@@ -319,7 +319,8 @@ class _NotificationCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        Wrap(
+                          runSpacing: 8,
                           children: tags.map((tag) => _buildTag(tag)).toList(),
                         ),
                         const SizedBox(height: 14),

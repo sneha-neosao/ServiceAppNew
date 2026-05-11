@@ -729,16 +729,23 @@ class _ServiceCallCard extends StatelessWidget {
         color: const Color(0xFF1565C0),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 18, color: Colors.white),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 18, color: Colors.white),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                label,
+                style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -755,9 +762,13 @@ class _ServiceCallCard extends StatelessWidget {
         children: [
           Icon(icon, size: 18, color: const Color(0xFF5C616E)),
           const SizedBox(width: 8),
-          Text(
-            label,
-            style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: const Color(0xFF5C616E)),
+          Flexible(
+            child: Text(
+              label,
+              style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: const Color(0xFF5C616E)),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
@@ -777,9 +788,13 @@ class _ServiceCallCard extends StatelessWidget {
         children: [
           const Icon(Icons.check_circle_outline, size: 18, color: Color(0xFFA5ABB7)),
           const SizedBox(width: 8),
-          Text(
-            'service_calls_btn_completed'.tr(),
-            style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+          Flexible(
+            child: Text(
+              'service_calls_btn_completed'.tr(),
+              style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
