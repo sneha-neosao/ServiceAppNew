@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:fpdart/fpdart.dart';
+import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../errors/failures.dart';
 import '../utils/failure_converter.dart';
@@ -39,16 +40,16 @@ class SessionManager {
     return prefs.getString("refreshToken");
   }
 
-  // static Future<void> saveUserSessionInfo(SignInResponse value) async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   await prefs.setString("userInfo", value.toRawJson());
-  // }
-  // static Future<SignInResponse?> getUserSessionInfo() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final raw = prefs.getString("userInfo");
-  //   if (raw == null) return null;
-  //   return SignInResponse.fromRawJson(raw);
-  // }
+  static Future<void> saveUserSession(LoginResponse value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("userSession", value.toRawJson());
+  }
+  static Future<LoginResponse?> getUserSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString("userSession");
+    if (raw == null) return null;
+    return LoginResponse.fromRawJson(raw);
+  }
 
   // static saveCommunityCode(String code) async {
   //   final prefs =await SharedPreferences.getInstance();

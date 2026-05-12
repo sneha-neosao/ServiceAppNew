@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
+import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
 import '../../configs/injector/injector.dart';
 import '../../core/api/api_exception.dart';
 import '../../core/api/api_helper.dart';
@@ -8,6 +10,8 @@ import '../../core/errors/exceptions.dart';
 import '../../core/utils/logger.dart';
 
 sealed class RemoteDataSource {
+
+  Future<LoginResponse> login(LoginParams params);
 
   Future<void> logout();
 }
@@ -19,6 +23,38 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   // final ApiHelper _superAdminHelper; /// Helper for super-admin or special API requests
 
   const RemoteDataSourceImpl(this._helper /* this._superAdminHelper*/);
+
+  @override
+  Future<LoginResponse> login(LoginParams params) async {
+    try {
+
+      var data = {
+        "email": params.email,
+        "password": params.password
+      };
+
+      final response = await _helper.execute(
+          method: Method.post,
+          url: ApiUrl.login,
+          data: data
+      );
+
+      final respData = LoginResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+      // throw here i want to pass same exception which is send by catch();
+    }
+  }
 
   @override
   Future<void> logout() async {
