@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/remote/models/commissioning_model.dart';
 
+import 'create_commissioning_report_screen.dart';
 import 'edit_commissioning_screen.dart';
 
 class MyCommissioningScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ class MyCommissioningScreen extends StatefulWidget {
 
 class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
   bool _isEditing = false;
+  bool _isCreating = false;
   CommissioningModel? _selectedItem;
 
   @override
@@ -26,6 +28,14 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
         onBack: () => setState(() {
           _isEditing = false;
           _selectedItem = null;
+        }),
+      );
+    }
+
+    if (_isCreating) {
+      return CreateCommissioningReportScreen(
+        onBack: () => setState(() {
+          _isCreating = false;
         }),
       );
     }
@@ -91,6 +101,9 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                   _isEditing = true;
                 }),
                 onDelete: () => _showDeleteDialog(context),
+                onSubmit: () => setState(() {
+                  _isCreating = true;
+                }),
               );
             },
           ),
@@ -210,6 +223,7 @@ class _CommissioningCard extends StatelessWidget {
   final String members;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback onSubmit;
 
   const _CommissioningCard({
     required this.companyName,
@@ -217,6 +231,7 @@ class _CommissioningCard extends StatelessWidget {
     required this.members,
     required this.onEdit,
     required this.onDelete,
+    required this.onSubmit,
   });
 
   @override
@@ -321,7 +336,7 @@ class _CommissioningCard extends StatelessWidget {
               width: double.infinity,
               height: 48,
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: onSubmit,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1565C0),
                   foregroundColor: Colors.white,

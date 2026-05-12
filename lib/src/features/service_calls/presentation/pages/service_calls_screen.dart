@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/features/my_commissioning/presentation/pages/create_commissioning_report_screen.dart';
 
 class ServiceCallsScreen extends StatefulWidget {
   const ServiceCallsScreen({super.key});
@@ -12,6 +13,7 @@ class ServiceCallsScreen extends StatefulWidget {
 class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool _isCreatingReport = false;
 
   @override
   void initState() {
@@ -27,6 +29,17 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (_isCreatingReport) {
+      return CreateCommissioningReportScreen(
+        isServiceReport: true,
+        onBack: () {
+          setState(() {
+            _isCreatingReport = false;
+          });
+        },
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -219,6 +232,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
           assignedTo: 'VINOD PATIL, PRASHANT SHINDE',
           onView: () => _showReportDialog(context),
           onEdit: () => _showAssignTechDialog(context),
+          onSubmit: () {
+            setState(() {
+              _isCreatingReport = true;
+            });
+          },
         ),
       ],
     );
@@ -235,6 +253,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
           location: 'MAIN SERVER ROOM',
           onView: () => _showReportDialog(context),
           onEdit: () => _showAssignTechDialog(context),
+          onSubmit: () {
+            setState(() {
+              _isCreatingReport = true;
+            });
+          },
         ),
         const SizedBox(height: 16),
         _ServiceCallCard(
@@ -244,6 +267,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
           location: 'ASSEMBLY LINE 4',
           onView: () => _showReportDialog(context),
           onEdit: () => _showAssignTechDialog(context),
+          onSubmit: () {
+            setState(() {
+              _isCreatingReport = true;
+            });
+          },
         ),
       ],
     );
@@ -544,6 +572,7 @@ class _ServiceCallCard extends StatelessWidget {
   final bool isCompleted;
   final VoidCallback onView;
   final VoidCallback onEdit;
+  final VoidCallback? onSubmit;
 
   const _ServiceCallCard({
     required this.type,
@@ -554,6 +583,7 @@ class _ServiceCallCard extends StatelessWidget {
     this.isCompleted = false,
     required this.onView,
     required this.onEdit,
+    this.onSubmit,
   });
 
   @override
@@ -689,13 +719,16 @@ class _ServiceCallCard extends StatelessWidget {
                 if (type != ServiceCallType.completed) ...[
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _buildPrimaryButton(
-                      type == ServiceCallType.ongoing
-                          ? 'service_calls_btn_submit'.tr()
-                          : 'service_calls_btn_assign'.tr(),
-                      type == ServiceCallType.ongoing
-                          ? Icons.check_circle_outline
-                          : Icons.person_add_outlined,
+                    child: GestureDetector(
+                      onTap: onSubmit,
+                      child: _buildPrimaryButton(
+                        type == ServiceCallType.ongoing
+                            ? 'service_calls_btn_submit'.tr()
+                            : 'service_calls_btn_assign'.tr(),
+                        type == ServiceCallType.ongoing
+                            ? Icons.check_circle_outline
+                            : Icons.person_add_outlined,
+                      ),
                     ),
                   ),
                 ],
