@@ -42,8 +42,8 @@ class AuthRepositoryImpl implements Repository {
           // Retrieve later
           final savedSession = await SessionManager.getUserSession();
           if (savedSession != null) {
-            print(savedSession.technician.name);
-            print(savedSession.dealer.name);
+            print(savedSession.technician?.name);
+            print(savedSession.dealer?.name);
           }
 
           return Right(respData);

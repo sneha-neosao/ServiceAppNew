@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -35,6 +36,23 @@ void configureDepedencies() {
 
   /// Other api blocs
 
+  getIt.registerFactory(
+        () => AuthLoginFormBloc(),
+  );
+
+  getIt.registerFactory(
+        () => AuthLoginBloc(
+        getIt<LoginUseCase>(),
+        // getIt<ForgotPasswordUseCase>(),
+        // getIt<AccountDeleteUseCase>()
+    ),
+  );
+
+  getIt.registerLazySingleton(
+        () => LoginUseCase(
+      getIt<AuthRepositoryImpl>(),
+    ),
+  );
 
   /// API Helper
 

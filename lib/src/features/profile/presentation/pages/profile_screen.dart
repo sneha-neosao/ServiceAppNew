@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/features/profile/widgets/profile_dialogs.dart';
+import 'package:service_app/src/features/profile/widgets/profile_widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -139,70 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: const BoxDecoration(color: Color(0xFFF8F9FB), shape: BoxShape.circle),
-                  child: const Icon(Icons.logout, size: 32, color: Color(0xFF1565C0)),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'logout_dialog_title'.tr(),
-                  style: AppFont.style(fontSize: 28, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'logout_dialog_subtitle'.tr(),
-                  textAlign: TextAlign.center,
-                  style: AppFont.style(fontSize: 10, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7), letterSpacing: 0.5),
-                ),
-                const SizedBox(height: 40),
-                SizedBox(
-                  width: double.infinity,
-                  height: 64,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      // Handle logout
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0D47A1),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'logout_dialog_btn_confirm'.tr(),
-                      style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 64,
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: TextButton.styleFrom(
-                      backgroundColor: const Color(0xFFF8F9FB),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    ),
-                    child: Text(
-                      'logout_dialog_btn_cancel'.tr(),
-                      style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: const Color(0xFF8E9BAE)),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+        return const ProfileLogoutDialog();
       },
     );
   }
@@ -212,70 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: const BoxDecoration(color: Color(0xFFFFF1F0), shape: BoxShape.circle),
-                  child: const Icon(Icons.delete_outline, size: 32, color: Color(0xFFF44336)),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'delete_dialog_title'.tr(),
-                  style: AppFont.style(fontSize: 28, fontWeight: FontWeight.w900, color: const Color(0xFFF44336)),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'delete_dialog_subtitle'.tr(),
-                  textAlign: TextAlign.center,
-                  style: AppFont.style(fontSize: 10, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7), letterSpacing: 0.5),
-                ),
-                const SizedBox(height: 40),
-                SizedBox(
-                  width: double.infinity,
-                  height: 64,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      // Handle deletion
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF44336),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'delete_dialog_btn_confirm'.tr(),
-                      style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 64,
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: TextButton.styleFrom(
-                      backgroundColor: const Color(0xFFF8F9FB),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    ),
-                    child: Text(
-                      'delete_dialog_btn_cancel'.tr(),
-                      style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: const Color(0xFF8E9BAE)),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+        return const ProfileDeleteDialog();
       },
     );
   }
@@ -318,7 +194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
 
             // ── Profile Details Section ──────────────────────────────────────
-            _buildSectionHeader('profile_details_section'.tr()),
+            ProfileSectionHeader(title: 'profile_details_section'.tr()),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -442,11 +318,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                           const SizedBox(height: 32),
-                          _buildInfoItem(Icons.location_on_outlined, 'profile_office_address'.tr(), '123, Industrial Area, Phase II, Pune - 411013'),
+                          ProfileInfoItem(icon: Icons.location_on_outlined, label: 'profile_office_address'.tr(), value: '123, Industrial Area, Phase II, Pune - 411013'),
                           const SizedBox(height: 24),
-                          _buildInfoItem(Icons.phone_outlined, 'profile_support_line'.tr(), '+91 20 2233 4455'),
+                          ProfileInfoItem(icon: Icons.phone_outlined, label: 'profile_support_line'.tr(), value: '+91 20 2233 4455'),
                           const SizedBox(height: 24),
-                          _buildInfoItem(Icons.verified_user_outlined, 'profile_tax_id'.tr(), '27AAACM1234A1Z5'),
+                          ProfileInfoItem(icon: Icons.verified_user_outlined, label: 'profile_tax_id'.tr(), value: '27AAACM1234A1Z5'),
                         ],
                       ),
                     ),
@@ -458,7 +334,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 40),
 
             // ── Preferences Section ──────────────────────────────────────────
-            _buildSectionHeader('profile_preferences_section'.tr()),
+            ProfileSectionHeader(title: 'profile_preferences_section'.tr()),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: GestureDetector(
@@ -507,14 +383,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 40),
 
             // ── Security Section ─────────────────────────────────────────────
-            _buildSectionHeader('profile_security_section'.tr()),
+            ProfileSectionHeader(title: 'profile_security_section'.tr()),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  _buildActionButton(Icons.logout, 'profile_btn_logout'.tr(), const Color(0xFFF8F9FB), const Color(0xFF8E9BAE), _showLogoutDialog),
+                  ProfileActionButton(icon: Icons.logout, label: 'profile_btn_logout'.tr(), bgColor: const Color(0xFFF8F9FB), textColor: const Color(0xFF8E9BAE), onTap: _showLogoutDialog),
                   const SizedBox(height: 16),
-                  _buildActionButton(Icons.delete_outline, 'profile_btn_delete'.tr(), const Color(0xFFFFEBEE), const Color(0xFFE53935), _showDeleteDialog),
+                  ProfileActionButton(icon: Icons.delete_outline, label: 'profile_btn_delete'.tr(), bgColor: const Color(0xFFFFEBEE), textColor: const Color(0xFFE53935), onTap: _showDeleteDialog),
                 ],
               ),
             ),
@@ -526,79 +402,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-      child: Row(
-        children: [
-          Text(
-            title,
-            style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
-          ),
-          const SizedBox(width: 12),
-          const Expanded(child: Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6))),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoItem(IconData icon, String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFFF1F2F6)),
-          ),
-          child: Icon(icon, size: 20, color: const Color(0xFFA5ABB7)),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: AppFont.style(fontSize: 10, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                value,
-                style: AppFont.style(fontSize: 15, fontWeight: FontWeight.w900, color: const Color(0xFF455A64)),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionButton(IconData icon, String label, Color bgColor, Color textColor, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        height: 64,
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: textColor, size: 20),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: textColor),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

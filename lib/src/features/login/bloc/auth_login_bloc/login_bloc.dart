@@ -1,6 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:service_app/src/core/errors/exceptions.dart';
+import 'package:service_app/src/core/errors/failures.dart';
+import 'package:service_app/src/core/session/session_manager.dart';
+import 'package:service_app/src/core/utils/failure_converter.dart';
 import 'package:service_app/src/core/utils/logger.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
 import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
@@ -21,7 +25,7 @@ class AuthLoginBloc extends Bloc<AuthEvent, AuthLoginState> {
   ) : super(AuthLoginInitialState()) {
     on<AuthLoginEvent>(_login);
     // on<AuthLogoutEvent>(_logout);
-    // on<AuthCheckSignInStatusEvent>(_checkSignInStatus);
+    on<AuthCheckSignInStatusEvent>(_checkSignInStatus);
     // on<AuthForgotPasswordEvent>(_forgotPassword);
     // on<AccountDeleteGetEvent>(_accountDelete);
   }
@@ -43,32 +47,32 @@ class AuthLoginBloc extends Bloc<AuthEvent, AuthLoginState> {
     );
   }
 
-  // /// - **Check Sign-In Status:** Handles [AuthCheckSignInStatusEvent] → checks [SessionManager]
-  // Future<Either<Failure, LoginResult>> checkSignInStatus() async {
-  //   try {
-  //     final result = await SessionManager.isLoggedIn();
-  //
-  //     if(result==true) {
-  //       final resultData = await SessionManager.getUserSessionInfo();
-  //       return Right(resultData!);
-  //     }
-  //     return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
-  //   } on CacheException {
-  //     return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
-  //   }
-  // }
-  //
-  // Future _checkSignInStatus(AuthCheckSignInStatusEvent event, Emitter emit) async
-  // {
-  //     emit(AuthCheckSignInStatusLoadingState());
-  //
-  //     final result= await checkSignInStatus();
-  //     result.fold(
-  //           (l) => emit(AuthCheckSignInStatusFailureState(mapFailureToMessage(l))),
-  //           (r) => emit(AuthCheckSignInStatusSuccessState(r.member!,r.social_media_app)),
-  //     );
-  // }
-  //
+  /// - **Check Sign-In Status:** Handles [AuthCheckSignInStatusEvent] → checks [SessionManager]
+  Future<Either<Failure, LoginResponse>> checkSignInStatus() async {
+    try {
+      final result = await SessionManager.isLoggedIn();
+
+      if(result==true) {
+        final resultData = await SessionManager.getUserSession();
+        return Right(resultData!);
+      }
+      return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+    } on CacheException {
+      return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+    }
+  }
+
+  Future _checkSignInStatus(AuthCheckSignInStatusEvent event, Emitter emit) async
+  {
+      emit(AuthCheckSignInStatusLoadingState());
+
+      final result= await checkSignInStatus();
+      result.fold(
+            (l) => emit(AuthCheckSignInStatusFailureState(mapFailureToMessage(l))),
+            (r) => emit(AuthCheckSignInStatusSuccessState(r)),
+      );
+  }
+
   // /// - **Logout:** Handles [AuthLogoutEvent] → clears [SessionManager]
   // Future _logout(AuthLogoutEvent event, Emitter emit) async {
   //   emit(AuthLogoutLoadingState());
