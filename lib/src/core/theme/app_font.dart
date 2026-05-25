@@ -3,15 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Centralized font definition for the entire app.
-/// Font family: Inter (equivalent to CSS --font-sans, Arial, Helvetica, sans-serif).
+/// Font family: Albert Sans.
 /// To change the font app-wide, update only [_fontFamily] below.
 class AppFont {
   AppFont._();
 
   // ── Single source of truth ─────────────────────────────────────────────────
-  static const String _fontFamily = 'Inter';
+  static const String _fontFamily = 'Albert Sans';
 
-  /// Returns an Inter [TextStyle].
+  /// Returns an Albert Sans [TextStyle].
   /// Only pass [fontSize], [fontWeight], [color], [height], [letterSpacing] —
   /// never hard-code the font family in individual screens.
   static TextStyle style({
@@ -22,7 +22,7 @@ class AppFont {
     double? letterSpacing,
     TextDecoration? decoration,
   }) {
-    return GoogleFonts.inter(
+    return GoogleFonts.albertSans(
       fontSize: fontSize,
       fontWeight: fontWeight,
       color: color,
@@ -34,13 +34,13 @@ class AppFont {
 
   // ── Legacy helpers (kept for existing theme wiring) ────────────────────────
   static TextStyle get normal =>
-      GoogleFonts.inter(fontWeight: FontWeight.normal);
+      GoogleFonts.albertSans(fontWeight: FontWeight.normal);
 
   static TextStyle get bold =>
-      GoogleFonts.inter(fontWeight: FontWeight.bold);
+      GoogleFonts.albertSans(fontWeight: FontWeight.bold);
 
   /// The raw font family string — used in ThemeData.fontFamily.
-  static String get family => GoogleFonts.inter().fontFamily!;
+  static String get family => GoogleFonts.albertSans().fontFamily!;
 }
 
 // ── Size extension (unchanged) ─────────────────────────────────────────────────

@@ -34,10 +34,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ── Bottom nav tab labels & icons ─────────────────────────────────────────
   static const List<_NavItem> _navItems = [
-    _NavItem(labelKey: 'home_nav_home', icon: Icons.home_outlined, activeIcon: Icons.home),
-    _NavItem(labelKey: 'home_nav_commissioning', icon: Icons.work_outline, activeIcon: Icons.work),
-    _NavItem(labelKey: 'home_nav_service_calls', icon: Icons.phone_in_talk_outlined, activeIcon: Icons.phone_in_talk),
-    _NavItem(labelKey: 'home_nav_reports', icon: Icons.insert_drive_file_outlined, activeIcon: Icons.insert_drive_file),
+    _NavItem(
+      labelKey: 'home_nav_home',
+      iconAsset: 'assets/icons/home_unselected_icon.png',
+      activeIconAsset: 'assets/icons/home_selected_icon.png',
+    ),
+    _NavItem(
+      labelKey: 'home_nav_commissioning',
+      iconAsset: 'assets/icons/mycommissioning_unselected_icon.png',
+      activeIconAsset: 'assets/icons/mycommissioning_selected_icon.png',
+    ),
+    _NavItem(
+      labelKey: 'home_nav_service_calls',
+      iconAsset: 'assets/icons/servicecalls_unselected_icon.png',
+      activeIconAsset: 'assets/icons/servicecalls_selected_icon.png',
+    ),
+    _NavItem(
+      labelKey: 'home_nav_reports',
+      iconAsset: 'assets/icons/reporthistory_unselected_icon.png',
+      activeIconAsset: 'assets/icons/reporthistory_selected_icon.png',
+    ),
   ];
 
   void _onTabTapped(int index) {
@@ -54,149 +70,130 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8F8),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        automaticallyImplyLeading: false,
-        title: Text(
-          _showNotifications
-              ? 'notif_appbar_title'.tr()
-              : _showProfile
-                  ? 'profile_appbar_title'.tr()
-                  : _showCreateReport
-                      ? 'create_report_appbar_title'.tr()
-                      : _getAppBarTitle(),
-          style: AppFont.style(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: const Color(0xFF0D121F),
-          ),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(75),
+        child: Stack(
+          children: [
+            // ── Background + content ─────────────────────────────────────────
+            Container(
+              height: 115,
+              color: const Color(0xFFE9F5FF),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 10, left: 16, right: 16),
+                  child: SafeArea(
+                    bottom: false,
+                    child: Row(
+                      children: [
+                        // ── Logo ───────────────────────────────────────────
+                        Image.asset(
+                          'assets/images/logo.png',
+                          height: 32,
+                          fit: BoxFit.contain,
+                        ),
+                        const Spacer(),
+                        // ── + button ───────────────────────────────────────
+                        GestureDetector(
+                          onTap: () => setState(() {
+                            _showCreateReport = true;
+                            _showNotifications = false;
+                            _showProfile = false;
+                          }),
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF0B68B9),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Image.asset('assets/icons/add_icon.png'),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        // ── Notification ───────────────────────────────────
+                        GestureDetector(
+                          onTap: () => setState(() {
+                            _showNotifications = true;
+                            _showCreateReport = false;
+                            _showProfile = false;
+                          }),
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF0B68B9),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Image.asset('assets/icons/notification_icon.png'),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        // ── Profile avatar ─────────────────────────────────
+                        GestureDetector(
+                          onTap: () => setState(() {
+                            _showProfile = true;
+                            _showNotifications = false;
+                            _showCreateReport = false;
+                          }),
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF0B68B9),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Image.asset('assets/icons/profile_icon.png'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // ── Upper-left corner decoration ──────────────────────────────
+            Positioned(
+              top: 0,
+              left: 0,
+              child: IgnorePointer(
+                child: Image.asset(
+                  'assets/icons/upper_left_corner_image.png',
+                  height: 90,
+                  width: 90,
+                  fit: BoxFit.fill,
+                ),
+              ),
+            ),
+            // ── Upper-right corner decoration ─────────────────────────────
+            Positioned(
+              top: 0,
+              right: 0,
+              child: IgnorePointer(
+                child: Image.asset(
+                  'assets/icons/upper_right_corner_image.png',
+                  height: 90,
+                  width: 90,
+                  fit: BoxFit.fill,
+                ),
+              ),
+            ),
+          ],
         ),
-        actions: [
-          // ── + blue button ──────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _showCreateReport = true;
-                  _showNotifications = false;
-                  _showProfile = false;
-                });
-              },
-              child: Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1565C0),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(Icons.add, color: Colors.white, size: 24),
-              ),
-            ),
-          ),
-
-          // ── Bell with notification dot ─────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: IconButton(
-              onPressed: () {
-                setState(() {
-                  _showNotifications = true;
-                  _showCreateReport = false;
-                  _showProfile = false;
-                });
-              },
-              icon: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE8E8E8)),
-                    ),
-                    child: const Icon(
-                      Icons.notifications_outlined,
-                      color: Color(0xFF1A1A1A),
-                      size: 22,
-                    ),
-                  ),
-                  Positioned(
-                    top: 6,
-                    right: 6,
-                    child: Container(
-                      width: 9,
-                      height: 9,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFF5722),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // ── Avatar ────────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _showProfile = true;
-                  _showNotifications = false;
-                  _showCreateReport = false;
-                });
-              },
-              child: Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8EAF6),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE8E8E8)),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(11),
-                  child: const Icon(
-                    Icons.person,
-                    size: 28,
-                    color: Color(0xFF5C6BC0),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
       body: _buildCurrentView(),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Color(0xFFEEEEEE), width: 1)),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: _CustomBottomNavBar(
+          selectedIndex: _selectedIndex,
           onTap: _onTabTapped,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFF1565C0),
-          unselectedItemColor: const Color(0xFF9E9E9E),
-          selectedLabelStyle: AppFont.style(fontSize: 11, fontWeight: FontWeight.w600),
-          unselectedLabelStyle: AppFont.style(fontSize: 11, fontWeight: FontWeight.w400),
-          elevation: 0,
-          items: _navItems.map((item) {
-            return BottomNavigationBarItem(
-              icon: Icon(item.icon),
-              activeIcon: Icon(item.activeIcon),
-              label: item.labelKey.tr(),
-            );
-          }).toList(),
+          navItems: _navItems,
         ),
       ),
     );
@@ -360,9 +357,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class _NavItem {
   final String labelKey;
-  final IconData icon;
-  final IconData activeIcon;
-  const _NavItem({required this.labelKey, required this.icon, required this.activeIcon});
+  final String iconAsset;
+  final String activeIconAsset;
+  const _NavItem({
+    required this.labelKey,
+    required this.iconAsset,
+    required this.activeIconAsset,
+  });
 }
 
 class _DropdownPill extends StatefulWidget {
@@ -397,6 +398,121 @@ class _DropdownPillState extends State<_DropdownPill> {
             const Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: Color(0xFF90A4AE)),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ── Custom bottom nav bar ──────────────────────────────────────────────────────
+class _CustomBottomNavBar extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onTap;
+  final List<_NavItem> navItems;
+
+  const _CustomBottomNavBar({
+    required this.selectedIndex,
+    required this.onTap,
+    required this.navItems,
+  });
+
+  static const double _indicatorSize = 20;
+  static const double _barHeight = 72;
+  // shifts the whole tab group to the left by this many logical pixels
+  static const double _groupShift = 24.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    // pill width = screen width minus left (8) + right (8) padding
+    final pillWidth = screenWidth - 16;
+    // effective tab area is narrowed by _groupShift on the right → tabs move left
+    final tabWidth = (pillWidth - _groupShift) / navItems.length;
+    final indicatorLeft =
+        tabWidth * selectedIndex + (tabWidth / 2) - (_indicatorSize / 2);
+
+    return Container(
+      // page background colour visible above the pill
+      // color: const Color(0xFFE9F5FF),
+      // top padding = half indicator height so it has room to overflow upward
+      padding: EdgeInsets.fromLTRB(8, _indicatorSize / 2, 8, 12),
+      child: Stack(
+        clipBehavior: Clip.none, // allows indicator to float above the pill
+        children: [
+          // ── Blue pill ───────────────────────────────────────────────────
+          Container(
+            height: _barHeight,
+            decoration: BoxDecoration(
+              color: const Color(0xFF0B68B9),
+              borderRadius: BorderRadius.circular(32),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(right: _groupShift),
+              child: Row(
+                children: navItems.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
+                final isActive = index == selectedIndex;
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => onTap(index),
+                    behavior: HitTestBehavior.opaque,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // reserve space equal to half indicator so items
+                        // are vertically centred inside the pill
+                        const SizedBox(height: _indicatorSize / 2),
+                        // ── icon ───────────────────────────────────────────
+                        Image.asset(
+                          isActive ? item.activeIconAsset : item.iconAsset,
+                          width: 24,
+                          height: 24,
+                          color: isActive
+                              ? Colors.white
+                              : Colors.white.withOpacity(0.55),
+                        ),
+                        const SizedBox(height: 4),
+                        // ── label ──────────────────────────────────────────
+                        Text(
+                          item.labelKey.tr(),
+                          style: AppFont.style(
+                            fontSize: 11,
+                            fontWeight: isActive
+                                ? FontWeight.w700
+                                : FontWeight.w400,
+                            color: isActive
+                                ? Colors.white
+                                : Colors.white.withOpacity(0.55),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+              ),
+            ),
+          ),
+
+          // ── Half-overflow selected indicator ────────────────────────────
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
+            left: indicatorLeft,
+            // top: 0 means the centre of the image sits on the top edge →
+            // half above the pill, half inside
+            top: -(_indicatorSize / 2),
+            child: IgnorePointer(
+              child: Image.asset(
+                'assets/icons/selected_item_icon.png',
+                width: _indicatorSize,
+                height: _indicatorSize,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

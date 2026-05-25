@@ -1,7 +1,7 @@
 class ApiUrl {
   const ApiUrl._();
 
-  static const baseUrl = "http://192.168.1.35:8001/api/v1/"; // TEST
+  static const baseUrl = "http://192.168.1.35:800/api/v1/"; // TEST
   // static const baseUrl = "https://admin.theperpetuity.com/api/v1"; // LIVE
 
   static const privacy_url = "https://theperpetuity.com/privacy-policy";

@@ -1,5 +1,5 @@
 enum AppRoute {
-  splash(path: "/"),
+  splash(path: "/splash_screen"),
   nextScreen(path: "/next_screen"),
   loginScreen(path: "/login"),
   forgotPasswordScreen(path: "/forgot-password"),

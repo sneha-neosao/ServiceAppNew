@@ -10,7 +10,7 @@ class AppRouteConf {
 
   late final _router = GoRouter(
     navigatorKey: globalNavigator,
-    initialLocation: AppRoute.nextScreen.path,
+    initialLocation: AppRoute.splash.path,
     debugLogDiagnostics: true,
 
     routes: [

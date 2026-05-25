@@ -21,9 +21,9 @@ class LoginUseCase implements UseCase<LoginResponse, LoginParams> {
       return Left(EmptyFailure("please_enter_email".tr()));
     }
 
-    if (!params.email.isEmailValid) {
-      return Left(EmptyFailure("please_enter_valid_email".tr()));
-    }
+    // if (!params.email.isEmailValid) {
+    //   return Left(EmptyFailure("please_enter_valid_email".tr()));
+    // }
 
     if (params.password.isEmpty) {
       return Left(EmptyFailure("please_enter_password".tr()));

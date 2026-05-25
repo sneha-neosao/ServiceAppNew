@@ -36,162 +36,185 @@ class LoginScreen extends StatelessWidget {
         BlocProvider(create: (_) => getIt<AuthLoginBloc>()),
       ],
       child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 60),
+        body: Stack(
+          children: [
+            Image.asset(
+              'assets/images/login_bg_image.jpg',
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.fill,
+            ),
+            SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 32.0),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // ── Decorative wing shapes ───────────────────────────────
+                      Positioned(
+                        left: -30,
+                        child: _WingShape(isLeft: true),
+                      ),
+                      Positioned(
+                        right: -30,
+                        child: _WingShape(isLeft: false),
+                      ),
 
-                  // ── Welcome heading ───────────────────────────────────────
-                  Text(
-                    'login_welcome_title'.tr(),
-                    style: AppFont.style(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF1A1A1A),
-                      height: 1.15,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'login_welcome_subtitle'.tr(),
-                    style: AppFont.style(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      color: const Color(0xFF6B6B6B),
-                      height: 1.5,
-                    ),
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  // ── INPUT FIELDS ──────────────────────────────────────────
-                  const LoginInputWidget(),
-
-                  const SizedBox(height: 32),
-
-                  // ── Sign In button ────────────────────────────────────────
-                  BlocConsumer<AuthLoginBloc, AuthLoginState>(
-                    listener: (context, state) {
-                      if (state is AuthLoginFailureState) {
-                        appSnackBar(context, AppColor.bright_red, state.message);
-                      } else if (state is AuthLoginSuccessState) {
-                        // Show success snackbar
-                        appSnackBar(context, AppColor.green, state.data.message);
-
-                        // Delay navigation slightly so user can see the message
-                        Future.delayed(const Duration(milliseconds: 200), () {
-                          if (context.mounted) {
-                            context.goNamed(AppRoute.homeScreen.name);
-                          }
-                        });
-                      }
-                    },
-                    builder: (context, state) {
-                      final isLoading = state is AuthLoginLoadingState;
-                      return SizedBox(
+                      // ── Blue login card ──────────────────────────────────────
+                      Container(
                         width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: isLoading ? null : () => _login(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1A1A1A),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24.0, vertical: 36.0),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF3B82C4),
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF3B82C4).withOpacity(0.35),
+                              blurRadius: 24,
+                              offset: const Offset(0, 10),
                             ),
-                          ),
-                          child: isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'login_sign_in'.tr(),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // ── Title ──────────────────────────────────────────
+                            Text(
+                              'Login',
+                              style: AppFont.style(
+                                fontSize: 26,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+
+                            const SizedBox(height: 28),
+
+                            // ── INPUT FIELDS ───────────────────────────────────
+                            const LoginInputWidget(),
+
+                            const SizedBox(height: 28),
+
+                            // ── Login button ───────────────────────────────────
+                            BlocConsumer<AuthLoginBloc, AuthLoginState>(
+                              listener: (context, state) {
+                                if (state is AuthLoginFailureState) {
+                                  appSnackBar(context, AppColor.bright_red, state.message);
+                                } else if (state is AuthLoginSuccessState) {
+                                  // Show success snackbar
+                                  appSnackBar(context, AppColor.green, state.data.message);
+
+                                  // Delay navigation slightly so user can see the message
+                                  Future.delayed(const Duration(milliseconds: 200), () {
+                                    if (context.mounted) {
+                                      context.goNamed(AppRoute.homeScreen.name);
+                                    }
+                                  });
+                                }
+                              },
+                              builder: (context, state) {
+                                final isLoading = state is AuthLoginLoadingState;
+                                return SizedBox(
+                                  width: double.infinity,
+                                  height: 50,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      context.pushNamed(AppRoute.homeScreen.name);
+                                    }, /*isLoading ? null : () => _login(context)*/
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      foregroundColor: const Color(0xFF3B82C4),
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                    ),
+                                    child: isLoading
+                                        ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Color(0xFF3B82C4),
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                        : Text(
+                                      'Login',
                                       style: AppFont.style(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
-                                        letterSpacing: 0.3,
+                                        color: const Color(0xFF3B82C4),
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
-                                    const Icon(Icons.arrow_forward, size: 18),
-                                  ],
-                                ),
-                        ),
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 36),
-
-                  // ── Don't have an account ─────────────────────────────────
-                  Center(
-                    child: RichText(
-                      text: TextSpan(
-                        style: AppFont.style(
-                          fontSize: 14,
-                          color: const Color(0xFF6B6B6B),
-                        ),
-                        children: [
-                          TextSpan(text: '${'login_no_account'.tr()} '),
-                          WidgetSpan(
-                            alignment: PlaceholderAlignment.baseline,
-                            baseline: TextBaseline.alphabetic,
-                            child: GestureDetector(
-                              onTap: () {
-                                // TODO: handle contact admin action
+                                  ),
+                                );
                               },
-                              child: Text(
-                                'login_contact_admin'.tr(),
-                                style: AppFont.style(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFF1565C0),
-                                ),
-                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-
-                  const SizedBox(height: 48),
-
-                  // ── Copyright footer ──────────────────────────────────────
-                  Center(
-                    child: Text(
-                      'login_copyright'.tr(),
-                      style: AppFont.style(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFFBDBDBD),
-                        letterSpacing: 1.1,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
+          ],
+        )
       ),
     );
   }
+}
+
+/// Decorative wing/chevron shape painted beside the card
+class _WingShape extends StatelessWidget {
+  final bool isLeft;
+  const _WingShape({required this.isLeft});
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.scale(
+      scaleX: isLeft ? -1 : 1,
+      child: CustomPaint(
+        size: const Size(90, 200),
+        painter: _WingPainter(),
+      ),
+    );
+  }
+}
+
+class _WingPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF3B82C4).withOpacity(0.18)
+      ..style = PaintingStyle.fill;
+
+    // Outer wing
+    final outerPath = Path()
+      ..moveTo(size.width, size.height * 0.2)
+      ..quadraticBezierTo(0, size.height * 0.5, size.width, size.height * 0.8)
+      ..quadraticBezierTo(size.width * 0.6, size.height * 0.5, size.width, size.height * 0.2)
+      ..close();
+
+    canvas.drawPath(outerPath, paint);
+
+    // Inner wing (slightly darker)
+    final innerPaint = Paint()
+      ..color = const Color(0xFF3B82C4).withOpacity(0.12)
+      ..style = PaintingStyle.fill;
+
+    final innerPath = Path()
+      ..moveTo(size.width, size.height * 0.3)
+      ..quadraticBezierTo(size.width * 0.3, size.height * 0.5, size.width, size.height * 0.7)
+      ..quadraticBezierTo(size.width * 0.7, size.height * 0.5, size.width, size.height * 0.3)
+      ..close();
+
+    canvas.drawPath(innerPath, innerPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
