@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(155),
         child: Stack(
@@ -256,19 +256,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 8),
           Text(
             'home_greeting_name'.tr(),
-            style: AppFont.style(fontSize: 26, fontWeight: FontWeight.w800, color: const Color(0xFF1A1A1A)),
+            style: AppFont.style(fontSize: 26, fontWeight: FontWeight.bold, color: const Color(0xFF1A1A1A)),
           ),
           const SizedBox(height: 4),
           Text(
             'home_greeting_message'.tr(),
             style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 36),
           // AMC Card
           Container(
             width: double.infinity,
@@ -292,10 +292,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       width: 48,
                       height: 48,
-                      decoration: BoxDecoration(color: const Color(0xFFFFF8E1), borderRadius: BorderRadius.circular(12)),
-                      child: const Icon(Icons.receipt_long_outlined, color: Color(0xFFD4870A), size: 24),
+                      decoration: BoxDecoration(color: const Color(0xFFC2E2FE), borderRadius: BorderRadius.circular(12)),
+                      child: const Icon(Icons.receipt_long_outlined, color: Color(0xFF0B68B9), size: 24),
                     ),
-                    const SizedBox(width: 14),
+                    const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         'home_amc_card_title'.tr(),
@@ -309,16 +309,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  decoration: BoxDecoration(color: const Color(0xFFFFF8E1), borderRadius: BorderRadius.circular(12)),
+                  decoration: BoxDecoration(color: const Color(0xFFC2E2FE), borderRadius: BorderRadius.circular(12)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('2', style: AppFont.style(fontSize: 32, fontWeight: FontWeight.w800, color: const Color(0xFFD4870A))),
+                          Text('2', style: AppFont.style(fontSize: 32, fontWeight: FontWeight.w800, color: const Color(0xFF0B68B9))),
                           const SizedBox(height: 2),
-                          Text('home_amc_total_label'.tr(), style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFFD4870A))),
+                          Text('home_amc_total_label'.tr(), style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF0B68B9))),
                         ],
                       ),
                       GestureDetector(
@@ -327,7 +327,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: 40,
                           height: 40,
                           decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                          child: const Icon(Icons.chevron_right, color: Color(0xFFD4870A), size: 22),
+                          child: const Icon(Icons.chevron_right, color: Color(0xFF0B68B9), size: 22),
                         ),
                       ),
                     ],
