@@ -52,27 +52,27 @@ class AuthCheckSignInStatusFailureState extends AuthLoginState {
   List<Object?> get props => [message];
 }
 
-// /// States like loading, success and failure representing logout.
-//
-// class AuthLogoutLoadingState extends AuthLoginState {}
-//
-// class AuthLogoutSuccessState extends AuthLoginState {
-//   final String message;
-//
-//   const AuthLogoutSuccessState(this.message);
-//
-//   @override
-//   List<Object?> get props => [message];
-// }
-//
-// class AuthLogoutFailureState extends AuthLoginState {
-//   final String message;
-//
-//   const AuthLogoutFailureState(this.message);
-//
-//   @override
-//   List<Object?> get props => [message];
-// }
+/// States like loading, success and failure representing logout.
+
+class AuthLogoutLoadingState extends AuthLoginState {}
+
+class AuthLogoutSuccessState extends AuthLoginState {
+  final String message;
+
+  const AuthLogoutSuccessState(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class AuthLogoutFailureState extends AuthLoginState {
+  final String message;
+
+  const AuthLogoutFailureState(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
 //
 // /// States like loading, success and failure representing forgot password.
 //

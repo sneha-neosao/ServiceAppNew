@@ -3,7 +3,7 @@ enum AppRoute {
   nextScreen(path: "/next_screen"),
   loginScreen(path: "/login"),
   forgotPasswordScreen(path: "/forgot-password"),
-  homeScreen(path: "/home");
+  homeScreen(path: "/home_screen");
 
   final String path;
 

@@ -71,17 +71,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8F8),
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(75),
+        preferredSize: const Size.fromHeight(155),
         child: Stack(
           children: [
             // ── Background + content ─────────────────────────────────────────
             Container(
-              height: 115,
+              height: 155,
               color: const Color(0xFFE9F5FF),
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 10, left: 16, right: 16),
+                  padding: const EdgeInsets.only(bottom: 38, left: 16, right: 16),
                   child: SafeArea(
                     bottom: false,
                     child: Row(
@@ -89,8 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         // ── Logo ───────────────────────────────────────────
                         Image.asset(
                           'assets/images/logo_tightcrop.png',
-                          height: 40,
-                          fit: BoxFit.contain,
+                          width: 135,
+                          fit: BoxFit.fill,
                         ),
                         const Spacer(),
                         // ── + button ───────────────────────────────────────
@@ -160,13 +160,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             // ── Upper-left corner decoration ──────────────────────────────
             Positioned(
-              top: 0,
-              left: 0,
+              top: -35,
+              left: -47,
               child: IgnorePointer(
                 child: Image.asset(
                   'assets/icons/upper_left_corner_image.png',
-                  height: 90,
-                  width: 90,
+                  height: 163,
+                  width: 181,
                   fit: BoxFit.fill,
                 ),
               ),
@@ -178,8 +178,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: IgnorePointer(
                 child: Image.asset(
                   'assets/icons/upper_right_corner_image.png',
-                  height: 90,
-                  width: 90,
+                  height: 160,
+                  width: 140,
                   fit: BoxFit.fill,
                 ),
               ),

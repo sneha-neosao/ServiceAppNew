@@ -24,7 +24,7 @@ class AuthLoginBloc extends Bloc<AuthEvent, AuthLoginState> {
     // this._accountDeleteUseCase
   ) : super(AuthLoginInitialState()) {
     on<AuthLoginEvent>(_login);
-    // on<AuthLogoutEvent>(_logout);
+    on<AuthLogoutEvent>(_logout);
     on<AuthCheckSignInStatusEvent>(_checkSignInStatus);
     // on<AuthForgotPasswordEvent>(_forgotPassword);
     // on<AccountDeleteGetEvent>(_accountDelete);
@@ -41,10 +41,18 @@ class AuthLoginBloc extends Bloc<AuthEvent, AuthLoginState> {
       ),
     );
 
-    result.fold(
-      (l) => emit(AuthLoginFailureState(l.message)),
-      (r) => emit(AuthLoginSuccessState(r)),
-    );
+    // fold() is synchronous — never put async work inside its callbacks.
+    // Instead check the result and await outside fold.
+    if (result.isLeft()) {
+      final failure = result.getLeft().toNullable()!;
+      emit(AuthLoginFailureState(failure.message));
+    } else {
+      final data = result.getRight().toNullable()!;
+      // Persist sign-in status so splash can route correctly on next launch
+      await SessionManager.saveLoginStatus(true);
+      await SessionManager.saveUserSession(data);
+      emit(AuthLoginSuccessState(data));
+    }
   }
 
   /// - **Check Sign-In Status:** Handles [AuthCheckSignInStatusEvent] → checks [SessionManager]
@@ -73,17 +81,18 @@ class AuthLoginBloc extends Bloc<AuthEvent, AuthLoginState> {
       );
   }
 
-  // /// - **Logout:** Handles [AuthLogoutEvent] → clears [SessionManager]
-  // Future _logout(AuthLogoutEvent event, Emitter emit) async {
-  //   emit(AuthLogoutLoadingState());
-  //
-  //   final result =  await SessionManager.clear();
-  //
-  //   result.fold(
-  //         (l) => emit(AuthLogoutFailureState(mapFailureToMessage(l))),
-  //         (r) => emit(const AuthLogoutSuccessState("Logout Success")),
-  //   );
-  // }
+  /// - **Logout:** Handles [AuthLogoutEvent] → saves false status then clears [SessionManager]
+  Future _logout(AuthLogoutEvent event, Emitter emit) async {
+    emit(AuthLogoutLoadingState());
+
+    await SessionManager.saveLoginStatus(false);
+    final result = await SessionManager.clear();
+
+    result.fold(
+          (l) => emit(AuthLogoutFailureState(mapFailureToMessage(l))),
+          (r) => emit(const AuthLogoutSuccessState("Logout Success")),
+    );
+  }
   //
   // /// - **Forgot Password:** Handles [AuthForgotPasswordEvent]
   // Future _forgotPassword(AuthForgotPasswordEvent event, Emitter emit) async {

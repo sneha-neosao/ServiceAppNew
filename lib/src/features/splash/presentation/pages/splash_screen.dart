@@ -1,7 +1,10 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
+import '../../../../configs/injector/injector.dart';
 import '../../../../routes/app_route_path.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -13,7 +16,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
 
@@ -21,7 +23,8 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // Fade in the logo
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
     _fadeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -32,21 +35,6 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _fadeController.forward();
-
-    // Navigate to next screen after 3 seconds
-    Future.delayed(const Duration(milliseconds: 3000), () async {
-      if (!mounted) return;
-
-      final isLoggedIn = await SessionManager.isLoggedIn();
-
-      if (!mounted) return;
-
-      if (isLoggedIn == true) {
-        // context.goNamed(AppRoute.homeScreen.name);
-      } else {
-        context.goNamed(AppRoute.loginScreen.name);
-      }
-    });
   }
 
   @override
@@ -57,28 +45,59 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Image.asset(
-            'assets/images/splash_bg_image.jpg',
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.fill,
-          ),
-          Center(
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Image.asset(
-                'assets/images/logo.png',
-                width: MediaQuery.of(context).size.width * 0.8,
-                fit: BoxFit.contain,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) =>
+          getIt<AuthLoginBloc>()..add(AuthCheckSignInStatusEvent()),
+        ),
+        BlocProvider(
+          create: (_) => SplashBloc(),
+        ),
+      ],
+      child: BlocListener<SplashBloc, SplashState>(
+        listenWhen: (_, state) => state is SplashDataState,
+        listener: (_, state) async {
+          if (!mounted) return;
+
+          SystemChrome.setEnabledSystemUIMode(
+            SystemUiMode.edgeToEdge,
+            overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+          );
+
+          final isLoggedIn = await SessionManager.isLoggedIn();
+
+          if (!mounted) return;
+
+          if (isLoggedIn == true) {
+            context.goNamed(AppRoute.homeScreen.name);
+          } else {
+            context.goNamed(AppRoute.loginScreen.name);
+          }
+        },
+        child: Scaffold(
+          body: Stack(
+            children: [
+              Image.asset(
+                'assets/images/splash_bg_image.jpg',
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.fill,
               ),
-            ),
+              Center(
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      )
+        ),
+      ),
     );
   }
 }
-
