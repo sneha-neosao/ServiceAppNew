@@ -12,4 +12,6 @@ class ApiUrl {
 
   static const login = "technician/login";
 
+  static const profile_details = "technician/profile";
+
 }

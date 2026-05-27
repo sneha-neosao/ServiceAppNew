@@ -1,7 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:service_app/src/configs/injector/injector.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/features/profile/bloc/profile_details_bloc/profile_details_bloc.dart';
 import 'package:service_app/src/features/profile/widgets/profile_dialogs.dart';
+import 'package:service_app/src/remote/models/profile_details_model/profile_details_model.dart';
 
 class ProfileScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -130,82 +135,115 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // ── Build ──────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF2F6FA),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Blue header ──────────────────────────────────────────────────
-            _buildHeader(),
+    return BlocProvider(
+      create: (_) => getIt<ProfileDetailsBloc>()..add(const ProfileDetailsGetEvent()),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF2F6FA),
+        body: BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
+          builder: (context, state) {
+            final data = state is ProfileDetailsSuccessState ? state.data.data : null;
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Blue header ────────────────────────────────────────────
+                  _buildHeader(data),
 
-            const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-            // ── Contact ──────────────────────────────────────────────────────
-            _sectionLabel('Contact'),
-            _infoCard(children: [
-              _contactRow(Icons.phone_outlined, 'Mobile', '+91 98220 14491'),
-              _divider(),
-              _contactRow(Icons.email_outlined, 'Email', 'pravin.p@mainten.in'),
-              _divider(),
-              _contactRow(Icons.location_on_outlined, 'Base location', 'Pune, Maharashtra'),
-            ]),
+                  // ── API error banner ───────────────────────────────────────
+                  if (state is ProfileDetailsFailureState)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.red.shade200),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.error_outline, color: Colors.red.shade400, size: 18),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                state.message,
+                                style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.red.shade600),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
 
-            const SizedBox(height: 20),
+                  // ── Contact ──────────────────────────────────────────────────
+                  _sectionLabel('Contact'),
+                  _infoCard(children: [
+                    _contactRow(Icons.phone_outlined, 'Mobile', data?.phone ?? '—'),
+                    _divider(),
+                    _contactRow(Icons.email_outlined, 'Email', data?.email ?? '—'),
+                    _divider(),
+                    _contactRow(Icons.location_on_outlined, 'Base location', 'Pune, Maharashtra'),
+                  ]),
 
-            // ── Employer ─────────────────────────────────────────────────────
-            _sectionLabel('Employer'),
-            _employerCard(),
+                  const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
+                  // ── Employer ─────────────────────────────────────────────────
+                  _sectionLabel('Employer'),
+                  _employerCard(),
 
-            // ── Preferences ──────────────────────────────────────────────────
-            _sectionLabel('Preferences'),
-            _infoCard(children: [
-              _prefRow(
-                Icons.language,
-                'Language',
-                _selectedLanguage,
-                onTap: _showLanguageBottomSheet,
+                  const SizedBox(height: 20),
+
+                  _sectionLabel('Preferences'),
+                  _infoCard(children: [
+                    _prefRow(
+                      Icons.language,
+                      'Language',
+                      _selectedLanguage,
+                      onTap: _showLanguageBottomSheet,
+                    ),
+                    _divider(),
+                    _prefToggleRow(
+                      Icons.dark_mode_outlined,
+                      'Dark mode',
+                      'Easier on the eyes at night',
+                      _darkMode,
+                      (v) => setState(() => _darkMode = v),
+                    ),
+                    _divider(),
+                    _prefToggleRow(
+                      Icons.notifications_outlined,
+                      'Push notifications',
+                      'Job assignments & alerts',
+                      _pushNotifications,
+                      (v) => setState(() => _pushNotifications = v),
+                    ),
+                  ]),
+
+                  const SizedBox(height: 20),
+
+                  // ── Security & session ────────────────────────────────────────
+                  _sectionLabel('Security & session'),
+                  _infoCard(children: [
+                    _actionRow(Icons.logout, 'Logout', onTap: _showLogoutDialog),
+                    _divider(),
+                    _actionRow(Icons.delete_outline, 'Delete Account',
+                        textColor: Colors.red, onTap: _showDeleteDialog),
+                  ]),
+
+                  const SizedBox(height: 100),
+                ],
               ),
-              _divider(),
-              _prefToggleRow(
-                Icons.dark_mode_outlined,
-                'Dark mode',
-                'Easier on the eyes at night',
-                _darkMode,
-                (v) => setState(() => _darkMode = v),
-              ),
-              _divider(),
-              _prefToggleRow(
-                Icons.notifications_outlined,
-                'Push notifications',
-                'Job assignments & alerts',
-                _pushNotifications,
-                (v) => setState(() => _pushNotifications = v),
-              ),
-            ]),
-
-            const SizedBox(height: 20),
-
-            // ── Security & session ────────────────────────────────────────────
-            _sectionLabel('Security & session'),
-            _infoCard(children: [
-              _actionRow(Icons.logout, 'Logout', onTap: _showLogoutDialog),
-              _divider(),
-              _actionRow(Icons.delete_outline, 'Delete Account',
-                  textColor: Colors.red, onTap: _showDeleteDialog),
-            ]),
-
-            const SizedBox(height: 100),
-          ],
+            );
+          },
         ),
       ),
     );
   }
 
   // ── Header widget ──────────────────────────────────────────────────────────
-  Widget _buildHeader() {
+  Widget _buildHeader(ProfileData? data) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -293,17 +331,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Pravin Patil',
-                        style: AppFont.style(
-                            fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF0D121F))),
+                    Text(
+                      data?.name ?? '—',
+                      style: AppFont.style(
+                          fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF0D121F)),
+                    ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.person_outline, size: 13, color: Color(0xFFA5ABB7)),
+                        const Icon(Icons.badge_outlined, size: 13, color: Color(0xFFA5ABB7)),
                         const SizedBox(width: 4),
-                        Text('ID: T-4491',
-                            style: AppFont.style(
-                                fontSize: 12, fontWeight: FontWeight.w500, color: const Color(0xFFA5ABB7))),
+                        Text(
+                          data != null ? 'ID: ${data.code}' : '—',
+                          style: AppFont.style(
+                              fontSize: 12, fontWeight: FontWeight.w500, color: const Color(0xFFA5ABB7)),
+                        ),
                       ],
                     ),
                   ],

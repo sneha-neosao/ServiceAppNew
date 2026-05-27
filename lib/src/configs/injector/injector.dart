@@ -10,3 +10,4 @@ export '../../features/splash/bloc/splash_bloc/splash_bloc.dart';
 export '../../core/deeplink/deep_link_service.dart';
 export '../../features/login/bloc/auth_login_bloc/login_bloc.dart';
 export '../../features/login/bloc/auth_login_form/login_form_bloc.dart';
+export '../../features/profile/bloc/profile_details_bloc/profile_details_bloc.dart';

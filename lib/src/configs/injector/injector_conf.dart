@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
+import 'package:service_app/src/features/profile/domain/usecase/profile_details_usecase.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -54,6 +55,17 @@ void configureDepedencies() {
     ),
   );
 
+  getIt.registerFactory(
+        () => ProfileDetailsBloc(
+      getIt<ProfileDetailsUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+        () => ProfileDetailsUseCase(
+      getIt<AuthRepositoryImpl>(),
+    ),
+  );
   /// API Helper
 
   getIt.registerLazySingleton(() => NetworkInfo());
