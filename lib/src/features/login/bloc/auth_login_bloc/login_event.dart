@@ -12,13 +12,13 @@ sealed class AuthEvent extends Equatable {
 /// Event for login.
 
 class AuthLoginEvent extends AuthEvent {
-  final String email;
+  final String phone;
   final String password;
 
-  const AuthLoginEvent(this.email, this.password);
+  const AuthLoginEvent(this.phone, this.password);
 
   @override
-  List<Object?> get props => [email, password];
+  List<Object?> get props => [phone, password];
 }
 
 /// Event for logout.

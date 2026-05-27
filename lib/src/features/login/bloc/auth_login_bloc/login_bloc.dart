@@ -36,7 +36,7 @@ class AuthLoginBloc extends Bloc<AuthEvent, AuthLoginState> {
 
     final result = await _loginUseCase.call(
       LoginParams(
-        email: event.email,
+        phone: event.phone,
         password: event.password,
       ),
     );

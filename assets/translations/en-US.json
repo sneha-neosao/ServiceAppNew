@@ -184,7 +184,7 @@
   "delete_dialog_btn_confirm": "CONFIRM DELETE",
   "delete_dialog_btn_cancel": "GO BACK",
   "comm_report_date": "Commissioning Date",
-  "please_enter_email": "Please enter the email.",
+  "please_enter_phone": "Please enter the contact number.",
   "please_enter_password": "Please enter the password.",
   "please_enter_valid_email": "Please enter the valid email."
 }

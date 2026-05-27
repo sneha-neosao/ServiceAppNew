@@ -17,8 +17,8 @@ class LoginUseCase implements UseCase<LoginResponse, LoginParams> {
   @override
   Future<Either<Failure, LoginResponse>> call(LoginParams params) async {
 
-    if (params.email.isEmpty) {
-      return Left(EmptyFailure("please_enter_email".tr()));
+    if (params.phone.isEmpty) {
+      return Left(EmptyFailure("please_enter_phone".tr()));
     }
 
     // if (!params.email.isEmailValid) {
@@ -36,17 +36,17 @@ class LoginUseCase implements UseCase<LoginResponse, LoginParams> {
 }
 
 class LoginParams extends Equatable {
-  final String email;
+  final String phone;
   final String password;
 
   const LoginParams({
-    required this.email,
+    required this.phone,
     required this.password
   });
 
   @override
   List<Object?> get props => [
-    email,
+    phone,
     password
   ];
 }

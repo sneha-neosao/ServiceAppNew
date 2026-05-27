@@ -88,8 +88,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         // ── Logo ───────────────────────────────────────────
                         Image.asset(
-                          'assets/images/logo.png',
-                          height: 32,
+                          'assets/images/logo_tightcrop.png',
+                          height: 40,
                           fit: BoxFit.contain,
                         ),
                         const Spacer(),

@@ -29,7 +29,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     try {
 
       var data = {
-        "email": params.email,
+        "phone": params.phone,
         "password": params.password
       };
 
