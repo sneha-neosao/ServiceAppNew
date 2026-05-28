@@ -180,45 +180,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // ── Contact ──────────────────────────────────────────────────
                   _sectionLabel('Contact'),
                   _infoCard(children: [
-                    _contactRow(Icons.phone_outlined, 'Mobile', data?.phone ?? '—'),
+                    _contactRow("assets/icons/call_icon.png", 'Mobile', data?.phone ?? '—'),
                     _divider(),
-                    _contactRow(Icons.email_outlined, 'Email', data?.email ?? '—'),
-                    _divider(),
-                    _contactRow(Icons.location_on_outlined, 'Base location', 'Pune, Maharashtra'),
+                    _contactRow("assets/icons/mail_icon.png", 'Email', data?.email ?? '—'),
                   ]),
 
                   const SizedBox(height: 20),
 
                   // ── Employer ─────────────────────────────────────────────────
-                  _sectionLabel('Employer'),
-                  _employerCard(),
+                  _sectionLabel('Dealer'),
+                  _employerCard(data),
 
                   const SizedBox(height: 20),
 
-                  _sectionLabel('Preferences'),
+                  _sectionLabel('Choose Language'),
                   _infoCard(children: [
                     _prefRow(
-                      Icons.language,
+                      "assets/icons/language.png",
                       'Language',
                       _selectedLanguage,
                       onTap: _showLanguageBottomSheet,
                     ),
-                    _divider(),
-                    _prefToggleRow(
-                      Icons.dark_mode_outlined,
-                      'Dark mode',
-                      'Easier on the eyes at night',
-                      _darkMode,
-                      (v) => setState(() => _darkMode = v),
-                    ),
-                    _divider(),
-                    _prefToggleRow(
-                      Icons.notifications_outlined,
-                      'Push notifications',
-                      'Job assignments & alerts',
-                      _pushNotifications,
-                      (v) => setState(() => _pushNotifications = v),
-                    ),
+                    // _divider(),
+                    // _prefToggleRow(
+                    //   Icons.dark_mode_outlined,
+                    //   'Dark mode',
+                    //   'Easier on the eyes at night',
+                    //   _darkMode,
+                    //   (v) => setState(() => _darkMode = v),
+                    // ),
+                    // _divider(),
+                    // _prefToggleRow(
+                    //   Icons.notifications_outlined,
+                    //   'Push notifications',
+                    //   'Job assignments & alerts',
+                    //   _pushNotifications,
+                    //   (v) => setState(() => _pushNotifications = v),
+                    // ),
                   ]),
 
                   const SizedBox(height: 20),
@@ -226,9 +224,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // ── Security & session ────────────────────────────────────────
                   _sectionLabel('Security & session'),
                   _infoCard(children: [
-                    _actionRow(Icons.logout, 'Logout', onTap: _showLogoutDialog),
+                    _actionRow("assets/icons/logout_icon.png", 'Logout', onTap: _showLogoutDialog),
                     _divider(),
-                    _actionRow(Icons.delete_outline, 'Delete Account',
+                    _actionRow("assets/icons/accountdelete_icon.png", 'Delete Account',
                         textColor: Colors.red, onTap: _showDeleteDialog),
                   ]),
 
@@ -249,12 +247,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         // Blue gradient bg
         Container(
-          height: 180,
+          height: 120,
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF0B68B9), Color(0xFF1A8FE3)],
+            image: DecorationImage(
+              image: AssetImage('assets/images/profile_bg_image.png'),
+              fit: BoxFit.cover,
             ),
           ),
           child: SafeArea(
@@ -265,19 +262,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Back arrow
-                  GestureDetector(
-                    onTap: widget.onBack,
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.arrow_back, color: Colors.white, size: 18),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
+                  // GestureDetector(
+                  //   onTap: widget.onBack,
+                  //   child: Container(
+                  //     width: 36,
+                  //     height: 36,
+                  //     decoration: BoxDecoration(
+                  //       color: Colors.white.withOpacity(0.2),
+                  //       shape: BoxShape.circle,
+                  //     ),
+                  //     child: const Icon(Icons.arrow_back, color: Colors.white, size: 18),
+                  //   ),
+                  // ),
+                  const SizedBox(height: 18),
                   // Title centred
                   Center(
                     child: Text(
@@ -299,7 +296,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Positioned(
           left: 16,
           right: 16,
-          top: 140,
+          top: 80,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
@@ -356,7 +353,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
 
         // Space the Stack so the floating card doesn't get clipped
-        const SizedBox(height: 230),
+        const SizedBox(height: 180),
       ],
     );
   }
@@ -396,7 +393,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _divider() => const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16, color: Color(0xFFF1F2F6));
 
   // ── Contact row ────────────────────────────────────────────────────────────
-  Widget _contactRow(IconData icon, String label, String value) {
+  Widget _contactRow(String icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
@@ -405,10 +402,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: const Color(0xFFE3F0FB),
+              color: const Color(0xFF0B68B9),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, size: 18, color: const Color(0xFF0B68B9)),
+            child: Padding(
+              padding: const EdgeInsets.all(9.0),
+              child: Image.asset(icon),
+            ),
           ),
           const SizedBox(width: 14),
 
@@ -446,7 +446,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ── Employer card (blue bg) ────────────────────────────────────────────────
-  Widget _employerCard() {
+  Widget _employerCard(ProfileData? data) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -476,16 +476,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Container(
                     width: 38,
                     height: 38,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(Icons.business, size: 20, color: Colors.white),
+                    child: Image.asset("assets/icons/dealer_icon.png"),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Text(
-                      'Mainten Systems Pvt Ltd',
+                      data?.dealer.name.isNotEmpty == true ? data!.dealer.name : '—',
                       style: AppFont.style(
                           fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
                     ),
@@ -509,10 +505,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Column(
                 children: [
-                  _contactRow(Icons.location_on_outlined, 'Office address',
-                      '123, Industrial Area, Phase II, Pune – 411013'),
-                  _divider(),
-                  _contactRow(Icons.phone_outlined, 'Support line', '+91 20 2233 4455'),
+                  _contactRow("assets/icons/dealercode_icon.png", 'Dealer code', data?.dealer.code.isNotEmpty == true ? data!.dealer.code : '—'),
+                  // _divider(),
+                  // _contactRow("assets/icons/mail_icon.png", 'Support line', '+91 20 2233 4455'),
                 ],
               ),
             ),
@@ -523,7 +518,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ── Preference tap row ─────────────────────────────────────────────────────
-  Widget _prefRow(IconData icon, String label, String subtitle, {VoidCallback? onTap}) {
+  Widget _prefRow(String icon, String label, String subtitle, {VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -535,10 +530,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: const Color(0xFFE3F0FB),
+                color: const Color(0xFF0B68B9),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, size: 18, color: const Color(0xFF0B68B9)),
+              child: Padding(
+                padding: const EdgeInsets.all(9.0),
+                child: Image.asset(icon),
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -600,7 +598,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ── Action row (logout / delete) ───────────────────────────────────────────
-  Widget _actionRow(IconData icon, String label, {Color? textColor, VoidCallback? onTap}) {
+  Widget _actionRow(String icon, String label, {Color? textColor, VoidCallback? onTap}) {
     final color = textColor ?? const Color(0xFF0B68B9);
     return GestureDetector(
       onTap: onTap,
@@ -613,10 +611,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: Color(0xFF0B68B9),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, size: 18, color: color),
+              child: Padding(
+                padding: const EdgeInsets.all(9.0),
+                child: Image.asset(icon),
+              ),
             ),
             const SizedBox(width: 14),
             Text(label,

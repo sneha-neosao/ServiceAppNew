@@ -209,13 +209,13 @@ class AmcVisitDetailsScreen extends StatelessWidget {
         // ── Bottom "Complete AMC Work" bar ───────────────────────────────────
         Container(
           color: const Color(0xFFF8F8F8),
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          padding: const EdgeInsets.fromLTRB(22, 12, 22, 24),
           child: Container(
             width: double.infinity,
             height: 56,
             decoration: BoxDecoration(
               color: const Color(0xFFECEFF1),
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
