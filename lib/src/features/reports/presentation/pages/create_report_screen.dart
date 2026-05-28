@@ -13,8 +13,65 @@ class CreateReportScreen extends StatefulWidget {
 class _CreateReportScreenState extends State<CreateReportScreen> {
   int _currentStep = 1;
 
+  bool _isCustomerDropdownOpen = false;
+  bool _isSiteDropdownOpen = false;
+  bool _isCustomerAddNew = false;   // true = show text field, false = show dropdown
+  bool _isSiteAddNew = false;        // true = show text field, false = show dropdown
+  String _selectedCustomer = 'Select Customer';
+  String _selectedSite = 'Select Site';
+
+  final TextEditingController _newCustomerController = TextEditingController();
+  final TextEditingController _newSiteController = TextEditingController();
+
+  final List<String> _customersList = [
+    'Gera Developers Pvt. Ltd.',
+    'Global Infotech',
+    'Reliance Mart',
+  ];
+
+  final List<String> _sitesList = [
+    'Imperium Gateway',
+    'Main Server Room',
+    'Chiller Plant',
+  ];
+
+  // Dynamic list of member name fields – starts with one empty field
+  final List<TextEditingController> _memberControllers = [TextEditingController()];
+  final TextEditingController _agendaController = TextEditingController();
+
+  void _addMemberField() {
+    setState(() => _memberControllers.add(TextEditingController()));
+  }
+
+  void _removeMemberField(int index) {
+    setState(() {
+      _memberControllers[index].dispose();
+      _memberControllers.removeAt(index);
+    });
+  }
+
+  @override
+  void dispose() {
+    for (final c in _memberControllers) c.dispose();
+    _agendaController.dispose();
+    _newCustomerController.dispose();
+    _newSiteController.dispose();
+    super.dispose();
+  }
+
+  void _simulateSpeech(TextEditingController controller) {
+    setState(() {
+      controller.text = controller.text.isEmpty 
+          ? "Spoken text added via mic" 
+          : "${controller.text} Spoken text added via mic";
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Simulated Speech-to-Text input')),
+    );
+  }
+
   void _nextStep() {
-    if (_currentStep < 6) {
+    if (_currentStep < 4) {
       setState(() {
         _currentStep++;
       });
@@ -127,12 +184,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         return 'create_report_step_info_3'.tr();
       case 4:
         return 'create_report_step_info_4'.tr();
-      case 5:
-        return 'create_report_step_info_5'.tr();
-      case 6:
-        return 'create_report_step_info_6'.tr();
       default:
-        return 'STEP $_currentStep OF 6';
+        return 'STEP $_currentStep OF 4';
     }
   }
 
@@ -159,21 +212,21 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Service Report',
+                          'SERVICE / WORK REPORT',
                           style: AppFont.style(
-                            fontSize: 22,
+                            fontSize: 20,
                             fontWeight: FontWeight.w900,
                             color: const Color(0xFF0D121F),
                           ),
                         ),
-                        Text(
-                          _getStepInfo(),
-                          style: AppFont.style(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFFA5ABB7),
-                          ),
-                        ),
+                        // Text(
+                        //   _getStepInfo(),
+                        //   style: AppFont.style(
+                        //     fontSize: 12,
+                        //     fontWeight: FontWeight.w800,
+                        //     color: const Color(0xFFA5ABB7),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ],
@@ -181,12 +234,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 const SizedBox(height: 20),
                 // Step Indicators
                 Row(
-                  children: List.generate(6, (index) {
+                  children: List.generate(4, (index) {
                     bool isActive = index < _currentStep;
                     return Expanded(
                       child: Container(
                         height: 4,
-                        margin: EdgeInsets.only(right: index == 5 ? 0 : 8),
+                        margin: EdgeInsets.only(right: index == 3 ? 0 : 8),
                         decoration: BoxDecoration(
                           color: isActive ? const Color(0xFF1565C0) : const Color(0xFFF1F2F6),
                           borderRadius: BorderRadius.circular(2),
@@ -260,17 +313,17 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (_currentStep == 6)
+                        if (_currentStep == 4)
                           const Icon(Icons.check_box_outlined, size: 20, color: Colors.white)
                         else
                           const SizedBox.shrink(),
-                        if (_currentStep == 6) const SizedBox(width: 12) else const SizedBox.shrink(),
+                        if (_currentStep == 4) const SizedBox(width: 12) else const SizedBox.shrink(),
                         Text(
-                          _currentStep == 6 ? 'create_report_btn_submit'.tr() : 'create_report_btn_next'.tr(),
+                          _currentStep == 4 ? 'create_report_btn_submit'.tr() : 'create_report_btn_next'.tr(),
                           style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white),
                         ),
-                        if (_currentStep < 6) const SizedBox(width: 12) else const SizedBox.shrink(),
-                        if (_currentStep < 6)
+                        if (_currentStep < 4) const SizedBox(width: 12) else const SizedBox.shrink(),
+                        if (_currentStep < 4)
                           const Icon(Icons.arrow_forward, size: 18, color: Colors.white)
                         else
                           const SizedBox.shrink(),
@@ -290,18 +343,16 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     switch (_currentStep) {
       case 1:
         return _buildStep1();
-      case 2:
-        return _buildStep2();
-      case 3:
-        return _buildStep3();
-      case 4:
-        return _buildStep4();
-      case 5:
-        return _buildStep5();
-      case 6:
-        return _buildStep6();
       default:
-        return const Center(child: Text("Coming Soon"));
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 60),
+            child: Text(
+              "Coming Soon",
+              style: AppFont.style(fontSize: 18, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+            ),
+          ),
+        );
     }
   }
 
@@ -352,7 +403,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
                   ),
                   Text(
-                    '11/05/2026',
+                    '28/05/2026',
                     style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
                   ),
                 ],
@@ -366,15 +417,23 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         // Technician Name
         _buildLabel('create_report_tech_name'.tr()),
         const SizedBox(height: 12),
-        Row(
-          children: [
-            const Icon(Icons.person_outline, size: 20, color: Color(0xFFA5ABB7)),
-            const SizedBox(width: 12),
-            Text(
-              'Mr. Rahul Mane',
-              style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
-            ),
-          ],
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8F9FB),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFF1F2F6)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.person_outline, size: 20, color: Color(0xFFA5ABB7)),
+              const SizedBox(width: 12),
+              Text(
+                'Mr. Rahul Mane',
+                style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w900, color: const Color(0xFF8E9BAE)),
+              ),
+            ],
+          ),
         ),
 
         const SizedBox(height: 32),
@@ -384,10 +443,72 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildLabel('create_report_customer_name'.tr()),
-            _buildAddNewButton('create_report_add_new'.tr()),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isCustomerAddNew = !_isCustomerAddNew;
+                  // Reset dropdown when switching modes
+                  _isCustomerDropdownOpen = false;
+                  _newCustomerController.clear();
+                });
+              },
+              child: _isCustomerAddNew
+                  ? _buildSelectExistingButton()
+                  : _buildAddNewButton('create_report_add_new'.tr()),
+            ),
           ],
         ),
-        _buildDropdownField('Select Customer'),
+        const SizedBox(height: 12),
+        if (_isCustomerAddNew) ...[  // ── Add New mode: text field
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFF1565C0)),
+            ),
+            child: TextField(
+              controller: _newCustomerController,
+              autofocus: true,
+              style: AppFont.style(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                color: const Color(0xFF0D121F),
+              ),
+              decoration: InputDecoration(
+                hintText: 'Enter new customer name',
+                hintStyle: AppFont.style(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xFFA5ABB7),
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+            ),
+          ),
+        ] else ...[                  // ── Select Existing mode: dropdown
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _isCustomerDropdownOpen = !_isCustomerDropdownOpen;
+                _isSiteDropdownOpen = false;
+              });
+            },
+            child: _buildDropdownField(_selectedCustomer, _isCustomerDropdownOpen),
+          ),
+          if (_isCustomerDropdownOpen)
+            _buildDropdownList(
+              title: 'Select Customer',
+              items: _customersList,
+              onSelect: (val) {
+                setState(() {
+                  _selectedCustomer = val;
+                  _isCustomerDropdownOpen = false;
+                });
+              },
+            ),
+        ],
 
         const SizedBox(height: 32),
 
@@ -396,37 +517,72 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildLabel('create_report_site_name'.tr()),
-            _buildAddNewButton('create_report_add_new'.tr()),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isSiteAddNew = !_isSiteAddNew;
+                  // Reset dropdown when switching modes
+                  _isSiteDropdownOpen = false;
+                  _newSiteController.clear();
+                });
+              },
+              child: _isSiteAddNew
+                  ? _buildSelectExistingButton()
+                  : _buildAddNewButton('create_report_add_new'.tr()),
+            ),
           ],
         ),
-        _buildDropdownField('Select Site'),
-
-        const SizedBox(height: 32),
-
-        // Site Address
-        _buildLabel('create_report_site_address'.tr()),
         const SizedBox(height: 12),
-        Container(
-          height: 100,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFF1F2F6)),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  'create_report_site_address_hint'.tr(),
-                  style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
-                ),
+        if (_isSiteAddNew) ...[  // ── Add New mode: text field
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFF1565C0)),
+            ),
+            child: TextField(
+              controller: _newSiteController,
+              autofocus: true,
+              style: AppFont.style(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                color: const Color(0xFF0D121F),
               ),
-              const Icon(Icons.mic_none, color: Color(0xFFA5ABB7)),
-            ],
+              decoration: InputDecoration(
+                hintText: 'Enter new site name',
+                hintStyle: AppFont.style(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xFFA5ABB7),
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+            ),
           ),
-        ),
+        ] else ...[                  // ── Select Existing mode: dropdown
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _isSiteDropdownOpen = !_isSiteDropdownOpen;
+                _isCustomerDropdownOpen = false;
+              });
+            },
+            child: _buildDropdownField(_selectedSite, _isSiteDropdownOpen),
+          ),
+          if (_isSiteDropdownOpen)
+            _buildDropdownList(
+              title: 'Select Site',
+              items: _sitesList,
+              onSelect: (val) {
+                setState(() {
+                  _selectedSite = val;
+                  _isSiteDropdownOpen = false;
+                });
+              },
+            ),
+        ],
 
         const SizedBox(height: 32),
 
@@ -436,10 +592,120 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             _buildLabel('create_report_complaint_no'.tr()),
             const SizedBox(width: 40),
             Text(
-              '-',
+              ':    -',
               style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
             ),
           ],
+        ),
+        const SizedBox(height: 32),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 32),
+
+        // Member Presents
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildLabel('create_report_member_presents'.tr()),
+            GestureDetector(
+              onTap: _addMemberField,
+              child: _buildAddNewButton('create_report_add_plus'.tr()),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        // Render one row per controller
+        ...List.generate(_memberControllers.length, (index) {
+          final ctrl = _memberControllers[index];
+          final isFirst = index == 0;
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: ctrl,
+                      style: AppFont.style(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF0D121F),
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'name',
+                        hintStyle: AppFont.style(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF8E9BAE),
+                        ),
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => _simulateSpeech(ctrl),
+                    child: const Icon(Icons.mic_none, color: Color(0xFFA5ABB7)),
+                  ),
+                  if (!isFirst) ...[
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () => _removeMemberField(index),
+                      child: const Icon(
+                        Icons.remove_circle_outline,
+                        color: Color(0xFFE53935),
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              const SizedBox(height: 8),
+              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+              if (index < _memberControllers.length - 1)
+                const SizedBox(height: 8),
+            ],
+          );
+        }),
+
+        const SizedBox(height: 48),
+
+        // Agenda / Purpose
+        _buildLabel('create_report_agenda'.tr()),
+        const SizedBox(height: 16),
+        Container(
+          height: 150,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8F9FB),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFF1F2F6)),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _agendaController,
+                  maxLines: null,
+                  style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF0D121F)),
+                  decoration: InputDecoration(
+                    hintText: 'Enter the main purpose of this visit...',
+                    hintStyle: AppFont.style(fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF8E9BAE)),
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.topRight,
+                child: GestureDetector(
+                  onTap: () => _simulateSpeech(_agendaController),
+                  child: const Icon(Icons.mic_none, color: Color(0xFFA5ABB7)),
+                ),
+              ),
+            ],
+          ),
         ),
 
         const SizedBox(height: 60),
@@ -848,23 +1114,78 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     );
   }
 
-  Widget _buildDropdownField(String value) {
-    return Column(
+  Widget _buildSelectExistingButton() {
+    return Row(
       children: [
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              value,
-              style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
-            ),
-            const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
-          ],
+        const Icon(Icons.check_circle_outline, size: 16, color: Color(0xFF1565C0)),
+        const SizedBox(width: 4),
+        Text(
+          'Select Existing',
+          style: AppFont.style(fontSize: 11, fontWeight: FontWeight.w800, color: const Color(0xFF1565C0)),
         ),
-        const SizedBox(height: 8),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
       ],
+    );
+  }
+
+  Widget _buildDropdownField(String value, bool isOpen) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isOpen ? const Color(0xFF1565C0) : const Color(0xFFF1F2F6),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            value,
+            style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+          ),
+          const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDropdownList({
+    required String title,
+    required List<String> items,
+    required ValueChanged<String> onSelect,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: const Color(0xFF757575), width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header item
+          Container(
+            color: const Color(0xFF757575),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Text(
+              title,
+              style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white),
+            ),
+          ),
+          // List items
+          ...items.map((item) => GestureDetector(
+                onTap: () => onSelect(item),
+                child: Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Text(
+                    item,
+                    style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w400, color: const Color(0xFF0D121F)),
+                  ),
+                ),
+              )),
+        ],
+      ),
     );
   }
 }

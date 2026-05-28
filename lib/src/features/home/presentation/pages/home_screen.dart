@@ -384,6 +384,8 @@ class _DropdownPillState extends State<_DropdownPill> {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
+      color: Colors.white,
+      surfaceTintColor: Colors.white,
       onSelected: (val) => setState(() => _selectedLabel = val),
       offset: const Offset(0, 45),
       itemBuilder: (ctx) => _options.map((opt) => PopupMenuItem(value: opt, child: Text(opt))).toList(),
