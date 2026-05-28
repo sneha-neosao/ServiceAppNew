@@ -37,16 +37,46 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   // Dynamic list of member name fields – starts with one empty field
   final List<TextEditingController> _memberControllers = [TextEditingController()];
+  // Mic toggle state per member row (false = off, true = on/active)
+  final List<bool> _memberMicActive = [false];
+  // Mic toggle state for agenda field
+  bool _agendaMicActive = false;
   final TextEditingController _agendaController = TextEditingController();
 
+  // ── Step 2: Technical Details ───────────────────────────────────────────────
+  bool _isTechnicalNA = false;
+  final TextEditingController _pumpMakeCtrl        = TextEditingController();
+  final TextEditingController _pumpModelCtrl       = TextEditingController();
+  final TextEditingController _pumpSerialCtrl      = TextEditingController();
+  final TextEditingController _pumpFlowLpmCtrl     = TextEditingController();
+  final TextEditingController _pumpFlowM3hrCtrl    = TextEditingController();
+  final TextEditingController _pumpFlowLpsCtrl     = TextEditingController();
+  final TextEditingController _pumpFlowUsgpmCtrl   = TextEditingController();
+  final TextEditingController _pumpHeadMtrCtrl     = TextEditingController();
+  final TextEditingController _driverMakeCtrl      = TextEditingController();
+  final TextEditingController _driverSerialCtrl    = TextEditingController();
+  final TextEditingController _ratingKwCtrl        = TextEditingController();
+  final TextEditingController _ratingHpCtrl        = TextEditingController();
+  final TextEditingController _rpmCtrl             = TextEditingController();
+  final TextEditingController _panelMakeCtrl       = TextEditingController();
+  final TextEditingController _panelSerialCtrl     = TextEditingController();
+  // Work Description – 3 rows initially
+  final List<TextEditingController> _workDescControllers = [
+    TextEditingController(), TextEditingController(), TextEditingController(),
+  ];
+
   void _addMemberField() {
-    setState(() => _memberControllers.add(TextEditingController()));
+    setState(() {
+      _memberControllers.add(TextEditingController());
+      _memberMicActive.add(false);
+    });
   }
 
   void _removeMemberField(int index) {
     setState(() {
       _memberControllers[index].dispose();
       _memberControllers.removeAt(index);
+      _memberMicActive.removeAt(index);
     });
   }
 
@@ -56,6 +86,23 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _agendaController.dispose();
     _newCustomerController.dispose();
     _newSiteController.dispose();
+    // step 2
+    _pumpMakeCtrl.dispose();
+    _pumpModelCtrl.dispose();
+    _pumpSerialCtrl.dispose();
+    _pumpFlowLpmCtrl.dispose();
+    _pumpFlowM3hrCtrl.dispose();
+    _pumpFlowLpsCtrl.dispose();
+    _pumpFlowUsgpmCtrl.dispose();
+    _pumpHeadMtrCtrl.dispose();
+    _driverMakeCtrl.dispose();
+    _driverSerialCtrl.dispose();
+    _ratingKwCtrl.dispose();
+    _ratingHpCtrl.dispose();
+    _rpmCtrl.dispose();
+    _panelMakeCtrl.dispose();
+    _panelSerialCtrl.dispose();
+    for (final c in _workDescControllers) c.dispose();
     super.dispose();
   }
 
@@ -343,6 +390,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     switch (_currentStep) {
       case 1:
         return _buildStep1();
+      case 2:
+        return _buildStep2();
       default:
         return Center(
           child: Padding(
@@ -643,8 +692,18 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => _simulateSpeech(ctrl),
-                    child: const Icon(Icons.mic_none, color: Color(0xFFA5ABB7)),
+                    onTap: () {
+                      setState(() {
+                        _memberMicActive[index] = !_memberMicActive[index];
+                      });
+                      if (_memberMicActive[index]) _simulateSpeech(ctrl);
+                    },
+                    child: Icon(
+                      _memberMicActive[index] ? Icons.mic_none : Icons.mic_off,
+                      color: _memberMicActive[index]
+                          ? const Color(0xFF1565C0)
+                          : const Color(0xFFA5ABB7),
+                    ),
                   ),
                   if (!isFirst) ...[
                     const SizedBox(width: 8),
@@ -700,8 +759,16 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               Align(
                 alignment: Alignment.topRight,
                 child: GestureDetector(
-                  onTap: () => _simulateSpeech(_agendaController),
-                  child: const Icon(Icons.mic_none, color: Color(0xFFA5ABB7)),
+                  onTap: () {
+                    setState(() => _agendaMicActive = !_agendaMicActive);
+                    if (_agendaMicActive) _simulateSpeech(_agendaController);
+                  },
+                  child: Icon(
+                    _agendaMicActive ? Icons.mic_none : Icons.mic_off,
+                    color: _agendaMicActive
+                        ? const Color(0xFF1565C0)
+                        : const Color(0xFFA5ABB7),
+                  ),
                 ),
               ),
             ],
@@ -717,56 +784,257 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Member Presents
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildLabel('create_report_member_presents'.tr()),
-            _buildAddNewButton('create_report_add_plus'.tr()),
-          ],
-        ),
-        const SizedBox(height: 12),
+
+        // ── Technical Details header ────────────────────────────────────────
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'create_report_site_address_hint'.tr(),
-              style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+              'Technical Details',
+              style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
             ),
-            const Icon(Icons.mic_none, color: Color(0xFFA5ABB7)),
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () => setState(() => _isTechnicalNA = !_isTechnicalNA),
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _isTechnicalNA ? const Color(0xFF1565C0) : const Color(0xFFA5ABB7),
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                      color: _isTechnicalNA ? const Color(0xFF1565C0) : Colors.white,
+                    ),
+                    child: _isTechnicalNA
+                        ? const Icon(Icons.check, size: 14, color: Colors.white)
+                        : null,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'NA',
+                  style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                ),
+              ],
+            ),
           ],
         ),
-        const SizedBox(height: 8),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
-        const SizedBox(height: 48),
+        // ── All fields wrapped: inactive + non-tappable when NA is checked ──────
+        IgnorePointer(
+          ignoring: _isTechnicalNA,
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 250),
+            opacity: _isTechnicalNA ? 0.38 : 1.0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 24),
 
-        // Agenda / Purpose
-        _buildLabel('create_report_agenda'.tr()),
-        const SizedBox(height: 16),
-        Container(
-          height: 200,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFF1F2F6)),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  'create_report_agenda_hint'.tr(),
-                  style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                // ── Pump Make ──────────────────────────────────────────────
+                _buildTechLabel('Pump Make'),
+                _buildUnderlineField(_pumpMakeCtrl),
+                const SizedBox(height: 20),
+
+                // ── Pump Model ─────────────────────────────────────────────
+                _buildTechLabel('Pump Model'),
+                _buildUnderlineField(_pumpModelCtrl),
+                const SizedBox(height: 20),
+
+                // ── Pump Serial Number ─────────────────────────────────────
+                _buildTechLabel('Pump Serial Number'),
+                _buildUnderlineField(_pumpSerialCtrl),
+                const SizedBox(height: 20),
+
+                // ── Pump Flow (2×2 grid) ───────────────────────────────────
+                _buildTechLabel('Pump Flow'),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(child: _buildUnitField(_pumpFlowLpmCtrl, 'LPM')),
+                    const SizedBox(width: 16),
+                    Expanded(child: _buildUnitField(_pumpFlowM3hrCtrl, 'M3/HR')),
+                  ],
                 ),
-              ),
-              const Icon(Icons.mic_none, color: Color(0xFFA5ABB7)),
-            ],
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(child: _buildUnitField(_pumpFlowLpsCtrl, 'LPS')),
+                    const SizedBox(width: 16),
+                    Expanded(child: _buildUnitField(_pumpFlowUsgpmCtrl, 'USGPM')),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // ── Pump Head ──────────────────────────────────────────────
+                _buildTechLabel('Pump Head'),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(flex: 5, child: _buildUnitField(_pumpHeadMtrCtrl, 'MTR')),
+                    const Spacer(flex: 5),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                const SizedBox(height: 24),
+
+                // ── Driver Make ────────────────────────────────────────────
+                _buildTechLabel('Driver Make'),
+                _buildUnderlineField(_driverMakeCtrl),
+                const SizedBox(height: 20),
+
+                // ── Driver Serial Number ───────────────────────────────────
+                _buildTechLabel('Driver Serial Number'),
+                _buildUnderlineField(_driverSerialCtrl),
+                const SizedBox(height: 20),
+
+                // ── Rating (KW / HP) ───────────────────────────────────────
+                _buildTechLabel('Rating (KW/HP)'),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(child: _buildUnitField(_ratingKwCtrl, 'KW')),
+                    const SizedBox(width: 16),
+                    Expanded(child: _buildUnitField(_ratingHpCtrl, 'HP')),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // ── RPM ────────────────────────────────────────────────────
+                _buildTechLabel('RPM'),
+                _buildUnderlineField(_rpmCtrl),
+                const SizedBox(height: 32),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                const SizedBox(height: 24),
+
+                // ── Control Panel Make ─────────────────────────────────────
+                _buildTechLabel('Control Panel Make'),
+                _buildUnderlineField(_panelMakeCtrl),
+                const SizedBox(height: 20),
+
+                // ── Panel Serial / Model ───────────────────────────────────
+                _buildTechLabel('Panel Serial / Model'),
+                _buildUnderlineField(_panelSerialCtrl),
+                const SizedBox(height: 40),
+
+                // ── Work Description ───────────────────────────────────────
+                Center(
+                  child: Text(
+                    'Work Description',
+                    style: AppFont.style(fontSize: 15, fontWeight: FontWeight.w900, color: const Color(0xFFA5ABB7)),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                ...List.generate(_workDescControllers.length, (index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12, right: 8),
+                          child: Text(
+                            '${index + 1}.',
+                            style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                          ),
+                        ),
+                        Expanded(
+                          child: Focus(
+                            child: Builder(
+                              builder: (ctx) {
+                                final hasFocus = Focus.of(ctx).hasFocus;
+                                return Container(
+                                  padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF8F9FB),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: hasFocus ? const Color(0xFF1565C0) : const Color(0xFFF1F2F6),
+                                      width: hasFocus ? 1.5 : 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: _workDescControllers[index],
+                                          minLines: 3,
+                                          maxLines: null,
+                                          style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF0D121F)),
+                                          decoration: InputDecoration(
+                                            hintText: '...',
+                                            hintStyle: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                                            border: InputBorder.none,
+                                            isDense: true,
+                                            contentPadding: EdgeInsets.zero,
+                                          ),
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => _simulateSpeech(_workDescControllers[index]),
+                                        child: const Icon(Icons.mic_off, size: 18, color: Color(0xFFA5ABB7)),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+
+                const SizedBox(height: 60),
+              ],
+            ),
           ),
         ),
+      ],
+    );
+  }
 
-        const SizedBox(height: 60),
+  // ── Underline text field (label above, full-width input with bottom border) ──
+  Widget _buildTechLabel(String text) {
+    return Text(
+      text,
+      style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: const Color(0xFF3A4152)),
+    );
+  }
+
+  Widget _buildUnderlineField(TextEditingController ctrl, {String hint = ''}) {
+    return TextField(
+      controller: ctrl,
+      style: AppFont.style(fontSize: 15, fontWeight: FontWeight.w500, color: const Color(0xFF0D121F)),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: AppFont.style(fontSize: 14, fontWeight: FontWeight.w400, color: const Color(0xFFA5ABB7)),
+        enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFD8DCE6))),
+        focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF1565C0), width: 1.5)),
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(vertical: 8),
+      ),
+    );
+  }
+
+  // ── Unit field: input + unit label above the underline ───────────────────────
+  Widget _buildUnitField(TextEditingController ctrl, String unit) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          unit,
+          style: AppFont.style(fontSize: 11, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+        ),
+        const SizedBox(height: 2),
+        _buildUnderlineField(ctrl),
       ],
     );
   }
