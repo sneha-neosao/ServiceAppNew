@@ -1,12 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/features/my_commissioning/presentation/pages/add_commissioning_screen.dart';
 import 'package:service_app/src/features/my_commissioning/presentation/widgets/commissioning_card.dart';
 import 'package:service_app/src/features/my_commissioning/presentation/widgets/delete_job_dialog.dart';
 import 'package:service_app/src/remote/models/commissioning_model.dart';
 
 import 'create_commissioning_report_screen.dart';
-import 'edit_commissioning_screen.dart';
 
 class MyCommissioningScreen extends StatefulWidget {
   const MyCommissioningScreen({super.key});
@@ -23,10 +23,10 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isEditing && _selectedItem != null) {
-      return EditCommissioningScreen(
-        customerName: _selectedItem!.companyName,
-        siteLocation: _selectedItem!.location,
-        assignedTechnicians: _selectedItem!.members,
+      return AddCommissioningScreen(
+        initialCustomer: _selectedItem!.companyName,
+        initialSite: _selectedItem!.location,
+        initialTechnicians: _selectedItem!.members,
         onBack: () => setState(() {
           _isEditing = false;
           _selectedItem = null;
