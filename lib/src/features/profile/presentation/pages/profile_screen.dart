@@ -318,11 +318,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: 52,
                   height: 52,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE3F0FB),
+                    color: const Color(0xFF0B68B9),
                     shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFF0B68B9), width: 2),
+                    // border: Border.all(color: const Color(0xFF0B68B9), width: 2),
                   ),
-                  child: const Icon(Icons.person, size: 30, color: Color(0xFF0B68B9)),
+                  child: Image.asset("assets/icons/profile_icon.png"),
                 ),
                 const SizedBox(width: 14),
                 Column(
