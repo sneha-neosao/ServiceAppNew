@@ -246,12 +246,14 @@ class _NotificationCard extends StatelessWidget {
         ],
       ),
       clipBehavior: Clip.antiAlias,
-      child: Row(
-        children: [
-          Container(width: 5, height: 160, color: accentColor),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(width: 5, color: isNew ? const Color(0xFF1565C0) : Colors.transparent),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -338,7 +340,8 @@ class _NotificationCard extends StatelessWidget {
               ),
             ),
           ),
-        ],
+        ]
+        ),
       ),
     );
   }
@@ -348,7 +351,7 @@ class _NotificationCard extends StatelessWidget {
       margin: const EdgeInsets.only(right: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F8FF),
+        color: const Color(0xFFF8F9FB),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
