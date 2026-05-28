@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import '../../../../configs/injector/injector.dart';
@@ -37,6 +38,18 @@ class _SplashScreenState extends State<SplashScreen>
     _fadeController.forward();
   }
 
+  /// Requests camera and photo-library permissions.
+  /// Navigation continues regardless of the user's choice.
+  Future<void> _requestPermissions() async {
+    // On Android 13+ READ_MEDIA_IMAGES is the relevant permission;
+    // on older versions READ_EXTERNAL_STORAGE is used instead.
+    await [
+      Permission.camera,
+      Permission.photos,        // iOS + Android 13+
+      Permission.storage,       // Android < 13 fallback
+    ].request();
+  }
+
   @override
   void dispose() {
     _fadeController.dispose();
@@ -64,6 +77,11 @@ class _SplashScreenState extends State<SplashScreen>
             SystemUiMode.edgeToEdge,
             overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
           );
+
+          // Request camera / photos permissions before navigating
+          await _requestPermissions();
+
+          if (!mounted) return;
 
           final isLoggedIn = await SessionManager.isLoggedIn();
 
@@ -101,3 +119,4 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
+

@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 
 class CreateReportScreen extends StatefulWidget {
@@ -103,6 +105,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _panelMakeCtrl.dispose();
     _panelSerialCtrl.dispose();
     for (final c in _workDescControllers) c.dispose();
+    // step 4
+    _remarksTechCtrl.dispose();
+    _remarksCustomerCtrl.dispose();
+    _customerRepNameCtrl.dispose();
     super.dispose();
   }
 
@@ -132,6 +138,29 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   String? _phase;
   String? _current;
   String? _panelWiring;
+
+  // ── Step 4: Remarks + Photos + Recorded By ─────────────────────────────
+  final TextEditingController _remarksTechCtrl     = TextEditingController();
+  final TextEditingController _remarksCustomerCtrl = TextEditingController();
+  final TextEditingController _customerRepNameCtrl = TextEditingController();
+  bool _remarksTechMicActive     = false;
+  bool _remarksCustomerMicActive = false;
+  final List<XFile> _pickedPhotos = [];
+  final ImagePicker _imagePicker  = ImagePicker();
+
+  Future<void> _pickPhoto() async {
+    final XFile? file = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+    if (file != null) {
+      setState(() => _pickedPhotos.add(file));
+    }
+  }
+
+  void _removePhoto(int index) {
+    setState(() => _pickedPhotos.removeAt(index));
+  }
 
   void _simulateSpeech(TextEditingController controller) {
     setState(() {
@@ -168,80 +197,166 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
+      barrierColor: Colors.black.withValues(alpha: 0.55),
+      builder: (BuildContext ctx) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // ── Card body ─────────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 36, 24, 28),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.close, color: Color(0xFFA5ABB7)),
-                      onPressed: () => Navigator.of(context).pop(),
+                    // Green success icon
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFFE8F5E9),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF4CAF50).withValues(alpha: 0.20),
+                            blurRadius: 20,
+                            spreadRadius: 4,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.check_circle_outline_rounded,
+                        color: Color(0xFF4CAF50),
+                        size: 36,
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Title
+                    Text(
+                      'Service Report Submitted',
+                      textAlign: TextAlign.center,
+                      style: AppFont.style(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF0D121F),
+                      ),
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    // Subtitle
+                    Text(
+                      'Scan for customer feedback',
+                      textAlign: TextAlign.center,
+                      style: AppFont.style(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFFA5ABB7),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+                    const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                    const SizedBox(height: 24),
+
+                    // QR code box
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8F9FB),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.qr_code_2_rounded,
+                            size: 160,
+                            color: Color(0xFF0D121F),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Hint
+                    Text(
+                      'Scan To Provide Feedback',
+                      style: AppFont.style(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFFA5ABB7),
+                      ),
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    // Complete button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                          widget.onBack();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1565C0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          'Complete Service Report',
+                          style: AppFont.style(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5E9),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.check_circle, color: Color(0xFF4CAF50), size: 40),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'create_report_success_title'.tr(),
-                  style: AppFont.style(fontSize: 22, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'create_report_success_subtitle'.tr(),
-                  style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
-                ),
-                const SizedBox(height: 16),
-                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-                const SizedBox(height: 32),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FB),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFF1F2F6)),
-                  ),
-                  child: const Icon(Icons.qr_code_2, size: 180, color: Color(0xFF0D121F)),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'create_report_scan_feedback'.tr(),
-                  style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
-                ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close Dialog
-                      widget.onBack(); // Go Home
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1565C0),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      elevation: 0,
+              ),
+
+              // ── ✕ close button ────────────────────────────────────────────
+              Positioned(
+                top: 14,
+                right: 14,
+                child: GestureDetector(
+                  onTap: () => Navigator.of(ctx).pop(),
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFFF1F2F6),
                     ),
-                    child: Text(
-                      'create_report_btn_done'.tr(),
-                      style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white),
-                    ),
+                    child: const Icon(Icons.close, size: 16, color: Color(0xFF6B7280)),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
@@ -421,6 +536,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         return _buildStep2();
       case 3:
         return _buildStep3();
+      case 4:
+        return _buildStep4();
       default:
         return Center(
           child: Padding(
@@ -1364,31 +1481,236 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle('create_report_work_description'.tr()),
-        const SizedBox(height: 8),
-        ...List.generate(8, (index) => _buildWorkRow(index + 1)),
-        const SizedBox(height: 20),
-        // Add More Rows Button
-        Container(
-          width: double.infinity,
-          height: 56,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFF1F2F6), width: 1, style: BorderStyle.solid),
-          ),
-          child: Center(
-            child: Text(
-              'create_report_add_more_rows'.tr(),
-              style: AppFont.style(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFFA5ABB7),
+
+        // ── Remarks (Technician Side) ─────────────────────────────────
+        Text(
+          'Remarks (Technician Side) :',
+          style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w800, color: const Color(0xFF6B7280)),
+        ),
+        const SizedBox(height: 10),
+        _buildRemarksBox(
+          controller: _remarksTechCtrl,
+          hint: 'Technician side remarks...',
+          micActive: _remarksTechMicActive,
+          onMicTap: () {
+            setState(() => _remarksTechMicActive = !_remarksTechMicActive);
+            if (_remarksTechMicActive) _simulateSpeech(_remarksTechCtrl);
+          },
+        ),
+
+        const SizedBox(height: 28),
+
+        // ── Remarks (Customer Side) ──────────────────────────────────
+        Text(
+          'Remarks (Customer Side) :',
+          style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w800, color: const Color(0xFF6B7180)),
+        ),
+        const SizedBox(height: 10),
+        _buildRemarksBox(
+          controller: _remarksCustomerCtrl,
+          hint: 'Customer side remarks...',
+          micActive: _remarksCustomerMicActive,
+          onMicTap: () {
+            setState(() => _remarksCustomerMicActive = !_remarksCustomerMicActive);
+            if (_remarksCustomerMicActive) _simulateSpeech(_remarksCustomerCtrl);
+          },
+        ),
+
+        const SizedBox(height: 36),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 28),
+
+        // ── Photos ────────────────────────────────────────────────
+        Row(
+          children: [
+            const Icon(Icons.camera_alt_outlined, size: 20, color: Color(0xFF0D121F)),
+            const SizedBox(width: 8),
+            Text(
+              'Photos',
+              style: AppFont.style(fontSize: 15, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 16),
+
+        // Photo grid: thumbnails + Add Photo tile
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            // Existing photo thumbnails
+            ..._pickedPhotos.asMap().entries.map((entry) {
+              final index = entry.key;
+              final file  = entry.value;
+              return Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      File(file.path),
+                      width: 110,
+                      height: 110,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    top: 4, right: 4,
+                    child: GestureDetector(
+                      onTap: () => _removePhoto(index),
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.black54,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.close, size: 16, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
+
+            // Add Photo tile
+            GestureDetector(
+              onTap: _pickPhoto,
+              child: Container(
+                width: 110,
+                height: 110,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: const Color(0xFFCDD0D8),
+                    width: 1.5,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.camera_alt_outlined, size: 28, color: Color(0xFFA5ABB7)),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Add Photo',
+                      style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 36),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 28),
+
+        // ── Recorded By ────────────────────────────────────────────
+        Text(
+          'Recorded By:',
+          style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+        ),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 24),
+
+        // Technician Rep
+        Text(
+          'TECHNICIAN REP',
+          style: AppFont.style(fontSize: 11, fontWeight: FontWeight.w900,
+              color: const Color(0xFFA5ABB7), letterSpacing: 0.8),
+        ),
+        const SizedBox(height: 16),
+        _buildSignatureRow('Name', 'Mr. Rahul Mane', isBold: true),
+        const SizedBox(height: 16),
+        _buildSignatureBox('Sign', 'create_report_digitally_signed'.tr()),
+
+        const SizedBox(height: 36),
+
+        // Customer Rep
+        Text(
+          'CUSTOMER REP',
+          style: AppFont.style(fontSize: 11, fontWeight: FontWeight.w900,
+              color: const Color(0xFFA5ABB7), letterSpacing: 0.8),
+        ),
+        const SizedBox(height: 16),
+        // Editable name field
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 60,
+              child: Text('Name', style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF8E9BAE))),
+            ),
+            const SizedBox(width: 8),
+            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+            const SizedBox(width: 8),
+            Expanded(
+              child: TextField(
+                controller: _customerRepNameCtrl,
+                style: AppFont.style(fontSize: 15, fontWeight: FontWeight.w500, color: const Color(0xFF0D121F)),
+                decoration: InputDecoration(
+                  hintText: 'Enter name',
+                  hintStyle: AppFont.style(fontSize: 15, fontWeight: FontWeight.w400, color: const Color(0xFFA5ABB7)),
+                  enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFD8DCE6))),
+                  focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF1565C0), width: 1.5)),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 6),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _buildSignatureBox('Sign', 'create_report_signature_area'.tr()),
+
+        const SizedBox(height: 60),
+      ],
+    );
+  }
+
+  // ── Remarks text area with toggle mic ────────────────────────────────
+  Widget _buildRemarksBox({
+    required TextEditingController controller,
+    required String hint,
+    required bool micActive,
+    required VoidCallback onMicTap,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F9FB),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFF1F2F6)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              minLines: 4,
+              maxLines: null,
+              style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w500, color: const Color(0xFF0D121F)),
+              decoration: InputDecoration(
+                hintText: hint,
+                hintStyle: AppFont.style(fontSize: 14, fontWeight: FontWeight.w400, color: const Color(0xFFA5ABB7)),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
               ),
             ),
           ),
-        ),
-        const SizedBox(height: 60),
-      ],
+          GestureDetector(
+            onTap: onMicTap,
+            child: Icon(
+              micActive ? Icons.mic_none : Icons.mic_off,
+              color: micActive ? const Color(0xFF1565C0) : const Color(0xFFA5ABB7),
+              size: 20,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
