@@ -106,6 +106,33 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     super.dispose();
   }
 
+  // ── Step 3: Preventive Maintenance Checklist ──────────────────────────────
+  // NA toggles per section
+  bool _mechNA  = false;
+  bool _pipeNA  = false;
+  bool _elecNA  = false;
+
+  // Mechanical Checklist  (null = unset, 'ok' / 'notok' / 'normal' / 'high')
+  String? _bearingNoise;
+  String? _vibration;      // 'normal' | 'high'
+  String? _mechSeal;
+  String? _pumpDry;
+
+  // Pipeline / Hydraulic Checklist
+  String? _nrvValve;
+  String? _strainerValve;
+  String? _suctionLine;
+  String? _deliveryLine;
+  String? _suctionDelivery;
+  String? _pressureSwitch;
+
+  // Electrical Checklist
+  String? _elecFaults;
+  String? _voltage;
+  String? _phase;
+  String? _current;
+  String? _panelWiring;
+
   void _simulateSpeech(TextEditingController controller) {
     setState(() {
       controller.text = controller.text.isEmpty 
@@ -392,6 +419,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         return _buildStep1();
       case 2:
         return _buildStep2();
+      case 3:
+        return _buildStep3();
       default:
         return Center(
           child: Padding(
@@ -1043,32 +1072,291 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Pump Details
-        _buildSectionTitle('create_report_pump_details'.tr()),
-        _buildInlineField('create_report_pump_make'.tr()),
-        _buildInlineField('create_report_pump_model'.tr()),
-        _buildInlineField('create_report_pump_serial'.tr()),
-        _buildInlineField('create_report_pump_flow'.tr()),
-        _buildInlineField('create_report_pump_head'.tr()),
+        // ── Title ─────────────────────────────────────────────────────────────
+        Text(
+          'Preventive Maintenance Checklist\n(Check & Tick if Found OK / NOT OK)',
+          textAlign: TextAlign.center,
+          style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+        ),
+        const SizedBox(height: 28),
 
-        const SizedBox(height: 48),
+        // ── Mechanical Checklist ───────────────────────────────────────────────
+        _buildCheckSection(
+          icon: Icons.settings_outlined,
+          title: 'Mechanical Checklist',
+          isNA: _mechNA,
+          onNATap: () => setState(() => _mechNA = !_mechNA),
+          items: [
+            _buildCheckItem(
+              label: 'Bearing Noise / Abnormal Sound Checked:',
+              selected: _bearingNoise,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _bearingNoise = v),
+            ),
+            _buildCheckItem(
+              label: 'Vibration Checked:',
+              selected: _vibration,
+              options: const ['normal', 'high'],
+              labels: const ['NORMAL', 'HIGH'],
+              onSelect: (v) => setState(() => _vibration = v),
+            ),
+            _buildCheckItem(
+              label: 'Mechanical Seal / Gland Leakage Checked:',
+              selected: _mechSeal,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _mechSeal = v),
+            ),
+            _buildCheckItem(
+              label: 'Pump Not Running Dry:',
+              selected: _pumpDry,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _pumpDry = v),
+            ),
+          ],
+        ),
 
-        // Driver Details
-        _buildSectionTitle('create_report_driver_details'.tr()),
-        _buildInlineField('create_report_driver_make'.tr()),
-        _buildInlineField('create_report_driver_serial'.tr()),
-        _buildInlineField('create_report_driver_rating'.tr()),
-        _buildInlineField('create_report_driver_rpm'.tr()),
+        const SizedBox(height: 28),
 
-        const SizedBox(height: 48),
+        // ── Pipeline / Hydraulic Checklist ────────────────────────────────────
+        _buildCheckSection(
+          icon: Icons.water_drop_outlined,
+          title: 'Pipeline / Hydraulic Checklist',
+          isNA: _pipeNA,
+          onNATap: () => setState(() => _pipeNA = !_pipeNA),
+          items: [
+            _buildCheckItem(
+              label: 'NRV / Butterfly Valve / Gate Valve Condition Checked:',
+              selected: _nrvValve,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _nrvValve = v),
+            ),
+            _buildCheckItem(
+              label: 'Strainer / Foot Valve Condition Checked:',
+              selected: _strainerValve,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _strainerValve = v),
+            ),
+            _buildCheckItem(
+              label: 'Suction Line (Air Leakage & Water Leakage Checked):',
+              selected: _suctionLine,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _suctionLine = v),
+            ),
+            _buildCheckItem(
+              label: 'Delivery Line (Air Leakage & Water Leakage Checked):',
+              selected: _deliveryLine,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _deliveryLine = v),
+            ),
+            _buildCheckItem(
+              label: 'Suction / Delivery Valve Condition Checked:',
+              selected: _suctionDelivery,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _suctionDelivery = v),
+            ),
+            _buildCheckItem(
+              label: 'Pressure Switch / Pressure Transmitter Checked:',
+              selected: _pressureSwitch,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _pressureSwitch = v),
+            ),
+          ],
+        ),
 
-        // Panel Details
-        _buildSectionTitle('create_report_panel_details'.tr()),
-        _buildInlineField('create_report_panel_make'.tr()),
-        _buildInlineField('create_report_panel_serial_model'.tr()),
+        const SizedBox(height: 28),
+
+        // ── Electrical Checklist ───────────────────────────────────────────────
+        _buildCheckSection(
+          icon: Icons.bolt_outlined,
+          title: 'Electrical Checklist',
+          isNA: _elecNA,
+          onNATap: () => setState(() => _elecNA = !_elecNA),
+          items: [
+            _buildCheckItem(
+              label: 'Electrical Faults Checked:',
+              selected: _elecFaults,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _elecFaults = v),
+            ),
+            _buildCheckItem(
+              label: 'Voltage Checked:',
+              selected: _voltage,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _voltage = v),
+            ),
+            _buildCheckItem(
+              label: 'Phase Checked:',
+              selected: _phase,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _phase = v),
+            ),
+            _buildCheckItem(
+              label: 'Current Checked:',
+              selected: _current,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _current = v),
+            ),
+            _buildCheckItem(
+              label: 'Control Panel Wiring Checked:',
+              selected: _panelWiring,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _panelWiring = v),
+            ),
+          ],
+        ),
 
         const SizedBox(height: 60),
       ],
+    );
+  }
+
+  // ── Checklist section wrapper (header + NA + items with disable support) ───
+  Widget _buildCheckSection({
+    required IconData icon,
+    required String title,
+    required bool isNA,
+    required VoidCallback onNATap,
+    required List<Widget> items,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section header row
+        Row(
+          children: [
+            Icon(icon, size: 20, color: const Color(0xFF0D121F)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                title,
+                style: AppFont.style(fontSize: 15, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+              ),
+            ),
+            // NA checkbox
+            GestureDetector(
+              onTap: onNATap,
+              child: Row(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: isNA ? const Color(0xFF1565C0) : const Color(0xFFA5ABB7),
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                      color: isNA ? const Color(0xFF1565C0) : Colors.white,
+                    ),
+                    child: isNA
+                        ? const Icon(Icons.check, size: 14, color: Colors.white)
+                        : null,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'NA',
+                    style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 12),
+
+        // Items — disabled when NA is checked
+        IgnorePointer(
+          ignoring: isNA,
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 250),
+            opacity: isNA ? 0.38 : 1.0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: items,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Single checklist item: label + radio-style option boxes ───────────────
+  Widget _buildCheckItem({
+    required String label,
+    required String? selected,
+    required List<String> options,
+    required List<String> labels,
+    required ValueChanged<String> onSelect,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w900, color: const Color(0xFF3A4152)),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: List.generate(options.length, (i) {
+              final isSelected = selected == options[i];
+              return Padding(
+                padding: EdgeInsets.only(right: i < options.length - 1 ? 20 : 0),
+                child: GestureDetector(
+                  onTap: () => onSelect(options[i]),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Checkbox
+                      Container(
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: isSelected ? const Color(0xFF1565C0) : Colors.white,
+                          border: Border.all(
+                            color: isSelected ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: isSelected
+                            ? const Icon(Icons.check, size: 14, color: Colors.white)
+                            : null,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        labels[i],
+                        style: AppFont.style(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: isSelected ? const Color(0xFF1565C0) : const Color(0xFF6B7280),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ),
+        ],
+      ),
     );
   }
 
