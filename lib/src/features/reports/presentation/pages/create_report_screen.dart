@@ -17,8 +17,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   bool _isCustomerDropdownOpen = false;
   bool _isSiteDropdownOpen = false;
-  bool _isCustomerAddNew = false;   // true = show text field, false = show dropdown
-  bool _isSiteAddNew = false;        // true = show text field, false = show dropdown
+  bool _isCustomerAddNew =
+      false; // true = show text field, false = show dropdown
+  bool _isSiteAddNew = false; // true = show text field, false = show dropdown
   String _selectedCustomer = 'Select Customer';
   String _selectedSite = 'Select Site';
 
@@ -38,7 +39,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   ];
 
   // Dynamic list of member name fields – starts with one empty field
-  final List<TextEditingController> _memberControllers = [TextEditingController()];
+  final List<TextEditingController> _memberControllers = [
+    TextEditingController(),
+  ];
   // Mic toggle state per member row (false = off, true = on/active)
   final List<bool> _memberMicActive = [false];
   // Mic toggle state for agenda field
@@ -47,24 +50,26 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   // ── Step 2: Technical Details ───────────────────────────────────────────────
   bool _isTechnicalNA = false;
-  final TextEditingController _pumpMakeCtrl        = TextEditingController();
-  final TextEditingController _pumpModelCtrl       = TextEditingController();
-  final TextEditingController _pumpSerialCtrl      = TextEditingController();
-  final TextEditingController _pumpFlowLpmCtrl     = TextEditingController();
-  final TextEditingController _pumpFlowM3hrCtrl    = TextEditingController();
-  final TextEditingController _pumpFlowLpsCtrl     = TextEditingController();
-  final TextEditingController _pumpFlowUsgpmCtrl   = TextEditingController();
-  final TextEditingController _pumpHeadMtrCtrl     = TextEditingController();
-  final TextEditingController _driverMakeCtrl      = TextEditingController();
-  final TextEditingController _driverSerialCtrl    = TextEditingController();
-  final TextEditingController _ratingKwCtrl        = TextEditingController();
-  final TextEditingController _ratingHpCtrl        = TextEditingController();
-  final TextEditingController _rpmCtrl             = TextEditingController();
-  final TextEditingController _panelMakeCtrl       = TextEditingController();
-  final TextEditingController _panelSerialCtrl     = TextEditingController();
+  final TextEditingController _pumpMakeCtrl = TextEditingController();
+  final TextEditingController _pumpModelCtrl = TextEditingController();
+  final TextEditingController _pumpSerialCtrl = TextEditingController();
+  final TextEditingController _pumpFlowLpmCtrl = TextEditingController();
+  final TextEditingController _pumpFlowM3hrCtrl = TextEditingController();
+  final TextEditingController _pumpFlowLpsCtrl = TextEditingController();
+  final TextEditingController _pumpFlowUsgpmCtrl = TextEditingController();
+  final TextEditingController _pumpHeadMtrCtrl = TextEditingController();
+  final TextEditingController _driverMakeCtrl = TextEditingController();
+  final TextEditingController _driverSerialCtrl = TextEditingController();
+  final TextEditingController _ratingKwCtrl = TextEditingController();
+  final TextEditingController _ratingHpCtrl = TextEditingController();
+  final TextEditingController _rpmCtrl = TextEditingController();
+  final TextEditingController _panelMakeCtrl = TextEditingController();
+  final TextEditingController _panelSerialCtrl = TextEditingController();
   // Work Description – 3 rows initially
   final List<TextEditingController> _workDescControllers = [
-    TextEditingController(), TextEditingController(), TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
   ];
 
   void _addMemberField() {
@@ -114,13 +119,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   // ── Step 3: Preventive Maintenance Checklist ──────────────────────────────
   // NA toggles per section
-  bool _mechNA  = false;
-  bool _pipeNA  = false;
-  bool _elecNA  = false;
+  bool _mechNA = false;
+  bool _pipeNA = false;
+  bool _elecNA = false;
 
   // Mechanical Checklist  (null = unset, 'ok' / 'notok' / 'normal' / 'high')
   String? _bearingNoise;
-  String? _vibration;      // 'normal' | 'high'
+  String? _vibration; // 'normal' | 'high'
   String? _mechSeal;
   String? _pumpDry;
 
@@ -140,13 +145,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   String? _panelWiring;
 
   // ── Step 4: Remarks + Photos + Recorded By ─────────────────────────────
-  final TextEditingController _remarksTechCtrl     = TextEditingController();
+  final TextEditingController _remarksTechCtrl = TextEditingController();
   final TextEditingController _remarksCustomerCtrl = TextEditingController();
   final TextEditingController _customerRepNameCtrl = TextEditingController();
-  bool _remarksTechMicActive     = false;
+  bool _remarksTechMicActive = false;
   bool _remarksCustomerMicActive = false;
   final List<XFile> _pickedPhotos = [];
-  final ImagePicker _imagePicker  = ImagePicker();
+  final ImagePicker _imagePicker = ImagePicker();
 
   Future<void> _pickPhoto() async {
     final XFile? file = await _imagePicker.pickImage(
@@ -164,8 +169,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   void _simulateSpeech(TextEditingController controller) {
     setState(() {
-      controller.text = controller.text.isEmpty 
-          ? "Spoken text added via mic" 
+      controller.text = controller.text.isEmpty
+          ? "Spoken text added via mic"
           : "${controller.text} Spoken text added via mic";
     });
     ScaffoldMessenger.of(context).showSnackBar(
@@ -201,8 +206,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       builder: (BuildContext ctx) {
         return Dialog(
           backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 28,
+            vertical: 40,
+          ),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -221,7 +231,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         color: const Color(0xFFE8F5E9),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF4CAF50).withValues(alpha: 0.20),
+                            color: const Color(
+                              0xFF4CAF50,
+                            ).withValues(alpha: 0.20),
                             blurRadius: 20,
                             spreadRadius: 4,
                           ),
@@ -261,7 +273,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     ),
 
                     const SizedBox(height: 20),
-                    const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                    const Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: Color(0xFFF1F2F6),
+                    ),
                     const SizedBox(height: 24),
 
                     // QR code box
@@ -352,7 +368,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       shape: BoxShape.circle,
                       color: const Color(0xFFF1F2F6),
                     ),
-                    child: const Icon(Icons.close, size: 16, color: Color(0xFF6B7280)),
+                    child: const Icon(
+                      Icons.close,
+                      size: 16,
+                      color: Color(0xFF6B7280),
+                    ),
                   ),
                 ),
               ),
@@ -382,148 +402,189 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          // ── Progress & Header ─────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Color(0xFFA5ABB7)),
-                      onPressed: _previousStep,
-                    ),
-                    const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'SERVICE / WORK REPORT',
-                          style: AppFont.style(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFF0D121F),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // ── Progress & Header ─────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Color(0xFFA5ABB7),
+                        ),
+                        onPressed: _previousStep,
+                      ),
+                      const SizedBox(width: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'SERVICE / WORK REPORT',
+                            style: AppFont.style(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xFF0D121F),
+                            ),
+                          ),
+                          // Text(
+                          //   _getStepInfo(),
+                          //   style: AppFont.style(
+                          //     fontSize: 12,
+                          //     fontWeight: FontWeight.w800,
+                          //     color: const Color(0xFFA5ABB7),
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  // Step Indicators
+                  Row(
+                    children: List.generate(4, (index) {
+                      bool isActive = index < _currentStep;
+                      return Expanded(
+                        child: Container(
+                          height: 4,
+                          margin: EdgeInsets.only(right: index == 3 ? 0 : 8),
+                          decoration: BoxDecoration(
+                            color: isActive
+                                ? const Color(0xFF1565C0)
+                                : const Color(0xFFF1F2F6),
+                            borderRadius: BorderRadius.circular(2),
                           ),
                         ),
-                        // Text(
-                        //   _getStepInfo(),
-                        //   style: AppFont.style(
-                        //     fontSize: 12,
-                        //     fontWeight: FontWeight.w800,
-                        //     color: const Color(0xFFA5ABB7),
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                // Step Indicators
-                Row(
-                  children: List.generate(4, (index) {
-                    bool isActive = index < _currentStep;
-                    return Expanded(
-                      child: Container(
-                        height: 4,
-                        margin: EdgeInsets.only(right: index == 3 ? 0 : 8),
-                        decoration: BoxDecoration(
-                          color: isActive ? const Color(0xFF1565C0) : const Color(0xFFF1F2F6),
-                          borderRadius: BorderRadius.circular(2),
+                      );
+                    }),
+                  ),
+                ],
+              ),
+            ),
+
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+
+            // ── Form Body ─────────────────────────────────────────────────────
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: _buildBodyContent(),
+              ),
+            ),
+
+            // ── Bottom Buttons ────────────────────────────────────────────────
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(top: BorderSide(color: Color(0xFFF1F2F6))),
+              ),
+              child: Row(
+                children: [
+                  if (_currentStep > 1)
+                    GestureDetector(
+                      onTap: _previousStep,
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.arrow_back,
+                            size: 18,
+                            color: Color(0xFFA5ABB7),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'create_report_btn_back'.tr(),
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFFA5ABB7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    TextButton(
+                      onPressed: widget.onBack,
+                      child: Text(
+                        'create_report_btn_cancel'.tr(),
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFFA5ABB7),
                         ),
                       ),
-                    );
-                  }),
-                ),
-              ],
-            ),
-          ),
-
-          const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-
-          // ── Form Body ─────────────────────────────────────────────────────
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: _buildBodyContent(),
-            ),
-          ),
-
-          // ── Bottom Buttons ────────────────────────────────────────────────
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(top: BorderSide(color: Color(0xFFF1F2F6))),
-            ),
-            child: Row(
-              children: [
-                if (_currentStep > 1)
+                    ),
+                  const Spacer(),
                   GestureDetector(
-                    onTap: _previousStep,
-                    child: Row(
-                      children: [
-                        const Icon(Icons.arrow_back, size: 18, color: Color(0xFFA5ABB7)),
-                        const SizedBox(width: 8),
-                        Text(
-                          'create_report_btn_back'.tr(),
-                          style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  TextButton(
-                    onPressed: widget.onBack,
-                    child: Text(
-                      'create_report_btn_cancel'.tr(),
-                      style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                    onTap: _nextStep,
+                    child: Container(
+                      height: 56,
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1565C0),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(
+                              0xFF1565C0,
+                            ).withValues(alpha: 0.2),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_currentStep == 4)
+                            const Icon(
+                              Icons.check_box_outlined,
+                              size: 20,
+                              color: Colors.white,
+                            )
+                          else
+                            const SizedBox.shrink(),
+                          if (_currentStep == 4)
+                            const SizedBox(width: 12)
+                          else
+                            const SizedBox.shrink(),
+                          Text(
+                            _currentStep == 4
+                                ? 'create_report_btn_submit'.tr()
+                                : 'create_report_btn_next'.tr(),
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                          if (_currentStep < 4)
+                            const SizedBox(width: 12)
+                          else
+                            const SizedBox.shrink(),
+                          if (_currentStep < 4)
+                            const Icon(
+                              Icons.arrow_forward,
+                              size: 18,
+                              color: Colors.white,
+                            )
+                          else
+                            const SizedBox.shrink(),
+                        ],
+                      ),
                     ),
                   ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: _nextStep,
-                  child: Container(
-                    height: 56,
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1565C0),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF1565C0).withValues(alpha: 0.2),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (_currentStep == 4)
-                          const Icon(Icons.check_box_outlined, size: 20, color: Colors.white)
-                        else
-                          const SizedBox.shrink(),
-                        if (_currentStep == 4) const SizedBox(width: 12) else const SizedBox.shrink(),
-                        Text(
-                          _currentStep == 4 ? 'create_report_btn_submit'.tr() : 'create_report_btn_next'.tr(),
-                          style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white),
-                        ),
-                        if (_currentStep < 4) const SizedBox(width: 12) else const SizedBox.shrink(),
-                        if (_currentStep < 4)
-                          const Icon(Icons.arrow_forward, size: 18, color: Colors.white)
-                        else
-                          const SizedBox.shrink(),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -544,7 +605,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             padding: const EdgeInsets.only(top: 60),
             child: Text(
               "Coming Soon",
-              style: AppFont.style(fontSize: 18, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+              style: AppFont.style(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFFA5ABB7),
+              ),
             ),
           ),
         );
@@ -572,7 +637,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: const Color(0xFFF1F2F6)),
                 ),
-                child: const Icon(Icons.business_outlined, color: Color(0xFFA5ABB7)),
+                child: const Icon(
+                  Icons.business_outlined,
+                  color: Color(0xFFA5ABB7),
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -581,11 +649,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   children: [
                     Text(
                       'create_report_service_provider'.tr(),
-                      style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                      style: AppFont.style(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFA5ABB7),
+                      ),
                     ),
                     Text(
                       'Flowmax Pumps Corporation',
-                      style: AppFont.style(fontSize: 15, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+                      style: AppFont.style(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF0D121F),
+                      ),
                     ),
                   ],
                 ),
@@ -595,11 +671,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 children: [
                   Text(
                     'create_report_date'.tr(),
-                    style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                    style: AppFont.style(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFFA5ABB7),
+                    ),
                   ),
                   Text(
                     '28/05/2026',
-                    style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+                    style: AppFont.style(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFF0D121F),
+                    ),
                   ),
                 ],
               ),
@@ -621,11 +705,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.person_outline, size: 20, color: Color(0xFFA5ABB7)),
+              const Icon(
+                Icons.person_outline,
+                size: 20,
+                color: Color(0xFFA5ABB7),
+              ),
               const SizedBox(width: 12),
               Text(
                 'Mr. Rahul Mane',
-                style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w900, color: const Color(0xFF8E9BAE)),
+                style: AppFont.style(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFF8E9BAE),
+                ),
               ),
             ],
           ),
@@ -654,7 +746,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ],
         ),
         const SizedBox(height: 12),
-        if (_isCustomerAddNew) ...[  // ── Add New mode: text field
+        if (_isCustomerAddNew) ...[
+          // ── Add New mode: text field
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
@@ -682,7 +775,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               ),
             ),
           ),
-        ] else ...[                  // ── Select Existing mode: dropdown
+        ] else ...[
+          // ── Select Existing mode: dropdown
           GestureDetector(
             onTap: () {
               setState(() {
@@ -690,7 +784,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 _isSiteDropdownOpen = false;
               });
             },
-            child: _buildDropdownField(_selectedCustomer, _isCustomerDropdownOpen),
+            child: _buildDropdownField(
+              _selectedCustomer,
+              _isCustomerDropdownOpen,
+            ),
           ),
           if (_isCustomerDropdownOpen)
             _buildDropdownList(
@@ -728,7 +825,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ],
         ),
         const SizedBox(height: 12),
-        if (_isSiteAddNew) ...[  // ── Add New mode: text field
+        if (_isSiteAddNew) ...[
+          // ── Add New mode: text field
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
@@ -756,7 +854,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               ),
             ),
           ),
-        ] else ...[                  // ── Select Existing mode: dropdown
+        ] else ...[
+          // ── Select Existing mode: dropdown
           GestureDetector(
             onTap: () {
               setState(() {
@@ -788,7 +887,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             const SizedBox(width: 40),
             Text(
               ':    -',
-              style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+              style: AppFont.style(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                color: const Color(0xFF0D121F),
+              ),
             ),
           ],
         ),
@@ -892,10 +995,18 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 child: TextField(
                   controller: _agendaController,
                   maxLines: null,
-                  style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF0D121F)),
+                  style: AppFont.style(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF0D121F),
+                  ),
                   decoration: InputDecoration(
                     hintText: 'Enter the main purpose of this visit...',
-                    hintStyle: AppFont.style(fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF8E9BAE)),
+                    hintStyle: AppFont.style(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF8E9BAE),
+                    ),
                     border: InputBorder.none,
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
@@ -930,14 +1041,17 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         // ── Technical Details header ────────────────────────────────────────
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'Technical Details',
-              style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+              style: AppFont.style(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                color: const Color(0xFF0D121F),
+              ),
             ),
             Row(
               children: [
@@ -948,11 +1062,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     height: 20,
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: _isTechnicalNA ? const Color(0xFF1565C0) : const Color(0xFFA5ABB7),
+                        color: _isTechnicalNA
+                            ? const Color(0xFF1565C0)
+                            : const Color(0xFFA5ABB7),
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(4),
-                      color: _isTechnicalNA ? const Color(0xFF1565C0) : Colors.white,
+                      color: _isTechnicalNA
+                          ? const Color(0xFF1565C0)
+                          : Colors.white,
                     ),
                     child: _isTechnicalNA
                         ? const Icon(Icons.check, size: 14, color: Colors.white)
@@ -962,7 +1080,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 const SizedBox(width: 6),
                 Text(
                   'NA',
-                  style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                  style: AppFont.style(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFA5ABB7),
+                  ),
                 ),
               ],
             ),
@@ -1002,7 +1124,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   children: [
                     Expanded(child: _buildUnitField(_pumpFlowLpmCtrl, 'LPM')),
                     const SizedBox(width: 16),
-                    Expanded(child: _buildUnitField(_pumpFlowM3hrCtrl, 'M3/HR')),
+                    Expanded(
+                      child: _buildUnitField(_pumpFlowM3hrCtrl, 'M3/HR'),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -1010,7 +1134,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   children: [
                     Expanded(child: _buildUnitField(_pumpFlowLpsCtrl, 'LPS')),
                     const SizedBox(width: 16),
-                    Expanded(child: _buildUnitField(_pumpFlowUsgpmCtrl, 'USGPM')),
+                    Expanded(
+                      child: _buildUnitField(_pumpFlowUsgpmCtrl, 'USGPM'),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -1020,12 +1146,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Expanded(flex: 5, child: _buildUnitField(_pumpHeadMtrCtrl, 'MTR')),
+                    Expanded(
+                      flex: 5,
+                      child: _buildUnitField(_pumpHeadMtrCtrl, 'MTR'),
+                    ),
                     const Spacer(flex: 5),
                   ],
                 ),
                 const SizedBox(height: 32),
-                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Color(0xFFF1F2F6),
+                ),
                 const SizedBox(height: 24),
 
                 // ── Driver Make ────────────────────────────────────────────
@@ -1054,7 +1187,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 _buildTechLabel('RPM'),
                 _buildUnderlineField(_rpmCtrl),
                 const SizedBox(height: 32),
-                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Color(0xFFF1F2F6),
+                ),
                 const SizedBox(height: 24),
 
                 // ── Control Panel Make ─────────────────────────────────────
@@ -1071,7 +1208,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 Center(
                   child: Text(
                     'Work Description',
-                    style: AppFont.style(fontSize: 15, fontWeight: FontWeight.w900, color: const Color(0xFFA5ABB7)),
+                    style: AppFont.style(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFFA5ABB7),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -1086,7 +1227,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           padding: const EdgeInsets.only(top: 12, right: 8),
                           child: Text(
                             '${index + 1}.',
-                            style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFFA5ABB7),
+                            ),
                           ),
                         ),
                         Expanded(
@@ -1095,27 +1240,44 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                               builder: (ctx) {
                                 final hasFocus = Focus.of(ctx).hasFocus;
                                 return Container(
-                                  padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
+                                  padding: const EdgeInsets.fromLTRB(
+                                    12,
+                                    10,
+                                    10,
+                                    10,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: const Color(0xFFF8F9FB),
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: hasFocus ? const Color(0xFF1565C0) : const Color(0xFFF1F2F6),
+                                      color: hasFocus
+                                          ? const Color(0xFF1565C0)
+                                          : const Color(0xFFF1F2F6),
                                       width: hasFocus ? 1.5 : 1,
                                     ),
                                   ),
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
                                         child: TextField(
-                                          controller: _workDescControllers[index],
+                                          controller:
+                                              _workDescControllers[index],
                                           minLines: 3,
                                           maxLines: null,
-                                          style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF0D121F)),
+                                          style: AppFont.style(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w800,
+                                            color: const Color(0xFF0D121F),
+                                          ),
                                           decoration: InputDecoration(
                                             hintText: '...',
-                                            hintStyle: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                                            hintStyle: AppFont.style(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w800,
+                                              color: const Color(0xFFA5ABB7),
+                                            ),
                                             border: InputBorder.none,
                                             isDense: true,
                                             contentPadding: EdgeInsets.zero,
@@ -1123,8 +1285,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                         ),
                                       ),
                                       GestureDetector(
-                                        onTap: () => _simulateSpeech(_workDescControllers[index]),
-                                        child: const Icon(Icons.mic_off, size: 18, color: Color(0xFFA5ABB7)),
+                                        onTap: () => _simulateSpeech(
+                                          _workDescControllers[index],
+                                        ),
+                                        child: const Icon(
+                                          Icons.mic_off,
+                                          size: 18,
+                                          color: Color(0xFFA5ABB7),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -1151,19 +1319,35 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   Widget _buildTechLabel(String text) {
     return Text(
       text,
-      style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: const Color(0xFF3A4152)),
+      style: AppFont.style(
+        fontSize: 14,
+        fontWeight: FontWeight.w900,
+        color: const Color(0xFF3A4152),
+      ),
     );
   }
 
   Widget _buildUnderlineField(TextEditingController ctrl, {String hint = ''}) {
     return TextField(
       controller: ctrl,
-      style: AppFont.style(fontSize: 15, fontWeight: FontWeight.w500, color: const Color(0xFF0D121F)),
+      style: AppFont.style(
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+        color: const Color(0xFF0D121F),
+      ),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: AppFont.style(fontSize: 14, fontWeight: FontWeight.w400, color: const Color(0xFFA5ABB7)),
-        enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFD8DCE6))),
-        focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF1565C0), width: 1.5)),
+        hintStyle: AppFont.style(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: const Color(0xFFA5ABB7),
+        ),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFFD8DCE6)),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFF1565C0), width: 1.5),
+        ),
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(vertical: 8),
       ),
@@ -1177,7 +1361,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       children: [
         Text(
           unit,
-          style: AppFont.style(fontSize: 11, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+          style: AppFont.style(
+            fontSize: 11,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFFA5ABB7),
+          ),
         ),
         const SizedBox(height: 2),
         _buildUnderlineField(ctrl),
@@ -1193,7 +1381,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         Text(
           'Preventive Maintenance Checklist\n(Check & Tick if Found OK / NOT OK)',
           textAlign: TextAlign.center,
-          style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+          style: AppFont.style(
+            fontSize: 14,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFF0D121F),
+          ),
         ),
         const SizedBox(height: 28),
 
@@ -1360,7 +1552,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             Expanded(
               child: Text(
                 title,
-                style: AppFont.style(fontSize: 15, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+                style: AppFont.style(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFF0D121F),
+                ),
               ),
             ),
             // NA checkbox
@@ -1373,7 +1569,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     height: 20,
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: isNA ? const Color(0xFF1565C0) : const Color(0xFFA5ABB7),
+                        color: isNA
+                            ? const Color(0xFF1565C0)
+                            : const Color(0xFFA5ABB7),
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(4),
@@ -1386,7 +1584,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   const SizedBox(width: 6),
                   Text(
                     'NA',
-                    style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                    style: AppFont.style(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFFA5ABB7),
+                    ),
                   ),
                 ],
               ),
@@ -1428,14 +1630,20 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         children: [
           Text(
             label,
-            style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w900, color: const Color(0xFF3A4152)),
+            style: AppFont.style(
+              fontSize: 13,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFF3A4152),
+            ),
           ),
           const SizedBox(height: 10),
           Row(
             children: List.generate(options.length, (i) {
               final isSelected = selected == options[i];
               return Padding(
-                padding: EdgeInsets.only(right: i < options.length - 1 ? 20 : 0),
+                padding: EdgeInsets.only(
+                  right: i < options.length - 1 ? 20 : 0,
+                ),
                 child: GestureDetector(
                   onTap: () => onSelect(options[i]),
                   child: Row(
@@ -1446,15 +1654,23 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         width: 22,
                         height: 22,
                         decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF1565C0) : Colors.white,
+                          color: isSelected
+                              ? const Color(0xFF1565C0)
+                              : Colors.white,
                           border: Border.all(
-                            color: isSelected ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
+                            color: isSelected
+                                ? const Color(0xFF1565C0)
+                                : const Color(0xFFCDD0D8),
                             width: 1.5,
                           ),
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: isSelected
-                            ? const Icon(Icons.check, size: 14, color: Colors.white)
+                            ? const Icon(
+                                Icons.check,
+                                size: 14,
+                                color: Colors.white,
+                              )
                             : null,
                       ),
                       const SizedBox(width: 6),
@@ -1463,7 +1679,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         style: AppFont.style(
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
-                          color: isSelected ? const Color(0xFF1565C0) : const Color(0xFF6B7280),
+                          color: isSelected
+                              ? const Color(0xFF1565C0)
+                              : const Color(0xFF6B7280),
                         ),
                       ),
                     ],
@@ -1481,11 +1699,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         // ── Remarks (Technician Side) ─────────────────────────────────
         Text(
           'Remarks (Technician Side) :',
-          style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w800, color: const Color(0xFF6B7280)),
+          style: AppFont.style(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF6B7280),
+          ),
         ),
         const SizedBox(height: 10),
         _buildRemarksBox(
@@ -1503,7 +1724,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         // ── Remarks (Customer Side) ──────────────────────────────────
         Text(
           'Remarks (Customer Side) :',
-          style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w800, color: const Color(0xFF6B7180)),
+          style: AppFont.style(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF6B7180),
+          ),
         ),
         const SizedBox(height: 10),
         _buildRemarksBox(
@@ -1511,8 +1736,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           hint: 'Customer side remarks...',
           micActive: _remarksCustomerMicActive,
           onMicTap: () {
-            setState(() => _remarksCustomerMicActive = !_remarksCustomerMicActive);
-            if (_remarksCustomerMicActive) _simulateSpeech(_remarksCustomerCtrl);
+            setState(
+              () => _remarksCustomerMicActive = !_remarksCustomerMicActive,
+            );
+            if (_remarksCustomerMicActive)
+              _simulateSpeech(_remarksCustomerCtrl);
           },
         ),
 
@@ -1523,11 +1751,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         // ── Photos ────────────────────────────────────────────────
         Row(
           children: [
-            const Icon(Icons.camera_alt_outlined, size: 20, color: Color(0xFF0D121F)),
+            const Icon(
+              Icons.camera_alt_outlined,
+              size: 20,
+              color: Color(0xFF0D121F),
+            ),
             const SizedBox(width: 8),
             Text(
               'Photos',
-              style: AppFont.style(fontSize: 15, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+              style: AppFont.style(
+                fontSize: 15,
+                fontWeight: FontWeight.w900,
+                color: const Color(0xFF0D121F),
+              ),
             ),
           ],
         ),
@@ -1543,7 +1779,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             // Existing photo thumbnails
             ..._pickedPhotos.asMap().entries.map((entry) {
               final index = entry.key;
-              final file  = entry.value;
+              final file = entry.value;
               return Stack(
                 children: [
                   ClipRRect(
@@ -1556,7 +1792,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     ),
                   ),
                   Positioned(
-                    top: 4, right: 4,
+                    top: 4,
+                    right: 4,
                     child: GestureDetector(
                       onTap: () => _removePhoto(index),
                       child: Container(
@@ -1564,7 +1801,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           color: Colors.black54,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.close, size: 16, color: Colors.white),
+                        child: const Icon(
+                          Icons.close,
+                          size: 16,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -1589,11 +1830,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.camera_alt_outlined, size: 28, color: Color(0xFFA5ABB7)),
+                    const Icon(
+                      Icons.camera_alt_outlined,
+                      size: 28,
+                      color: Color(0xFFA5ABB7),
+                    ),
                     const SizedBox(height: 6),
                     Text(
                       'Add Photo',
-                      style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                      style: AppFont.style(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFA5ABB7),
+                      ),
                     ),
                   ],
                 ),
@@ -1609,7 +1858,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         // ── Recorded By ────────────────────────────────────────────
         Text(
           'Recorded By:',
-          style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+          style: AppFont.style(
+            fontSize: 16,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFF0D121F),
+          ),
         ),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 24),
@@ -1617,8 +1870,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         // Technician Rep
         Text(
           'TECHNICIAN REP',
-          style: AppFont.style(fontSize: 11, fontWeight: FontWeight.w900,
-              color: const Color(0xFFA5ABB7), letterSpacing: 0.8),
+          style: AppFont.style(
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFFA5ABB7),
+            letterSpacing: 0.8,
+          ),
         ),
         const SizedBox(height: 16),
         _buildSignatureRow('Name', 'Mr. Rahul Mane', isBold: true),
@@ -1630,8 +1887,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         // Customer Rep
         Text(
           'CUSTOMER REP',
-          style: AppFont.style(fontSize: 11, fontWeight: FontWeight.w900,
-              color: const Color(0xFFA5ABB7), letterSpacing: 0.8),
+          style: AppFont.style(
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFFA5ABB7),
+            letterSpacing: 0.8,
+          ),
         ),
         const SizedBox(height: 16),
         // Editable name field
@@ -1640,7 +1901,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           children: [
             SizedBox(
               width: 60,
-              child: Text('Name', style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF8E9BAE))),
+              child: Text(
+                'Name',
+                style: AppFont.style(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF8E9BAE),
+                ),
+              ),
             ),
             const SizedBox(width: 8),
             const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
@@ -1648,12 +1916,27 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             Expanded(
               child: TextField(
                 controller: _customerRepNameCtrl,
-                style: AppFont.style(fontSize: 15, fontWeight: FontWeight.w500, color: const Color(0xFF0D121F)),
+                style: AppFont.style(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF0D121F),
+                ),
                 decoration: InputDecoration(
                   hintText: 'Enter name',
-                  hintStyle: AppFont.style(fontSize: 15, fontWeight: FontWeight.w400, color: const Color(0xFFA5ABB7)),
-                  enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFD8DCE6))),
-                  focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF1565C0), width: 1.5)),
+                  hintStyle: AppFont.style(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFFA5ABB7),
+                  ),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFFD8DCE6)),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Color(0xFF1565C0),
+                      width: 1.5,
+                    ),
+                  ),
                   isDense: true,
                   contentPadding: const EdgeInsets.symmetric(vertical: 6),
                 ),
@@ -1691,10 +1974,18 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               controller: controller,
               minLines: 4,
               maxLines: null,
-              style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w500, color: const Color(0xFF0D121F)),
+              style: AppFont.style(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF0D121F),
+              ),
               decoration: InputDecoration(
                 hintText: hint,
-                hintStyle: AppFont.style(fontSize: 14, fontWeight: FontWeight.w400, color: const Color(0xFFA5ABB7)),
+                hintStyle: AppFont.style(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xFFA5ABB7),
+                ),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
@@ -1705,7 +1996,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             onTap: onMicTap,
             child: Icon(
               micActive ? Icons.mic_none : Icons.mic_off,
-              color: micActive ? const Color(0xFF1565C0) : const Color(0xFFA5ABB7),
+              color: micActive
+                  ? const Color(0xFF1565C0)
+                  : const Color(0xFFA5ABB7),
               size: 20,
             ),
           ),
@@ -1775,11 +2068,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.camera_alt_outlined, size: 32, color: Color(0xFFA5ABB7)),
+              const Icon(
+                Icons.camera_alt_outlined,
+                size: 32,
+                color: Color(0xFFA5ABB7),
+              ),
               const SizedBox(height: 8),
               Text(
                 'create_report_add_photo'.tr(),
-                style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                style: AppFont.style(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFFA5ABB7),
+                ),
               ),
             ],
           ),
@@ -1796,7 +2097,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       children: [
         Text(
           'create_report_recorded_by'.tr(),
-          style: AppFont.style(fontSize: 18, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+          style: AppFont.style(
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFF0D121F),
+          ),
         ),
         const SizedBox(height: 8),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
@@ -1805,32 +2110,55 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         // Technician Rep
         _buildLabel('create_report_tech_rep'.tr()),
         const SizedBox(height: 24),
-        _buildSignatureRow('create_report_name'.tr(), 'Mr. Rahul Mane', isBold: true),
+        _buildSignatureRow(
+          'create_report_name'.tr(),
+          'Mr. Rahul Mane',
+          isBold: true,
+        ),
         const SizedBox(height: 24),
-        _buildSignatureBox('create_report_sign'.tr(), 'create_report_digitally_signed'.tr()),
+        _buildSignatureBox(
+          'create_report_sign'.tr(),
+          'create_report_digitally_signed'.tr(),
+        ),
 
         const SizedBox(height: 60),
 
         // Customer Rep
         _buildLabel('create_report_customer_rep'.tr()),
         const SizedBox(height: 24),
-        _buildSignatureRow('create_report_name'.tr(), 'Enter name', isPlaceholder: true),
+        _buildSignatureRow(
+          'create_report_name'.tr(),
+          'Enter name',
+          isPlaceholder: true,
+        ),
         const SizedBox(height: 24),
-        _buildSignatureBox('create_report_sign'.tr(), 'create_report_signature_area'.tr()),
+        _buildSignatureBox(
+          'create_report_sign'.tr(),
+          'create_report_signature_area'.tr(),
+        ),
 
         const SizedBox(height: 60),
       ],
     );
   }
 
-  Widget _buildSignatureRow(String label, String value, {bool isBold = false, bool isPlaceholder = false}) {
+  Widget _buildSignatureRow(
+    String label,
+    String value, {
+    bool isBold = false,
+    bool isPlaceholder = false,
+  }) {
     return Row(
       children: [
         SizedBox(
           width: 80,
           child: Text(
             label,
-            style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF8E9BAE)),
+            style: AppFont.style(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF8E9BAE),
+            ),
           ),
         ),
         const SizedBox(width: 16),
@@ -1845,12 +2173,18 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 style: AppFont.style(
                   fontSize: 16,
                   fontWeight: isBold ? FontWeight.w900 : FontWeight.w800,
-                  color: isPlaceholder ? const Color(0xFFA5ABB7) : const Color(0xFF0D121F),
+                  color: isPlaceholder
+                      ? const Color(0xFFA5ABB7)
+                      : const Color(0xFF0D121F),
                 ),
               ),
               if (isPlaceholder) ...[
                 const SizedBox(height: 4),
-                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Color(0xFFF1F2F6),
+                ),
               ],
             ],
           ),
@@ -1867,7 +2201,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           width: 80,
           child: Text(
             label,
-            style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF8E9BAE)),
+            style: AppFont.style(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF8E9BAE),
+            ),
           ),
         ),
         const SizedBox(width: 16),
@@ -1884,7 +2222,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             child: Center(
               child: Text(
                 hint.tr(),
-                style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFCFD8DC)),
+                style: AppFont.style(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFFCFD8DC),
+                ),
               ),
             ),
           ),
@@ -1901,7 +2243,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         children: [
           Text(
             '$number.',
-            style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+            style: AppFont.style(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFFA5ABB7),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1919,10 +2265,18 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   Expanded(
                     child: Text(
                       '...',
-                      style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                      style: AppFont.style(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFA5ABB7),
+                      ),
                     ),
                   ),
-                  const Icon(Icons.mic_none, size: 18, color: Color(0xFFA5ABB7)),
+                  const Icon(
+                    Icons.mic_none,
+                    size: 18,
+                    color: Color(0xFFA5ABB7),
+                  ),
                 ],
               ),
             ),
@@ -1938,7 +2292,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       children: [
         Text(
           title,
-          style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+          style: AppFont.style(
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFFA5ABB7),
+          ),
         ),
         const SizedBox(height: 8),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
@@ -1956,7 +2314,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             flex: 4,
             child: Text(
               label,
-              style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+              style: AppFont.style(
+                fontSize: 14,
+                fontWeight: FontWeight.w900,
+                color: const Color(0xFF0D121F),
+              ),
             ),
           ),
           const Expanded(
@@ -1982,11 +2344,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   Widget _buildAddNewButton(String text) {
     return Row(
       children: [
-        const Icon(Icons.add_circle_outline, size: 16, color: Color(0xFF1565C0)),
+        const Icon(
+          Icons.add_circle_outline,
+          size: 16,
+          color: Color(0xFF1565C0),
+        ),
         const SizedBox(width: 4),
         Text(
           text,
-          style: AppFont.style(fontSize: 11, fontWeight: FontWeight.w800, color: const Color(0xFF1565C0)),
+          style: AppFont.style(
+            fontSize: 11,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF1565C0),
+          ),
         ),
       ],
     );
@@ -1995,11 +2365,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   Widget _buildSelectExistingButton() {
     return Row(
       children: [
-        const Icon(Icons.check_circle_outline, size: 16, color: Color(0xFF1565C0)),
+        const Icon(
+          Icons.check_circle_outline,
+          size: 16,
+          color: Color(0xFF1565C0),
+        ),
         const SizedBox(width: 4),
         Text(
           'Select Existing',
-          style: AppFont.style(fontSize: 11, fontWeight: FontWeight.w800, color: const Color(0xFF1565C0)),
+          style: AppFont.style(
+            fontSize: 11,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF1565C0),
+          ),
         ),
       ],
     );
@@ -2020,7 +2398,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         children: [
           Text(
             value,
-            style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+            style: AppFont.style(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFF0D121F),
+            ),
           ),
           const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
         ],
@@ -2047,21 +2429,34 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Text(
               title,
-              style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white),
+              style: AppFont.style(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: Colors.white,
+              ),
             ),
           ),
           // List items
-          ...items.map((item) => GestureDetector(
-                onTap: () => onSelect(item),
-                child: Container(
-                  color: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Text(
-                    item,
-                    style: AppFont.style(fontSize: 16, fontWeight: FontWeight.w400, color: const Color(0xFF0D121F)),
+          ...items.map(
+            (item) => GestureDetector(
+              onTap: () => onSelect(item),
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: Text(
+                  item,
+                  style: AppFont.style(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFF0D121F),
                   ),
                 ),
-              )),
+              ),
+            ),
+          ),
         ],
       ),
     );

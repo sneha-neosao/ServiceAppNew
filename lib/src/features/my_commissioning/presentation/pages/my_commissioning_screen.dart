@@ -16,32 +16,8 @@ class MyCommissioningScreen extends StatefulWidget {
 }
 
 class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
-  bool _isEditing = false;
-  bool _isCreating = false;
-  CommissioningModel? _selectedItem;
-
   @override
   Widget build(BuildContext context) {
-    if (_isEditing && _selectedItem != null) {
-      return AddCommissioningScreen(
-        initialCustomer: _selectedItem!.companyName,
-        initialSite: _selectedItem!.location,
-        initialTechnicians: _selectedItem!.members,
-        onBack: () => setState(() {
-          _isEditing = false;
-          _selectedItem = null;
-        }),
-      );
-    }
-
-    if (_isCreating) {
-      return CreateCommissioningReportScreen(
-        onBack: () => setState(() {
-          _isCreating = false;
-        }),
-      );
-    }
-
     final List<CommissioningModel> items = CommissioningModel.dummyList;
 
     return Column(
@@ -98,14 +74,30 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                 companyName: item.companyName,
                 location: item.location,
                 members: item.members,
-                onEdit: () => setState(() {
-                  _selectedItem = item;
-                  _isEditing = true;
-                }),
+                onEdit: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddCommissioningScreen(
+                        initialCustomer: item.companyName,
+                        initialSite: item.location,
+                        initialTechnicians: item.members,
+                        onBack: () => Navigator.pop(context),
+                      ),
+                    ),
+                  );
+                },
                 onDelete: () => _showDeleteDialog(context),
-                onSubmit: () => setState(() {
-                  _isCreating = true;
-                }),
+                onSubmit: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CreateCommissioningReportScreen(
+                        onBack: () => Navigator.pop(context),
+                      ),
+                    ),
+                  );
+                },
               );
             },
           ),
@@ -129,3 +121,4 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
     );
   }
 }
+

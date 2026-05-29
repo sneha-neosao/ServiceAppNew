@@ -95,11 +95,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         const Spacer(),
                         // ── + button ───────────────────────────────────────
                         GestureDetector(
-                          onTap: () => setState(() {
-                            _showCreateReport = true;
-                            _showNotifications = false;
-                            _showProfile = false;
-                          }),
+                          onTap: () {
+                            setState(() {
+                              _selectedIndex = 0;
+                              _amcViewState = _AmcViewState.dashboard;
+                              _showNotifications = false;
+                              _showProfile = false;
+                              _showCreateReport = false;
+                            });
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => CreateReportScreen(
+                                  onBack: () => Navigator.pop(context),
+                                ),
+                              ),
+                            );
+                          },
                           child: Container(
                             width: 40,
                             height: 40,
@@ -205,9 +217,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     if (_showProfile) {
       return ProfileScreen(onBack: () => setState(() => _showProfile = false));
-    }
-    if (_showCreateReport) {
-      return CreateReportScreen(onBack: () => setState(() => _showCreateReport = false));
     }
 
     switch (_selectedIndex) {
