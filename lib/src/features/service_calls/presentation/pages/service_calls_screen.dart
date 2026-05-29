@@ -21,7 +21,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -51,18 +51,8 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: Row(
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5F6F9),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.arrow_back, size: 20, color: Color(0xFF5C616E)),
-              ),
-              const SizedBox(width: 16),
               Text(
-                'service_calls_section_title'.tr(),
+                'Service Calls',
                 style: AppFont.style(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -84,9 +74,8 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
           labelPadding: const EdgeInsets.symmetric(vertical: 8),
           dividerColor: const Color(0xFFF1F2F6),
           tabs: [
-            _buildTab('service_calls_tab_ongoing'.tr(), 1),
-            _buildTab('service_calls_tab_active'.tr(), 2),
-            _buildTab('service_calls_tab_completed'.tr(), 1),
+            _buildTab('ASSIGNED SERVICE CALLS', 1),
+            _buildTab('PENDING SERVICE CALLS', 2),
           ],
         ),
 
@@ -95,25 +84,65 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // Search Bar
-              _buildSearchField(),
-              const SizedBox(height: 12),
               // Filter Row 1
               Row(
                 children: [
-                  Expanded(child: _buildFilterDropdown('service_calls_filter_clients'.tr(), Icons.search)),
+                  Expanded(
+                    child: _buildFilterDropdown(
+                      'Select Customer',
+                      Icons.person_outline,
+                    ),
+                  ),
                   const SizedBox(width: 12),
-                  Expanded(child: _buildFilterDropdown('service_calls_filter_sites'.tr(), Icons.location_on_outlined)),
+                  Expanded(
+                    child: _buildFilterDropdown(
+                      'Select Site',
+                      Icons.location_on_outlined,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
               // Filter Row 2
               Row(
                 children: [
-                  Expanded(child: _buildFilterInput('service_calls_filter_complaint'.tr(), Icons.assignment_outlined)),
+                  Expanded(
+                    child: _buildFilterInput(
+                      'Complaint No...',
+                      Icons.assignment_outlined,
+                    ),
+                  ),
                   const SizedBox(width: 12),
-                  Expanded(child: _buildFilterInput('service_calls_filter_date'.tr(), Icons.calendar_today_outlined)),
+                  Expanded(
+                    child: _buildFilterInput(
+                      'dd-mm-yyyy',
+                      Icons.calendar_today_outlined,
+                    ),
+                  ),
                 ],
+              ),
+              const SizedBox(height: 16),
+              // Clear Filters Button
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  // Using dashed-like border by using a light solid border if no package is available
+                  border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+                ),
+                child: Center(
+                  child: Text(
+                    'CLEAR FILTERS',
+                    style: AppFont.style(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFFA5ABB7),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -125,11 +154,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
         Expanded(
           child: TabBarView(
             controller: _tabController,
-            children: [
-              _buildOngoingList(),
-              _buildActiveList(),
-              _buildCompletedList(),
-            ],
+            children: [_buildOngoingList(), _buildActiveList()],
           ),
         ),
       ],
@@ -155,32 +180,14 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     );
   }
 
-  Widget _buildSearchField() {
-    return Container(
-      height: 44,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF5F6F9),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: 'service_calls_search_hint'.tr(),
-          hintStyle: AppFont.style(fontSize: 13, color: const Color(0xFFA5ABB7), fontWeight: FontWeight.w600),
-          prefixIcon: const Icon(Icons.search, color: Color(0xFFA5ABB7), size: 20),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 11),
-        ),
-      ),
-    );
-  }
-
   Widget _buildFilterDropdown(String label, IconData icon) {
     return Container(
       height: 44,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F6F9),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Row(
         children: [
@@ -189,11 +196,19 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
           Expanded(
             child: Text(
               label,
-              style: AppFont.style(fontSize: 12, color: const Color(0xFF0D121F), fontWeight: FontWeight.w600),
+              style: AppFont.style(
+                fontSize: 14,
+                color: const Color(0xFFA5ABB7),
+                fontWeight: FontWeight.w500,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          const Icon(Icons.keyboard_arrow_down, color: Color(0xFF0D121F), size: 18),
+          const Icon(
+            Icons.keyboard_arrow_down,
+            color: Color(0xFFA5ABB7),
+            size: 18,
+          ),
         ],
       ),
     );
@@ -204,8 +219,9 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
       height: 44,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F6F9),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Row(
         children: [
@@ -214,7 +230,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
           Expanded(
             child: Text(
               label,
-              style: AppFont.style(fontSize: 12, color: const Color(0xFFA5ABB7), fontWeight: FontWeight.w600),
+              style: AppFont.style(
+                fontSize: 14,
+                color: const Color(0xFFA5ABB7),
+                fontWeight: FontWeight.w500,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),

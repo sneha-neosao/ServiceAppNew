@@ -52,7 +52,10 @@ class ServiceCallCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF1F8FF),
                     borderRadius: BorderRadius.circular(4),
@@ -69,7 +72,10 @@ class ServiceCallCard extends StatelessWidget {
                 if (isCompleted) ...[
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFE8F5E9),
                       borderRadius: BorderRadius.circular(4),
@@ -106,7 +112,11 @@ class ServiceCallCard extends StatelessWidget {
             // Location
             Row(
               children: [
-                const Icon(Icons.location_on_outlined, size: 14, color: Color(0xFFA5ABB7)),
+                const Icon(
+                  Icons.location_on_outlined,
+                  size: 14,
+                  color: Color(0xFFA5ABB7),
+                ),
                 const SizedBox(width: 4),
                 Text(
                   location,
@@ -122,20 +132,27 @@ class ServiceCallCard extends StatelessWidget {
               const SizedBox(height: 12),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF5F6F9),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.person_outline, size: 16, color: Color(0xFF1565C0)),
+                    const Icon(
+                      Icons.person_outline,
+                      size: 16,
+                      color: Color(0xFF1565C0),
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'ASSIGNED: $assignedTo',
+                        assignedTo!,
                         style: AppFont.style(
-                          fontSize: 12,
+                          fontSize: 14,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF424B5C),
                         ),
@@ -149,31 +166,31 @@ class ServiceCallCard extends StatelessWidget {
             // Buttons
             Row(
               children: [
-                if (type != ServiceCallType.completed)
+                if (type == ServiceCallType.active)
                   Expanded(
                     child: _buildSecondaryButton(
-                      'service_calls_btn_closed'.tr(),
+                      'CLOSE OVER CALL',
                       Icons.phone_disabled_outlined,
                     ),
-                  )
-                else
+                  ),
+                if (type == ServiceCallType.completed)
                   Expanded(child: _buildCompletedButton()),
-                if (type != ServiceCallType.completed) ...[
-                  const SizedBox(width: 12),
+                if (type == ServiceCallType.active) const SizedBox(width: 12),
+                if (type == ServiceCallType.ongoing ||
+                    type == ServiceCallType.active)
                   Expanded(
                     child: GestureDetector(
                       onTap: onSubmit,
                       child: _buildPrimaryButton(
                         type == ServiceCallType.ongoing
-                            ? 'service_calls_btn_submit'.tr()
-                            : 'service_calls_btn_assign'.tr(),
+                            ? 'SUBMIT SERVICE REPORT'
+                            : 'ASSIGN TECHNICIAN',
                         type == ServiceCallType.ongoing
                             ? Icons.check_circle_outline
-                            : Icons.person_add_outlined,
+                            : Icons.person_outline,
                       ),
                     ),
                   ),
-                ],
               ],
             ),
           ],
@@ -214,7 +231,11 @@ class ServiceCallCard extends StatelessWidget {
             Flexible(
               child: Text(
                 label,
-                style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white),
+                style: AppFont.style(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -240,7 +261,11 @@ class ServiceCallCard extends StatelessWidget {
           Flexible(
             child: Text(
               label,
-              style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: const Color(0xFF5C616E)),
+              style: AppFont.style(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF5C616E),
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -261,12 +286,20 @@ class ServiceCallCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.check_circle_outline, size: 18, color: Color(0xFFA5ABB7)),
+          const Icon(
+            Icons.check_circle_outline,
+            size: 18,
+            color: Color(0xFFA5ABB7),
+          ),
           const SizedBox(width: 8),
           Flexible(
             child: Text(
               'service_calls_btn_completed'.tr(),
-              style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+              style: AppFont.style(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFFA5ABB7),
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

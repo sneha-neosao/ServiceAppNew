@@ -258,8 +258,8 @@ class _CreateCommissioningReportScreenState
                         children: [
                           Text(
                             widget.isServiceReport
-                                ? 'Service Report'
-                                : 'Commissioning Report',
+                                ? 'SERVICE REPORT'
+                                : 'COMMISSIONING REPORT',
                             style: AppFont.style(
                               fontSize: 22,
                               fontWeight: FontWeight.w900,
