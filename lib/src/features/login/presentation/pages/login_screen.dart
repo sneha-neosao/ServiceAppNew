@@ -121,7 +121,9 @@ class LoginScreen extends StatelessWidget {
                                   width: double.infinity,
                                   height: 50,
                                   child: ElevatedButton(
-                                    onPressed: isLoading ? null : () => _login(context),
+                                    onPressed: (){
+                                      context.pushNamed(AppRoute.homeScreen.name);
+                                    }/*isLoading ? null : () => _login(context)*/,
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.white,
                                       foregroundColor: const Color(0xFF3B82C4),

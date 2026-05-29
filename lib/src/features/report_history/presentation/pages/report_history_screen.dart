@@ -22,18 +22,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
           child: Row(
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5F6F9),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.arrow_back, size: 20, color: Color(0xFF5C616E)),
-              ),
-              const SizedBox(width: 16),
               Text(
-                'reports_section_title'.tr(),
+                'Reports History',
                 style: AppFont.style(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -55,9 +45,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             ),
             child: Row(
               children: [
-                Expanded(child: _buildSegmentTab(0, 'reports_tab_commissioning'.tr())),
-                Expanded(child: _buildSegmentTab(1, 'reports_tab_service'.tr())),
-                Expanded(child: _buildSegmentTab(2, 'reports_tab_amc'.tr())),
+                Expanded(child: _buildSegmentTab(0, 'COMMISSIONING')),
+                Expanded(child: _buildSegmentTab(1, 'SERVICE')),
+                Expanded(child: _buildSegmentTab(2, 'AMC')),
               ],
             ),
           ),
@@ -143,7 +133,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     return GestureDetector(
       onTap: () => setState(() => _selectedTab = index),
       child: Container(
-        margin: const EdgeInsets.all(4),
+        margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
         decoration: BoxDecoration(
           color: isSelected ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
@@ -153,7 +143,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
-                  )
+                  ),
                 ]
               : null,
         ),
@@ -161,9 +151,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           child: Text(
             label,
             style: AppFont.style(
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-              color: isSelected ? const Color(0xFF1565C0) : const Color(0xFFA5ABB7),
+              color: isSelected
+                  ? const Color(0xFF1565C0)
+                  : const Color(0xFFA5ABB7),
             ),
           ),
         ),
@@ -182,62 +174,67 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       ),
       child: Column(
         children: [
-          // Search Field
-          Container(
-            height: 44,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF5F6F9),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'reports_search_hint'.tr(),
-                hintStyle: AppFont.style(fontSize: 13, color: const Color(0xFFA5ABB7), fontWeight: FontWeight.w600),
-                prefixIcon: const Icon(Icons.search, color: Color(0xFFA5ABB7), size: 20),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 11),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
           // Filter Row 1
           Row(
             children: [
-              Expanded(child: _buildFilterItem('reports_filter_clients'.tr(), Icons.business_outlined)),
+              Expanded(
+                child: _buildFilterDropdown(
+                  'Select Custo...',
+                  Icons.business_outlined,
+                ),
+              ),
               const SizedBox(width: 12),
-              Expanded(child: _buildFilterItem('reports_filter_sites'.tr(), Icons.location_on_outlined)),
+              Expanded(
+                child: _buildFilterDropdown(
+                  'Select Site',
+                  Icons.location_on_outlined,
+                ),
+              ),
             ],
           ),
-          // Complaint Number (Only for Service tab)
-          if (_selectedTab == 1) ...[
-            const SizedBox(height: 12),
-            _buildFilterItemFull('reports_filter_complaint'.tr(), Icons.assignment_outlined),
-          ],
+          const SizedBox(height: 12),
+          // Complaint Number
+          _buildFilterInputFull(
+            'Complaint Number...',
+            Icons.assignment_outlined,
+          ),
           const SizedBox(height: 12),
           // Filter Row 2
           Row(
             children: [
-              Expanded(child: _buildFilterItem('reports_filter_date'.tr(), Icons.calendar_today_outlined)),
+              Expanded(
+                child: _buildFilterInput(
+                  'dd-mm-yyyy',
+                  Icons.calendar_today_outlined,
+                ),
+              ),
               const SizedBox(width: 12),
-              Expanded(child: _buildFilterItem('reports_filter_technicians'.tr(), Icons.person_search_outlined)),
+              Expanded(
+                child: _buildFilterDropdown(
+                  'Select Techni...',
+                  Icons.person_outline,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),
           // Clear Filters
           Container(
             width: double.infinity,
-            height: 44,
+            padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFF1565C0).withValues(alpha: 0.2), style: BorderStyle.solid),
+              border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
             ),
             child: Center(
               child: Text(
-                'reports_clear_filters'.tr(),
+                'CLEAR FILTERS',
                 style: AppFont.style(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF1565C0).withValues(alpha: 0.5),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFFA5ABB7),
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
@@ -247,13 +244,14 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     );
   }
 
-  Widget _buildFilterItem(String label, IconData icon) {
+  Widget _buildFilterDropdown(String label, IconData icon) {
     return Container(
       height: 44,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F6F9),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Row(
         children: [
@@ -262,7 +260,45 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           Expanded(
             child: Text(
               label,
-              style: AppFont.style(fontSize: 12, color: const Color(0xFF0D121F), fontWeight: FontWeight.w600),
+              style: AppFont.style(
+                fontSize: 14,
+                color: const Color(0xFFA5ABB7),
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const Icon(
+            Icons.keyboard_arrow_down,
+            color: Color(0xFFA5ABB7),
+            size: 18,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterInput(String label, IconData icon) {
+    return Container(
+      height: 44,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFFA5ABB7), size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              label,
+              style: AppFont.style(
+                fontSize: 14,
+                color: const Color(0xFFA5ABB7),
+                fontWeight: FontWeight.w500,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -271,13 +307,14 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     );
   }
 
-  Widget _buildFilterItemFull(String label, IconData icon) {
+  Widget _buildFilterInputFull(String label, IconData icon) {
     return Container(
       height: 44,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F6F9),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Row(
         children: [
@@ -286,7 +323,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           Expanded(
             child: Text(
               label,
-              style: AppFont.style(fontSize: 12, color: const Color(0xFFA5ABB7), fontWeight: FontWeight.w600),
+              style: AppFont.style(
+                fontSize: 14,
+                color: const Color(0xFFA5ABB7),
+                fontWeight: FontWeight.w500,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -360,34 +401,18 @@ class _ReportCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Badge Row
+            // Company & Date Row
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: badgeBg,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    badgeLabel,
-                    style: AppFont.style(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      color: badgeText,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
                 Text(
-                  'ID: $id',
+                  companyName,
                   style: AppFont.style(
-                    fontSize: 12,
+                    fontSize: 17,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
+                    color: const Color(0xFF0D121F),
                   ),
                 ),
-                const Spacer(),
                 Text(
                   date,
                   style: AppFont.style(
@@ -398,42 +423,38 @@ class _ReportCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            // Company
-            Text(
-              companyName,
-              style: AppFont.style(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF0D121F),
-              ),
-            ),
             const SizedBox(height: 8),
             // Location
             Row(
               children: [
-                const Icon(Icons.location_on_outlined, size: 16, color: Color(0xFF1565C0)),
+                const Icon(
+                  Icons.location_on_outlined,
+                  size: 16,
+                  color: Color(0xFFA5ABB7),
+                ),
                 const SizedBox(width: 8),
                 Text(
                   location,
                   style: AppFont.style(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF424B5C),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF7A8699),
                   ),
                 ),
               ],
             ),
             if (complaintNo != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               // Complaint Row
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFBF2),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFFFE0B2).withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -441,17 +462,17 @@ class _ReportCard extends StatelessWidget {
                       complaintNo!,
                       style: AppFont.style(
                         fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFFFF6D00),
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFFE65100),
                       ),
                     ),
                     const Spacer(),
                     Text(
-                      'reports_view_complaint'.tr(),
+                      'VIEW COMPLAINT REPORT',
                       style: AppFont.style(
                         fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFFFF6D00),
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFFE65100),
                         letterSpacing: 0.5,
                         decoration: TextDecoration.underline,
                       ),
@@ -460,9 +481,7 @@ class _ReportCard extends StatelessWidget {
                 ),
               ),
             ],
-            const SizedBox(height: 16),
-            const Divider(height: 1, color: Color(0xFFF1F2F6)),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             // Technician Row
             Row(
               children: [
@@ -470,10 +489,14 @@ class _ReportCard extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: const BoxDecoration(
-                    color: Color(0xFFF5F6F9),
+                    color: Color(0xFFF9FAFB),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.refresh, size: 20, color: Color(0xFFA5ABB7)),
+                  child: const Icon(
+                    Icons.person_outline,
+                    size: 20,
+                    color: Color(0xFFCDD0D8),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Column(
@@ -498,8 +521,6 @@ class _ReportCard extends StatelessWidget {
                   ],
                 ),
                 const Spacer(),
-                _buildDownloadButton(),
-                const SizedBox(width: 12),
                 _buildViewButton(),
               ],
             ),
@@ -509,22 +530,10 @@ class _ReportCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDownloadButton() {
-    return Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF5F6F9),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: const Icon(Icons.download_outlined, size: 20, color: Color(0xFFA5ABB7)),
-    );
-  }
-
   Widget _buildViewButton() {
     return Container(
       height: 44,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: const Color(0xFF1565C0),
         borderRadius: BorderRadius.circular(10),
@@ -532,11 +541,15 @@ class _ReportCard extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            'reports_btn_view'.tr(),
-            style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w800, color: Colors.white),
+            'VIEW SERVICE REPORT',
+            style: AppFont.style(
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(width: 8),
-          const Icon(Icons.chevron_right, size: 18, color: Colors.white),
+          const Icon(Icons.chevron_right, size: 16, color: Colors.white),
         ],
       ),
     );

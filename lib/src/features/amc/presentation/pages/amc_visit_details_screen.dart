@@ -4,18 +4,24 @@ import 'package:service_app/src/core/theme/app_font.dart';
 
 class AmcVisitDetailsScreen extends StatelessWidget {
   final VoidCallback onBack;
+  final VoidCallback onSubmit;
+  final VoidCallback? onCompleteAmcWork;
   final String title;
   final String location;
   final String visitInfo;
   final String window;
+  final int reportsCreated;
 
   const AmcVisitDetailsScreen({
     super.key,
     required this.onBack,
+    required this.onSubmit,
+    this.onCompleteAmcWork,
     required this.title,
     required this.location,
     required this.visitInfo,
     required this.window,
+    this.reportsCreated = 0,
   });
 
   @override
@@ -48,8 +54,11 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                           ],
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.arrow_back,
-                              size: 20, color: Color(0xFF5C616E)),
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            size: 20,
+                            color: Color(0xFF5C616E),
+                          ),
                           onPressed: onBack,
                         ),
                       ),
@@ -67,8 +76,11 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              const Icon(Icons.location_on_outlined,
-                                  size: 14, color: Color(0xFF1565C0)),
+                              const Icon(
+                                Icons.location_on_outlined,
+                                size: 14,
+                                color: Color(0xFF1565C0),
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 location,
@@ -88,7 +100,10 @@ class AmcVisitDetailsScreen extends StatelessWidget {
 
                 // ── Visit Info Card ────────────────────────────────────────
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
@@ -149,39 +164,40 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20),
-
-                        // ── Submit button ───────────────────────────────────
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF1565C0),
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                        if (reportsCreated == 0) ...[
+                          const SizedBox(height: 20),
+                          // ── Submit button ───────────────────────────────────
+                          SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: ElevatedButton(
+                              onPressed: onSubmit,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF1565C0),
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.add, size: 20),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'amc_details_submit_btn'.tr(),
+                                    style: AppFont.style(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.add, size: 20),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'amc_details_submit_btn'.tr(),
-                                  style: AppFont.style(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   ),
@@ -192,15 +208,102 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                 // ── Reports Created label ──────────────────────────────────
                 Center(
                   child: Text(
-                    '${'amc_details_reports_created'.tr()} (0)',
+                    reportsCreated > 0
+                        ? 'Reports Created ($reportsCreated)'
+                        : '${'amc_details_reports_created'.tr()} (0)',
                     style: AppFont.style(
                       fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w800,
                       color: const Color(0xFFA5ABB7),
                       letterSpacing: 0.3,
                     ),
                   ),
                 ),
+
+                if (reportsCreated > 0) ...[
+                  const SizedBox(height: 16),
+                  
+                  ...List.generate(reportsCreated, (index) {
+                    return Container(
+                      margin: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE8F5E9), // Light green
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.check_circle_outline,
+                              color: Color(0xFF00A76F),
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Text(
+                            'Report ${index + 1} – Completed',
+                            style: AppFont.style(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xFF0D121F),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                  
+                  // + Create Another Report (dashed)
+                  GestureDetector(
+                    onTap: onSubmit,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(0xFFE5E7EB),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.add,
+                            color: Color(0xFFA5ABB7),
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Create Another Report',
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFFA5ABB7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 40),
               ],
             ),
           ),
@@ -210,31 +313,40 @@ class AmcVisitDetailsScreen extends StatelessWidget {
         Container(
           color: const Color(0xFFF8F8F8),
           padding: const EdgeInsets.fromLTRB(22, 12, 22, 24),
-          child: Container(
-            width: double.infinity,
-            height: 56,
-            decoration: BoxDecoration(
-              color: const Color(0xFFECEFF1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.check_circle_outline,
-                  size: 20,
-                  color: Colors.grey.shade400,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Complete AMC Work',
-                  style: AppFont.style(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade400,
+          child: GestureDetector(
+            onTap: reportsCreated > 0 ? onCompleteAmcWork : null,
+            child: Container(
+              width: double.infinity,
+              height: 56,
+              decoration: BoxDecoration(
+                color: reportsCreated > 0
+                    ? const Color(0xFF1565C0)
+                    : const Color(0xFFECEFF1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.check_circle_outline,
+                    size: 20,
+                    color: reportsCreated > 0
+                        ? Colors.white
+                        : Colors.grey.shade400,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Text(
+                    'Complete AMC Work',
+                    style: AppFont.style(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: reportsCreated > 0
+                          ? Colors.white
+                          : Colors.grey.shade400,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -254,7 +366,7 @@ class _OutlineBadge extends StatelessWidget {
     required this.label,
     required this.borderColor,
     required this.textColor,
-    required this.bgColor
+    required this.bgColor,
   });
 
   @override

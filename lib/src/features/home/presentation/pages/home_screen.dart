@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/amc/presentation/pages/amc_schedule_screen.dart';
 import 'package:service_app/src/features/amc/presentation/pages/amc_visit_details_screen.dart';
+import 'package:service_app/src/features/amc/presentation/pages/create_amc_report_screen.dart';
 import 'package:service_app/src/features/my_commissioning/presentation/pages/my_commissioning_screen.dart';
 import 'package:service_app/src/features/notifications/presentation/pages/notification_screen.dart';
 import 'package:service_app/src/features/report_history/presentation/pages/report_history_screen.dart';
@@ -17,7 +18,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-enum _AmcViewState { dashboard, schedule, details }
+enum _AmcViewState { dashboard, schedule, details, createReport }
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
@@ -25,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _showCreateReport = false;
   bool _showProfile = false;
   _AmcViewState _amcViewState = _AmcViewState.dashboard;
+  int _amcReportsCreated = 0;
 
   // Selected AMC Item Data
   String? _selectedAmcTitle;
@@ -60,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
       _amcViewState = _AmcViewState.dashboard;
+      _amcReportsCreated = 0;
       _showNotifications = false;
       _showCreateReport = false;
       _showProfile = false;
@@ -81,7 +84,11 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 38, left: 16, right: 16),
+                  padding: const EdgeInsets.only(
+                    bottom: 38,
+                    left: 16,
+                    right: 16,
+                  ),
                   child: SafeArea(
                     bottom: false,
                     child: Row(
@@ -99,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             setState(() {
                               _selectedIndex = 0;
                               _amcViewState = _AmcViewState.dashboard;
+                              _amcReportsCreated = 0;
                               _showNotifications = false;
                               _showProfile = false;
                               _showCreateReport = false;
@@ -142,7 +150,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(10.0),
-                              child: Image.asset('assets/icons/notification_icon.png'),
+                              child: Image.asset(
+                                'assets/icons/notification_icon.png',
+                              ),
                             ),
                           ),
                         ),
@@ -213,7 +223,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCurrentView() {
     if (_showNotifications) {
-      return NotificationScreen(onBack: () => setState(() => _showNotifications = false));
+      return NotificationScreen(
+        onBack: () => setState(() => _showNotifications = false),
+      );
     }
     if (_showProfile) {
       return ProfileScreen(onBack: () => setState(() => _showProfile = false));
@@ -241,7 +253,24 @@ class _HomeScreenState extends State<HomeScreen> {
           location: _selectedAmcLocation ?? '',
           visitInfo: _selectedAmcVisitInfo ?? '',
           window: _selectedAmcWindow ?? '',
+          reportsCreated: _amcReportsCreated,
           onBack: () => setState(() => _amcViewState = _AmcViewState.schedule),
+          onSubmit: () =>
+              setState(() => _amcViewState = _AmcViewState.createReport),
+          onCompleteAmcWork: () {
+            setState(() {
+              _amcViewState = _AmcViewState.dashboard;
+              _amcReportsCreated = 0;
+            });
+          },
+        );
+      case _AmcViewState.createReport:
+        return CreateAmcReportScreen(
+          onBack: () => setState(() => _amcViewState = _AmcViewState.details),
+          onSubmit: () => setState(() {
+            _amcReportsCreated++;
+            _amcViewState = _AmcViewState.details;
+          }),
         );
       case _AmcViewState.schedule:
         return AmcScheduleScreen(
@@ -252,6 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _selectedAmcLocation = location;
               _selectedAmcVisitInfo = visitInfo;
               _selectedAmcWindow = window;
+              _amcReportsCreated = 0;
               _amcViewState = _AmcViewState.details;
             });
           },
@@ -270,12 +300,20 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 8),
           Text(
             'home_greeting_name'.tr(),
-            style: AppFont.style(fontSize: 26, fontWeight: FontWeight.bold, color: const Color(0xFF1A1A1A)),
+            style: AppFont.style(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF1A1A1A),
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             'home_greeting_message'.tr(),
-            style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black),
+            style: AppFont.style(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
           ),
           const SizedBox(height: 36),
           // AMC Card
@@ -301,14 +339,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       width: 48,
                       height: 48,
-                      decoration: BoxDecoration(color: const Color(0xFFC2E2FE), borderRadius: BorderRadius.circular(12)),
-                      child: const Icon(Icons.receipt_long_outlined, color: Color(0xFF0B68B9), size: 24),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFC2E2FE),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.receipt_long_outlined,
+                        color: Color(0xFF0B68B9),
+                        size: 24,
+                      ),
                     ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         'home_amc_card_title'.tr(),
-                        style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF1A1A1A), letterSpacing: 0.3),
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF1A1A1A),
+                          letterSpacing: 0.3,
+                        ),
                       ),
                     ),
                     _DropdownPill(label: 'home_amc_card_dropdown'.tr()),
@@ -317,26 +367,55 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 20),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  decoration: BoxDecoration(color: const Color(0xFFC2E2FE), borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFC2E2FE),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('2', style: AppFont.style(fontSize: 32, fontWeight: FontWeight.w800, color: const Color(0xFF0B68B9))),
+                          Text(
+                            '2',
+                            style: AppFont.style(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF0B68B9),
+                            ),
+                          ),
                           const SizedBox(height: 2),
-                          Text('home_amc_total_label'.tr(), style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF0B68B9))),
+                          Text(
+                            'home_amc_total_label'.tr(),
+                            style: AppFont.style(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF0B68B9),
+                            ),
+                          ),
                         ],
                       ),
                       GestureDetector(
-                        onTap: () => setState(() => _amcViewState = _AmcViewState.schedule),
+                        onTap: () => setState(
+                          () => _amcViewState = _AmcViewState.schedule,
+                        ),
                         child: Container(
                           width: 40,
                           height: 40,
-                          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                          child: const Icon(Icons.chevron_right, color: Color(0xFF0B68B9), size: 22),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.chevron_right,
+                            color: Color(0xFF0B68B9),
+                            size: 22,
+                          ),
                         ),
                       ),
                     ],
@@ -351,15 +430,28 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildPlaceholder() {
-    return Center(child: Text('home_placeholder'.tr(), style: AppFont.style(fontSize: 22, fontWeight: FontWeight.w600, color: const Color(0xFF9E9E9E))));
+    return Center(
+      child: Text(
+        'home_placeholder'.tr(),
+        style: AppFont.style(
+          fontSize: 22,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF9E9E9E),
+        ),
+      ),
+    );
   }
 
   String _getAppBarTitle() {
     switch (_selectedIndex) {
-      case 1: return 'commissioning_appbar_title'.tr();
-      case 2: return 'service_calls_appbar_title'.tr();
-      case 3: return 'reports_appbar_title'.tr();
-      default: return 'home_appbar_title'.tr();
+      case 1:
+        return 'commissioning_appbar_title'.tr();
+      case 2:
+        return 'service_calls_appbar_title'.tr();
+      case 3:
+        return 'reports_appbar_title'.tr();
+      default:
+        return 'home_appbar_title'.tr();
     }
   }
 }
@@ -390,6 +482,7 @@ class _DropdownPillState extends State<_DropdownPill> {
     super.initState();
     _selectedLabel = widget.label;
   }
+
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
@@ -397,16 +490,33 @@ class _DropdownPillState extends State<_DropdownPill> {
       surfaceTintColor: Colors.white,
       onSelected: (val) => setState(() => _selectedLabel = val),
       offset: const Offset(0, 45),
-      itemBuilder: (ctx) => _options.map((opt) => PopupMenuItem(value: opt, child: Text(opt))).toList(),
+      itemBuilder: (ctx) => _options
+          .map((opt) => PopupMenuItem(value: opt, child: Text(opt)))
+          .toList(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFCFD8DC))),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0xFFCFD8DC)),
+        ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_selectedLabel, style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w700, color: const Color(0xFF455A64))),
+            Text(
+              _selectedLabel,
+              style: AppFont.style(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF455A64),
+              ),
+            ),
             const SizedBox(width: 8),
-            const Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: Color(0xFF90A4AE)),
+            const Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 18,
+              color: Color(0xFF90A4AE),
+            ),
           ],
         ),
       ),
@@ -460,49 +570,49 @@ class _CustomBottomNavBar extends StatelessWidget {
               padding: const EdgeInsets.only(right: _groupShift),
               child: Row(
                 children: navItems.asMap().entries.map((entry) {
-                final index = entry.key;
-                final item = entry.value;
-                final isActive = index == selectedIndex;
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () => onTap(index),
-                    behavior: HitTestBehavior.opaque,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // reserve space equal to half indicator so items
-                        // are vertically centred inside the pill
-                        const SizedBox(height: _indicatorSize / 2),
-                        // ── icon ───────────────────────────────────────────
-                        Image.asset(
-                          isActive ? item.activeIconAsset : item.iconAsset,
-                          width: 24,
-                          height: 24,
-                          color: isActive
-                              ? Colors.white
-                              : Colors.white.withOpacity(0.55),
-                        ),
-                        const SizedBox(height: 4),
-                        // ── label ──────────────────────────────────────────
-                        Text(
-                          item.labelKey.tr(),
-                          style: AppFont.style(
-                            fontSize: 11,
-                            fontWeight: isActive
-                                ? FontWeight.w700
-                                : FontWeight.w400,
+                  final index = entry.key;
+                  final item = entry.value;
+                  final isActive = index == selectedIndex;
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () => onTap(index),
+                      behavior: HitTestBehavior.opaque,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // reserve space equal to half indicator so items
+                          // are vertically centred inside the pill
+                          const SizedBox(height: _indicatorSize / 2),
+                          // ── icon ───────────────────────────────────────────
+                          Image.asset(
+                            isActive ? item.activeIconAsset : item.iconAsset,
+                            width: 24,
+                            height: 24,
                             color: isActive
                                 ? Colors.white
                                 : Colors.white.withOpacity(0.55),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                          const SizedBox(height: 4),
+                          // ── label ──────────────────────────────────────────
+                          Text(
+                            item.labelKey.tr(),
+                            style: AppFont.style(
+                              fontSize: 11,
+                              fontWeight: isActive
+                                  ? FontWeight.w700
+                                  : FontWeight.w400,
+                              color: isActive
+                                  ? Colors.white
+                                  : Colors.white.withOpacity(0.55),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }).toList(),
+                  );
+                }).toList(),
               ),
             ),
           ),
