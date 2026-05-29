@@ -20,7 +20,37 @@ class _CreateCommissioningReportScreenState
     extends State<CreateCommissioningReportScreen> {
   int _currentStep = 1;
   late List<TextEditingController> _technicians;
+  late List<TextEditingController> _representatives;
+  String _selectedWarranty = '1 YEAR';
+  bool _isTechnicalDetailsNA = false;
   int _workDescriptionRows = 5;
+
+  // ── Step 5: Preventive Maintenance Checklist ──────────────────────────────
+  // NA toggles per section
+  bool _mechNA = false;
+  bool _pipeNA = false;
+  bool _elecNA = false;
+
+  // Mechanical Checklist
+  String? _bearingNoise;
+  String? _vibration;
+  String? _mechSeal;
+  String? _pumpDry;
+
+  // Pipeline / Hydraulic Checklist
+  String? _nrvValve;
+  String? _strainerValve;
+  String? _suctionLine;
+  String? _deliveryLine;
+  String? _suctionDelivery;
+  String? _pressureSwitch;
+
+  // Electrical Checklist
+  String? _elecFaults;
+  String? _voltage;
+  String? _phase;
+  String? _current;
+  String? _panelWiring;
 
   @override
   void initState() {
@@ -31,11 +61,15 @@ class _CreateCommissioningReportScreenState
     _technicians = initialNames
         .map((name) => TextEditingController(text: name))
         .toList();
+    _representatives = [TextEditingController()];
   }
 
   @override
   void dispose() {
     for (var controller in _technicians) {
+      controller.dispose();
+    }
+    for (var controller in _representatives) {
       controller.dispose();
     }
     super.dispose();
@@ -693,98 +727,154 @@ class _CreateCommissioningReportScreenState
 
         // ── Member Presents ─────────────────────────────────────────────
         Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: 180,
-              child: Text(
-                'Member Presents',
-                style: AppFont.style(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF5C6672),
-                ),
-              ),
-            ),
-            Text(
-              ':',
-              style: AppFont.style(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFFA5ABB7),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Representative',
-                          style: AppFont.style(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFFA5ABB7), // Placeholder color
-                          ),
-                        ),
-                      ),
-                      const Icon(
-                        Icons.mic_none,
-                        color: Color(0xFFA5ABB7),
-                        size: 20,
-                      ),
-                      const SizedBox(width: 12),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Text(
-                          'Add+',
-                          style: AppFont.style(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFF1565C0),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  const Divider(
-                    height: 1,
-                    thickness: 1,
-                    color: Color(0xFFF1F2F6),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 32),
-
-        // ── Select Warranty Period (Hidden for Service Report) ───────────
-        if (!widget.isServiceReport) ...[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 180,
+              width: 150,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  'Select Warranty Period',
+                  'Member Presents (Customer Side)',
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF5C6672),
                   ),
                 ),
               ),
-              Text(
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
                 ':',
                 style: AppFont.style(
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: FontWeight.w800,
-                  color: const Color(0xFFA5ABB7),
+                  color: const Color(0xFFE5E7EB),
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                children: _representatives.asMap().entries.map((entry) {
+                  int idx = entry.key;
+                  TextEditingController controller = entry.value;
+                  bool isFirst = idx == 0;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: controller,
+                                style: AppFont.style(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                  color: const Color(0xFF0D121F),
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: 'Representative',
+                                  hintStyle: AppFont.style(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                    color: const Color(0xFFA5ABB7),
+                                  ),
+                                  border: InputBorder.none,
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.mic_off_outlined,
+                              color: Color(0xFFA5ABB7),
+                              size: 20,
+                            ),
+                            const SizedBox(width: 12),
+                            if (isFirst)
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _representatives.add(
+                                      TextEditingController(),
+                                    );
+                                  });
+                                },
+                                child: Text(
+                                  'Add+',
+                                  style: AppFont.style(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w900,
+                                    color: const Color(0xFF1565C0),
+                                  ),
+                                ),
+                              )
+                            else
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    var removed = _representatives.removeAt(
+                                      idx,
+                                    );
+                                    removed.dispose();
+                                  });
+                                },
+                                child: const Icon(
+                                  Icons.remove,
+                                  color: Color(0xFFFF5252),
+                                  size: 24,
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: Color(0xFFF1F2F6),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 16),
+
+        // ── Select Warranty Period (Hidden for Service Report) ───────────
+        if (!widget.isServiceReport) ...[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 150,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 12.0),
+                  child: Text(
+                    'Select Warranty Period',
+                    style: AppFont.style(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF5C6672),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Text(
+                  ':',
+                  style: AppFont.style(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFE5E7EB),
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -792,19 +882,38 @@ class _CreateCommissioningReportScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '1 YEAR',
-                      style: AppFont.style(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF0D121F),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: _selectedWarranty,
+                        isExpanded: true,
+                        icon: const SizedBox.shrink(),
+                        style: AppFont.style(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF0D121F),
+                        ),
+                        items:
+                            ['1 YEAR', '2 YEAR', '3 YEAR', '4 YEAR', '5 YEAR']
+                                .map(
+                                  (val) => DropdownMenuItem(
+                                    value: val,
+                                    child: Text(val),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (val) {
+                          if (val != null) {
+                            setState(() {
+                              _selectedWarranty = val;
+                            });
+                          }
+                        },
                       ),
                     ),
-                    const SizedBox(height: 8),
                     const Divider(
                       height: 1,
                       thickness: 1,
-                      color: Color(0xFFF1F2F6),
+                      color: Color(0xFF1565C0),
                     ),
                   ],
                 ),
@@ -815,44 +924,53 @@ class _CreateCommissioningReportScreenState
         ],
 
         // ── Purpose of Visit Section ─────────────────────────────────────
-        _buildLabel('Purpose of Visit'),
+        _buildLabel('Agenda / Purpose of Visit'),
         const SizedBox(height: 12),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-        const SizedBox(height: 32),
+        const SizedBox(height: 16),
 
         // ── Purpose Text Area ────────────────────────────────────────────
         Container(
-          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFF1F2F6)),
+            color: const Color(0xFFF9FAFB),
+            border: Border.all(color: const Color(0xFFE5E7EB)),
           ),
-          child: Column(
+          child: Stack(
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Enter the main purpose of this visit...',
-                      style: AppFont.style(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFFA5ABB7),
-                      ),
-                    ),
+              TextField(
+                maxLines: 5,
+                style: AppFont.style(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFF0D121F),
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Enter the main purpose of this visit...',
+                  hintStyle: AppFont.style(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFA5ABB7),
                   ),
-                  const Icon(Icons.mic_none, color: Color(0xFFA5ABB7)),
-                ],
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.all(16),
+                ),
               ),
-              const SizedBox(height: 100),
-              const Align(
-                alignment: Alignment.bottomRight,
+              const Positioned(
+                top: 16,
+                right: 16,
                 child: Icon(
-                  Icons.format_indent_increase,
-                  size: 16,
-                  color: Color(0xFF0D121F),
+                  Icons.mic_off_outlined,
+                  color: Color(0xFFA5ABB7),
+                  size: 20,
+                ),
+              ),
+              const Positioned(
+                bottom: 8,
+                right: 8,
+                child: Icon(
+                  Icons.signal_cellular_4_bar,
+                  size: 12,
+                  color: Color(0xFFA5ABB7),
                 ),
               ),
             ],
@@ -866,74 +984,189 @@ class _CreateCommissioningReportScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Pump Details ────────────────────────────────────────────────
-        _buildLabel('Pump Details'),
+        // ── Technical Details ───────────────────────────────────────────
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Technical Details',
+              style: AppFont.style(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                color: const Color(0xFF0D121F),
+              ),
+            ),
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () => setState(
+                    () => _isTechnicalDetailsNA = !_isTechnicalDetailsNA,
+                  ),
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _isTechnicalDetailsNA
+                            ? const Color(0xFF1565C0)
+                            : const Color(0xFFA5ABB7),
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                      color: _isTechnicalDetailsNA
+                          ? const Color(0xFF1565C0)
+                          : Colors.white,
+                    ),
+                    child: _isTechnicalDetailsNA
+                        ? const Icon(Icons.check, size: 14, color: Colors.white)
+                        : null,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'NA',
+                  style: AppFont.style(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFA5ABB7),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
         const SizedBox(height: 12),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-        const SizedBox(height: 24),
-        _buildInputFieldRow('Pump Make'),
-        _buildInputFieldRow('Pump Model'),
-        _buildInputFieldRow('Serial Number'),
-        _buildInputFieldRow('Pump Head (MTR)'),
-        _buildInputFieldRow('Flow (LPM)'),
-        _buildInputFieldRow('Flow (M3/HR)'),
-        _buildInputFieldRow('Flow (LPS)'),
-        _buildInputFieldRow('Flow (USGPM)'),
-
         const SizedBox(height: 32),
 
-        // ── Driver Details ──────────────────────────────────────────────
-        _buildLabel('Driver Details'),
-        const SizedBox(height: 12),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-        const SizedBox(height: 24),
-        _buildInputFieldRow('Driver Make'),
-        _buildInputFieldRow('Serial Number'),
-        _buildInputFieldRow('Rating (KW)'),
-        _buildInputFieldRow('Rating (HP)'),
-        _buildInputFieldRow('RPM'),
-
-        const SizedBox(height: 32),
-
-        // ── Panel Details ───────────────────────────────────────────────
-        _buildLabel('Panel Details'),
-        const SizedBox(height: 12),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-        const SizedBox(height: 24),
-        _buildInputFieldRow('Panel Make'),
-        _buildInputFieldRow('Serial / Model'),
+        // ── Input Fields ────────────────────────────────────────────────
+        IgnorePointer(
+          ignoring: _isTechnicalDetailsNA,
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 250),
+            opacity: _isTechnicalDetailsNA ? 0.38 : 1.0,
+            child: Column(
+              children: [
+                _buildTechField('Pump Make'),
+                _buildTechField('Pump Model'),
+                _buildTechField('Pump Serial Number'),
+                _buildTechMultiField('Pump Flow', [
+                  'LPM',
+                  'M3/HR',
+                  'LPS',
+                  'USGPM',
+                ]),
+                _buildTechMultiField('Pump Head', ['MTR']),
+                _buildTechField('Driver Make'),
+                _buildTechField('Driver Serial Number'),
+                _buildTechMultiField('Rating (KW/HP)', ['KW', 'HP']),
+                _buildTechField('RPM'),
+                _buildTechField('Control Panel Make'),
+                _buildTechField('Panel Serial / Model'),
+              ],
+            ),
+          ),
+        ),
 
         const SizedBox(height: 40),
       ],
     );
   }
 
-  Widget _buildInputFieldRow(String label) {
+  Widget _buildTechField(String label) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 4,
-            child: Text(
-              label,
-              style: AppFont.style(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF0D121F),
+          Text(
+            label,
+            style: AppFont.style(
+              fontSize: 14,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFF3A4152),
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            style: AppFont.style(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF0D121F),
+            ),
+            decoration: const InputDecoration(
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(vertical: 8),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFFF1F2F6)),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF1565C0), width: 1.5),
               ),
             ),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            flex: 6,
-            child: Container(
-              decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: Color(0xFFF1F2F6))),
-              ),
-              child: const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTechMultiField(String label, List<String> units) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: AppFont.style(
+              fontSize: 14,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFF3A4152),
             ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 16,
+            runSpacing: 24,
+            children: units.map((unit) {
+              return FractionallySizedBox(
+                widthFactor: 0.45,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      unit,
+                      style: AppFont.style(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFA5ABB7),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    TextField(
+                      style: AppFont.style(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF0D121F),
+                      ),
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 8),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Color(0xFFF1F2F6)),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xFF1565C0),
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
           ),
         ],
       ),
@@ -942,49 +1175,25 @@ class _CreateCommissioningReportScreenState
 
   Widget _buildStep4() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // ── Work Description Label ──────────────────────────────────────
-        _buildLabel('Work Description'),
+        Center(
+          child: Text(
+            'Work Description',
+            style: AppFont.style(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFFA5ABB7),
+            ),
+          ),
+        ),
         const SizedBox(height: 12),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 24),
 
         // ── Work Description Fields ──────────────────────────────────────
-        ...List.generate(
-          _workDescriptionRows,
-          (index) => _buildWorkDescriptionField(index + 1),
-        ),
-
-        const SizedBox(height: 8),
-
-        // ── Add Row Button ──────────────────────────────────────────────
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _workDescriptionRows++;
-            });
-          },
-          child: Container(
-            width: double.infinity,
-            height: 56,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFF1F2F6), width: 1),
-            ),
-            child: Center(
-              child: Text(
-                '+ Add Row',
-                style: AppFont.style(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFFA5ABB7),
-                ),
-              ),
-            ),
-          ),
-        ),
+        ...List.generate(3, (index) => _buildWorkDescriptionField(index + 1)),
 
         const SizedBox(height: 40),
       ],
@@ -997,48 +1206,60 @@ class _CreateCommissioningReportScreenState
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '$number.',
-            style: AppFont.style(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              color: const Color(0xFFA5ABB7),
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: Text(
+              '$number.',
+              style: AppFont.style(
+                fontSize: 14,
+                fontWeight: FontWeight.w900,
+                color: const Color(0xFFA5ABB7),
+              ),
             ),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: const Color(0xFFF1F2F6)),
+                color: const Color(0xFFF9FAFB),
+                border: Border.all(color: const Color(0xFFE5E7EB)),
               ),
-              child: Column(
+              child: Stack(
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '...',
-                          style: AppFont.style(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFFA5ABB7),
-                          ),
-                        ),
+                  TextField(
+                    maxLines: 3,
+                    style: AppFont.style(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFF0D121F),
+                    ),
+                    decoration: InputDecoration(
+                      hintText: '...',
+                      hintStyle: AppFont.style(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFA5ABB7),
                       ),
-                      const Icon(Icons.mic_none, color: Color(0xFFA5ABB7)),
-                    ],
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.all(16),
+                    ),
                   ),
-                  const SizedBox(height: 40),
-                  const Align(
-                    alignment: Alignment.bottomRight,
+                  const Positioned(
+                    top: 16,
+                    right: 16,
                     child: Icon(
-                      Icons.format_indent_increase,
-                      size: 16,
-                      color: Color(0xFF0D121F),
+                      Icons.mic_off_outlined,
+                      color: Color(0xFFA5ABB7),
+                      size: 20,
+                    ),
+                  ),
+                  const Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: Icon(
+                      Icons.signal_cellular_4_bar,
+                      size: 12,
+                      color: Color(0xFFA5ABB7),
                     ),
                   ),
                 ],
@@ -1054,110 +1275,316 @@ class _CreateCommissioningReportScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Mechanical Section ──────────────────────────────────────────
-        _buildSectionHeader(Icons.settings_outlined, 'MECHANICAL'),
-        const SizedBox(height: 24),
-        _buildChecklistRow('Bearing Noise', ['OK', 'NOT OK']),
-        _buildChecklistRow('Vibration', ['NORMAL', 'HIGH']),
-        _buildChecklistRow('Seal / Gland Leakage', ['OK', 'NOT OK']),
-        _buildChecklistRow('Pump Not Running Dry', ['OK', 'NOT OK']),
+        // ── Title ─────────────────────────────────────────────────────────────
+        Text(
+          'Preventive Maintenance Checklist\n(Check & Tick if Found OK / NOT OK)',
+          textAlign: TextAlign.center,
+          style: AppFont.style(
+            fontSize: 14,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFF0D121F),
+          ),
+        ),
+        const SizedBox(height: 28),
 
-        const SizedBox(height: 32),
+        // ── Mechanical Checklist ───────────────────────────────────────────────
+        _buildCheckSection(
+          icon: Icons.settings_outlined,
+          title: 'MECHANICAL CHECKLIST',
+          isNA: _mechNA,
+          onNATap: () => setState(() => _mechNA = !_mechNA),
+          items: [
+            _buildCheckItem(
+              label: 'Bearing Noise / Abnormal Sound Checked:',
+              selected: _bearingNoise,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _bearingNoise = v),
+            ),
+            _buildCheckItem(
+              label: 'Vibration Checked:',
+              selected: _vibration,
+              options: const ['normal', 'high'],
+              labels: const ['NORMAL', 'HIGH'],
+              onSelect: (v) => setState(() => _vibration = v),
+            ),
+            _buildCheckItem(
+              label: 'Mechanical Seal / Gland Leakage Checked:',
+              selected: _mechSeal,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _mechSeal = v),
+            ),
+            _buildCheckItem(
+              label: 'Pump Not Running Dry:',
+              selected: _pumpDry,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _pumpDry = v),
+            ),
+          ],
+        ),
 
-        // ── Pipeline / Hydraulic Section ─────────────────────────────────
-        _buildSectionHeader(Icons.water_drop_outlined, 'PIPELINE / HYDRAULIC'),
-        const SizedBox(height: 24),
-        _buildChecklistRow('NRV/Butterfly Valve', ['OK', 'NOT OK']),
-        _buildChecklistRow('Strainer / Foot Valve', ['OK', 'NOT OK']),
-        _buildChecklistRow('Line Leakage Check', ['OK', 'NOT OK']),
-        _buildChecklistRow('Suction/Delivery Valve', ['OK', 'NOT OK']),
+        const SizedBox(height: 28),
 
-        const SizedBox(height: 32),
+        // ── Pipeline / Hydraulic Checklist ────────────────────────────────────
+        _buildCheckSection(
+          icon: Icons.water_drop_outlined,
+          title: 'PIPELINE / HYDRAULIC CHECKLIST',
+          isNA: _pipeNA,
+          onNATap: () => setState(() => _pipeNA = !_pipeNA),
+          items: [
+            _buildCheckItem(
+              label: 'NRV / Butterfly Valve / Gate Valve Condition Checked:',
+              selected: _nrvValve,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _nrvValve = v),
+            ),
+            _buildCheckItem(
+              label: 'Strainer / Foot Valve Condition Checked:',
+              selected: _strainerValve,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _strainerValve = v),
+            ),
+            _buildCheckItem(
+              label: 'Suction Line (Air Leakage & Water Leakage Checked):',
+              selected: _suctionLine,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _suctionLine = v),
+            ),
+            _buildCheckItem(
+              label: 'Delivery Line (Air Leakage & Water Leakage Checked):',
+              selected: _deliveryLine,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _deliveryLine = v),
+            ),
+            _buildCheckItem(
+              label: 'Suction / Delivery Valve Condition Checked:',
+              selected: _suctionDelivery,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _suctionDelivery = v),
+            ),
+            _buildCheckItem(
+              label: 'Pressure Switch / Pressure Transmitter Checked:',
+              selected: _pressureSwitch,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _pressureSwitch = v),
+            ),
+          ],
+        ),
 
-        // ── Electrical Section ───────────────────────────────────────────
-        _buildSectionHeader(Icons.bolt_outlined, 'ELECTRICAL'),
-        const SizedBox(height: 24),
-        _buildChecklistRow('Electrical Faults', ['OK', 'NOT OK', 'NA']),
-        _buildChecklistRow('Voltage Checked', ['OK', 'NOT OK', 'NA']),
-        _buildChecklistRow('Phase Checked', ['OK', 'NOT OK', 'NA']),
-        _buildChecklistRow('Current Checked', ['OK', 'NOT OK', 'NA']),
-        _buildChecklistRow('Panel Wiring', ['OK', 'NOT OK', 'NA']),
+        const SizedBox(height: 28),
 
-        const SizedBox(height: 40),
+        // ── Electrical Checklist ───────────────────────────────────────────────
+        _buildCheckSection(
+          icon: Icons.bolt_outlined,
+          title: 'ELECTRICAL CHECKLIST',
+          isNA: _elecNA,
+          onNATap: () => setState(() => _elecNA = !_elecNA),
+          items: [
+            _buildCheckItem(
+              label: 'Electrical Faults Checked:',
+              selected: _elecFaults,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _elecFaults = v),
+            ),
+            _buildCheckItem(
+              label: 'Voltage Checked:',
+              selected: _voltage,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _voltage = v),
+            ),
+            _buildCheckItem(
+              label: 'Phase Checked:',
+              selected: _phase,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _phase = v),
+            ),
+            _buildCheckItem(
+              label: 'Current Checked:',
+              selected: _current,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _current = v),
+            ),
+            _buildCheckItem(
+              label: 'Control Panel Wiring Checked:',
+              selected: _panelWiring,
+              options: const ['ok', 'notok'],
+              labels: const ['OK', 'NOT OK'],
+              onSelect: (v) => setState(() => _panelWiring = v),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 60),
       ],
     );
   }
 
-  Widget _buildSectionHeader(IconData icon, String title) {
+  // ── Checklist section wrapper (header + NA + items with disable support) ───
+  Widget _buildCheckSection({
+    required IconData icon,
+    required String title,
+    required bool isNA,
+    required VoidCallback onNATap,
+    required List<Widget> items,
+  }) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Section header row
         Row(
           children: [
             Icon(icon, size: 20, color: const Color(0xFF0D121F)),
-            const SizedBox(width: 12),
-            Text(
-              title,
-              style: AppFont.style(
-                fontSize: 14,
-                fontWeight: FontWeight.w900,
-                color: const Color(0xFF0D121F),
-                letterSpacing: 0.5,
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                title,
+                style: AppFont.style(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFF0D121F),
+                ),
+              ),
+            ),
+            // NA checkbox
+            GestureDetector(
+              onTap: onNATap,
+              child: Row(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: isNA
+                            ? const Color(0xFF1565C0)
+                            : const Color(0xFFA5ABB7),
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                      color: isNA ? const Color(0xFF1565C0) : Colors.white,
+                    ),
+                    child: isNA
+                        ? const Icon(Icons.check, size: 14, color: Colors.white)
+                        : null,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '(NA)',
+                    style: AppFont.style(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFFA5ABB7),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 4),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 12),
+
+        // Items — disabled when NA is checked
+        IgnorePointer(
+          ignoring: isNA,
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 250),
+            opacity: isNA ? 0.38 : 1.0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: items,
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildChecklistRow(String label, List<String> options) {
+  // ── Single checklist item: label + radio-style option boxes ───────────────
+  Widget _buildCheckItem({
+    required String label,
+    required String? selected,
+    required List<String> options,
+    required List<String> labels,
+    required ValueChanged<String> onSelect,
+  }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
             style: AppFont.style(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF5C6672),
+              fontSize: 13,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFF3A4152),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Row(
-            children: options.map((option) {
+            children: List.generate(options.length, (i) {
+              final isSelected = selected == options[i];
               return Padding(
-                padding: const EdgeInsets.only(right: 24),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          color: const Color(0xFFF1F2F6),
-                          width: 1.5,
+                padding: EdgeInsets.only(
+                  right: i < options.length - 1 ? 20 : 0,
+                ),
+                child: GestureDetector(
+                  onTap: () => onSelect(options[i]),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Checkbox
+                      Container(
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xFF1565C0)
+                              : Colors.white,
+                          border: Border.all(
+                            color: isSelected
+                                ? const Color(0xFF1565C0)
+                                : const Color(0xFFCDD0D8),
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: isSelected
+                            ? const Icon(
+                                Icons.check,
+                                size: 14,
+                                color: Colors.white,
+                              )
+                            : null,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        labels[i],
+                        style: AppFont.style(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF7A8699),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      option,
-                      style: AppFont.style(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF8E9BAE),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
-            }).toList(),
+            }),
           ),
         ],
       ),
@@ -1168,90 +1595,180 @@ class _CreateCommissioningReportScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Remarks (Technician) ────────────────────────────────────────
-        _buildLabel('REMARKS (TECHNICIAN)'),
-        const SizedBox(height: 12),
-        _buildRemarksBox('Technician side remarks...'),
-
-        const SizedBox(height: 32),
-
-        // ── Remarks (Customer) ──────────────────────────────────────────
-        _buildLabel('REMARKS (CUSTOMER)'),
-        const SizedBox(height: 12),
-        _buildRemarksBox('Customer side remarks...'),
-
-        const SizedBox(height: 32),
-
-        // ── Photos Section ──────────────────────────────────────────────
-        _buildLabel('Photos'),
-        const SizedBox(height: 16),
-        Container(
-          width: 120,
-          height: 120,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: const Color(0xFFF1F2F6),
-            ), // Should be dashed if possible
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.camera_alt_outlined,
-                color: Color(0xFFA5ABB7),
-                size: 32,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'ADD',
-                style: AppFont.style(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFFA5ABB7),
-                ),
-              ),
-            ],
+        // ── Remarks (Technician Side) ─────────────────────────────────
+        Text(
+          'Remarks (Technician Side) :',
+          style: AppFont.style(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF6B7280),
           ),
         ),
+        const SizedBox(height: 10),
+        _buildRemarksBox('Technician side remarks...'),
 
-        const SizedBox(height: 40),
+        const SizedBox(height: 28),
 
-        // ── Recorded By Section ─────────────────────────────────────────
+        // ── Remarks (Customer Side) ──────────────────────────────────
         Text(
-          'Recorded By:',
+          'Remarks (Customer Side) :',
           style: AppFont.style(
-            fontSize: 18,
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF6B7180),
+          ),
+        ),
+        const SizedBox(height: 10),
+        _buildRemarksBox('Customer side remarks...'),
+
+        const SizedBox(height: 36),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 28),
+
+        // ── Recorded By ────────────────────────────────────────────
+        Text(
+          'Recorded By :',
+          style: AppFont.style(
+            fontSize: 16,
             fontWeight: FontWeight.w900,
             color: const Color(0xFF0D121F),
           ),
         ),
         const SizedBox(height: 24),
 
-        // ── Technician Rep ─────────────────────────────────────────────
-        _buildLabel('Technician Rep'),
-        const SizedBox(height: 12),
+        // Technician Rep
+        Text(
+          'TECHNICIAN REP',
+          style: AppFont.style(
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFFA5ABB7),
+            letterSpacing: 0.8,
+          ),
+        ),
+        const SizedBox(height: 16),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
         _buildInfoRow('Name', 'Vinod Patil'),
-        const SizedBox(height: 24),
-        _buildInfoRow('Date', '12/05/2026'),
-        const SizedBox(height: 24),
-        _buildSignatureRow('Sign', 'Digitally Signed'),
+        const SizedBox(height: 16),
+        _buildSignatureBox('Sign', 'Digitally Signed'),
 
-        const SizedBox(height: 40),
+        const SizedBox(height: 36),
 
-        // ── Customer Rep ───────────────────────────────────────────────
-        _buildLabel('Customer Rep'),
-        const SizedBox(height: 12),
+        // Customer Rep
+        Text(
+          'CUSTOMER REP',
+          style: AppFont.style(
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFFA5ABB7),
+            letterSpacing: 0.8,
+          ),
+        ),
+        const SizedBox(height: 16),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-        const SizedBox(height: 24),
-        _buildInputFieldRow('Name'), // Reusing the input row helper
-        const SizedBox(height: 24),
-        _buildInfoRow('Date', '12/05/2026'),
-        const SizedBox(height: 24),
-        _buildSignatureRow('Sign', 'Signature Area'),
+        const SizedBox(height: 16),
+        // Editable name field
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 60,
+              child: Text(
+                'Name',
+                style: AppFont.style(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF8E9BAE),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+            const SizedBox(width: 8),
+            Expanded(
+              child: TextField(
+                style: AppFont.style(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF0D121F),
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Enter name',
+                  hintStyle: AppFont.style(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFFA5ABB7),
+                  ),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFFD8DCE6)),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Color(0xFF1565C0),
+                      width: 1.5,
+                    ),
+                  ),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _buildSignatureBox('Sign', 'Signature Box'),
+
+        const SizedBox(height: 36),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 28),
+
+        // ── Upload / Capture Work Photos ──────────────────────────────
+        Text(
+          'Upload / Capture Work Photos :',
+          style: AppFont.style(
+            fontSize: 15,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFF0D121F),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Add Photo tile
+        GestureDetector(
+          onTap: () {}, // Add photo logic here
+          child: Container(
+            width: 110,
+            height: 110,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: const Color(0xFFCDD0D8),
+                width: 1.5,
+                style: BorderStyle.solid,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.camera_alt_outlined,
+                  size: 28,
+                  color: Color(0xFFA5ABB7),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'ADD+',
+                  style: AppFont.style(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFA5ABB7),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
 
         const SizedBox(height: 40),
       ],
@@ -1260,37 +1777,47 @@ class _CreateCommissioningReportScreenState
 
   Widget _buildRemarksBox(String placeholder) {
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
+        color: const Color(0xFFF9FAFB),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+        borderRadius: BorderRadius.circular(8),
       ),
-      child: Column(
+      child: Stack(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  placeholder,
-                  style: AppFont.style(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
-                  ),
-                ),
+          TextField(
+            maxLines: 4,
+            style: AppFont.style(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFF0D121F),
+            ),
+            decoration: InputDecoration(
+              hintText: placeholder,
+              hintStyle: AppFont.style(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFFA5ABB7),
               ),
-              const Icon(Icons.mic_none, color: Color(0xFFA5ABB7)),
-            ],
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.all(16),
+            ),
           ),
-          const SizedBox(height: 80),
-          const Align(
-            alignment: Alignment.bottomRight,
+          const Positioned(
+            top: 16,
+            right: 16,
             child: Icon(
-              Icons.format_indent_increase,
-              size: 16,
-              color: Color(0xFF0D121F),
+              Icons.mic_off_outlined,
+              color: Color(0xFFA5ABB7),
+              size: 20,
+            ),
+          ),
+          const Positioned(
+            bottom: 8,
+            right: 8,
+            child: Icon(
+              Icons.signal_cellular_4_bar,
+              size: 12,
+              color: Color(0xFFA5ABB7),
             ),
           ),
         ],
@@ -1298,37 +1825,31 @@ class _CreateCommissioningReportScreenState
     );
   }
 
-  Widget _buildSignatureRow(String label, String placeholder) {
+  Widget _buildSignatureBox(String label, String placeholder) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 150,
+          width: 60,
           child: Text(
             label,
             style: AppFont.style(
               fontSize: 14,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF5C6672),
+              color: const Color(0xFF8E9BAE),
             ),
           ),
         ),
-        Text(
-          ':',
-          style: AppFont.style(
-            fontSize: 14,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFFA5ABB7),
-          ),
-        ),
-        const SizedBox(width: 24),
+        const SizedBox(width: 8),
+        const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+        const SizedBox(width: 8),
         Expanded(
           child: Container(
             height: 100,
             decoration: BoxDecoration(
-              color: const Color(0xFFF8F9FB),
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: const Color(0xFFF1F2F6)),
+              color: const Color(0xFFF9FAFB),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
             ),
             child: Center(
               child: Text(
@@ -1336,8 +1857,7 @@ class _CreateCommissioningReportScreenState
                 style: AppFont.style(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: const Color(0xFFA5ABB7),
-                  // fontStyle: FontStyle.italic,
+                  color: const Color(0xFFCDD0D8),
                 ),
               ),
             ),
