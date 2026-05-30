@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:service_app/src/features/common/domain/usecase/customer_usecase.dart';
+import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
+import 'package:service_app/src/features/common/domain/usecase/technician_usecase.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
 import 'package:service_app/src/features/profile/domain/usecase/profile_details_usecase.dart';
 import 'injector.dart';
@@ -66,6 +69,43 @@ void configureDepedencies() {
       getIt<AuthRepositoryImpl>(),
     ),
   );
+
+  getIt.registerFactory(
+        () => SitesBloc(
+      getIt<SitesUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+        () => SitesUseCase(
+      getIt<AuthRepositoryImpl>(),
+    ),
+  );
+
+  getIt.registerFactory(
+        () => CustomerBloc(
+      getIt<CustomerUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+        () => CustomerUseCase(
+      getIt<AuthRepositoryImpl>(),
+    ),
+  );
+
+  getIt.registerFactory(
+        () => TechnicianBloc(
+      getIt<TechnicianUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+        () => TechnicianUseCase(
+      getIt<AuthRepositoryImpl>(),
+    ),
+  );
+
   /// API Helper
 
   getIt.registerLazySingleton(() => NetworkInfo());

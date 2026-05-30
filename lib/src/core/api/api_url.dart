@@ -12,6 +12,12 @@ class ApiUrl {
 
   static const login = "technician/login";
 
-  static const profile_details = "technician/profile";
+  static const profileDetails = "technician/profile";
+
+  static const customerDropdown = "technician/dropdowns/customers";
+
+  static const siteDropdown = "technician/dropdowns/sites";
+
+  static const technicians = "technician/dropdowns/technicians";
 
 }
