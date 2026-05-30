@@ -1,8 +1,12 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
+import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 
 class CreateReportScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -26,17 +30,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   final TextEditingController _newCustomerController = TextEditingController();
   final TextEditingController _newSiteController = TextEditingController();
 
-  final List<String> _customersList = [
-    'Gera Developers Pvt. Ltd.',
-    'Global Infotech',
-    'Reliance Mart',
-  ];
+  final List<String> _customersList = [];
 
-  final List<String> _sitesList = [
-    'Imperium Gateway',
-    'Main Server Room',
-    'Chiller Plant',
-  ];
+  final List<String> _sitesList = [];
+
+  late CustomerBloc _customerBloc;
+  late SitesBloc _sitesBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
+    _sitesBloc = getIt<SitesBloc>();
+  }
 
   // Dynamic list of member name fields – starts with one empty field
   final List<TextEditingController> _memberControllers = [
@@ -89,6 +95,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   @override
   void dispose() {
+    _customerBloc.close();
+    _sitesBloc.close();
     for (final c in _memberControllers) c.dispose();
     _agendaController.dispose();
     _newCustomerController.dispose();
@@ -777,29 +785,55 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ),
         ] else ...[
           // ── Select Existing mode: dropdown
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _isCustomerDropdownOpen = !_isCustomerDropdownOpen;
-                _isSiteDropdownOpen = false;
-              });
+          BlocBuilder<CustomerBloc, CustomerState>(
+            bloc: _customerBloc,
+            builder: (context, state) {
+              bool isLoading = state is CustomerLoadingState;
+              if (state is CustomerSuccessState) {
+                final apiNames = state.data.data.map((e) => e.name).toList();
+                for (var name in apiNames) {
+                  if (!_customersList.contains(name)) _customersList.add(name);
+                }
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (!isLoading) {
+                        setState(() {
+                          _isCustomerDropdownOpen = !_isCustomerDropdownOpen;
+                          _isSiteDropdownOpen = false;
+                        });
+                      }
+                    },
+                    child: _buildDropdownField(
+                      isLoading ? 'Loading...' : _selectedCustomer,
+                      _isCustomerDropdownOpen,
+                      isLoading: isLoading,
+                    ),
+                  ),
+                  if (_isCustomerDropdownOpen)
+                    _buildDropdownList(
+                      title: 'Select Customer',
+                      items: _customersList,
+                      onSelect: (val) {
+                        setState(() {
+                          _selectedCustomer = val;
+                          _isCustomerDropdownOpen = false;
+                        });
+                        if (state is CustomerSuccessState) {
+                          final cList = state.data.data.where((x) => x.name == val);
+                          if (cList.isNotEmpty) {
+                            _sitesBloc.add(SitesGetEvent(cList.first.id));
+                          }
+                        }
+                      },
+                    ),
+                ],
+              );
             },
-            child: _buildDropdownField(
-              _selectedCustomer,
-              _isCustomerDropdownOpen,
-            ),
           ),
-          if (_isCustomerDropdownOpen)
-            _buildDropdownList(
-              title: 'Select Customer',
-              items: _customersList,
-              onSelect: (val) {
-                setState(() {
-                  _selectedCustomer = val;
-                  _isCustomerDropdownOpen = false;
-                });
-              },
-            ),
         ],
 
         const SizedBox(height: 32),
@@ -856,26 +890,49 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ),
         ] else ...[
           // ── Select Existing mode: dropdown
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _isSiteDropdownOpen = !_isSiteDropdownOpen;
-                _isCustomerDropdownOpen = false;
-              });
+          BlocBuilder<SitesBloc, SitesState>(
+            bloc: _sitesBloc,
+            builder: (context, state) {
+              bool isLoading = state is SitesLoadingState;
+              if (state is SitesSuccessState) {
+                final apiNames = state.data.data.map((e) => e.name).toList();
+                for (var name in apiNames) {
+                  if (!_sitesList.contains(name)) _sitesList.add(name);
+                }
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (!isLoading) {
+                        setState(() {
+                          _isSiteDropdownOpen = !_isSiteDropdownOpen;
+                          _isCustomerDropdownOpen = false;
+                        });
+                      }
+                    },
+                    child: _buildDropdownField(
+                      isLoading ? 'Loading...' : _selectedSite,
+                      _isSiteDropdownOpen,
+                      isLoading: isLoading,
+                    ),
+                  ),
+                  if (_isSiteDropdownOpen)
+                    _buildDropdownList(
+                      title: 'Select Site',
+                      items: _sitesList,
+                      onSelect: (val) {
+                        setState(() {
+                          _selectedSite = val;
+                          _isSiteDropdownOpen = false;
+                        });
+                      },
+                    ),
+                ],
+              );
             },
-            child: _buildDropdownField(_selectedSite, _isSiteDropdownOpen),
           ),
-          if (_isSiteDropdownOpen)
-            _buildDropdownList(
-              title: 'Select Site',
-              items: _sitesList,
-              onSelect: (val) {
-                setState(() {
-                  _selectedSite = val;
-                  _isSiteDropdownOpen = false;
-                });
-              },
-            ),
         ],
 
         const SizedBox(height: 32),
@@ -2383,7 +2440,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     );
   }
 
-  Widget _buildDropdownField(String value, bool isOpen) {
+  Widget _buildDropdownField(String value, bool isOpen, {bool isLoading = false}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
@@ -2404,7 +2461,16 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               color: const Color(0xFF0D121F),
             ),
           ),
-          const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
+          isLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF1565C0),
+                    strokeWidth: 2,
+                  ),
+                )
+              : const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
         ],
       ),
     );

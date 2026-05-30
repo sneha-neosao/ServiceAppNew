@@ -1,6 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
+import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
+import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
 
 class AddCommissioningScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -24,11 +29,11 @@ class AddCommissioningScreen extends StatefulWidget {
 
 class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   // ── Customer ──────────────────────────────────────────────────────────────
-  final List<String> _customers = ['Global Infotech', 'Reliance Mart', 'Tech Corp'];
+  List<String> _customers = [];
   String? _selectedCustomer;
 
   // ── Site / Location ───────────────────────────────────────────────────────
-  final List<String> _sites = ['Main Server Room', 'Chiller Plant', 'Roof Top'];
+  List<String> _sites = [];
   String? _selectedSite;
 
   // ── Equipment ─────────────────────────────────────────────────────────────
@@ -36,17 +41,20 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   String? _selectedEquipment;
 
   // ── Technicians ───────────────────────────────────────────────────────────
-  final List<String> _technicians = [
-    'Vinod Patil',
-    'Prashant Shinde',
-    'Rahul Deshmukh',
-    'Amit Kumar',
-  ];
+  List<String> _technicians = [];
   String? _selectedTechnician;
+
+  late CustomerBloc _customerBloc;
+  late SitesBloc _sitesBloc;
+  late TechnicianBloc _technicianBloc;
 
   @override
   void initState() {
     super.initState();
+
+    _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
+    _sitesBloc = getIt<SitesBloc>();
+    _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
 
     // ── Customer ─────────────────────────────────────────────────────────────
     if (widget.initialCustomer != null) {
@@ -72,10 +80,20 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
     // ── Technician — only set if the value exists as a single list item ───────
     // initialTechnicians may be a comma-joined string like "A, B"; guard it.
-    _selectedTechnician = (widget.initialTechnicians != null &&
-            _technicians.contains(widget.initialTechnicians))
-        ? widget.initialTechnicians
-        : null;
+    if (widget.initialTechnicians != null) {
+      if (!_technicians.contains(widget.initialTechnicians)) {
+        _technicians.insert(0, widget.initialTechnicians!);
+      }
+      _selectedTechnician = widget.initialTechnicians;
+    }
+  }
+
+  @override
+  void dispose() {
+    _customerBloc.close();
+    _sitesBloc.close();
+    _technicianBloc.close();
+    super.dispose();
   }
 
   // ── Bottom sheet: Add new entry ────────────────────────────────────────────
@@ -297,12 +315,32 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           }),
                         ),
                       ),
-                      _buildDropdown(
-                        hint: 'Choose customer...',
-                        value: _selectedCustomer,
-                        items: _customers,
-                        onChanged: (v) =>
-                            setState(() => _selectedCustomer = v),
+                      BlocBuilder<CustomerBloc, CustomerState>(
+                        bloc: _customerBloc,
+                        builder: (context, state) {
+                          bool isLoading = state is CustomerLoadingState;
+                          if (state is CustomerSuccessState) {
+                            final apiNames = state.data.data.map((e) => e.name).toList();
+                            for (var name in apiNames) {
+                              if (!_customers.contains(name)) _customers.add(name);
+                            }
+                          }
+                          return _buildDropdown(
+                            hint: 'Choose customer...',
+                            value: _selectedCustomer,
+                            items: _customers,
+                            isLoading: isLoading,
+                            onChanged: (v) {
+                              setState(() => _selectedCustomer = v);
+                              if (v != null && state is CustomerSuccessState) {
+                                final cList = state.data.data.where((x) => x.name == v);
+                                if (cList.isNotEmpty) {
+                                  _sitesBloc.add(SitesGetEvent(cList.first.id));
+                                }
+                              }
+                            },
+                          );
+                        },
                       ),
 
                       const SizedBox(height: 24),
@@ -319,12 +357,24 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           }),
                         ),
                       ),
-                      _buildDropdown(
-                        hint: 'Choose site...',
-                        value: _selectedSite,
-                        items: _sites,
-                        onChanged: (v) =>
-                            setState(() => _selectedSite = v),
+                      BlocBuilder<SitesBloc, SitesState>(
+                        bloc: _sitesBloc,
+                        builder: (context, state) {
+                          bool isLoading = state is SitesLoadingState;
+                          if (state is SitesSuccessState) {
+                            final apiNames = state.data.data.map((e) => e.name).toList();
+                            for (var name in apiNames) {
+                              if (!_sites.contains(name)) _sites.add(name);
+                            }
+                          }
+                          return _buildDropdown(
+                            hint: 'Choose site...',
+                            value: _selectedSite,
+                            items: _sites,
+                            isLoading: isLoading,
+                            onChanged: (v) => setState(() => _selectedSite = v),
+                          );
+                        },
                       ),
 
                       const SizedBox(height: 24),
@@ -349,12 +399,24 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                         label: 'ASSIGN TECHNICIAN',
                         showAdd: false,
                       ),
-                      _buildDropdown(
-                        hint: 'Choose technician...',
-                        value: _selectedTechnician,
-                        items: _technicians,
-                        onChanged: (v) =>
-                            setState(() => _selectedTechnician = v),
+                      BlocBuilder<TechnicianBloc, TechnicianState>(
+                        bloc: _technicianBloc,
+                        builder: (context, state) {
+                          bool isLoading = state is TechnicianLoadingState;
+                          if (state is TechnicianSuccessState) {
+                            final apiNames = state.data.data.map((e) => e.name).toList();
+                            for (var name in apiNames) {
+                              if (!_technicians.contains(name)) _technicians.add(name);
+                            }
+                          }
+                          return _buildDropdown(
+                            hint: 'Choose technician...',
+                            value: _selectedTechnician,
+                            items: _technicians,
+                            isLoading: isLoading,
+                            onChanged: (v) => setState(() => _selectedTechnician = v),
+                          );
+                        },
                       ),
 
                       const SizedBox(height: 40),
@@ -448,7 +510,14 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     required String? value,
     required List<String> items,
     required ValueChanged<String?> onChanged,
+    bool isLoading = false,
   }) {
+    // Make sure current value is in items to avoid DropdownButton error
+    List<String> validItems = List.from(items);
+    if (value != null && !validItems.contains(value)) {
+      validItems.add(value);
+    }
+
     return Container(
       height: 56,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -457,32 +526,43 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFF1F2F6)),
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          isExpanded: true,
-          value: value,
-          hint: Text(
-            hint,
-            style: AppFont.style(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-              color: const Color(0xFFA5ABB7),
+      child: isLoading
+          ? const Center(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Color(0xFF1565C0),
+                  strokeWidth: 2.5,
+                ),
+              ),
+            )
+          : DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                isExpanded: true,
+                value: value,
+                hint: Text(
+                  hint,
+                  style: AppFont.style(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFFA5ABB7),
+                  ),
+                ),
+                icon: const Icon(Icons.keyboard_arrow_down,
+                    color: Color(0xFFA5ABB7)),
+                dropdownColor: Colors.white,
+                style: AppFont.style(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF0D121F),
+                ),
+                onChanged: onChanged,
+                items: validItems
+                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                    .toList(),
+              ),
             ),
-          ),
-          icon: const Icon(Icons.keyboard_arrow_down,
-              color: Color(0xFFA5ABB7)),
-          dropdownColor: Colors.white,
-          style: AppFont.style(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: const Color(0xFF0D121F),
-          ),
-          onChanged: onChanged,
-          items: items
-              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-              .toList(),
-        ),
-      ),
     );
   }
 }
