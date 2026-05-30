@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
 import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
+import 'package:service_app/src/remote/models/commissioning_work_model/commissioning_work_list_response.dart';
 import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
 import 'package:service_app/src/remote/models/profile_details_model/profile_details_model.dart';
 import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
@@ -25,6 +26,8 @@ sealed class RemoteDataSource {
   Future<SiteResponse> sites(SitesParams params,String token);
 
   Future<TechnicianResponse> technician(String token);
+
+  Future<CommissioningWorkListResponse> commissioningWorkList(String token);
 
   Future<void> logout();
 }
@@ -177,6 +180,37 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = TechnicianResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+      // throw here i want to pass same exception which is send by catch();
+    }
+  }
+
+  @override
+  Future<CommissioningWorkListResponse> commissioningWorkList(String token) async {
+    try {
+
+      final response = await _helper.execute(
+        method: Method.get,
+        url: ApiUrl.commissioningWork,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      final respData = CommissioningWorkListResponse.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
-import 'package:service_app/src/features/my_commissioning/presentation/widgets/report_form_widgets.dart';
+import 'package:service_app/src/features/my_commissioning/widgets/report_form_widgets.dart';
 
 class Step6Declaration extends StatelessWidget {
   const Step6Declaration({super.key});
