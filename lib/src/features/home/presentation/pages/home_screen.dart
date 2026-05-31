@@ -5,6 +5,7 @@ import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/features/home/bloc/upcoming_amc_bloc/upcoming_amc_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/features/profile/bloc/profile_details_bloc/profile_details_bloc.dart';
 import 'package:service_app/src/features/amc/presentation/pages/amc_schedule_screen.dart';
 import 'package:service_app/src/features/amc/presentation/pages/amc_visit_details_screen.dart';
 import 'package:service_app/src/features/amc/presentation/pages/create_amc_report_screen.dart';
@@ -26,16 +27,19 @@ enum _AmcViewState { dashboard, schedule, details, createReport }
 
 class _HomeScreenState extends State<HomeScreen> {
   late UpcomingAmcBloc _upcomingAmcBloc;
+  late ProfileDetailsBloc _profileDetailsBloc;
 
   @override
   void initState() {
     super.initState();
     _upcomingAmcBloc = getIt<UpcomingAmcBloc>()..add(const UpcomingAmcGetEvent('Today'));
+    _profileDetailsBloc = getIt<ProfileDetailsBloc>()..add(const ProfileDetailsGetEvent());
   }
 
   @override
   void dispose() {
     _upcomingAmcBloc.close();
+    _profileDetailsBloc.close();
     super.dispose();
   }
 
@@ -316,13 +320,41 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 8),
-          Text(
-            'home_greeting_name'.tr(),
-            style: AppFont.style(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1A1A1A),
-            ),
+          BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
+            bloc: _profileDetailsBloc,
+            builder: (context, state) {
+              if (state is ProfileDetailsLoadingState || state is ProfileDetailsInitialState) {
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    width: 150,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                );
+              }
+
+              String name = 'home_greeting_name'.tr();
+              if (state is ProfileDetailsSuccessState) {
+                final data = state.data.data;
+                if (data != null && data.name.isNotEmpty) {
+                  name = data.name;
+                }
+              }
+
+              return Text(
+                name,
+                style: AppFont.style(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF1A1A1A),
+                ),
+              );
+            },
           ),
           const SizedBox(height: 4),
           Text(
