@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:service_app/src/core/usecases/usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
+import 'package:service_app/src/features/home/domain/usecase/upcoming_amc_usecase.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
 import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
 import 'package:service_app/src/remote/models/commissioning_work_model/commissioning_work_list_response.dart';
@@ -10,6 +11,7 @@ import 'package:service_app/src/remote/models/customer_model/customer_response.d
 import 'package:service_app/src/remote/models/profile_details_model/profile_details_model.dart';
 import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
 import 'package:service_app/src/remote/models/technician_model/technician_response.dart';
+import 'package:service_app/src/remote/models/upcoming_amc_model/upcoming_amc_response.dart';
 import '../../configs/injector/injector.dart';
 import '../../core/api/api_exception.dart';
 import '../../core/errors/exceptions.dart';
@@ -32,6 +34,8 @@ abstract class Repository {
   Future<Either<Failure, TechnicianResponse>> technician(NoParams params);
 
   Future<Either<Failure, CommissioningWorkListResponse>> commissioning_work_list(NoParams params);
+
+  Future<Either<Failure, UpcomingAmcVisitsResponse>> upcoming_amc(UpcomingAmcParams params);
 
 }
 
@@ -251,6 +255,41 @@ class AuthRepositoryImpl implements Repository {
           String token = await SessionManager.getAuthToken() ?? "";
 
           final respData = await _remoteDataSource.commissioningWorkList(token);
+
+          if (respData.status != 200) {
+            return Left(CredentialFailure(respData.message!));
+          }
+
+          return Right(respData);
+
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch(e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));// rethrow as-is
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, UpcomingAmcVisitsResponse>> upcoming_amc(UpcomingAmcParams params) {
+    return _networkInfo.check<UpcomingAmcVisitsResponse>(
+      connected: () async {
+        try {
+
+          String token = await SessionManager.getAuthToken() ?? "";
+
+          final respData = await _remoteDataSource.upcomingAmc(params,token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message!));

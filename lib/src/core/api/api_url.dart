@@ -12,6 +12,8 @@ class ApiUrl {
 
   static const login = "technician/login";
 
+  static const upcomingAmcVisits = "dashboard/upcoming-amc-visits";
+
   static const profileDetails = "technician/profile";
 
   static const customerDropdown = "technician/dropdowns/customers";
@@ -21,5 +23,11 @@ class ApiUrl {
   static const technicians = "technician/dropdowns/technicians";
 
   static const commissioningWork = "technician/commissioning-works";
+
+  static const commissioningWorkUpdate = "technician/commissioning-works";
+
+  static const commissioningWorkDelete = "technician/commissioning-works";
+
+  static const serviceCallsAssigned = "technician/service-calls/assign-technicians";
 
 }

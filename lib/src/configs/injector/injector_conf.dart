@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:service_app/src/features/common/domain/usecase/customer_usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/technician_usecase.dart';
+import 'package:service_app/src/features/home/domain/usecase/upcoming_amc_usecase.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_list_bloc/commissioning_work_list_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_work_usecase.dart';
@@ -116,6 +117,18 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
         () => CommissioningWorkListUseCase(
+      getIt<AuthRepositoryImpl>(),
+    ),
+  );
+
+  getIt.registerFactory(
+        () => UpcomingAmcBloc(
+      getIt<UpcomingAmcUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+        () => UpcomingAmcUseCase(
       getIt<AuthRepositoryImpl>(),
     ),
   );

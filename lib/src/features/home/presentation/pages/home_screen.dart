@@ -1,5 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
+import 'package:service_app/src/features/home/bloc/upcoming_amc_bloc/upcoming_amc_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/amc/presentation/pages/amc_schedule_screen.dart';
 import 'package:service_app/src/features/amc/presentation/pages/amc_visit_details_screen.dart';
@@ -21,6 +25,20 @@ class HomeScreen extends StatefulWidget {
 enum _AmcViewState { dashboard, schedule, details, createReport }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late UpcomingAmcBloc _upcomingAmcBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _upcomingAmcBloc = getIt<UpcomingAmcBloc>()..add(const UpcomingAmcGetEvent('Today'));
+  }
+
+  @override
+  void dispose() {
+    _upcomingAmcBloc.close();
+    super.dispose();
+  }
+
   int _selectedIndex = 0;
   bool _showNotifications = false;
   bool _showCreateReport = false;
@@ -361,7 +379,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    _DropdownPill(label: 'home_amc_card_dropdown'.tr()),
+                    _DropdownPill(
+                      label: 'home_amc_card_dropdown'.tr(),
+                      onChanged: (val) {
+                        _upcomingAmcBloc.add(UpcomingAmcGetEvent(val));
+                      },
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -381,13 +404,42 @@ class _HomeScreenState extends State<HomeScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '2',
-                            style: AppFont.style(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFF0B68B9),
-                            ),
+                          BlocBuilder<UpcomingAmcBloc, UpcomingAmcState>(
+                            bloc: _upcomingAmcBloc,
+                            builder: (context, state) {
+                              if (state is UpcomingAmcLoadingState) {
+                                return Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: Container(
+                                    width: 36,
+                                    height: 36,
+                                    margin: const EdgeInsets.only(bottom: 6),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                );
+                              } else if (state is UpcomingAmcSuccessState) {
+                                return Text(
+                                  '${state.data.data?.total ?? 0}',
+                                  style: AppFont.style(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w800,
+                                    color: const Color(0xFF0B68B9),
+                                  ),
+                                );
+                              }
+                              return Text(
+                                '0',
+                                style: AppFont.style(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF0B68B9),
+                                ),
+                              );
+                            },
                           ),
                           const SizedBox(height: 2),
                           Text(
@@ -469,7 +521,8 @@ class _NavItem {
 
 class _DropdownPill extends StatefulWidget {
   final String label;
-  const _DropdownPill({required this.label});
+  final ValueChanged<String>? onChanged;
+  const _DropdownPill({required this.label, this.onChanged});
   @override
   State<_DropdownPill> createState() => _DropdownPillState();
 }
@@ -488,10 +541,15 @@ class _DropdownPillState extends State<_DropdownPill> {
     return PopupMenuButton<String>(
       color: Colors.white,
       surfaceTintColor: Colors.white,
-      onSelected: (val) => setState(() => _selectedLabel = val),
+      onSelected: (val) {
+        setState(() => _selectedLabel = val);
+        if (widget.onChanged != null) {
+          widget.onChanged!(val);
+        }
+      },
       offset: const Offset(0, 45),
       itemBuilder: (ctx) => _options
-          .map((opt) => PopupMenuItem(value: opt, child: Text(opt)))
+          .map((opt) => PopupMenuItem(value: opt, child: Text(opt, style: AppFont.style(color: Colors.black))))
           .toList(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),

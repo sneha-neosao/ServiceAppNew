@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
+import 'package:service_app/src/features/home/domain/usecase/upcoming_amc_usecase.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
 import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
 import 'package:service_app/src/remote/models/commissioning_work_model/commissioning_work_list_response.dart';
@@ -7,6 +8,7 @@ import 'package:service_app/src/remote/models/customer_model/customer_response.d
 import 'package:service_app/src/remote/models/profile_details_model/profile_details_model.dart';
 import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
 import 'package:service_app/src/remote/models/technician_model/technician_response.dart';
+import 'package:service_app/src/remote/models/upcoming_amc_model/upcoming_amc_response.dart';
 import '../../configs/injector/injector.dart';
 import '../../core/api/api_exception.dart';
 import '../../core/api/api_helper.dart';
@@ -28,6 +30,8 @@ sealed class RemoteDataSource {
   Future<TechnicianResponse> technician(String token);
 
   Future<CommissioningWorkListResponse> commissioningWorkList(String token);
+
+  Future<UpcomingAmcVisitsResponse> upcomingAmc(UpcomingAmcParams params,String token);
 
   Future<void> logout();
 }
@@ -211,6 +215,37 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = CommissioningWorkListResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+      // throw here i want to pass same exception which is send by catch();
+    }
+  }
+
+  @override
+  Future<UpcomingAmcVisitsResponse> upcomingAmc(UpcomingAmcParams params,String token) async {
+    try {
+
+      final response = await _helper.execute(
+        method: Method.get,
+        url: ApiUrl.upcomingAmcVisits,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      final respData = UpcomingAmcVisitsResponse.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();
