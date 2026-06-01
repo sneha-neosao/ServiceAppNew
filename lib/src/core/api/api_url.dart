@@ -30,4 +30,7 @@ class ApiUrl {
 
   static const serviceCallsAssigned = "technician/service-calls/assign-technicians";
 
+  static const serviceCallsPending = "/api/v1/technician/service-calls/pending";
+
+  static const createNewCustomer = "dealer/customers/";
 }

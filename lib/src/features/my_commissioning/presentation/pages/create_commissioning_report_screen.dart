@@ -266,14 +266,14 @@ class _CreateCommissioningReportScreenState
                               color: const Color(0xFF0D121F),
                             ),
                           ),
-                          Text(
-                            _getStepInfo(),
-                            style: AppFont.style(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFFA5ABB7),
-                            ),
-                          ),
+                          // Text(
+                          //   _getStepInfo(),
+                          //   style: AppFont.style(
+                          //     fontSize: 12,
+                          //     fontWeight: FontWeight.w800,
+                          //     color: const Color(0xFFA5ABB7),
+                          //   ),
+                          // ),
                         ],
                       ),
                     ],

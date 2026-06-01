@@ -328,8 +328,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   baseColor: Colors.grey[300]!,
                   highlightColor: Colors.grey[100]!,
                   child: Container(
-                    width: 150,
-                    height: 32,
+                    width: 200,
+                    height: 37,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
@@ -444,8 +444,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   baseColor: Colors.grey[300]!,
                                   highlightColor: Colors.grey[100]!,
                                   child: Container(
-                                    width: 36,
-                                    height: 36,
+                                    width: 40,
+                                    height: 40,
                                     margin: const EdgeInsets.only(bottom: 6),
                                     decoration: const BoxDecoration(
                                       color: Colors.white,
