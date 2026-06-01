@@ -12,6 +12,13 @@ import 'package:service_app/src/features/my_commissioning/bloc/commissioning_ste
 
 import '../../../../remote/models/commissioning_report_step1_model/commissioning_report_step1_autofill_response.dart';
 import '../../../../remote/models/commissioning_report_step2_autofill_model/commissioning_report_step2_autofill_response.dart';
+import '../../../../remote/models/commissioning_report_step3_autofill_model/commissioning_report_step3_autofill_response.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step3_autofill_bloc/commissioning_step3_autofill_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step3_autofill_bloc/commissioning_step3_autofill_event.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step3_autofill_bloc/commissioning_step3_autofill_state.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step3_bloc/commissioning_step3_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step3_bloc/commissioning_step3_event.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step3_bloc/commissioning_step3_state.dart';
 
 class CreateCommissioningReportScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -74,6 +81,26 @@ class _CreateCommissioningReportScreenState
   late CommissioningStep2AutoFillBloc _step2Bloc;
   late TextEditingController _agendaController;
 
+  late CommissioningStep3AutoFillBloc _step3Bloc;
+  late CommissioningStep3Bloc _submitStep3Bloc;
+
+  // Step 3 Controllers
+  final _pumpMakeController = TextEditingController();
+  final _pumpModelController = TextEditingController();
+  final _pumpSerialNumberController = TextEditingController();
+  final _pumpFlowLPMController = TextEditingController();
+  final _pumpFlowM3HRController = TextEditingController();
+  final _pumpFlowLPSController = TextEditingController();
+  final _pumpFlowUSGPMController = TextEditingController();
+  final _pumpHeadMTRController = TextEditingController();
+  final _driverMakeController = TextEditingController();
+  final _driverSerialNumberController = TextEditingController();
+  final _ratingKWController = TextEditingController();
+  final _ratingHPController = TextEditingController();
+  final _rpmController = TextEditingController();
+  final _controlPanelMakeController = TextEditingController();
+  final _panelSerialModelController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -83,6 +110,8 @@ class _CreateCommissioningReportScreenState
       ..add(CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId));
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
     _step2Bloc = getIt<CommissioningStep2AutoFillBloc>();
+    _step3Bloc = getIt<CommissioningStep3AutoFillBloc>();
+    _submitStep3Bloc = getIt<CommissioningStep3Bloc>();
     _agendaController = TextEditingController();
 
     _technicians = [TextEditingController()];
@@ -96,7 +125,24 @@ class _CreateCommissioningReportScreenState
     _submitStep1Bloc.close();
     _submitStep2Bloc.close();
     _step2Bloc.close();
+    _step3Bloc.close();
+    _submitStep3Bloc.close();
     _agendaController.dispose();
+    _pumpMakeController.dispose();
+    _pumpModelController.dispose();
+    _pumpSerialNumberController.dispose();
+    _pumpFlowLPMController.dispose();
+    _pumpFlowM3HRController.dispose();
+    _pumpFlowLPSController.dispose();
+    _pumpFlowUSGPMController.dispose();
+    _pumpHeadMTRController.dispose();
+    _driverMakeController.dispose();
+    _driverSerialNumberController.dispose();
+    _ratingKWController.dispose();
+    _ratingHPController.dispose();
+    _rpmController.dispose();
+    _controlPanelMakeController.dispose();
+    _panelSerialModelController.dispose();
     for (var controller in _technicians) {
       controller.dispose();
     }
@@ -144,6 +190,32 @@ class _CreateCommissioningReportScreenState
         repNames,
         _agendaController.text.trim(),
       ));
+    } else if (_currentStep == 3) {
+      if (_submitStep3Bloc.state is CommissioningStep3LoadingState) return;
+
+      final techDetails = _isTechnicalDetailsNA ? null : TechnicalDetails(
+        pumpMake: _pumpMakeController.text,
+        pumpModel: _pumpModelController.text,
+        pumpSerialNumber: _pumpSerialNumberController.text,
+        pumpFlowLpm: _pumpFlowLPMController.text,
+        pumpFlowM3hr: _pumpFlowM3HRController.text,
+        pumpFlowLps: _pumpFlowLPSController.text,
+        pumpFlowUsgpm: _pumpFlowUSGPMController.text,
+        pumpHeadMtr: _pumpHeadMTRController.text,
+        driverMake: _driverMakeController.text,
+        driverSerialNumber: _driverSerialNumberController.text,
+        ratingKw: _ratingKWController.text,
+        ratingHp: _ratingHPController.text,
+        rpm: _rpmController.text,
+        controlPanelMake: _controlPanelMakeController.text,
+        panelSerialModel: _panelSerialModelController.text,
+      );
+
+      _submitStep3Bloc.add(CommissioningStep3GetEvent(
+        _commissioningReportId ?? widget.commissioningWorkId,
+        _isTechnicalDetailsNA,
+        techDetails,
+      ));
     } else if (_currentStep < 6) {
       setState(() {
         _currentStep++;
@@ -162,6 +234,10 @@ class _CreateCommissioningReportScreenState
         } else if (_currentStep == 2) {
           if (_commissioningReportId != null) {
             _step2Bloc.add(CommissioningStep2AutoFillGetEvent(_commissioningReportId!));
+          }
+        } else if (_currentStep == 3) {
+          if (_commissioningReportId != null) {
+            _step3Bloc.add(CommissioningStep3AutoFillGetEvent(_commissioningReportId!));
           }
         }
       });
@@ -314,6 +390,9 @@ class _CreateCommissioningReportScreenState
           appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
           setState(() {
             _currentStep++;
+            if (_currentStep == 3 && _commissioningReportId != null) {
+              _step3Bloc.add(CommissioningStep3AutoFillGetEvent(_commissioningReportId!));
+            }
           });
         } else if (state is CommissioningStep2FailureState) {
           appSnackBar(context, const Color(0xFFF44336), state.message);
@@ -335,6 +414,61 @@ class _CreateCommissioningReportScreenState
           appSnackBar(context, const Color(0xFFF44336), state.message);
         }
       },
+      child: BlocListener<CommissioningStep3Bloc, CommissioningStep3State>(
+        bloc: _submitStep3Bloc,
+        listener: (context, state) {
+          if (state is CommissioningStep3SuccessState) {
+            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+            setState(() {
+              _currentStep++;
+            });
+          } else if (state is CommissioningStep3FailureState) {
+            appSnackBar(context, const Color(0xFFF44336), state.message);
+          }
+        },
+      child: BlocListener<CommissioningStep3AutoFillBloc, CommissioningStep3AutoFillState>(
+        bloc: _step3Bloc,
+        listener: (context, state) {
+          if (state is CommissioningStep3AutoFillSuccessState) {
+            final data = state.data.data;
+            _isTechnicalDetailsNA = data.isTechnicalNa;
+            final techDetails = data.technicalDetails;
+            if (techDetails != null) {
+              _pumpMakeController.text = techDetails.pumpMake ?? '';
+              _pumpModelController.text = techDetails.pumpModel ?? '';
+              _pumpSerialNumberController.text = techDetails.pumpSerialNumber ?? '';
+              _pumpFlowLPMController.text = techDetails.pumpFlowLpm ?? '';
+              _pumpFlowM3HRController.text = techDetails.pumpFlowM3hr ?? '';
+              _pumpFlowLPSController.text = techDetails.pumpFlowLps ?? '';
+              _pumpFlowUSGPMController.text = techDetails.pumpFlowUsgpm ?? '';
+              _pumpHeadMTRController.text = techDetails.pumpHeadMtr ?? '';
+              _driverMakeController.text = techDetails.driverMake ?? '';
+              _driverSerialNumberController.text = techDetails.driverSerialNumber ?? '';
+              _ratingKWController.text = techDetails.ratingKw ?? '';
+              _ratingHPController.text = techDetails.ratingHp ?? '';
+              _rpmController.text = techDetails.rpm ?? '';
+              _controlPanelMakeController.text = techDetails.controlPanelMake ?? '';
+              _panelSerialModelController.text = techDetails.panelSerialModel ?? '';
+            } else {
+              _pumpMakeController.text = '';
+              _pumpModelController.text = '';
+              _pumpSerialNumberController.text = '';
+              _pumpFlowLPMController.text = '';
+              _pumpFlowM3HRController.text = '';
+              _pumpFlowLPSController.text = '';
+              _pumpFlowUSGPMController.text = '';
+              _pumpHeadMTRController.text = '';
+              _driverMakeController.text = '';
+              _driverSerialNumberController.text = '';
+              _ratingKWController.text = '';
+              _ratingHPController.text = '';
+              _rpmController.text = '';
+              _controlPanelMakeController.text = '';
+              _panelSerialModelController.text = '';
+            }
+            setState(() {});
+          }
+        },
       child: Scaffold(
         backgroundColor: Colors.white,
       body: SafeArea(
@@ -469,10 +603,14 @@ class _CreateCommissioningReportScreenState
                         return BlocBuilder<CommissioningStep1Bloc, CommissioningStep1State>(
                           bloc: _submitStep1Bloc,
                           builder: (context, submitState) {
-                            bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
-                                                (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState);
-                            return Container(
-                          height: 56,
+                            return BlocBuilder<CommissioningStep3Bloc, CommissioningStep3State>(
+                              bloc: _submitStep3Bloc,
+                              builder: (context, submitStep3State) {
+                                bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
+                                                    (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState) ||
+                                                    (_currentStep == 3 && submitStep3State is CommissioningStep3LoadingState);
+                                return Container(
+                                  height: 56,
                           padding: const EdgeInsets.symmetric(horizontal: 32),
                           decoration: BoxDecoration(
                             color: const Color(0xFF1565C0),
@@ -530,6 +668,8 @@ class _CreateCommissioningReportScreenState
                               ],
                             ],
                           ),
+                                );
+                              },
                             );
                           },
                         );
@@ -543,8 +683,10 @@ class _CreateCommissioningReportScreenState
       ), // Column
       ), // SafeArea
       ), // Scaffold
-      ), // BlocListener<CommissioningStep1Bloc>
-    );   // BlocListener<CommissioningStep2Bloc>
+      ),
+      ),
+      ),
+    );
   }
 
   Widget _buildBodyContent() {
@@ -610,7 +752,20 @@ class _CreateCommissioningReportScreenState
           },
         );
       case 3:
-        return _buildStep3();
+        return BlocBuilder<CommissioningStep3AutoFillBloc, CommissioningStep3AutoFillState>(
+          bloc: _step3Bloc,
+          builder: (context, state) {
+            if (state is CommissioningStep3AutoFillLoadingState || state is CommissioningStep3AutoFillInitialState) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                ),
+              );
+            }
+            return _buildStep3();
+          },
+        );
       case 4:
         return _buildStep4();
       case 5:
@@ -1276,22 +1431,27 @@ class _CreateCommissioningReportScreenState
             opacity: _isTechnicalDetailsNA ? 0.38 : 1.0,
             child: Column(
               children: [
-                _buildTechField('Pump Make'),
-                _buildTechField('Pump Model'),
-                _buildTechField('Pump Serial Number'),
+                _buildTechField('Pump Make', _pumpMakeController),
+                _buildTechField('Pump Model', _pumpModelController),
+                _buildTechField('Pump Serial Number', _pumpSerialNumberController),
                 _buildTechMultiField('Pump Flow', [
                   'LPM',
                   'M3/HR',
                   'LPS',
                   'USGPM',
+                ], [
+                  _pumpFlowLPMController,
+                  _pumpFlowM3HRController,
+                  _pumpFlowLPSController,
+                  _pumpFlowUSGPMController,
                 ]),
-                _buildTechMultiField('Pump Head', ['MTR']),
-                _buildTechField('Driver Make'),
-                _buildTechField('Driver Serial Number'),
-                _buildTechMultiField('Rating (KW/HP)', ['KW', 'HP']),
-                _buildTechField('RPM'),
-                _buildTechField('Control Panel Make'),
-                _buildTechField('Panel Serial / Model'),
+                _buildTechMultiField('Pump Head', ['MTR'], [_pumpHeadMTRController]),
+                _buildTechField('Driver Make', _driverMakeController),
+                _buildTechField('Driver Serial Number', _driverSerialNumberController),
+                _buildTechMultiField('Rating (KW/HP)', ['KW', 'HP'], [_ratingKWController, _ratingHPController]),
+                _buildTechField('RPM', _rpmController),
+                _buildTechField('Control Panel Make', _controlPanelMakeController),
+                _buildTechField('Panel Serial / Model', _panelSerialModelController),
               ],
             ),
           ),
@@ -1302,7 +1462,7 @@ class _CreateCommissioningReportScreenState
     );
   }
 
-  Widget _buildTechField(String label) {
+  Widget _buildTechField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(
@@ -1318,6 +1478,7 @@ class _CreateCommissioningReportScreenState
           ),
           const SizedBox(height: 8),
           TextField(
+            controller: controller,
             style: AppFont.style(
               fontSize: 15,
               fontWeight: FontWeight.w500,
@@ -1339,7 +1500,7 @@ class _CreateCommissioningReportScreenState
     );
   }
 
-  Widget _buildTechMultiField(String label, List<String> units) {
+  Widget _buildTechMultiField(String label, List<String> units, List<TextEditingController> controllers) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(
@@ -1357,7 +1518,9 @@ class _CreateCommissioningReportScreenState
           Wrap(
             spacing: 16,
             runSpacing: 24,
-            children: units.map((unit) {
+            children: List.generate(units.length, (index) {
+              final unit = units[index];
+              final controller = controllers[index];
               return FractionallySizedBox(
                 widthFactor: 0.45,
                 child: Column(
@@ -1373,6 +1536,7 @@ class _CreateCommissioningReportScreenState
                     ),
                     const SizedBox(height: 2),
                     TextField(
+                      controller: controller,
                       style: AppFont.style(
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
@@ -1395,7 +1559,7 @@ class _CreateCommissioningReportScreenState
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ),
         ],
       ),

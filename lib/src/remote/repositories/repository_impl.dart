@@ -26,6 +26,9 @@ import '../../features/my_commissioning/domain/usecase/commissioning_step2_useca
 import '../datasource/auth_remote_datasource.dart';
 import '../models/commissioning_report_step1_model/commissioning_report_step1_autofill_response.dart';
 import '../models/commissioning_report_step2_autofill_model/commissioning_report_step2_autofill_response.dart';
+import '../models/commissioning_report_step3_autofill_model/commissioning_report_step3_autofill_response.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step3_autofill_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step3_usecase.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -52,6 +55,10 @@ abstract class Repository {
   Future<Either<Failure, CommissioningStep2Response>> commissioning_report_step2(CommissioningStep2Params params);
 
   Future<Either<Failure, CommissioningReportStep2AutoFillResponse>> commissioning_report_step2_autofill(CommissioningStep2AutofillParams params);
+
+  Future<Either<Failure, CommissioningStep3Response>> commissioning_report_step3(CommissioningStep3Params params);
+
+  Future<Either<Failure, CommissioningStep3Response>> commissioning_report_step3_autofill(CommissioningStep3AutofillParams params);
 
 }
 
@@ -458,6 +465,68 @@ class AuthRepositoryImpl implements Repository {
         } catch(e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));// rethrow as-is
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, CommissioningStep3Response>> commissioning_report_step3(CommissioningStep3Params params) {
+    return _networkInfo.check<CommissioningStep3Response>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.commissioningReportStep3(params, token);
+
+          if (respData.status != 200) {
+            return Left(CredentialFailure(respData.message!));
+          }
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch(e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, CommissioningStep3Response>> commissioning_report_step3_autofill(CommissioningStep3AutofillParams params) {
+    return _networkInfo.check<CommissioningStep3Response>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.commissioningReportStep3Autofill(params, token);
+
+          if (respData.status != 200) {
+            return Left(CredentialFailure(respData.message!));
+          }
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch(e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
           }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
