@@ -32,16 +32,17 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
 
   @override
   Widget build(BuildContext context) {
-    if (_isCreatingReport) {
-      return CreateCommissioningReportScreen(
-        isServiceReport: true,
-        onBack: () {
-          setState(() {
-            _isCreatingReport = false;
-          });
-        },
-      );
-    }
+    // if (_isCreatingReport) {
+    //   return CreateCommissioningReportScreen(
+    //     isServiceReport: true,
+    //     onBack: () {
+    //       setState(() {
+    //         _isCreatingReport = false;
+    //       });
+    //     },
+    //     commissioningWorkId: '',
+    //   );
+    // }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

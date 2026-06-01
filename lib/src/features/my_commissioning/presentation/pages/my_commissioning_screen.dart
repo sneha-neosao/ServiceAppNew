@@ -133,6 +133,7 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => CreateCommissioningReportScreen(
+                              commissioningWorkId: item.id,
                               onBack: () => Navigator.pop(context),
                             ),
                           ),

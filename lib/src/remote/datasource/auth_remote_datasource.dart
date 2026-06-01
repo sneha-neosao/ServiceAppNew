@@ -16,6 +16,10 @@ import '../../core/api/api_url.dart';
 import '../../core/constants/error_message.dart';
 import '../../core/errors/exceptions.dart';
 import '../../core/utils/logger.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step1_autofill_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step1_usecase.dart';
+import '../models/commissioning_report_step1_model/commissioning_report_step1_autofill_response.dart';
+import '../models/commissioning_report_step1_model/commissioning_report_step1_response.dart';
 
 sealed class RemoteDataSource {
 
@@ -32,6 +36,10 @@ sealed class RemoteDataSource {
   Future<CommissioningWorkListResponse> commissioningWorkList(String token);
 
   Future<UpcomingAmcVisitsResponse> upcomingAmc(UpcomingAmcParams params,String token);
+
+  Future<CommissioningReportStep1AutoFillResponse> commissioningReportStep1Autofill(CommissioningStep1AutofillParams params,String token);
+
+  Future<CommissioningStep1Response> commissioningReportStep1(CommissioningStep1Params params,String token);
 
   Future<void> logout();
 }
@@ -246,6 +254,68 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = UpcomingAmcVisitsResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+      // throw here i want to pass same exception which is send by catch();
+    }
+  }
+
+  @override
+  Future<CommissioningReportStep1AutoFillResponse> commissioningReportStep1Autofill(CommissioningStep1AutofillParams params,String token) async {
+    try {
+
+      final response = await _helper.execute(
+        method: Method.get,
+        url: "${ApiUrl.commissioningWorkReportStep1AutoFill}/${params.commissioning_report_id}",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      final respData = CommissioningReportStep1AutoFillResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+      // throw here i want to pass same exception which is send by catch();
+    }
+  }
+
+  @override
+  Future<CommissioningStep1Response> commissioningReportStep1(CommissioningStep1Params params,String token) async {
+    try {
+
+      final response = await _helper.execute(
+        method: Method.get,
+        url: ApiUrl.commissioningWorkReportStep1AutoFill,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      final respData = CommissioningStep1Response.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

@@ -5,7 +5,9 @@ import 'package:service_app/src/core/usecases/usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
 import 'package:service_app/src/features/home/domain/usecase/upcoming_amc_usecase.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
+import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_step1_autofill_usecase.dart';
 import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
+import 'package:service_app/src/remote/models/commissioning_report_step1_model/commissioning_report_step1_response.dart';
 import 'package:service_app/src/remote/models/commissioning_work_model/commissioning_work_list_response.dart';
 import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
 import 'package:service_app/src/remote/models/profile_details_model/profile_details_model.dart';
@@ -17,7 +19,9 @@ import '../../core/api/api_exception.dart';
 import '../../core/errors/exceptions.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/failure_converter.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step1_usecase.dart';
 import '../datasource/auth_remote_datasource.dart';
+import '../models/commissioning_report_step1_model/commissioning_report_step1_autofill_response.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -36,6 +40,10 @@ abstract class Repository {
   Future<Either<Failure, CommissioningWorkListResponse>> commissioning_work_list(NoParams params);
 
   Future<Either<Failure, UpcomingAmcVisitsResponse>> upcoming_amc(UpcomingAmcParams params);
+
+  Future<Either<Failure, CommissioningReportStep1AutoFillResponse>> commissioning_report_step1_autofill(CommissioningStep1AutofillParams params);
+
+  Future<Either<Failure, CommissioningStep1Response>> commissioning_report_step1(CommissioningStep1Params params);
 
 }
 
@@ -290,6 +298,76 @@ class AuthRepositoryImpl implements Repository {
           String token = await SessionManager.getAuthToken() ?? "";
 
           final respData = await _remoteDataSource.upcomingAmc(params,token);
+
+          if (respData.status != 200) {
+            return Left(CredentialFailure(respData.message!));
+          }
+
+          return Right(respData);
+
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch(e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));// rethrow as-is
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, CommissioningReportStep1AutoFillResponse>> commissioning_report_step1_autofill(CommissioningStep1AutofillParams params) {
+    return _networkInfo.check<CommissioningReportStep1AutoFillResponse>(
+      connected: () async {
+        try {
+
+          String token = await SessionManager.getAuthToken() ?? "";
+
+          final respData = await _remoteDataSource.commissioningReportStep1Autofill(params,token);
+
+          if (respData.status != 200) {
+            return Left(CredentialFailure(respData.message!));
+          }
+
+          return Right(respData);
+
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch(e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));// rethrow as-is
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, CommissioningStep1Response>> commissioning_report_step1(CommissioningStep1Params params) {
+    return _networkInfo.check<CommissioningStep1Response>(
+      connected: () async {
+        try {
+
+          String token = await SessionManager.getAuthToken() ?? "";
+
+          final respData = await _remoteDataSource.commissioningReportStep1(params,token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message!));

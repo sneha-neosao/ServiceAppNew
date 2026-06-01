@@ -1,14 +1,23 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step1_autofill_bloc/commissioning_step1_autofill_bloc.dart';
+
+import '../../../../remote/models/commissioning_report_step1_model/commissioning_report_step1_autofill_response.dart';
 
 class CreateCommissioningReportScreen extends StatefulWidget {
   final VoidCallback onBack;
   final bool isServiceReport;
+  final String commissioningWorkId;
+
   const CreateCommissioningReportScreen({
     super.key,
     required this.onBack,
     this.isServiceReport = false,
+    required this.commissioningWorkId,
   });
 
   @override
@@ -52,9 +61,16 @@ class _CreateCommissioningReportScreenState
   String? _current;
   String? _panelWiring;
 
+  late CommissioningStep1AutoFillBloc _step1Bloc;
+  late TechnicianBloc _technicianBloc;
+
   @override
   void initState() {
     super.initState();
+    _step1Bloc = getIt<CommissioningStep1AutoFillBloc>()
+      ..add(CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId));
+    _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
+
     final initialNames = widget.isServiceReport
         ? ['Pravin Patil']
         : ['Vinod Patil', 'Prashant Shinde'];
@@ -66,6 +82,8 @@ class _CreateCommissioningReportScreenState
 
   @override
   void dispose() {
+    _step1Bloc.close();
+    _technicianBloc.close();
     for (var controller in _technicians) {
       controller.dispose();
     }
@@ -429,7 +447,32 @@ class _CreateCommissioningReportScreenState
   Widget _buildBodyContent() {
     switch (_currentStep) {
       case 1:
-        return _buildStep1();
+        return BlocConsumer<CommissioningStep1AutoFillBloc, CommissioningStep1AutoFillState>(
+          bloc: _step1Bloc,
+          listener: (context, state) {
+            if (state is CommissioningStep1AutoFillSuccessState) {
+              setState(() {
+                if (state.data.data.assignedTechnicians.isNotEmpty) {
+                  _technicians.clear();
+                  _technicians.addAll(state.data.data.assignedTechnicians
+                      .map((t) => TextEditingController(text: t.name)));
+                }
+              });
+            }
+          },
+          builder: (context, state) {
+            if (state is CommissioningStep1AutoFillLoadingState || state is CommissioningStep1AutoFillInitialState) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                ),
+              );
+            }
+            final data = state is CommissioningStep1AutoFillSuccessState ? state.data.data : null;
+            return _buildStep1(data);
+          },
+        );
       case 2:
         return _buildStep2();
       case 3:
@@ -445,7 +488,7 @@ class _CreateCommissioningReportScreenState
     }
   }
 
-  Widget _buildStep1() {
+  Widget _buildStep1([CommissioningData? data]) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -479,7 +522,7 @@ class _CreateCommissioningReportScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Dealer Name',
+                      data?.dealerName ?? 'Dealer Name',
                       style: AppFont.style(
                         fontSize: 20,
                         fontWeight: FontWeight.w900,
@@ -512,7 +555,7 @@ class _CreateCommissioningReportScreenState
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '29/05/2026',
+                    DateFormat('dd/MM/yyyy').format(DateTime.now()),
                     style: AppFont.style(
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
@@ -606,36 +649,80 @@ class _CreateCommissioningReportScreenState
             child: Row(
               children: [
                 Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE5E7EB)),
-                    ),
-                    child: TextField(
-                      controller: controller,
-                      style: AppFont.style(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF0D121F),
-                      ),
-                      decoration: InputDecoration(
-                        hintText: '${idx + 1}) Technician Name...',
-                        hintStyle: AppFont.style(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFFA5ABB7),
+                  child: BlocBuilder<TechnicianBloc, TechnicianState>(
+                    bloc: _technicianBloc,
+                    builder: (context, state) {
+                      bool isLoading = state is TechnicianLoadingState;
+                      List<String> validItems = [];
+                      if (state is TechnicianSuccessState) {
+                        validItems = state.data.data.map((e) => e.name).toList();
+                      }
+                      
+                      final otherSelected = _technicians
+                          .where((c) => c != controller && c.text.isNotEmpty)
+                          .map((c) => c.text)
+                          .toSet();
+                      
+                      validItems.removeWhere((item) => otherSelected.contains(item));
+
+                      if (controller.text.isNotEmpty && !validItems.contains(controller.text)) {
+                        validItems.add(controller.text);
+                      }
+
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE5E7EB)),
                         ),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
-                        ),
-                      ),
-                    ),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                        child: isLoading
+                            ? const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Color(0xFF1565C0),
+                                      strokeWidth: 2.5,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  isExpanded: true,
+                                  value: controller.text.isNotEmpty ? controller.text : null,
+                                  hint: Text(
+                                    'Select Technician',
+                                    style: AppFont.style(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFFA5ABB7),
+                                    ),
+                                  ),
+                                  icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
+                                  style: AppFont.style(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                    color: const Color(0xFF0D121F),
+                                  ),
+                                  onChanged: (v) {
+                                    if (v != null) {
+                                      setState(() => controller.text = v);
+                                    }
+                                  },
+                                  items: validItems
+                                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                                      .toList(),
+                                ),
+                              ),
+                      );
+                    },
                   ),
                 ),
-                if (!isFirst) ...[
+                if (_technicians.length > 1) ...[
                   const SizedBox(width: 12),
                   GestureDetector(
                     onTap: () {
@@ -667,9 +754,11 @@ class _CreateCommissioningReportScreenState
         const SizedBox(height: 16),
 
         // ── Customer & Project Details ───────────────────────────────────
-        _buildInfoRow('Customer Name', 'Global Infotech'),
+        _buildInfoRow('Customer Name', data?.customerName ?? 'Global Infotech'),
         const SizedBox(height: 24),
-        _buildInfoRow('Project / Site Name', 'Main Server Room'),
+        _buildInfoRow('Project / Site Name', data?.siteName ?? 'Main Server Room'),
+        const SizedBox(height: 24),
+        _buildInfoRow('Application Of Equipment', data?.applicationOfEquipment ?? 'Pump Application'),
 
         const SizedBox(height: 40),
       ],

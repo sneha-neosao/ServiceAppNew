@@ -33,4 +33,28 @@ class ApiUrl {
   static const serviceCallsPending = "/api/v1/technician/service-calls/pending";
 
   static const createNewCustomer = "dealer/customers/";
+
+  static const commissioningWorkReportStep1AutoFill = "technician/commissioning-report/step1";
+
+  static const commissioningWorkReportStep2AutoFill = "technician/commissioning-report/step2";
+
+  static const commissioningWorkReportStep3AutoFill = "technician/commissioning-report/step3";
+
+  static const commissioningWorkReportStep4AutoFill = "technician/commissioning-report/step4";
+
+  static const commissioningWorkReportStep5AutoFill = "technician/commissioning-report/step5";
+
+  static const commissioningWorkReportStep6AutoFill = "technician/commissioning-report/step6";
+
+  static const commissioningWorkReportStep1 = "technician/commissioning-report/step1";
+
+  static const commissioningWorkReportStep2 = "technician/commissioning-report/step2";
+
+  static const commissioningWorkReportStep3 = "technician/commissioning-report/step3";
+
+  static const commissioningWorkReportStep4 = "technician/commissioning-report/step4";
+
+  static const commissioningWorkReportStep5 = "technician/commissioning-report/step5";
+
+  static const commissioningWorkReportStep6 = "technician/commissioning-report/step6";
 }
