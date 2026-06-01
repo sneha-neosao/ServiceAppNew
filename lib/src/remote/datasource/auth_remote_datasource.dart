@@ -18,8 +18,12 @@ import '../../core/errors/exceptions.dart';
 import '../../core/utils/logger.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step1_autofill_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step1_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step2_autofill_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step2_usecase.dart';
 import '../models/commissioning_report_step1_model/commissioning_report_step1_autofill_response.dart';
 import '../models/commissioning_report_step1_model/commissioning_report_step1_response.dart';
+import '../models/commissioning_report_step2_autofill_model/commissioning_report_step2_autofill_response.dart';
+import '../models/commissioning_report_step2_autofill_model/commissioning_report_step2_response.dart';
 
 sealed class RemoteDataSource {
 
@@ -40,6 +44,10 @@ sealed class RemoteDataSource {
   Future<CommissioningReportStep1AutoFillResponse> commissioningReportStep1Autofill(CommissioningStep1AutofillParams params,String token);
 
   Future<CommissioningStep1Response> commissioningReportStep1(CommissioningStep1Params params,String token);
+
+  Future<CommissioningStep2Response> commissioningReportStep2(CommissioningStep2Params params,String token);
+
+  Future<CommissioningReportStep2AutoFillResponse> commissioningReportStep2Autofill(CommissioningStep2AutofillParams params,String token);
 
   Future<void> logout();
 }
@@ -306,8 +314,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     try {
 
       final response = await _helper.execute(
-        method: Method.get,
-        url: ApiUrl.commissioningWorkReportStep1AutoFill,
+        method: Method.post,
+        url: ApiUrl.commissioningWorkReportStep1,
+        data: {
+          "commissioning_work_id": params.commissioningWorkId,
+          "technician_ids": params.technicianIds,
+        },
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -316,6 +328,74 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = CommissioningStep1Response.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+      // throw here i want to pass same exception which is send by catch();
+    }
+  }
+
+  @override
+  Future<CommissioningStep2Response> commissioningReportStep2(CommissioningStep2Params params,String token) async {
+    try {
+
+      final response = await _helper.execute(
+        method: Method.post,
+        url: ApiUrl.commissioningWorkReportStep2,
+        data: {
+          "id": params.id,
+          "warranty_period_years": params.warrantyPeriodYears,
+          "member_presents_customer_side": params.memberPresentsCustomerSide,
+          "agenda": params.agenda,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      final respData = CommissioningStep2Response.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+      // throw here i want to pass same exception which is send by catch();
+    }
+  }
+
+  @override
+  Future<CommissioningReportStep2AutoFillResponse> commissioningReportStep2Autofill(CommissioningStep2AutofillParams params,String token) async {
+    try {
+
+      final response = await _helper.execute(
+        method: Method.get,
+        url: "${ApiUrl.commissioningWorkReportStep2AutoFill}/${params.commissioning_report_id}",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      final respData = CommissioningReportStep2AutoFillResponse.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

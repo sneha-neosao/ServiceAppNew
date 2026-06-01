@@ -4,9 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step1_bloc/commissioning_step1_bloc.dart';
+import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step1_autofill_bloc/commissioning_step1_autofill_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step2_autofill_bloc/commissioning_step2_autofill_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step2_bloc/commissioning_step2_bloc.dart';
 
 import '../../../../remote/models/commissioning_report_step1_model/commissioning_report_step1_autofill_response.dart';
+import '../../../../remote/models/commissioning_report_step2_autofill_model/commissioning_report_step2_autofill_response.dart';
 
 class CreateCommissioningReportScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -28,6 +33,7 @@ class CreateCommissioningReportScreen extends StatefulWidget {
 class _CreateCommissioningReportScreenState
     extends State<CreateCommissioningReportScreen> {
   int _currentStep = 1;
+  String? _commissioningReportId;
   late List<TextEditingController> _technicians;
   late List<TextEditingController> _representatives;
   String _selectedWarranty = '1 YEAR';
@@ -63,20 +69,23 @@ class _CreateCommissioningReportScreenState
 
   late CommissioningStep1AutoFillBloc _step1Bloc;
   late TechnicianBloc _technicianBloc;
+  late CommissioningStep1Bloc _submitStep1Bloc;
+  late CommissioningStep2Bloc _submitStep2Bloc;
+  late CommissioningStep2AutoFillBloc _step2Bloc;
+  late TextEditingController _agendaController;
 
   @override
   void initState() {
     super.initState();
+    _submitStep1Bloc = getIt<CommissioningStep1Bloc>();
+    _submitStep2Bloc = getIt<CommissioningStep2Bloc>();
     _step1Bloc = getIt<CommissioningStep1AutoFillBloc>()
       ..add(CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId));
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
+    _step2Bloc = getIt<CommissioningStep2AutoFillBloc>();
+    _agendaController = TextEditingController();
 
-    final initialNames = widget.isServiceReport
-        ? ['Pravin Patil']
-        : ['Vinod Patil', 'Prashant Shinde'];
-    _technicians = initialNames
-        .map((name) => TextEditingController(text: name))
-        .toList();
+    _technicians = [TextEditingController()];
     _representatives = [TextEditingController()];
   }
 
@@ -84,6 +93,10 @@ class _CreateCommissioningReportScreenState
   void dispose() {
     _step1Bloc.close();
     _technicianBloc.close();
+    _submitStep1Bloc.close();
+    _submitStep2Bloc.close();
+    _step2Bloc.close();
+    _agendaController.dispose();
     for (var controller in _technicians) {
       controller.dispose();
     }
@@ -94,7 +107,44 @@ class _CreateCommissioningReportScreenState
   }
 
   void _nextStep() {
-    if (_currentStep < 6) {
+    if (_currentStep == 1) {
+      if (_submitStep1Bloc.state is CommissioningStep1LoadingState) return;
+      List<String> technicianIds = [];
+      for (var controller in _technicians) {
+        if (controller.text.isNotEmpty) {
+          technicianIds.add(controller.text);
+        }
+      }
+      _submitStep1Bloc.add(CommissioningStep1GetEvent(widget.commissioningWorkId, technicianIds));
+    } else if (_currentStep == 2) {
+      if (_submitStep2Bloc.state is CommissioningStep2LoadingState) return;
+      
+      List<String> repNames = [];
+      for (var c in _representatives) {
+        if (c.text.trim().isNotEmpty) {
+          repNames.add(c.text.trim());
+        }
+      }
+      
+      if (repNames.isEmpty) {
+        appSnackBar(context, const Color(0xFFF44336), "Please add at least one representative");
+        return;
+      }
+      
+      if (_agendaController.text.trim().isEmpty) {
+        appSnackBar(context, const Color(0xFFF44336), "Please enter the agenda/purpose of visit");
+        return;
+      }
+      
+      int warrantyYears = int.tryParse(_selectedWarranty.split(' ').first) ?? 1;
+
+      _submitStep2Bloc.add(CommissioningStep2GetEvent(
+        _commissioningReportId ?? widget.commissioningWorkId,
+        warrantyYears,
+        repNames,
+        _agendaController.text.trim(),
+      ));
+    } else if (_currentStep < 6) {
       setState(() {
         _currentStep++;
       });
@@ -107,6 +157,13 @@ class _CreateCommissioningReportScreenState
     if (_currentStep > 1) {
       setState(() {
         _currentStep--;
+        if (_currentStep == 1) {
+          _step1Bloc.add(CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId));
+        } else if (_currentStep == 2) {
+          if (_commissioningReportId != null) {
+            _step2Bloc.add(CommissioningStep2AutoFillGetEvent(_commissioningReportId!));
+          }
+        }
       });
     } else {
       widget.onBack();
@@ -250,8 +307,36 @@ class _CreateCommissioningReportScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return BlocListener<CommissioningStep2Bloc, CommissioningStep2State>(
+      bloc: _submitStep2Bloc,
+      listener: (context, state) {
+        if (state is CommissioningStep2SuccessState) {
+          appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+          setState(() {
+            _currentStep++;
+          });
+        } else if (state is CommissioningStep2FailureState) {
+          appSnackBar(context, const Color(0xFFF44336), state.message);
+        }
+      },
+      child: BlocListener<CommissioningStep1Bloc, CommissioningStep1State>(
+      bloc: _submitStep1Bloc,
+      listener: (context, state) {
+        if (state is CommissioningStep1lSuccessState) {
+          appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+          _commissioningReportId = state.data.data.id;
+          setState(() {
+            _currentStep++;
+            if (_currentStep == 2 && _commissioningReportId != null) {
+              _step2Bloc.add(CommissioningStep2AutoFillGetEvent(_commissioningReportId!));
+            }
+          });
+        } else if (state is CommissioningStep1FailureState) {
+          appSnackBar(context, const Color(0xFFF44336), state.message);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -378,70 +463,88 @@ class _CreateCommissioningReportScreenState
                   const Spacer(),
                   GestureDetector(
                     onTap: _nextStep,
-                    child: Container(
-                      height: 56,
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1565C0),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(
-                              0xFF1565C0,
-                            ).withValues(alpha: 0.2),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
+                    child: BlocBuilder<CommissioningStep2Bloc, CommissioningStep2State>(
+                      bloc: _submitStep2Bloc,
+                      builder: (context, submitStep2State) {
+                        return BlocBuilder<CommissioningStep1Bloc, CommissioningStep1State>(
+                          bloc: _submitStep1Bloc,
+                          builder: (context, submitState) {
+                            bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
+                                                (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState);
+                            return Container(
+                          height: 56,
+                          padding: const EdgeInsets.symmetric(horizontal: 32),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1565C0),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF1565C0).withValues(alpha: 0.2),
+                                blurRadius: 15,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (_currentStep == 6)
-                            const Icon(
-                              Icons.check_box_outlined,
-                              size: 20,
-                              color: Colors.white,
-                            )
-                          else
-                            const SizedBox.shrink(),
-                          if (_currentStep == 6)
-                            const SizedBox(width: 12)
-                          else
-                            const SizedBox.shrink(),
-                          Text(
-                            _currentStep == 6
-                                ? 'create_report_btn_submit'.tr().toUpperCase()
-                                : 'create_report_btn_next'.tr().toUpperCase(),
-                            style: AppFont.style(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (_currentStep == 6)
+                                const Icon(
+                                  Icons.check_box_outlined,
+                                  size: 20,
+                                  color: Colors.white,
+                                )
+                              else
+                                const SizedBox.shrink(),
+                              if (_currentStep == 6)
+                                const SizedBox(width: 12)
+                              else
+                                const SizedBox.shrink(),
+                              if (isSubmitting)
+                                const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
+                              else
+                                Text(
+                                  _currentStep == 6
+                                      ? 'create_report_btn_submit'.tr().toUpperCase()
+                                      : 'create_report_btn_next'.tr().toUpperCase(),
+                                  style: AppFont.style(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              if (_currentStep < 6 && !isSubmitting) ...[
+                                const SizedBox(width: 12),
+                                const Icon(
+                                  Icons.arrow_forward,
+                                  size: 18,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ],
                           ),
-                          if (_currentStep < 6)
-                            const SizedBox(width: 12)
-                          else
-                            const SizedBox.shrink(),
-                          if (_currentStep < 6)
-                            const Icon(
-                              Icons.arrow_forward,
-                              size: 18,
-                              color: Colors.white,
-                            )
-                          else
-                            const SizedBox.shrink(),
-                        ],
-                      ),
+                            );
+                          },
+                        );
+                      },
                     ),
                   ),
                 ],
               ),
             ),
           ],
-        ),
-      ),
-    );
+      ), // Column
+      ), // SafeArea
+      ), // Scaffold
+      ), // BlocListener<CommissioningStep1Bloc>
+    );   // BlocListener<CommissioningStep2Bloc>
   }
 
   Widget _buildBodyContent() {
@@ -451,11 +554,12 @@ class _CreateCommissioningReportScreenState
           bloc: _step1Bloc,
           listener: (context, state) {
             if (state is CommissioningStep1AutoFillSuccessState) {
+              _commissioningReportId = state.data.data.id;
               setState(() {
                 if (state.data.data.assignedTechnicians.isNotEmpty) {
                   _technicians.clear();
                   _technicians.addAll(state.data.data.assignedTechnicians
-                      .map((t) => TextEditingController(text: t.name)));
+                      .map((t) => TextEditingController(text: t.id)));
                 }
               });
             }
@@ -474,7 +578,37 @@ class _CreateCommissioningReportScreenState
           },
         );
       case 2:
-        return _buildStep2();
+        return BlocConsumer<CommissioningStep2AutoFillBloc, CommissioningStep2AutoFillState>(
+          bloc: _step2Bloc,
+          listener: (context, state) {
+            if (state is CommissioningStep2AutoFillSuccessState) {
+              setState(() {
+                if (state.data.data.memberPresentsCustomerSide.isNotEmpty) {
+                  _representatives.clear();
+                  _representatives.addAll(state.data.data.memberPresentsCustomerSide
+                      .map((t) => TextEditingController(text: t)));
+                }
+                if (state.data.data.warrantyPeriodYears > 0) {
+                  _selectedWarranty = '${state.data.data.warrantyPeriodYears} YEAR';
+                }
+                if (state.data.data.agenda.isNotEmpty) {
+                  _agendaController.text = state.data.data.agenda;
+                }
+              });
+            }
+          },
+          builder: (context, state) {
+            if (state is CommissioningStep2AutoFillLoadingState || state is CommissioningStep2AutoFillInitialState) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                ),
+              );
+            }
+            return _buildStep2();
+          },
+        );
       case 3:
         return _buildStep3();
       case 4:
@@ -653,9 +787,9 @@ class _CreateCommissioningReportScreenState
                     bloc: _technicianBloc,
                     builder: (context, state) {
                       bool isLoading = state is TechnicianLoadingState;
-                      List<String> validItems = [];
+                      List<dynamic> validItems = [];
                       if (state is TechnicianSuccessState) {
-                        validItems = state.data.data.map((e) => e.name).toList();
+                        validItems = List.from(state.data.data);
                       }
                       
                       final otherSelected = _technicians
@@ -663,10 +797,15 @@ class _CreateCommissioningReportScreenState
                           .map((c) => c.text)
                           .toSet();
                       
-                      validItems.removeWhere((item) => otherSelected.contains(item));
+                      validItems.removeWhere((item) => otherSelected.contains(item.id));
 
-                      if (controller.text.isNotEmpty && !validItems.contains(controller.text)) {
-                        validItems.add(controller.text);
+                      if (controller.text.isNotEmpty && !validItems.any((e) => e.id == controller.text)) {
+                        if (state is TechnicianSuccessState) {
+                          try {
+                            final match = state.data.data.firstWhere((e) => e.id == controller.text);
+                            validItems.add(match);
+                          } catch (_) {}
+                        }
                       }
 
                       return Container(
@@ -714,7 +853,7 @@ class _CreateCommissioningReportScreenState
                                     }
                                   },
                                   items: validItems
-                                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                                      .map<DropdownMenuItem<String>>((e) => DropdownMenuItem(value: e.id, child: Text(e.name)))
                                       .toList(),
                                 ),
                               ),
@@ -1027,6 +1166,7 @@ class _CreateCommissioningReportScreenState
           child: Stack(
             children: [
               TextField(
+                controller: _agendaController,
                 maxLines: 5,
                 style: AppFont.style(
                   fontSize: 16,

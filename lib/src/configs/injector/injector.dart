@@ -17,3 +17,5 @@ export '../../features/common/bloc/technician_bloc/technician_bloc.dart';
 export '../../features/home/bloc/upcoming_amc_bloc/upcoming_amc_bloc.dart';
 export '../../features/my_commissioning/bloc/commissioning_step1_autofill_bloc/commissioning_step1_autofill_bloc.dart';
 export '../../features/my_commissioning/bloc/commissioning_step1_bloc/commissioning_step1_bloc.dart';
+export '../../features/my_commissioning/bloc/commissioning_step2_bloc/commissioning_step2_bloc.dart';
+export '../../features/my_commissioning/bloc/commissioning_step2_autofill_bloc/commissioning_step2_autofill_bloc.dart';

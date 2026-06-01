@@ -10,6 +10,8 @@ import 'package:service_app/src/features/my_commissioning/domain/usecase/commiss
 import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_work_usecase.dart';
 import 'package:service_app/src/features/profile/domain/usecase/profile_details_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step1_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step2_autofill_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step2_usecase.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -155,6 +157,30 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
         () => CommissioningStep1Usecase(
+      getIt<AuthRepositoryImpl>(),
+    ),
+  );
+
+  getIt.registerFactory(
+        () => CommissioningStep2Bloc(
+      getIt<CommissioningStep2Usecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+        () => CommissioningStep2Usecase(
+      getIt<AuthRepositoryImpl>(),
+    ),
+  );
+
+  getIt.registerFactory(
+        () => CommissioningStep2AutoFillBloc(
+      getIt<CommissioningStep2AutofillUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+        () => CommissioningStep2AutofillUsecase(
       getIt<AuthRepositoryImpl>(),
     ),
   );

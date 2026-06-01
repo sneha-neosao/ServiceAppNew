@@ -1,20 +1,20 @@
 import 'package:equatable/equatable.dart';
 
-class CommissioningReportStep2AutoFillResponse extends Equatable {
+class CommissioningStep2Response extends Equatable {
   final int status;
   final bool success;
   final CommissioningStep2Data data;
   final String message;
 
-  const CommissioningReportStep2AutoFillResponse({
+  const CommissioningStep2Response({
     required this.status,
     required this.success,
     required this.data,
     required this.message,
   });
 
-  factory CommissioningReportStep2AutoFillResponse.fromJson(Map<String, dynamic> json) {
-    return CommissioningReportStep2AutoFillResponse(
+  factory CommissioningStep2Response.fromJson(Map<String, dynamic> json) {
+    return CommissioningStep2Response(
       status: json['status'],
       success: json['success'],
       data: CommissioningStep2Data.fromJson(json['data']),
