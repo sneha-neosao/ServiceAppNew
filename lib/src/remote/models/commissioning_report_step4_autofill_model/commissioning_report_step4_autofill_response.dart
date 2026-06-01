@@ -38,6 +38,7 @@ class CommissioningData {
   final String siteName;
   final String applicationOfEquipment;
   final List<Technician> assignedTechnicians;
+  final List<SavedDescription> savedDescriptions;
   final int lastCompletedStep;
 
   CommissioningData({
@@ -48,20 +49,26 @@ class CommissioningData {
     required this.siteName,
     required this.applicationOfEquipment,
     required this.assignedTechnicians,
+    required this.savedDescriptions,
     required this.lastCompletedStep,
   });
 
   factory CommissioningData.fromJson(Map<String, dynamic> json) {
     return CommissioningData(
-      id: json['id'],
-      commissioningWorkId: json['commissioning_work_id'],
-      dealerName: json['dealer_name'],
-      customerName: json['customer_name'],
-      siteName: json['site_name'],
-      applicationOfEquipment: json['application_of_equipment'],
-      assignedTechnicians: (json['assigned_technicians'] as List)
-          .map((e) => Technician.fromJson(e))
-          .toList(),
+      id: json['id'] ?? '',
+      commissioningWorkId: json['commissioning_work_id'] ?? '',
+      dealerName: json['dealer_name'] ?? '',
+      customerName: json['customer_name'] ?? '',
+      siteName: json['site_name'] ?? '',
+      applicationOfEquipment: json['application_of_equipment'] ?? '',
+      assignedTechnicians: (json['assigned_technicians'] as List?)
+              ?.map((e) => Technician.fromJson(e))
+              .toList() ??
+          [],
+      savedDescriptions: (json['saved_descriptions'] as List?)
+              ?.map((e) => SavedDescription.fromJson(e))
+              .toList() ??
+          [],
       lastCompletedStep: json['last_completed_step'],
     );
   }
@@ -76,7 +83,33 @@ class CommissioningData {
       'application_of_equipment': applicationOfEquipment,
       'assigned_technicians':
       assignedTechnicians.map((e) => e.toJson()).toList(),
+      'saved_descriptions':
+      savedDescriptions.map((e) => e.toJson()).toList(),
       'last_completed_step': lastCompletedStep,
+    };
+  }
+}
+
+class SavedDescription {
+  final int srNo;
+  final String description;
+
+  SavedDescription({
+    required this.srNo,
+    required this.description,
+  });
+
+  factory SavedDescription.fromJson(Map<String, dynamic> json) {
+    return SavedDescription(
+      srNo: json['sr_no'],
+      description: json['description'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'sr_no': srNo,
+      'description': description,
     };
   }
 }

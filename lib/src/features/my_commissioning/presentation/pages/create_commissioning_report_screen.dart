@@ -13,12 +13,20 @@ import 'package:service_app/src/features/my_commissioning/bloc/commissioning_ste
 import '../../../../remote/models/commissioning_report_step1_model/commissioning_report_step1_autofill_response.dart';
 import '../../../../remote/models/commissioning_report_step2_autofill_model/commissioning_report_step2_autofill_response.dart';
 import '../../../../remote/models/commissioning_report_step3_autofill_model/commissioning_report_step3_autofill_response.dart';
-import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step3_autofill_bloc/commissioning_step3_autofill_bloc.dart';
-import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step3_autofill_bloc/commissioning_step3_autofill_event.dart';
-import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step3_autofill_bloc/commissioning_step3_autofill_state.dart';
-import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step3_bloc/commissioning_step3_bloc.dart';
-import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step3_bloc/commissioning_step3_event.dart';
-import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step3_bloc/commissioning_step3_state.dart';
+import '../../bloc/commissioning_step3_autofill_bloc/commissioning_step3_autofill_bloc.dart';
+import '../../bloc/commissioning_step3_autofill_bloc/commissioning_step3_autofill_event.dart';
+import '../../bloc/commissioning_step3_autofill_bloc/commissioning_step3_autofill_state.dart';
+import '../../bloc/commissioning_step3_bloc/commissioning_step3_bloc.dart';
+import '../../bloc/commissioning_step3_bloc/commissioning_step3_event.dart';
+import '../../bloc/commissioning_step3_bloc/commissioning_step3_state.dart';
+import '../../bloc/commissioning_step4_autofill_bloc/commissioning_step4_autofill_bloc.dart';
+import '../../bloc/commissioning_step4_autofill_bloc/commissioning_step4_autofill_event.dart';
+import '../../bloc/commissioning_step4_autofill_bloc/commissioning_step4_autofill_state.dart';
+import '../../bloc/commissioning_step4_bloc/commissioning_step4_bloc.dart';
+import '../../bloc/commissioning_step4_bloc/commissioning_step4_event.dart';
+import '../../bloc/commissioning_step4_bloc/commissioning_step4_state.dart';
+import '../../bloc/commissioning_work_list_bloc/commissioning_work_list_bloc.dart';
+import '../../../../remote/models/commissioning_report_step4_autofill_model/commissioning_report_step4_autofill_response.dart' hide CommissioningData, Technician;
 
 class CreateCommissioningReportScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -83,6 +91,9 @@ class _CreateCommissioningReportScreenState
 
   late CommissioningStep3AutoFillBloc _step3Bloc;
   late CommissioningStep3Bloc _submitStep3Bloc;
+  
+  late CommissioningStep4AutoFillBloc _step4Bloc;
+  late CommissioningStep4Bloc _submitStep4Bloc;
 
   // Step 3 Controllers
   final _pumpMakeController = TextEditingController();
@@ -101,6 +112,12 @@ class _CreateCommissioningReportScreenState
   final _controlPanelMakeController = TextEditingController();
   final _panelSerialModelController = TextEditingController();
 
+  final List<TextEditingController> _workDescriptionControllers = [
+    TextEditingController(),
+    TextEditingController(),
+    TextEditingController(),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -112,6 +129,8 @@ class _CreateCommissioningReportScreenState
     _step2Bloc = getIt<CommissioningStep2AutoFillBloc>();
     _step3Bloc = getIt<CommissioningStep3AutoFillBloc>();
     _submitStep3Bloc = getIt<CommissioningStep3Bloc>();
+    _step4Bloc = getIt<CommissioningStep4AutoFillBloc>();
+    _submitStep4Bloc = getIt<CommissioningStep4Bloc>();
     _agendaController = TextEditingController();
 
     _technicians = [TextEditingController()];
@@ -127,6 +146,8 @@ class _CreateCommissioningReportScreenState
     _step2Bloc.close();
     _step3Bloc.close();
     _submitStep3Bloc.close();
+    _step4Bloc.close();
+    _submitStep4Bloc.close();
     _agendaController.dispose();
     _pumpMakeController.dispose();
     _pumpModelController.dispose();
@@ -147,6 +168,9 @@ class _CreateCommissioningReportScreenState
       controller.dispose();
     }
     for (var controller in _representatives) {
+      controller.dispose();
+    }
+    for (var controller in _workDescriptionControllers) {
       controller.dispose();
     }
     super.dispose();
@@ -216,6 +240,26 @@ class _CreateCommissioningReportScreenState
         _isTechnicalDetailsNA,
         techDetails,
       ));
+    } else if (_currentStep == 4) {
+      if (_submitStep4Bloc.state is CommissioningStep4LoadingState) return;
+
+      List<SavedDescription> descriptions = [];
+      for (int i = 0; i < _workDescriptionControllers.length; i++) {
+        final text = _workDescriptionControllers[i].text.trim();
+        if (text.isNotEmpty) {
+          descriptions.add(SavedDescription(srNo: i + 1, description: text));
+        }
+      }
+
+      if (descriptions.isEmpty) {
+        appSnackBar(context, const Color(0xFFF44336), "Please enter at least one work description");
+        return;
+      }
+
+      _submitStep4Bloc.add(CommissioningStep4GetEvent(
+        _commissioningReportId ?? widget.commissioningWorkId,
+        descriptions,
+      ));
     } else if (_currentStep < 6) {
       setState(() {
         _currentStep++;
@@ -238,6 +282,10 @@ class _CreateCommissioningReportScreenState
         } else if (_currentStep == 3) {
           if (_commissioningReportId != null) {
             _step3Bloc.add(CommissioningStep3AutoFillGetEvent(_commissioningReportId!));
+          }
+        } else if (_currentStep == 4) {
+          if (_commissioningReportId != null) {
+            _step4Bloc.add(CommissioningStep4AutoFillGetEvent(_commissioningReportId!));
           }
         }
       });
@@ -311,7 +359,7 @@ class _CreateCommissioningReportScreenState
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8F9FB),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFF1F2F6)),
+                    border: Border.all(color: Color(0xFFF1F2F6)),
                   ),
                   child: const Icon(
                     Icons.qr_code_2,
@@ -421,6 +469,9 @@ class _CreateCommissioningReportScreenState
             appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
             setState(() {
               _currentStep++;
+              if (_currentStep == 4 && _commissioningReportId != null) {
+                _step4Bloc.add(CommissioningStep4AutoFillGetEvent(_commissioningReportId!));
+              }
             });
           } else if (state is CommissioningStep3FailureState) {
             appSnackBar(context, const Color(0xFFF44336), state.message);
@@ -469,6 +520,39 @@ class _CreateCommissioningReportScreenState
             setState(() {});
           }
         },
+      child: BlocListener<CommissioningStep4Bloc, CommissioningStep4State>(
+        bloc: _submitStep4Bloc,
+        listener: (context, state) {
+          if (state is CommissioningStep4SuccessState) {
+            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+            setState(() {
+              _currentStep++;
+            });
+          } else if (state is CommissioningStep4FailureState) {
+            appSnackBar(context, const Color(0xFFF44336), state.message);
+          }
+        },
+      child: BlocListener<CommissioningStep4AutoFillBloc, CommissioningStep4AutoFillState>(
+        bloc: _step4Bloc,
+        listener: (context, state) {
+          if (state is CommissioningStep4AutoFillSuccessState) {
+            final data = state.data.data;
+            if (data.savedDescriptions.isNotEmpty) {
+              for (int i = 0; i < data.savedDescriptions.length; i++) {
+                if (i < _workDescriptionControllers.length) {
+                  _workDescriptionControllers[i].text = data.savedDescriptions[i].description;
+                } else {
+                  _workDescriptionControllers.add(TextEditingController(text: data.savedDescriptions[i].description));
+                }
+              }
+            } else {
+              for (var controller in _workDescriptionControllers) {
+                controller.text = '';
+              }
+            }
+            setState(() {});
+          }
+        },
       child: Scaffold(
         backgroundColor: Colors.white,
       body: SafeArea(
@@ -503,14 +587,6 @@ class _CreateCommissioningReportScreenState
                               color: const Color(0xFF0D121F),
                             ),
                           ),
-                          // Text(
-                          //   _getStepInfo(),
-                          //   style: AppFont.style(
-                          //     fontSize: 12,
-                          //     fontWeight: FontWeight.w800,
-                          //     color: const Color(0xFFA5ABB7),
-                          //   ),
-                          // ),
                         ],
                       ),
                     ],
@@ -606,68 +682,74 @@ class _CreateCommissioningReportScreenState
                             return BlocBuilder<CommissioningStep3Bloc, CommissioningStep3State>(
                               bloc: _submitStep3Bloc,
                               builder: (context, submitStep3State) {
-                                bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
-                                                    (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState) ||
-                                                    (_currentStep == 3 && submitStep3State is CommissioningStep3LoadingState);
-                                return Container(
-                                  height: 56,
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1565C0),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF1565C0).withValues(alpha: 0.2),
-                                blurRadius: 15,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (_currentStep == 6)
-                                const Icon(
-                                  Icons.check_box_outlined,
-                                  size: 20,
-                                  color: Colors.white,
-                                )
-                              else
-                                const SizedBox.shrink(),
-                              if (_currentStep == 6)
-                                const SizedBox(width: 12)
-                              else
-                                const SizedBox.shrink(),
-                              if (isSubmitting)
-                                const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2.5,
-                                  ),
-                                )
-                              else
-                                Text(
-                                  _currentStep == 6
-                                      ? 'create_report_btn_submit'.tr().toUpperCase()
-                                      : 'create_report_btn_next'.tr().toUpperCase(),
-                                  style: AppFont.style(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              if (_currentStep < 6 && !isSubmitting) ...[
-                                const SizedBox(width: 12),
-                                const Icon(
-                                  Icons.arrow_forward,
-                                  size: 18,
-                                  color: Colors.white,
-                                ),
-                              ],
-                            ],
-                          ),
+                                return BlocBuilder<CommissioningStep4Bloc, CommissioningStep4State>(
+                                  bloc: _submitStep4Bloc,
+                                  builder: (context, submitStep4State) {
+                                    bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
+                                                        (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState) ||
+                                                        (_currentStep == 3 && submitStep3State is CommissioningStep3LoadingState) ||
+                                                        (_currentStep == 4 && submitStep4State is CommissioningStep4LoadingState);
+                                    return Container(
+                                      height: 56,
+                                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF1565C0),
+                                        borderRadius: BorderRadius.circular(16),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: const Color(0xFF1565C0).withValues(alpha: 0.2),
+                                            blurRadius: 15,
+                                            offset: const Offset(0, 8),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          if (_currentStep == 6)
+                                            const Icon(
+                                              Icons.check_box_outlined,
+                                              size: 20,
+                                              color: Colors.white,
+                                            )
+                                          else
+                                            const SizedBox.shrink(),
+                                          if (_currentStep == 6)
+                                            const SizedBox(width: 12)
+                                          else
+                                            const SizedBox.shrink(),
+                                          if (isSubmitting)
+                                            const SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 2.5,
+                                              ),
+                                            )
+                                          else
+                                            Text(
+                                              _currentStep == 6
+                                                  ? 'create_report_btn_submit'.tr().toUpperCase()
+                                                  : 'create_report_btn_next'.tr().toUpperCase(),
+                                              style: AppFont.style(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w800,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          if (_currentStep < 6 && !isSubmitting) ...[
+                                            const SizedBox(width: 12),
+                                            const Icon(
+                                              Icons.arrow_forward,
+                                              size: 18,
+                                              color: Colors.white,
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    );
+                                  },
                                 );
                               },
                             );
@@ -683,10 +765,12 @@ class _CreateCommissioningReportScreenState
       ), // Column
       ), // SafeArea
       ), // Scaffold
-      ),
-      ),
-      ),
-    );
+      ), // Step 4 AutoFill
+      ), // Step 4 Submit
+      ), // Step 3 AutoFill
+      ), // Step 3 Submit
+      ), // Step 1 Submit
+    ); // Step 2 Submit
   }
 
   Widget _buildBodyContent() {
@@ -767,7 +851,20 @@ class _CreateCommissioningReportScreenState
           },
         );
       case 4:
-        return _buildStep4();
+        return BlocBuilder<CommissioningStep4AutoFillBloc, CommissioningStep4AutoFillState>(
+          bloc: _step4Bloc,
+          builder: (context, state) {
+            if (state is CommissioningStep4AutoFillLoadingState || state is CommissioningStep4AutoFillInitialState) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                ),
+              );
+            }
+            return _buildStep4();
+          },
+        );
       case 5:
         return _buildStep5();
       case 6:
@@ -1586,14 +1683,14 @@ class _CreateCommissioningReportScreenState
         const SizedBox(height: 24),
 
         // ── Work Description Fields ──────────────────────────────────────
-        ...List.generate(3, (index) => _buildWorkDescriptionField(index + 1)),
+        ...List.generate(_workDescriptionControllers.length, (index) => _buildWorkDescriptionField(index + 1, _workDescriptionControllers[index])),
 
         const SizedBox(height: 40),
       ],
     );
   }
 
-  Widget _buildWorkDescriptionField(int number) {
+  Widget _buildWorkDescriptionField(int number, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Row(
@@ -1620,6 +1717,7 @@ class _CreateCommissioningReportScreenState
               child: Stack(
                 children: [
                   TextField(
+                    controller: controller,
                     maxLines: 3,
                     style: AppFont.style(
                       fontSize: 16,
