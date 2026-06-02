@@ -32,6 +32,8 @@ import '../../features/my_commissioning/domain/usecase/commissioning_work_create
 import '../../features/my_commissioning/bloc/commissioning_work_create_bloc/commissioning_work_create_bloc.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_report_history_usecase.dart';
 import '../../features/my_commissioning/bloc/commissioning_report_history_bloc/commissioning_report_history_bloc.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_report_details_usecase.dart';
+import '../../features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -251,6 +253,16 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => CommissioningReportHistoryUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => CommissioningReportDetailsBloc(
+      getIt<CommissioningReportDetailsUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => CommissioningReportDetailsUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper

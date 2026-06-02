@@ -44,6 +44,8 @@ import '../models/commissioning_work_create_model/commissioning_work_create_resp
 import '../models/commissioning_report_history_model/commissioning_report_history_response.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_create_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_report_history_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_report_details_usecase.dart';
+import '../models/commissioning_report_history_model/commissioning_report_details_response.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -113,6 +115,9 @@ abstract class Repository {
 
   Future<Either<Failure, CommissioningReportHistoryResponse>>
   commissioningReportHistory(CommissioningReportHistoryParams params);
+
+  Future<Either<Failure, CommissioningDetailsResponse>>
+  commissioningReportDetails(String reportId);
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -870,6 +875,40 @@ class AuthRepositoryImpl implements Repository {
 
           if (respData.status != 200 && respData.status != 201) {
             return Left(ServerFailure(respData.message));
+          } else {
+            return Right(respData);
+          }
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, CommissioningDetailsResponse>>
+      commissioningReportDetails(String reportId) {
+    return _networkInfo.check<CommissioningDetailsResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.commissioningReportDetails(
+            reportId,
+            token,
+          );
+
+          if (respData.status != 200 && respData.status != 201) {
+            return Left(ServerFailure(respData.message ?? "Error"));
           } else {
             return Right(respData);
           }

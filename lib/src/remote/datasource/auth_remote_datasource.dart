@@ -40,6 +40,7 @@ import '../../features/my_commissioning/domain/usecase/assigned_technician_repre
 import '../models/assigned_technician_representative_model/assigned_technician_representative_response.dart';
 import '../models/commissioning_work_create_model/commissioning_work_create_response.dart';
 import '../models/commissioning_report_history_model/commissioning_report_history_response.dart';
+import '../models/commissioning_report_history_model/commissioning_report_details_response.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_create_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_report_history_usecase.dart';
 
@@ -126,6 +127,11 @@ sealed class RemoteDataSource {
 
   Future<CommissioningReportHistoryResponse> commissioningReportHistory(
     CommissioningReportHistoryParams params,
+    String token,
+  );
+
+  Future<CommissioningDetailsResponse> commissioningReportDetails(
+    String reportId,
     String token,
   );
 
@@ -865,6 +871,34 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = CommissioningReportHistoryResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<CommissioningDetailsResponse> commissioningReportDetails(
+    String reportId,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: "${ApiUrl.commissioningReportDetails}/$reportId",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = CommissioningDetailsResponse.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

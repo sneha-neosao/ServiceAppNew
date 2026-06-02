@@ -22,3 +22,4 @@ export '../../features/my_commissioning/bloc/commissioning_step2_autofill_bloc/c
 export '../../features/my_commissioning/bloc/commissioning_step3_bloc/commissioning_step3_bloc.dart';
 export '../../features/my_commissioning/bloc/commissioning_step3_autofill_bloc/commissioning_step3_autofill_bloc.dart';
 export '../../features/my_commissioning/bloc/commissioning_work_create_bloc/commissioning_work_create_bloc.dart';
+export '../../features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_bloc.dart';

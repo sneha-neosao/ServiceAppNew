@@ -13,6 +13,8 @@ import 'package:service_app/src/remote/models/customer_model/customer_response.d
 import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
 import 'package:service_app/src/remote/models/technician_model/technician_response.dart';
 import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_report_history_usecase.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_event.dart';
 
 class ReportHistoryScreen extends StatefulWidget {
   const ReportHistoryScreen({super.key});
@@ -24,6 +26,7 @@ class ReportHistoryScreen extends StatefulWidget {
 class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   int _selectedTab = 1; // Default to 'Service'
   late CommissioningReportHistoryBloc _historyBloc;
+  late CommissioningReportDetailsBloc _detailsBloc;
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
   late TechnicianBloc _technicianBloc;
@@ -51,6 +54,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   void initState() {
     super.initState();
     _historyBloc = getIt<CommissioningReportHistoryBloc>();
+    _detailsBloc = getIt<CommissioningReportDetailsBloc>();
     _fetchReportHistory();
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
     _sitesBloc = getIt<SitesBloc>();
@@ -60,6 +64,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   @override
   void dispose() {
     _historyBloc.close();
+    _detailsBloc.close();
     _customerBloc.close();
     _sitesBloc.close();
     _technicianBloc.close();
@@ -175,6 +180,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
 
                             return _ReportCard(
                               id: item.commissioningWorkId,
+                              reportId: item.id,
                               type: ReportType.commissioning,
                               companyName: item.customerName,
                               location: item.siteName,
@@ -183,6 +189,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   item.technicianRepresentativeName ??
                                   'No representative',
                               technicianId: item.dealerName,
+                              onViewTap: (id) {
+                                _detailsBloc.add(
+                                  CommissioningReportDetailsGetEvent(id),
+                                );
+                              },
                             );
                           },
                         );
@@ -597,6 +608,7 @@ enum ReportType { commissioning, service, amc }
 
 class _ReportCard extends StatelessWidget {
   final String id;
+  final String? reportId;
   final ReportType type;
   final String companyName;
   final String location;
@@ -604,9 +616,11 @@ class _ReportCard extends StatelessWidget {
   final String? complaintNo;
   final String technician;
   final String technicianId;
+  final void Function(String reportId)? onViewTap;
 
   const _ReportCard({
     required this.id,
+    this.reportId,
     required this.type,
     required this.companyName,
     required this.location,
@@ -614,6 +628,7 @@ class _ReportCard extends StatelessWidget {
     this.complaintNo,
     required this.technician,
     required this.technicianId,
+    this.onViewTap,
   });
 
   @override
@@ -793,27 +808,81 @@ class _ReportCard extends StatelessWidget {
     } else if (type == ReportType.amc) {
       btnText = 'VIEW AMC REPORT';
     }
-    return Container(
-      height: 44,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFF1565C0),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            btnText,
-            style: AppFont.style(
-              fontSize: 12,
-              fontWeight: FontWeight.w900,
-              color: Colors.white,
-            ),
+    return Column(
+      children: [
+        Container(
+          height: 44,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: const Color(0xFF1565C0),
+            borderRadius: BorderRadius.circular(10),
           ),
-          const SizedBox(width: 8),
-          const Icon(Icons.chevron_right, size: 16, color: Colors.white),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                btnText,
+                style: AppFont.style(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(Icons.chevron_right, size: 16, color: Colors.white),
+            ],
+          ),
+        ),
+        // Extra action buttons — only for commissioning type
+        if (type == ReportType.commissioning) ...[
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              // Eye / View icon button
+              Expanded(
+                child: _buildIconActionButton(
+                  icon: Icons.remove_red_eye_outlined,
+                  iconColor: const Color(0xFF6B7280),
+                  onTap: () {
+                    if (reportId != null) {
+                      onViewTap?.call(reportId!);
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(width: 10),
+              // QR Code icon button
+              Expanded(
+                child: _buildIconActionButton(
+                  icon: Icons.qr_code_2_outlined,
+                  iconColor: const Color(0xFFF59E0B),
+                  onTap: () {},
+                ),
+              ),
+            ],
+          ),
         ],
+      ],
+    );
+  }
+
+  Widget _buildIconActionButton({
+    required IconData icon,
+    required Color iconColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 44,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0xFFE5E7EB), width: 1.2),
+        ),
+        child: Center(
+          child: Icon(icon, size: 22, color: iconColor),
+        ),
       ),
     );
   }
