@@ -2,6 +2,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/my_commissioning/presentation/pages/create_commissioning_report_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
+import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
+import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
+import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
+import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/assign_technician_dialog.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/complaint_report_dialog.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/service_call_card.dart';
@@ -18,15 +24,29 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
   late TabController _tabController;
   bool _isCreatingReport = false;
 
+  late CustomerBloc _customerBloc;
+  late SitesBloc _sitesBloc;
+
+  String? _selectedCustomerName;
+  String? _selectedCustomerId;
+
+  String? _selectedSiteName;
+  String? _selectedSiteId;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    
+    _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
+    _sitesBloc = getIt<SitesBloc>();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _customerBloc.close();
+    _sitesBloc.close();
     super.dispose();
   }
 
@@ -89,16 +109,83 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
               Row(
                 children: [
                   Expanded(
-                    child: _buildFilterDropdown(
-                      'Select Customer',
-                      Icons.person_outline,
+                    child: BlocBuilder<CustomerBloc, CustomerState>(
+                      bloc: _customerBloc,
+                      builder: (context, state) {
+                        final customers = <Customer>[];
+                        if (state is CustomerSuccessState) {
+                          customers.addAll(state.data.data);
+                        }
+                        return PopupMenuButton<Customer>(
+                          color: Colors.white,
+                          surfaceTintColor: Colors.white,
+                          onSelected: (customer) {
+                            setState(() {
+                              _selectedCustomerName = customer.name;
+                              _selectedCustomerId = customer.id;
+                              _selectedSiteName = null;
+                              _selectedSiteId = null;
+                            });
+                            _sitesBloc.add(SitesGetEvent(customer.id));
+                          },
+                          offset: const Offset(0, 45),
+                          itemBuilder: (ctx) => customers
+                              .map(
+                                (c) => PopupMenuItem<Customer>(
+                                  value: c,
+                                  child: Text(
+                                    c.name,
+                                    style: AppFont.style(color: Colors.black),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          child: _buildFilterDropdown(
+                            _selectedCustomerName ?? 'Select Customer',
+                            Icons.person_outline,
+                            isLoading: state is CustomerLoadingState,
+                          ),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _buildFilterDropdown(
-                      'Select Site',
-                      Icons.location_on_outlined,
+                    child: BlocBuilder<SitesBloc, SitesState>(
+                      bloc: _sitesBloc,
+                      builder: (context, state) {
+                        final sites = <Site>[];
+                        if (state is SitesSuccessState) {
+                          sites.addAll(state.data.data);
+                        }
+                        return PopupMenuButton<Site>(
+                          color: Colors.white,
+                          surfaceTintColor: Colors.white,
+                          onSelected: (site) {
+                            setState(() {
+                              _selectedSiteName = site.name;
+                              _selectedSiteId = site.id;
+                            });
+                          },
+                          offset: const Offset(0, 45),
+                          itemBuilder: (ctx) => sites
+                              .map(
+                                (s) => PopupMenuItem<Site>(
+                                  value: s,
+                                  child: Text(
+                                    s.name,
+                                    style: AppFont.style(color: Colors.black),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          child: _buildFilterDropdown(
+                            _selectedSiteName ?? 'Select Site',
+                            Icons.location_on_outlined,
+                            isLoading: state is SitesLoadingState,
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -181,7 +268,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     );
   }
 
-  Widget _buildFilterDropdown(String label, IconData icon) {
+  Widget _buildFilterDropdown(String label, IconData icon, {bool isLoading = false}) {
     return Container(
       height: 44,
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -195,15 +282,28 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
           Icon(icon, color: const Color(0xFFA5ABB7), size: 18),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
-              label,
-              style: AppFont.style(
-                fontSize: 14,
-                color: const Color(0xFFA5ABB7),
-                fontWeight: FontWeight.w500,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
+            child: isLoading
+                ? const Row(
+                    children: [
+                      SizedBox(
+                        height: 14,
+                        width: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Color(0xFFA5ABB7),
+                        ),
+                      ),
+                    ],
+                  )
+                : Text(
+                    label,
+                    style: AppFont.style(
+                      fontSize: 14,
+                      color: const Color(0xFFA5ABB7),
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
           ),
           const Icon(
             Icons.keyboard_arrow_down,
