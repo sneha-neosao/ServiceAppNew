@@ -23,3 +23,5 @@ export '../../features/my_commissioning/bloc/commissioning_step3_bloc/commission
 export '../../features/my_commissioning/bloc/commissioning_step3_autofill_bloc/commissioning_step3_autofill_bloc.dart';
 export '../../features/my_commissioning/bloc/commissioning_work_create_bloc/commissioning_work_create_bloc.dart';
 export '../../features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_bloc.dart';
+export '../../features/my_commissioning/bloc/commissioning_work_details_bloc/commissioning_work_details_bloc.dart';
+export '../../features/my_commissioning/bloc/commissioning_work_update_bloc/commissioning_work_update_bloc.dart';

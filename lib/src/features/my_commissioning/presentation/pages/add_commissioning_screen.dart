@@ -7,22 +7,22 @@ import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_create_bloc/commissioning_work_create_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_details_bloc/commissioning_work_details_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_details_bloc/commissioning_work_details_event.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_details_bloc/commissioning_work_details_state.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_update_bloc/commissioning_work_update_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_update_bloc/commissioning_work_update_event.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_update_bloc/commissioning_work_update_state.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 
 class AddCommissioningScreen extends StatefulWidget {
   final VoidCallback onBack;
-  final String? initialCustomer;
-  final String? initialSite;
-  final String? initialEquipment;
-  final String? initialTechnicians;
+  final String? editWorkId;
 
   const AddCommissioningScreen({
     super.key,
     required this.onBack,
-    this.initialCustomer,
-    this.initialSite,
-    this.initialEquipment,
-    this.initialTechnicians,
+    this.editWorkId,
   });
 
   @override
@@ -49,6 +49,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   late SitesBloc _sitesBloc;
   late TechnicianBloc _technicianBloc;
   late CommissioningWorkCreateBloc _createBloc;
+  late CommissioningWorkDetailsBloc _detailsBloc;
+  late CommissioningWorkUpdateBloc _updateBloc;
 
   @override
   void initState() {
@@ -58,31 +60,12 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     _sitesBloc = getIt<SitesBloc>();
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
     _createBloc = getIt<CommissioningWorkCreateBloc>();
-    _equipmentController = TextEditingController(text: widget.initialEquipment);
+    _detailsBloc = getIt<CommissioningWorkDetailsBloc>();
+    _updateBloc = getIt<CommissioningWorkUpdateBloc>();
+    _equipmentController = TextEditingController();
 
-    // ── Customer ─────────────────────────────────────────────────────────────
-    if (widget.initialCustomer != null) {
-      if (!_customers.contains(widget.initialCustomer)) {
-        _customers.insert(0, widget.initialCustomer!);
-      }
-      _selectedCustomer = widget.initialCustomer;
-    }
-
-    // ── Site ─────────────────────────────────────────────────────────────────
-    if (widget.initialSite != null) {
-      if (!_sites.contains(widget.initialSite)) {
-        _sites.insert(0, widget.initialSite!);
-      }
-      _selectedSite = widget.initialSite;
-    }
-
-    // ── Technician — only set if the value exists as a single list item ───────
-    // initialTechnicians may be a comma-joined string like "A, B"; guard it.
-    if (widget.initialTechnicians != null) {
-      if (!_technicians.contains(widget.initialTechnicians)) {
-        _technicians.insert(0, widget.initialTechnicians!);
-      }
-      _selectedTechnician = widget.initialTechnicians;
+    if (widget.editWorkId != null) {
+      _detailsBloc.add(CommissioningWorkDetailsGetEvent(widget.editWorkId!));
     }
   }
 
@@ -92,6 +75,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     _sitesBloc.close();
     _technicianBloc.close();
     _createBloc.close();
+    _detailsBloc.close();
+    _updateBloc.close();
     _equipmentController.dispose();
     super.dispose();
   }
@@ -290,31 +275,55 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
       }
     }
 
-    _createBloc.add(
-      CommissioningWorkCreateSubmitEvent(
-        customerId: customerId,
-        siteId: siteId,
-        applicationOfEquipment: appOfEquipment,
-        technicians: technicianId.isNotEmpty ? [technicianId] : [],
-      ),
-    );
+    if (widget.editWorkId != null) {
+      _updateBloc.add(
+        CommissioningWorkUpdateSubmitEvent(
+          workId: widget.editWorkId!,
+          customerId: customerId,
+          siteId: siteId,
+          applicationOfEquipment: appOfEquipment,
+          technicians: technicianId.isNotEmpty ? [technicianId] : [],
+        ),
+      );
+    } else {
+      _createBloc.add(
+        CommissioningWorkCreateSubmitEvent(
+          customerId: customerId,
+          siteId: siteId,
+          applicationOfEquipment: appOfEquipment,
+          technicians: technicianId.isNotEmpty ? [technicianId] : [],
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<
-      CommissioningWorkCreateBloc,
-      CommissioningWorkCreateState
-    >(
-      bloc: _createBloc,
-      listener: (context, state) {
-        if (state is CommissioningWorkCreateSuccessState) {
-          appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-          widget.onBack();
-        } else if (state is CommissioningWorkCreateFailureState) {
-          appSnackBar(context, const Color(0xFFF44336), state.message);
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<CommissioningWorkCreateBloc, CommissioningWorkCreateState>(
+          bloc: _createBloc,
+          listener: (context, state) {
+            if (state is CommissioningWorkCreateSuccessState) {
+              appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+              widget.onBack();
+            } else if (state is CommissioningWorkCreateFailureState) {
+              appSnackBar(context, const Color(0xFFF44336), state.message);
+            }
+          },
+        ),
+        BlocListener<CommissioningWorkUpdateBloc, CommissioningWorkUpdateState>(
+          bloc: _updateBloc,
+          listener: (context, state) {
+            if (state is CommissioningWorkUpdateSuccessState) {
+              appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+              widget.onBack();
+            } else if (state is CommissioningWorkUpdateFailureState) {
+              appSnackBar(context, const Color(0xFFF44336), state.message);
+            }
+          },
+        ),
+      ],
       child: PopScope(
         // Intercept Android system back button
         canPop: false,
@@ -370,7 +379,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          widget.initialCustomer != null
+                          widget.editWorkId != null
                               ? 'Edit Commissioning Work'
                               : 'Assign For New Commissioning Work',
                           style: AppFont.style(
@@ -392,12 +401,48 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
                 // ── Form body ────────────────────────────────────────────────
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 8),
+                  child: BlocConsumer<CommissioningWorkDetailsBloc, CommissioningWorkDetailsState>(
+                    bloc: _detailsBloc,
+                    listener: (context, state) {
+                      if (state is CommissioningWorkDetailsSuccessState) {
+                        final data = state.data.data;
+                        setState(() {
+                          _selectedCustomer = data.customer.name;
+                          if (!_customers.contains(data.customer.name)) {
+                            _customers.insert(0, data.customer.name);
+                          }
+                          
+                          _selectedSite = data.site.name;
+                          if (!_sites.contains(data.site.name)) {
+                            _sites.insert(0, data.site.name);
+                          }
+                          
+                          _equipmentController.text = data.applicationOfEquipment;
+                          
+                          if (data.assignedTechnicians.isNotEmpty) {
+                            final techNames = data.assignedTechnicians.map((t) => t.name).join(', ');
+                            _selectedTechnician = techNames;
+                            if (!_technicians.contains(techNames)) {
+                              _technicians.insert(0, techNames);
+                            }
+                          }
+                        });
+                      } else if (state is CommissioningWorkDetailsFailureState) {
+                        appSnackBar(context, const Color(0xFFF44336), state.message);
+                      }
+                    },
+                    builder: (context, state) {
+                      if (widget.editWorkId != null && 
+                         (state is CommissioningWorkDetailsInitialState || state is CommissioningWorkDetailsLoadingState)) {
+                        return const Center(child: CircularProgressIndicator(color: Color(0xFF1565C0)));
+                      }
+
+                      return SingleChildScrollView(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 8),
 
                         // ── STEP 1: SELECT CUSTOMER ──────────────────────────
                         _buildSectionHeader(
@@ -562,56 +607,63 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                               >(
                                 bloc: _createBloc,
                                 builder: (context, state) {
-                                  final isLoading =
-                                      state
-                                          is CommissioningWorkCreateLoadingState;
-                                  return ElevatedButton(
-                                    onPressed: isLoading ? null : _onAssign,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF1565C0),
-                                      foregroundColor: Colors.white,
-                                      elevation: 0,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                    ),
-                                    child: isLoading
-                                        ? const SizedBox(
-                                            width: 24,
-                                            height: 24,
-                                            child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2.5,
-                                            ),
-                                          )
-                                        : Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                'ASSIGN',
-                                                style: AppFont.style(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w900,
+                                  return BlocBuilder<CommissioningWorkUpdateBloc, CommissioningWorkUpdateState>(
+                                    bloc: _updateBloc,
+                                    builder: (context, updateState) {
+                                      final isLoading =
+                                          state is CommissioningWorkCreateLoadingState ||
+                                          updateState is CommissioningWorkUpdateLoadingState;
+                                      return ElevatedButton(
+                                        onPressed: isLoading ? null : _onAssign,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color(0xFF1565C0),
+                                          foregroundColor: Colors.white,
+                                          elevation: 0,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(14),
+                                          ),
+                                        ),
+                                        child: isLoading
+                                            ? const SizedBox(
+                                                width: 24,
+                                                height: 24,
+                                                child: CircularProgressIndicator(
                                                   color: Colors.white,
-                                                  letterSpacing: 1.2,
+                                                  strokeWidth: 2.5,
                                                 ),
-                                              ),
-                                              const SizedBox(width: 8),
+                                              )
+                                            : Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    widget.editWorkId != null ? 'UPDATE' : 'ASSIGN',
+                                                    style: AppFont.style(
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.w900,
+                                                      color: Colors.white,
+                                                      letterSpacing: 1.2,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
                                               const Icon(
                                                 Icons.arrow_forward,
                                                 size: 18,
                                               ),
                                             ],
                                           ),
-                                  );
-                                },
-                              ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
                         ),
 
                         const SizedBox(height: 30),
-                      ],
-                    ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],

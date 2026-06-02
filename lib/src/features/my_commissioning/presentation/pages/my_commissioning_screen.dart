@@ -143,9 +143,7 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => AddCommissioningScreen(
-                                initialCustomer: item.customer.name,
-                                initialSite: item.site.name,
-                                initialTechnicians: membersString,
+                                editWorkId: item.id,
                                 onBack: () => Navigator.pop(context),
                               ),
                             ),

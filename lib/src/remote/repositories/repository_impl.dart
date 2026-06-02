@@ -46,6 +46,9 @@ import '../../features/my_commissioning/domain/usecase/commissioning_work_create
 import '../../features/my_commissioning/domain/usecase/commissioning_report_history_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_report_details_usecase.dart';
 import '../models/commissioning_report_history_model/commissioning_report_details_response.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_work_update_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_work_details_usecase.dart';
+import '../models/commissioning_work_model/commissioning_work_details_response.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -113,11 +116,17 @@ abstract class Repository {
   Future<Either<Failure, CommissioningWorkCreateResponse>>
   commissioningWorkCreate(CommissioningWorkCreateParams params);
 
+  Future<Either<Failure, CommissioningWorkCreateResponse>>
+  commissioningWorkUpdate(CommissioningWorkUpdateParams params, String workId);
+
   Future<Either<Failure, CommissioningReportHistoryResponse>>
   commissioningReportHistory(CommissioningReportHistoryParams params);
 
   Future<Either<Failure, CommissioningDetailsResponse>>
   commissioningReportDetails(String reportId);
+
+  Future<Either<Failure, CommissioningWorkDetailsResponse>>
+  commissioningWorkDetails(String workId);
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -862,6 +871,41 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
+  Future<Either<Failure, CommissioningWorkCreateResponse>>
+      commissioningWorkUpdate(CommissioningWorkUpdateParams params, String workId) {
+    return _networkInfo.check<CommissioningWorkCreateResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.commissioningWorkUpdate(
+            params,
+            workId,
+            token,
+          );
+
+          if (respData.status != 200 && respData.status != 201) {
+            return Left(ServerFailure(respData.message));
+          } else {
+            return Right(respData);
+          }
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
   Future<Either<Failure, CommissioningReportHistoryResponse>>
       commissioningReportHistory(CommissioningReportHistoryParams params) {
     return _networkInfo.check<CommissioningReportHistoryResponse>(
@@ -909,6 +953,40 @@ class AuthRepositoryImpl implements Repository {
 
           if (respData.status != 200 && respData.status != 201) {
             return Left(ServerFailure(respData.message ?? "Error"));
+          } else {
+            return Right(respData);
+          }
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, CommissioningWorkDetailsResponse>>
+      commissioningWorkDetails(String workId) {
+    return _networkInfo.check<CommissioningWorkDetailsResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.commissioningWorkDetails(
+            workId,
+            token,
+          );
+
+          if (respData.status != 200 && respData.status != 201) {
+            return Left(ServerFailure(respData.message));
           } else {
             return Right(respData);
           }
