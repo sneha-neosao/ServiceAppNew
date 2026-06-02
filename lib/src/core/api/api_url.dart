@@ -61,4 +61,6 @@ class ApiUrl {
   static const commissioningWorkReportStep6 = "technician/commissioning-report/step6";
 
   static const commissioningWorkReportTechnicians = "technician/commissioning-report";
+
+  static const commissioningReportHistory = "technician/commissioning-reports/history";
 }

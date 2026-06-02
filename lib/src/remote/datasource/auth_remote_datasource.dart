@@ -38,8 +38,10 @@ import '../../features/my_commissioning/domain/usecase/commissioning_step6_autof
 import '../models/commissioning_report_step6_autofill_model/commissioning_report_step6_autofill_response.dart';
 import '../../features/my_commissioning/domain/usecase/assigned_technician_representative_usecase.dart';
 import '../models/assigned_technician_representative_model/assigned_technician_representative_response.dart';
-import '../../features/my_commissioning/domain/usecase/commissioning_work_create_usecase.dart';
 import '../models/commissioning_work_create_model/commissioning_work_create_response.dart';
+import '../models/commissioning_report_history_model/commissioning_report_history_response.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_work_create_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_report_history_usecase.dart';
 
 sealed class RemoteDataSource {
   Future<LoginResponse> login(LoginParams params);
@@ -119,6 +121,11 @@ sealed class RemoteDataSource {
 
   Future<CommissioningWorkCreateResponse> commissioningWorkCreate(
     CommissioningWorkCreateParams params,
+    String token,
+  );
+
+  Future<CommissioningReportHistoryResponse> commissioningReportHistory(
+    CommissioningReportHistoryParams params,
     String token,
   );
 
@@ -789,14 +796,75 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         method: Method.post,
         url: ApiUrl.commissioningWorkCreate,
         data: params.toJson(),
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       final respData = CommissioningWorkCreateResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<CommissioningReportHistoryResponse> commissioningReportHistory(
+    CommissioningReportHistoryParams params,
+    String token,
+  ) async {
+    try {
+      final Map<String, String> queryParams = {};
+      if (params.customerId != null) {
+        queryParams['customer_id'] = params.customerId!;
+      }
+      if (params.siteId != null) {
+        queryParams['site_id'] = params.siteId!;
+      }
+      if (params.date != null) {
+        queryParams['date'] = params.date!;
+      }
+      if (params.startDate != null) {
+        queryParams['start_date'] = params.startDate!;
+      }
+      if (params.endDate != null) {
+        queryParams['end_date'] = params.endDate!;
+      }
+      if (params.search != null) {
+        queryParams['search'] = params.search!;
+      }
+      if (params.ordering != null) {
+        queryParams['ordering'] = params.ordering!;
+      }
+      if (params.page != null) {
+        queryParams['page'] = params.page.toString();
+      }
+      if (params.pageSize != null) {
+        queryParams['page_size'] = params.pageSize.toString();
+      }
+
+      String queryString = '';
+      if (queryParams.isNotEmpty) {
+        queryString = '?' +
+            queryParams.entries
+                .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+                .join('&');
+      }
+
+      final response = await _helper.execute(
+        method: Method.get,
+        url: "${ApiUrl.commissioningReportHistory}$queryString",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = CommissioningReportHistoryResponse.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

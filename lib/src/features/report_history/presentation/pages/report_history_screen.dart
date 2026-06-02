@@ -1,6 +1,18 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_history_bloc/commissioning_report_history_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_history_bloc/commissioning_report_history_event.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_history_bloc/commissioning_report_history_state.dart';
+import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
+import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
+import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
+import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
+import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
+import 'package:service_app/src/remote/models/technician_model/technician_response.dart';
+import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_report_history_usecase.dart';
 
 class ReportHistoryScreen extends StatefulWidget {
   const ReportHistoryScreen({super.key});
@@ -11,6 +23,48 @@ class ReportHistoryScreen extends StatefulWidget {
 
 class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   int _selectedTab = 1; // Default to 'Service'
+  late CommissioningReportHistoryBloc _historyBloc;
+  late CustomerBloc _customerBloc;
+  late SitesBloc _sitesBloc;
+  late TechnicianBloc _technicianBloc;
+  String? _selectedCustomerName;
+  String? _selectedCustomerId;
+  String? _selectedSiteName;
+  String? _selectedSiteId;
+  String? _selectedTechnicianName;
+  String? _selectedTechnicianId;
+
+  void _fetchReportHistory() {
+    _historyBloc.add(
+      CommissioningReportHistoryGetEvent(
+        params: CommissioningReportHistoryParams(
+          customerId: _selectedCustomerId,
+          siteId: _selectedSiteId,
+          page: 1,
+          pageSize: 10,
+        ),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _historyBloc = getIt<CommissioningReportHistoryBloc>();
+    _fetchReportHistory();
+    _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
+    _sitesBloc = getIt<SitesBloc>();
+    _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
+  }
+
+  @override
+  void dispose() {
+    _historyBloc.close();
+    _customerBloc.close();
+    _sitesBloc.close();
+    _technicianBloc.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +117,83 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
         Expanded(
           child: Container(
             color: const Color(0xFFF8F9FB),
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: _buildReportList(),
-            ),
+            child: _selectedTab == 0
+                ? BlocBuilder<
+                    CommissioningReportHistoryBloc,
+                    CommissioningReportHistoryState
+                  >(
+                    bloc: _historyBloc,
+                    builder: (context, state) {
+                      if (state is CommissioningReportHistoryLoadingState ||
+                          state is CommissioningReportHistoryInitialState) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFF1565C0),
+                          ),
+                        );
+                      } else if (state
+                          is CommissioningReportHistoryFailureState) {
+                        return Center(
+                          child: Text(
+                            state.message,
+                            style: AppFont.style(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.red,
+                            ),
+                          ),
+                        );
+                      } else if (state
+                          is CommissioningReportHistorySuccessState) {
+                        final items = state.data.data.results;
+                        if (items.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'No commissioning reports found',
+                              style: AppFont.style(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFFA5ABB7),
+                              ),
+                            ),
+                          );
+                        }
+                        return ListView.separated(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: items.length,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 16),
+                          itemBuilder: (context, index) {
+                            final item = items[index];
+                            String formattedDate = item.submittedAt;
+                            try {
+                              final dt = DateTime.parse(item.submittedAt);
+                              formattedDate = DateFormat(
+                                'dd MMM yyyy',
+                              ).format(dt);
+                            } catch (_) {}
+
+                            return _ReportCard(
+                              id: item.commissioningWorkId,
+                              type: ReportType.commissioning,
+                              companyName: item.customerName,
+                              location: item.siteName,
+                              date: formattedDate,
+                              technician:
+                                  item.technicianRepresentativeName ??
+                                  'No representative',
+                              technicianId: item.dealerName,
+                            );
+                          },
+                        );
+                      }
+                      return const SizedBox();
+                    },
+                  )
+                : ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: _buildReportList(),
+                  ),
           ),
         ),
       ],
@@ -178,16 +305,85 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           Row(
             children: [
               Expanded(
-                child: _buildFilterDropdown(
-                  'Select Custo...',
-                  Icons.business_outlined,
+                child: BlocBuilder<CustomerBloc, CustomerState>(
+                  bloc: _customerBloc,
+                  builder: (context, state) {
+                    final customers = <Customer>[];
+                    if (state is CustomerSuccessState) {
+                      customers.addAll(state.data.data);
+                    }
+                    return PopupMenuButton<Customer>(
+                      color: Colors.white,
+                      surfaceTintColor: Colors.white,
+                      onSelected: (customer) {
+                        setState(() {
+                          _selectedCustomerName = customer.name;
+                          _selectedCustomerId = customer.id;
+                          _selectedSiteName = null;
+                          _selectedSiteId = null;
+                        });
+                        _sitesBloc.add(SitesGetEvent(customer.id));
+                        _fetchReportHistory();
+                      },
+                      offset: const Offset(0, 45),
+                      itemBuilder: (ctx) => customers
+                          .map(
+                            (c) => PopupMenuItem<Customer>(
+                              value: c,
+                              child: Text(
+                                c.name,
+                                style: AppFont.style(color: Colors.black),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      child: _buildFilterDropdown(
+                        _selectedCustomerName ?? 'Select Customer',
+                        Icons.business_outlined,
+                        isLoading: state is CustomerLoadingState,
+                      ),
+                    );
+                  },
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _buildFilterDropdown(
-                  'Select Site',
-                  Icons.location_on_outlined,
+                child: BlocBuilder<SitesBloc, SitesState>(
+                  bloc: _sitesBloc,
+                  builder: (context, state) {
+                    final sites = <Site>[];
+                    if (state is SitesSuccessState) {
+                      sites.addAll(state.data.data);
+                    }
+                    return PopupMenuButton<Site>(
+                      color: Colors.white,
+                      surfaceTintColor: Colors.white,
+                      onSelected: (site) {
+                        setState(() {
+                          _selectedSiteName = site.name;
+                          _selectedSiteId = site.id;
+                        });
+                        _fetchReportHistory();
+                      },
+                      offset: const Offset(0, 45),
+                      itemBuilder: (ctx) => sites
+                          .map(
+                            (s) => PopupMenuItem<Site>(
+                              value: s,
+                              child: Text(
+                                s.name,
+                                style: AppFont.style(color: Colors.black),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      child: _buildFilterDropdown(
+                        _selectedSiteName ?? 'Select Site',
+                        Icons.location_on_outlined,
+                        isLoading: state is SitesLoadingState,
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -210,31 +406,77 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _buildFilterDropdown(
-                  'Select Techni...',
-                  Icons.person_outline,
+                child: BlocBuilder<TechnicianBloc, TechnicianState>(
+                  bloc: _technicianBloc,
+                  builder: (context, state) {
+                    final technicians = <Technician>[];
+                    if (state is TechnicianSuccessState) {
+                      technicians.addAll(state.data.data);
+                    }
+                    return PopupMenuButton<Technician>(
+                      color: Colors.white,
+                      surfaceTintColor: Colors.white,
+                      onSelected: (tech) {
+                        setState(() {
+                          _selectedTechnicianName = tech.name;
+                          _selectedTechnicianId = tech.id;
+                        });
+                        _fetchReportHistory();
+                      },
+                      offset: const Offset(0, 45),
+                      itemBuilder: (ctx) => technicians
+                          .map(
+                            (t) => PopupMenuItem<Technician>(
+                              value: t,
+                              child: Text(
+                                t.name,
+                                style: AppFont.style(color: Colors.black),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      child: _buildFilterDropdown(
+                        _selectedTechnicianName ?? 'Select Technician',
+                        Icons.person_outline,
+                        isLoading: state is TechnicianLoadingState,
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
           // Clear Filters
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
-            ),
-            child: Center(
-              child: Text(
-                'CLEAR FILTERS',
-                style: AppFont.style(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                  color: const Color(0xFFA5ABB7),
-                  letterSpacing: 0.5,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedCustomerName = null;
+                _selectedCustomerId = null;
+                _selectedSiteName = null;
+                _selectedSiteId = null;
+                _selectedTechnicianName = null;
+                _selectedTechnicianId = null;
+              });
+              _fetchReportHistory();
+            },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+              ),
+              child: Center(
+                child: Text(
+                  'CLEAR FILTERS',
+                  style: AppFont.style(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFFA5ABB7),
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
             ),
@@ -244,7 +486,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     );
   }
 
-  Widget _buildFilterDropdown(String label, IconData icon) {
+  Widget _buildFilterDropdown(
+    String label,
+    IconData icon, {
+    bool isLoading = false,
+  }) {
     return Container(
       height: 44,
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -268,11 +514,21 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          const Icon(
-            Icons.keyboard_arrow_down,
-            color: Color(0xFFA5ABB7),
-            size: 18,
-          ),
+          if (isLoading)
+            const SizedBox(
+              width: 14,
+              height: 14,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Color(0xFF1565C0),
+              ),
+            )
+          else
+            const Icon(
+              Icons.keyboard_arrow_down,
+              color: Color(0xFFA5ABB7),
+              size: 18,
+            ),
         ],
       ),
     );
@@ -520,10 +776,10 @@ class _ReportCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const Spacer(),
-                _buildViewButton(),
               ],
             ),
+            const SizedBox(height: 16),
+            _buildViewButton(),
           ],
         ),
       ),
@@ -531,17 +787,24 @@ class _ReportCard extends StatelessWidget {
   }
 
   Widget _buildViewButton() {
+    String btnText = 'VIEW SERVICE REPORT';
+    if (type == ReportType.commissioning) {
+      btnText = 'VIEW COMMISSIONING REPORT';
+    } else if (type == ReportType.amc) {
+      btnText = 'VIEW AMC REPORT';
+    }
     return Container(
       height: 44,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      width: double.infinity,
       decoration: BoxDecoration(
         color: const Color(0xFF1565C0),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'VIEW SERVICE REPORT',
+            btnText,
             style: AppFont.style(
               fontSize: 12,
               fontWeight: FontWeight.w900,

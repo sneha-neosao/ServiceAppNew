@@ -106,138 +106,143 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        return SingleChildScrollView(
-          padding: EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 24,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'New $fieldLabel',
-                    style: AppFont.style(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      color: const Color(0xFF0D121F),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(ctx),
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF8F9FB),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFFF1F2F6)),
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        size: 16,
-                        color: Color(0xFFA5ABB7),
+        return SafeArea(
+          bottom: true,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 24,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'New $fieldLabel',
+                      style: AppFont.style(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF0D121F),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'NAME',
-                style: AppFont.style(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFFA5ABB7),
-                  letterSpacing: 1.0,
+                    GestureDetector(
+                      onTap: () => Navigator.pop(ctx),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8F9FB),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: const Color(0xFFF1F2F6)),
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          size: 16,
+                          color: Color(0xFFA5ABB7),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: controller,
-                autofocus: true,
-                style: AppFont.style(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF0D121F),
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Type here...',
-                  hintStyle: AppFont.style(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
+                const SizedBox(height: 24),
+                Text(
+                  'NAME',
+                  style: AppFont.style(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
                     color: const Color(0xFFA5ABB7),
-                  ),
-                  filled: true,
-                  fillColor: const Color(0xFFF8F9FB),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF1565C0),
-                      width: 1.5,
-                    ),
+                    letterSpacing: 1.0,
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Save button
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    final text = controller.text.trim();
-                    if (text.isNotEmpty) {
-                      Navigator.pop(ctx);
-                      onSaved(text);
-                    }
-                  },
-                  icon: const Icon(Icons.save_outlined, size: 18),
-                  label: Text(
-                    'SAVE ENTRY',
-                    style: AppFont.style(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                      letterSpacing: 0.5,
-                    ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: controller,
+                  autofocus: true,
+                  style: AppFont.style(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF0D121F),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(
-                      0xFF1565C0,
-                    ), // matching the blue
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
+                  decoration: InputDecoration(
+                    hintText: 'Type here...',
+                    hintStyle: AppFont.style(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFFA5ABB7),
+                    ),
+                    filled: true,
+                    fillColor: const Color(0xFFF8F9FB),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF1565C0),
+                        width: 1.5,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+
+                const SizedBox(height: 24),
+
+                // Save button
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      final text = controller.text.trim();
+                      if (text.isNotEmpty) {
+                        Navigator.pop(ctx);
+                        onSaved(text);
+                      }
+                    },
+                    icon: const Icon(Icons.save_outlined, size: 18),
+                    label: Text(
+                      'SAVE ENTRY',
+                      style: AppFont.style(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(
+                        0xFF1565C0,
+                      ), // matching the blue
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

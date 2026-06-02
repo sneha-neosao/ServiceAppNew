@@ -40,16 +40,19 @@ import '../../features/my_commissioning/domain/usecase/commissioning_step6_autof
 import '../../features/my_commissioning/domain/usecase/commissioning_step6_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/assigned_technician_representative_usecase.dart';
 import '../models/assigned_technician_representative_model/assigned_technician_representative_response.dart';
-import '../../features/my_commissioning/domain/usecase/commissioning_work_create_usecase.dart';
 import '../models/commissioning_work_create_model/commissioning_work_create_response.dart';
+import '../models/commissioning_report_history_model/commissioning_report_history_response.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_work_create_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_report_history_usecase.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
 abstract class Repository {
-
   Future<Either<Failure, LoginResponse>> login(LoginParams params);
 
-  Future<Either<Failure, ProfileDetailsResponse>> profile_details(NoParams params);
+  Future<Either<Failure, ProfileDetailsResponse>> profile_details(
+    NoParams params,
+  );
 
   Future<Either<Failure, CustomerResponse>> customers(NoParams params);
 
@@ -57,37 +60,59 @@ abstract class Repository {
 
   Future<Either<Failure, TechnicianResponse>> technician(NoParams params);
 
-  Future<Either<Failure, CommissioningWorkListResponse>> commissioning_work_list(NoParams params);
+  Future<Either<Failure, CommissioningWorkListResponse>>
+  commissioning_work_list(NoParams params);
 
-  Future<Either<Failure, UpcomingAmcVisitsResponse>> upcoming_amc(UpcomingAmcParams params);
+  Future<Either<Failure, UpcomingAmcVisitsResponse>> upcoming_amc(
+    UpcomingAmcParams params,
+  );
 
-  Future<Either<Failure, CommissioningReportStep1AutoFillResponse>> commissioning_report_step1_autofill(CommissioningStep1AutofillParams params);
+  Future<Either<Failure, CommissioningReportStep1AutoFillResponse>>
+  commissioning_report_step1_autofill(CommissioningStep1AutofillParams params);
 
-  Future<Either<Failure, CommissioningStep1Response>> commissioning_report_step1(CommissioningStep1Params params);
+  Future<Either<Failure, CommissioningStep1Response>>
+  commissioning_report_step1(CommissioningStep1Params params);
 
-  Future<Either<Failure, CommissioningStep2Response>> commissioning_report_step2(CommissioningStep2Params params);
+  Future<Either<Failure, CommissioningStep2Response>>
+  commissioning_report_step2(CommissioningStep2Params params);
 
-  Future<Either<Failure, CommissioningReportStep2AutoFillResponse>> commissioning_report_step2_autofill(CommissioningStep2AutofillParams params);
+  Future<Either<Failure, CommissioningReportStep2AutoFillResponse>>
+  commissioning_report_step2_autofill(CommissioningStep2AutofillParams params);
 
-  Future<Either<Failure, CommissioningStep3Response>> commissioning_report_step3(CommissioningStep3Params params);
+  Future<Either<Failure, CommissioningStep3Response>>
+  commissioning_report_step3(CommissioningStep3Params params);
 
-  Future<Either<Failure, CommissioningStep3Response>> commissioning_report_step3_autofill(CommissioningStep3AutofillParams params);
+  Future<Either<Failure, CommissioningStep3Response>>
+  commissioning_report_step3_autofill(CommissioningStep3AutofillParams params);
 
-  Future<Either<Failure, CommissioningReportStep4AutoFillResponse>> commissioning_report_step4_autofill(CommissioningStep4AutofillParams params);
+  Future<Either<Failure, CommissioningReportStep4AutoFillResponse>>
+  commissioning_report_step4_autofill(CommissioningStep4AutofillParams params);
 
-  Future<Either<Failure, CommissioningReportStep4AutoFillResponse>> commissioning_report_step4(CommissioningStep4Params params);
+  Future<Either<Failure, CommissioningReportStep4AutoFillResponse>>
+  commissioning_report_step4(CommissioningStep4Params params);
 
-  Future<Either<Failure, CommissioningReportStep5AutoFillResponse>> commissioning_report_step5_autofill(CommissioningStep5AutofillParams params);
+  Future<Either<Failure, CommissioningReportStep5AutoFillResponse>>
+  commissioning_report_step5_autofill(CommissioningStep5AutofillParams params);
 
-  Future<Either<Failure, CommissioningReportStep5AutoFillResponse>> commissioning_report_step5(CommissioningStep5Params params);
+  Future<Either<Failure, CommissioningReportStep5AutoFillResponse>>
+  commissioning_report_step5(CommissioningStep5Params params);
 
-  Future<Either<Failure, CommissioningReportStep6AutoFillResponse>> commissioning_report_step6_autofill(CommissioningStep6AutofillParams params);
+  Future<Either<Failure, CommissioningReportStep6AutoFillResponse>>
+  commissioning_report_step6_autofill(CommissioningStep6AutofillParams params);
 
-  Future<Either<Failure, CommissioningReportStep6AutoFillResponse>> commissioning_report_step6(CommissioningStep6Params params);
+  Future<Either<Failure, CommissioningReportStep6AutoFillResponse>>
+  commissioning_report_step6(CommissioningStep6Params params);
 
-  Future<Either<Failure, AssignedTechnicianResponse>> assigned_technician_representative(AssignedTechnicianRepresentativeParams params);
+  Future<Either<Failure, AssignedTechnicianResponse>>
+  assigned_technician_representative(
+    AssignedTechnicianRepresentativeParams params,
+  );
 
-  Future<Either<Failure, CommissioningWorkCreateResponse>> commissioningWorkCreate(CommissioningWorkCreateParams params);
+  Future<Either<Failure, CommissioningWorkCreateResponse>>
+  commissioningWorkCreate(CommissioningWorkCreateParams params);
+
+  Future<Either<Failure, CommissioningReportHistoryResponse>>
+  commissioningReportHistory(CommissioningReportHistoryParams params);
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -101,7 +126,6 @@ class AuthRepositoryImpl implements Repository {
     return _networkInfo.check<LoginResponse>(
       connected: () async {
         try {
-
           final respData = await _remoteDataSource.login(params);
 
           if (respData.status != 200) {
@@ -127,12 +151,11 @@ class AuthRepositoryImpl implements Repository {
           }
 
           return Right(respData);
-
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
-            return Left(ApiFailure(e.message));// rethrow as-is
+            return Left(ApiFailure(e.message)); // rethrow as-is
           }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
@@ -148,11 +171,12 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ProfileDetailsResponse>> profile_details(NoParams params) {
+  Future<Either<Failure, ProfileDetailsResponse>> profile_details(
+    NoParams params,
+  ) {
     return _networkInfo.check<ProfileDetailsResponse>(
       connected: () async {
         try {
-
           String token = await SessionManager.getAuthToken() ?? "";
 
           final respData = await _remoteDataSource.profileDetails(token);
@@ -172,12 +196,11 @@ class AuthRepositoryImpl implements Repository {
           // }
 
           return Right(respData);
-
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
-            return Left(ApiFailure(e.message));// rethrow as-is
+            return Left(ApiFailure(e.message)); // rethrow as-is
           }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
@@ -197,7 +220,6 @@ class AuthRepositoryImpl implements Repository {
     return _networkInfo.check<CustomerResponse>(
       connected: () async {
         try {
-
           String token = await SessionManager.getAuthToken() ?? "";
 
           final respData = await _remoteDataSource.customers(token);
@@ -207,12 +229,11 @@ class AuthRepositoryImpl implements Repository {
           }
 
           return Right(respData);
-
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
-            return Left(ApiFailure(e.message));// rethrow as-is
+            return Left(ApiFailure(e.message)); // rethrow as-is
           }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
@@ -232,22 +253,20 @@ class AuthRepositoryImpl implements Repository {
     return _networkInfo.check<SiteResponse>(
       connected: () async {
         try {
-
           String token = await SessionManager.getAuthToken() ?? "";
 
-          final respData = await _remoteDataSource.sites(params,token);
+          final respData = await _remoteDataSource.sites(params, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message!));
           }
 
           return Right(respData);
-
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
-            return Left(ApiFailure(e.message));// rethrow as-is
+            return Left(ApiFailure(e.message)); // rethrow as-is
           }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
@@ -267,7 +286,6 @@ class AuthRepositoryImpl implements Repository {
     return _networkInfo.check<TechnicianResponse>(
       connected: () async {
         try {
-
           String token = await SessionManager.getAuthToken() ?? "";
 
           final respData = await _remoteDataSource.technician(token);
@@ -277,12 +295,11 @@ class AuthRepositoryImpl implements Repository {
           }
 
           return Right(respData);
-
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
-            return Left(ApiFailure(e.message));// rethrow as-is
+            return Left(ApiFailure(e.message)); // rethrow as-is
           }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
@@ -298,11 +315,11 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningWorkListResponse>> commissioning_work_list(NoParams params) {
+  Future<Either<Failure, CommissioningWorkListResponse>>
+  commissioning_work_list(NoParams params) {
     return _networkInfo.check<CommissioningWorkListResponse>(
       connected: () async {
         try {
-
           String token = await SessionManager.getAuthToken() ?? "";
 
           final respData = await _remoteDataSource.commissioningWorkList(token);
@@ -312,12 +329,11 @@ class AuthRepositoryImpl implements Repository {
           }
 
           return Right(respData);
-
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
-            return Left(ApiFailure(e.message));// rethrow as-is
+            return Left(ApiFailure(e.message)); // rethrow as-is
           }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
@@ -333,26 +349,26 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, UpcomingAmcVisitsResponse>> upcoming_amc(UpcomingAmcParams params) {
+  Future<Either<Failure, UpcomingAmcVisitsResponse>> upcoming_amc(
+    UpcomingAmcParams params,
+  ) {
     return _networkInfo.check<UpcomingAmcVisitsResponse>(
       connected: () async {
         try {
-
           String token = await SessionManager.getAuthToken() ?? "";
 
-          final respData = await _remoteDataSource.upcomingAmc(params,token);
+          final respData = await _remoteDataSource.upcomingAmc(params, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message!));
           }
 
           return Right(respData);
-
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
-            return Left(ApiFailure(e.message));// rethrow as-is
+            return Left(ApiFailure(e.message)); // rethrow as-is
           }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
@@ -368,26 +384,26 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningReportStep1AutoFillResponse>> commissioning_report_step1_autofill(CommissioningStep1AutofillParams params) {
+  Future<Either<Failure, CommissioningReportStep1AutoFillResponse>>
+  commissioning_report_step1_autofill(CommissioningStep1AutofillParams params) {
     return _networkInfo.check<CommissioningReportStep1AutoFillResponse>(
       connected: () async {
         try {
-
           String token = await SessionManager.getAuthToken() ?? "";
 
-          final respData = await _remoteDataSource.commissioningReportStep1Autofill(params,token);
+          final respData = await _remoteDataSource
+              .commissioningReportStep1Autofill(params, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message!));
           }
 
           return Right(respData);
-
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
-            return Left(ApiFailure(e.message));// rethrow as-is
+            return Left(ApiFailure(e.message)); // rethrow as-is
           }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
@@ -403,26 +419,28 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningStep1Response>> commissioning_report_step1(CommissioningStep1Params params) {
+  Future<Either<Failure, CommissioningStep1Response>>
+  commissioning_report_step1(CommissioningStep1Params params) {
     return _networkInfo.check<CommissioningStep1Response>(
       connected: () async {
         try {
-
           String token = await SessionManager.getAuthToken() ?? "";
 
-          final respData = await _remoteDataSource.commissioningReportStep1(params,token);
+          final respData = await _remoteDataSource.commissioningReportStep1(
+            params,
+            token,
+          );
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message!));
           }
 
           return Right(respData);
-
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
-            return Left(ApiFailure(e.message));// rethrow as-is
+            return Left(ApiFailure(e.message)); // rethrow as-is
           }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
@@ -438,26 +456,28 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningStep2Response>> commissioning_report_step2(CommissioningStep2Params params) {
+  Future<Either<Failure, CommissioningStep2Response>>
+  commissioning_report_step2(CommissioningStep2Params params) {
     return _networkInfo.check<CommissioningStep2Response>(
       connected: () async {
         try {
-
           String token = await SessionManager.getAuthToken() ?? "";
 
-          final respData = await _remoteDataSource.commissioningReportStep2(params,token);
+          final respData = await _remoteDataSource.commissioningReportStep2(
+            params,
+            token,
+          );
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message!));
           }
 
           return Right(respData);
-
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
-            return Left(ApiFailure(e.message));// rethrow as-is
+            return Left(ApiFailure(e.message)); // rethrow as-is
           }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
@@ -473,26 +493,26 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningReportStep2AutoFillResponse>> commissioning_report_step2_autofill(CommissioningStep2AutofillParams params) {
+  Future<Either<Failure, CommissioningReportStep2AutoFillResponse>>
+  commissioning_report_step2_autofill(CommissioningStep2AutofillParams params) {
     return _networkInfo.check<CommissioningReportStep2AutoFillResponse>(
       connected: () async {
         try {
-
           String token = await SessionManager.getAuthToken() ?? "";
 
-          final respData = await _remoteDataSource.commissioningReportStep2Autofill(params,token);
+          final respData = await _remoteDataSource
+              .commissioningReportStep2Autofill(params, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message!));
           }
 
           return Right(respData);
-
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
-            return Left(ApiFailure(e.message));// rethrow as-is
+            return Left(ApiFailure(e.message)); // rethrow as-is
           }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
@@ -508,12 +528,16 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningStep3Response>> commissioning_report_step3(CommissioningStep3Params params) {
+  Future<Either<Failure, CommissioningStep3Response>>
+  commissioning_report_step3(CommissioningStep3Params params) {
     return _networkInfo.check<CommissioningStep3Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.commissioningReportStep3(params, token);
+          final respData = await _remoteDataSource.commissioningReportStep3(
+            params,
+            token,
+          );
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message!));
@@ -521,7 +545,7 @@ class AuthRepositoryImpl implements Repository {
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));
           }
@@ -539,12 +563,14 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningStep3Response>> commissioning_report_step3_autofill(CommissioningStep3AutofillParams params) {
+  Future<Either<Failure, CommissioningStep3Response>>
+  commissioning_report_step3_autofill(CommissioningStep3AutofillParams params) {
     return _networkInfo.check<CommissioningStep3Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.commissioningReportStep3Autofill(params, token);
+          final respData = await _remoteDataSource
+              .commissioningReportStep3Autofill(params, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message!));
@@ -552,7 +578,7 @@ class AuthRepositoryImpl implements Repository {
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));
           }
@@ -570,12 +596,14 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningReportStep4AutoFillResponse>> commissioning_report_step4_autofill(CommissioningStep4AutofillParams params) {
+  Future<Either<Failure, CommissioningReportStep4AutoFillResponse>>
+  commissioning_report_step4_autofill(CommissioningStep4AutofillParams params) {
     return _networkInfo.check<CommissioningReportStep4AutoFillResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.commissioningReportStep4Autofill(params.id, token);
+          final respData = await _remoteDataSource
+              .commissioningReportStep4Autofill(params.id, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message));
@@ -583,7 +611,7 @@ class AuthRepositoryImpl implements Repository {
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));
           }
@@ -601,12 +629,16 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningReportStep4AutoFillResponse>> commissioning_report_step4(CommissioningStep4Params params) {
+  Future<Either<Failure, CommissioningReportStep4AutoFillResponse>>
+  commissioning_report_step4(CommissioningStep4Params params) {
     return _networkInfo.check<CommissioningReportStep4AutoFillResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.commissioningReportStep4(params, token);
+          final respData = await _remoteDataSource.commissioningReportStep4(
+            params,
+            token,
+          );
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message));
@@ -614,7 +646,7 @@ class AuthRepositoryImpl implements Repository {
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));
           }
@@ -632,18 +664,20 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningReportStep5AutoFillResponse>> commissioning_report_step5_autofill(CommissioningStep5AutofillParams params) {
+  Future<Either<Failure, CommissioningReportStep5AutoFillResponse>>
+  commissioning_report_step5_autofill(CommissioningStep5AutofillParams params) {
     return _networkInfo.check<CommissioningReportStep5AutoFillResponse>(
       connected: () async {
         try {
-          final respData = await _remoteDataSource.commissioningReportStep5Autofill(params.id);
+          final respData = await _remoteDataSource
+              .commissioningReportStep5Autofill(params.id);
 
           if (respData.status != 200) {
             return Left(ServerFailure(respData.message));
           } else {
             return Right(respData);
           }
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));
           }
@@ -661,18 +695,21 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningReportStep5AutoFillResponse>> commissioning_report_step5(CommissioningStep5Params params) {
+  Future<Either<Failure, CommissioningReportStep5AutoFillResponse>>
+  commissioning_report_step5(CommissioningStep5Params params) {
     return _networkInfo.check<CommissioningReportStep5AutoFillResponse>(
       connected: () async {
         try {
-          final respData = await _remoteDataSource.commissioningReportStep5(params);
+          final respData = await _remoteDataSource.commissioningReportStep5(
+            params,
+          );
 
           if (respData.status != 200) {
             return Left(ServerFailure(respData.message));
           } else {
             return Right(respData);
           }
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));
           }
@@ -690,18 +727,20 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningReportStep6AutoFillResponse>> commissioning_report_step6_autofill(CommissioningStep6AutofillParams params) {
+  Future<Either<Failure, CommissioningReportStep6AutoFillResponse>>
+  commissioning_report_step6_autofill(CommissioningStep6AutofillParams params) {
     return _networkInfo.check<CommissioningReportStep6AutoFillResponse>(
       connected: () async {
         try {
-          final respData = await _remoteDataSource.commissioningReportStep6Autofill(params.id);
+          final respData = await _remoteDataSource
+              .commissioningReportStep6Autofill(params.id);
 
           if (respData.status != 200) {
             return Left(ServerFailure(respData.message));
           } else {
             return Right(respData);
           }
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));
           }
@@ -719,18 +758,21 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningReportStep6AutoFillResponse>> commissioning_report_step6(CommissioningStep6Params params) {
+  Future<Either<Failure, CommissioningReportStep6AutoFillResponse>>
+  commissioning_report_step6(CommissioningStep6Params params) {
     return _networkInfo.check<CommissioningReportStep6AutoFillResponse>(
       connected: () async {
         try {
-          final respData = await _remoteDataSource.commissioningReportStep6(params);
+          final respData = await _remoteDataSource.commissioningReportStep6(
+            params,
+          );
 
           if (respData.status != 200) {
             return Left(ServerFailure(respData.message));
           } else {
             return Right(respData);
           }
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));
           }
@@ -748,18 +790,22 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, AssignedTechnicianResponse>> assigned_technician_representative(AssignedTechnicianRepresentativeParams params) {
+  Future<Either<Failure, AssignedTechnicianResponse>>
+  assigned_technician_representative(
+    AssignedTechnicianRepresentativeParams params,
+  ) {
     return _networkInfo.check<AssignedTechnicianResponse>(
       connected: () async {
         try {
-          final respData = await _remoteDataSource.assignedTechnicianRepresentative(params.id);
+          final respData = await _remoteDataSource
+              .assignedTechnicianRepresentative(params.id);
 
           if (respData.status != 200) {
             return Left(ServerFailure(respData.message));
           } else {
             return Right(respData);
           }
-        } catch(e) {
+        } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));
           }
@@ -777,19 +823,57 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningWorkCreateResponse>> commissioningWorkCreate(CommissioningWorkCreateParams params) {
+  Future<Either<Failure, CommissioningWorkCreateResponse>>
+  commissioningWorkCreate(CommissioningWorkCreateParams params) {
     return _networkInfo.check<CommissioningWorkCreateResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.commissioningWorkCreate(params, token);
+          final respData = await _remoteDataSource.commissioningWorkCreate(
+            params,
+            token,
+          );
 
           if (respData.status != 200 && respData.status != 201) {
             return Left(ServerFailure(respData.message));
           } else {
             return Right(respData);
           }
-        } catch(e) {
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, CommissioningReportHistoryResponse>>
+      commissioningReportHistory(CommissioningReportHistoryParams params) {
+    return _networkInfo.check<CommissioningReportHistoryResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.commissioningReportHistory(
+            params,
+            token,
+          );
+
+          if (respData.status != 200 && respData.status != 201) {
+            return Left(ServerFailure(respData.message));
+          } else {
+            return Right(respData);
+          }
+        } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));
           }
