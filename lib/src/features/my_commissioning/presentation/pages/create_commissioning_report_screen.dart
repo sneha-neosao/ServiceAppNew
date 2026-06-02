@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
@@ -25,8 +27,16 @@ import '../../bloc/commissioning_step4_autofill_bloc/commissioning_step4_autofil
 import '../../bloc/commissioning_step4_bloc/commissioning_step4_bloc.dart';
 import '../../bloc/commissioning_step4_bloc/commissioning_step4_event.dart';
 import '../../bloc/commissioning_step4_bloc/commissioning_step4_state.dart';
+import '../../bloc/commissioning_step5_autofill_bloc/commissioning_step5_autofill_bloc.dart';
+import '../../bloc/commissioning_step5_autofill_bloc/commissioning_step5_autofill_event.dart';
+import '../../bloc/commissioning_step5_autofill_bloc/commissioning_step5_autofill_state.dart';
+import '../../bloc/commissioning_step5_bloc/commissioning_step5_bloc.dart';
+import '../../bloc/commissioning_step5_bloc/commissioning_step5_event.dart';
+import '../../bloc/commissioning_step5_bloc/commissioning_step5_state.dart';
 import '../../bloc/commissioning_work_list_bloc/commissioning_work_list_bloc.dart';
+import '../../domain/usecase/commissioning_step5_usecase.dart';
 import '../../../../remote/models/commissioning_report_step4_autofill_model/commissioning_report_step4_autofill_response.dart' hide CommissioningData, Technician;
+import '../../../../remote/models/commissioning_report_step5_autofill_model/commissioning_report_step5_autofill_response.dart' hide SavedDescription;
 
 class CreateCommissioningReportScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -95,6 +105,9 @@ class _CreateCommissioningReportScreenState
   late CommissioningStep4AutoFillBloc _step4Bloc;
   late CommissioningStep4Bloc _submitStep4Bloc;
 
+  late CommissioningStep5AutoFillBloc _step5Bloc;
+  late CommissioningStep5Bloc _submitStep5Bloc;
+
   // Step 3 Controllers
   final _pumpMakeController = TextEditingController();
   final _pumpModelController = TextEditingController();
@@ -118,6 +131,29 @@ class _CreateCommissioningReportScreenState
     TextEditingController(),
   ];
 
+  final Map<String, File> _step5Media = {};
+  final Map<String, String?> _step5ExistingPhotos = {};
+  final Map<String, String?> _step5ExistingVideos = {};
+
+  Future<void> _pickMedia(String key, ImageSource source, bool isVideo) async {
+    final ImagePicker picker = ImagePicker();
+    if (isVideo) {
+      final XFile? video = await picker.pickVideo(source: source);
+      if (video != null) {
+        setState(() {
+          _step5Media[key] = File(video.path);
+        });
+      }
+    } else {
+      final XFile? photo = await picker.pickImage(source: source);
+      if (photo != null) {
+        setState(() {
+          _step5Media[key] = File(photo.path);
+        });
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -131,6 +167,8 @@ class _CreateCommissioningReportScreenState
     _submitStep3Bloc = getIt<CommissioningStep3Bloc>();
     _step4Bloc = getIt<CommissioningStep4AutoFillBloc>();
     _submitStep4Bloc = getIt<CommissioningStep4Bloc>();
+    _step5Bloc = getIt<CommissioningStep5AutoFillBloc>();
+    _submitStep5Bloc = getIt<CommissioningStep5Bloc>();
     _agendaController = TextEditingController();
 
     _technicians = [TextEditingController()];
@@ -148,6 +186,8 @@ class _CreateCommissioningReportScreenState
     _submitStep3Bloc.close();
     _step4Bloc.close();
     _submitStep4Bloc.close();
+    _step5Bloc.close();
+    _submitStep5Bloc.close();
     _agendaController.dispose();
     _pumpMakeController.dispose();
     _pumpModelController.dispose();
@@ -260,6 +300,45 @@ class _CreateCommissioningReportScreenState
         _commissioningReportId ?? widget.commissioningWorkId,
         descriptions,
       ));
+    } else if (_currentStep == 5) {
+      if (_submitStep5Bloc.state is CommissioningStep5LoadingState) return;
+
+      List<SavedChecklist> savedChecklists = [];
+
+      // Add mechanical checklists if not NA
+      if (!_mechNA) {
+        if (_bearingNoise != null) savedChecklists.add(SavedChecklist(id: "", checkType: "mechanical", keyChecklist: "Bearing noise", valueChecklist: _bearingNoise!, photo: _step5Media['Bearing Noise / Abnormal Sound Checked:']?.path, video: _step5Media['Bearing Noise / Abnormal Sound Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Bearing noise'], existingVideoUrl: _step5ExistingVideos['Bearing noise']));
+        if (_vibration != null) savedChecklists.add(SavedChecklist(id: "", checkType: "mechanical", keyChecklist: "Vibration", valueChecklist: _vibration!, photo: _step5Media['Vibration Checked:']?.path, video: _step5Media['Vibration Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Vibration'], existingVideoUrl: _step5ExistingVideos['Vibration']));
+        if (_mechSeal != null) savedChecklists.add(SavedChecklist(id: "", checkType: "mechanical", keyChecklist: "Mechanical seal", valueChecklist: _mechSeal!, photo: _step5Media['Mechanical Seal / Gland Leakage Checked:']?.path, video: _step5Media['Mechanical Seal / Gland Leakage Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Mechanical seal'], existingVideoUrl: _step5ExistingVideos['Mechanical seal']));
+        if (_pumpDry != null) savedChecklists.add(SavedChecklist(id: "", checkType: "mechanical", keyChecklist: "Pump not running dry", valueChecklist: _pumpDry!, photo: _step5Media['Pump Not Running Dry:']?.path, video: _step5Media['Pump Not Running Dry:']?.path, existingPhotoUrl: _step5ExistingPhotos['Pump not running dry'], existingVideoUrl: _step5ExistingVideos['Pump not running dry']));
+      }
+
+      // Add pipeline checklists if not NA
+      if (!_pipeNA) {
+        if (_nrvValve != null) savedChecklists.add(SavedChecklist(id: "", checkType: "pipeline_hydraulic", keyChecklist: "NRV", valueChecklist: _nrvValve!, photo: _step5Media['NRV / Butterfly Valve / Gate Valve Condition Checked:']?.path, video: _step5Media['NRV / Butterfly Valve / Gate Valve Condition Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['NRV'], existingVideoUrl: _step5ExistingVideos['NRV']));
+        if (_strainerValve != null) savedChecklists.add(SavedChecklist(id: "", checkType: "pipeline_hydraulic", keyChecklist: "Strainer", valueChecklist: _strainerValve!, photo: _step5Media['Strainer / Foot Valve Condition Checked:']?.path, video: _step5Media['Strainer / Foot Valve Condition Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Strainer'], existingVideoUrl: _step5ExistingVideos['Strainer']));
+        if (_suctionLine != null) savedChecklists.add(SavedChecklist(id: "", checkType: "pipeline_hydraulic", keyChecklist: "Suction line", valueChecklist: _suctionLine!, photo: _step5Media['Suction Line (Air Leakage & Water Leakage Checked):']?.path, video: _step5Media['Suction Line (Air Leakage & Water Leakage Checked):']?.path, existingPhotoUrl: _step5ExistingPhotos['Suction line'], existingVideoUrl: _step5ExistingVideos['Suction line']));
+        if (_deliveryLine != null) savedChecklists.add(SavedChecklist(id: "", checkType: "pipeline_hydraulic", keyChecklist: "Delivery line", valueChecklist: _deliveryLine!, photo: _step5Media['Delivery Line (Air Leakage & Water Leakage Checked):']?.path, video: _step5Media['Delivery Line (Air Leakage & Water Leakage Checked):']?.path, existingPhotoUrl: _step5ExistingPhotos['Delivery line'], existingVideoUrl: _step5ExistingVideos['Delivery line']));
+        if (_suctionDelivery != null) savedChecklists.add(SavedChecklist(id: "", checkType: "pipeline_hydraulic", keyChecklist: "Suction / Delivery Valve", valueChecklist: _suctionDelivery!, photo: _step5Media['Suction / Delivery Valve Condition Checked:']?.path, video: _step5Media['Suction / Delivery Valve Condition Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Suction / Delivery Valve'], existingVideoUrl: _step5ExistingVideos['Suction / Delivery Valve']));
+        if (_pressureSwitch != null) savedChecklists.add(SavedChecklist(id: "", checkType: "pipeline_hydraulic", keyChecklist: "Pressure switch", valueChecklist: _pressureSwitch!, photo: _step5Media['Pressure Switch / Pressure Transmitter Checked:']?.path, video: _step5Media['Pressure Switch / Pressure Transmitter Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Pressure switch'], existingVideoUrl: _step5ExistingVideos['Pressure switch']));
+      }
+
+      // Add electrical checklists if not NA
+      if (!_elecNA) {
+        if (_elecFaults != null) savedChecklists.add(SavedChecklist(id: "", checkType: "electrical", keyChecklist: "Electrical Faults", valueChecklist: _elecFaults!, photo: _step5Media['Electrical Faults Checked:']?.path, video: _step5Media['Electrical Faults Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Electrical Faults'], existingVideoUrl: _step5ExistingVideos['Electrical Faults']));
+        if (_voltage != null) savedChecklists.add(SavedChecklist(id: "", checkType: "electrical", keyChecklist: "Voltage Check", valueChecklist: _voltage!, photo: _step5Media['Voltage Checked:']?.path, video: _step5Media['Voltage Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Voltage Check'], existingVideoUrl: _step5ExistingVideos['Voltage Check']));
+        if (_phase != null) savedChecklists.add(SavedChecklist(id: "", checkType: "electrical", keyChecklist: "Phase Check", valueChecklist: _phase!, photo: _step5Media['Phase Checked:']?.path, video: _step5Media['Phase Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Phase Check'], existingVideoUrl: _step5ExistingVideos['Phase Check']));
+        if (_current != null) savedChecklists.add(SavedChecklist(id: "", checkType: "electrical", keyChecklist: "Current Check", valueChecklist: _current!, photo: _step5Media['Current Checked:']?.path, video: _step5Media['Current Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Current Check'], existingVideoUrl: _step5ExistingVideos['Current Check']));
+        if (_panelWiring != null) savedChecklists.add(SavedChecklist(id: "", checkType: "electrical", keyChecklist: "Control Panel Wiring", valueChecklist: _panelWiring!, photo: _step5Media['Panel Wiring Checked:']?.path, video: _step5Media['Panel Wiring Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Control Panel Wiring'], existingVideoUrl: _step5ExistingVideos['Control Panel Wiring']));
+      }
+
+      _submitStep5Bloc.add(CommissioningStep5GetEvent(
+        _commissioningReportId ?? widget.commissioningWorkId,
+        _mechNA,
+        _pipeNA,
+        _elecNA,
+        savedChecklists,
+      ));
     } else if (_currentStep < 6) {
       setState(() {
         _currentStep++;
@@ -286,6 +365,10 @@ class _CreateCommissioningReportScreenState
         } else if (_currentStep == 4) {
           if (_commissioningReportId != null) {
             _step4Bloc.add(CommissioningStep4AutoFillGetEvent(_commissioningReportId!));
+          }
+        } else if (_currentStep == 5) {
+          if (_commissioningReportId != null) {
+            _step5Bloc.add(CommissioningStep5AutoFillGetEvent(_commissioningReportId!));
           }
         }
       });
@@ -527,6 +610,9 @@ class _CreateCommissioningReportScreenState
             appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
             setState(() {
               _currentStep++;
+              if (_currentStep == 5 && _commissioningReportId != null) {
+                _step5Bloc.add(CommissioningStep5AutoFillGetEvent(_commissioningReportId!));
+              }
             });
           } else if (state is CommissioningStep4FailureState) {
             appSnackBar(context, const Color(0xFFF44336), state.message);
@@ -549,6 +635,69 @@ class _CreateCommissioningReportScreenState
               for (var controller in _workDescriptionControllers) {
                 controller.text = '';
               }
+            }
+            setState(() {});
+          }
+        },
+      child: BlocListener<CommissioningStep5Bloc, CommissioningStep5State>(
+        bloc: _submitStep5Bloc,
+        listener: (context, state) {
+          if (state is CommissioningStep5SuccessState) {
+            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+            setState(() {
+              _currentStep++;
+            });
+          } else if (state is CommissioningStep5FailureState) {
+            appSnackBar(context, const Color(0xFFF44336), state.message);
+          }
+        },
+      child: BlocListener<CommissioningStep5AutoFillBloc, CommissioningStep5AutoFillState>(
+        bloc: _step5Bloc,
+        listener: (context, state) {
+          if (state is CommissioningStep5AutoFillSuccessState) {
+            final data = state.data.data;
+            _mechNA = data.isMechanicalChecklistNa;
+            _pipeNA = data.isPipelineChecklistNa;
+            _elecNA = data.isElectricalChecklistNa;
+            
+            _bearingNoise = null;
+            _vibration = null;
+            _mechSeal = null;
+            _pumpDry = null;
+            _nrvValve = null;
+            _strainerValve = null;
+            _suctionLine = null;
+            _deliveryLine = null;
+            _suctionDelivery = null;
+            _pressureSwitch = null;
+            _elecFaults = null;
+            _voltage = null;
+            _phase = null;
+            _current = null;
+            _panelWiring = null;
+
+            for (var check in data.savedChecklists) {
+              final key = check.keyChecklist;
+              final val = check.valueChecklist;
+              
+              _step5ExistingPhotos[key] = check.photo;
+              _step5ExistingVideos[key] = check.video;
+
+              if (key == "Bearing noise") _bearingNoise = val;
+              else if (key == "Vibration") _vibration = val;
+              else if (key == "Mechanical seal") _mechSeal = val;
+              else if (key == "Pump not running dry") _pumpDry = val;
+              else if (key == "NRV") _nrvValve = val;
+              else if (key == "Strainer") _strainerValve = val;
+              else if (key == "Suction line") _suctionLine = val;
+              else if (key == "Delivery line") _deliveryLine = val;
+              else if (key == "Suction / Delivery Valve") _suctionDelivery = val;
+              else if (key == "Pressure switch") _pressureSwitch = val;
+              else if (key == "Electrical Faults") _elecFaults = val;
+              else if (key == "Voltage Check") _voltage = val;
+              else if (key == "Phase Check") _phase = val;
+              else if (key == "Current Check") _current = val;
+              else if (key == "Control Panel Wiring") _panelWiring = val;
             }
             setState(() {});
           }
@@ -685,11 +834,15 @@ class _CreateCommissioningReportScreenState
                                 return BlocBuilder<CommissioningStep4Bloc, CommissioningStep4State>(
                                   bloc: _submitStep4Bloc,
                                   builder: (context, submitStep4State) {
-                                    bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
-                                                        (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState) ||
-                                                        (_currentStep == 3 && submitStep3State is CommissioningStep3LoadingState) ||
-                                                        (_currentStep == 4 && submitStep4State is CommissioningStep4LoadingState);
-                                    return Container(
+                                      return BlocBuilder<CommissioningStep5Bloc, CommissioningStep5State>(
+                                        bloc: _submitStep5Bloc,
+                                        builder: (context, submitStep5State) {
+                                          bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
+                                                              (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState) ||
+                                                              (_currentStep == 3 && submitStep3State is CommissioningStep3LoadingState) ||
+                                                              (_currentStep == 4 && submitStep4State is CommissioningStep4LoadingState) ||
+                                                              (_currentStep == 5 && submitStep5State is CommissioningStep5LoadingState);
+                                          return Container(
                                       height: 56,
                                       padding: const EdgeInsets.symmetric(horizontal: 32),
                                       decoration: BoxDecoration(
@@ -748,7 +901,9 @@ class _CreateCommissioningReportScreenState
                                           ],
                                         ],
                                       ),
-                                    );
+                                      );
+                                        },
+                                      );
                                   },
                                 );
                               },
@@ -765,6 +920,8 @@ class _CreateCommissioningReportScreenState
       ), // Column
       ), // SafeArea
       ), // Scaffold
+      ), // Step 5 AutoFill
+      ), // Step 5 Submit
       ), // Step 4 AutoFill
       ), // Step 4 Submit
       ), // Step 3 AutoFill
@@ -866,7 +1023,20 @@ class _CreateCommissioningReportScreenState
           },
         );
       case 5:
-        return _buildStep5();
+        return BlocBuilder<CommissioningStep5AutoFillBloc, CommissioningStep5AutoFillState>(
+          bloc: _step5Bloc,
+          builder: (context, state) {
+            if (state is CommissioningStep5AutoFillLoadingState || state is CommissioningStep5AutoFillInitialState) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                ),
+              );
+            }
+            return _buildStep5();
+          },
+        );
       case 6:
         return _buildStep6();
       default:
@@ -1788,7 +1958,7 @@ class _CreateCommissioningReportScreenState
             _buildCheckItem(
               label: 'Bearing Noise / Abnormal Sound Checked:',
               selected: _bearingNoise,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _bearingNoise = v),
             ),
@@ -1802,14 +1972,14 @@ class _CreateCommissioningReportScreenState
             _buildCheckItem(
               label: 'Mechanical Seal / Gland Leakage Checked:',
               selected: _mechSeal,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _mechSeal = v),
             ),
             _buildCheckItem(
               label: 'Pump Not Running Dry:',
               selected: _pumpDry,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _pumpDry = v),
             ),
@@ -1828,42 +1998,42 @@ class _CreateCommissioningReportScreenState
             _buildCheckItem(
               label: 'NRV / Butterfly Valve / Gate Valve Condition Checked:',
               selected: _nrvValve,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _nrvValve = v),
             ),
             _buildCheckItem(
               label: 'Strainer / Foot Valve Condition Checked:',
               selected: _strainerValve,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _strainerValve = v),
             ),
             _buildCheckItem(
               label: 'Suction Line (Air Leakage & Water Leakage Checked):',
               selected: _suctionLine,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _suctionLine = v),
             ),
             _buildCheckItem(
               label: 'Delivery Line (Air Leakage & Water Leakage Checked):',
               selected: _deliveryLine,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _deliveryLine = v),
             ),
             _buildCheckItem(
               label: 'Suction / Delivery Valve Condition Checked:',
               selected: _suctionDelivery,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _suctionDelivery = v),
             ),
             _buildCheckItem(
               label: 'Pressure Switch / Pressure Transmitter Checked:',
               selected: _pressureSwitch,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _pressureSwitch = v),
             ),
@@ -1882,35 +2052,35 @@ class _CreateCommissioningReportScreenState
             _buildCheckItem(
               label: 'Electrical Faults Checked:',
               selected: _elecFaults,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _elecFaults = v),
             ),
             _buildCheckItem(
               label: 'Voltage Checked:',
               selected: _voltage,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _voltage = v),
             ),
             _buildCheckItem(
               label: 'Phase Checked:',
               selected: _phase,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _phase = v),
             ),
             _buildCheckItem(
               label: 'Current Checked:',
               selected: _current,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _current = v),
             ),
             _buildCheckItem(
               label: 'Control Panel Wiring Checked:',
               selected: _panelWiring,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _panelWiring = v),
             ),
@@ -2034,7 +2204,14 @@ class _CreateCommissioningReportScreenState
                   right: i < options.length - 1 ? 20 : 0,
                 ),
                 child: GestureDetector(
-                  onTap: () => onSelect(options[i]),
+                  onTap: () {
+                    onSelect(options[i]);
+                    if (options[i] != 'not_ok') {
+                      setState(() {
+                        _step5Media.remove(label);
+                      });
+                    }
+                  },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -2077,7 +2254,105 @@ class _CreateCommissioningReportScreenState
               );
             }),
           ),
+          if (selected == 'not_ok') ...[
+            const SizedBox(height: 12),
+            _step5Media.containsKey(label)
+                ? Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _step5Media[label]!.path.endsWith('.mp4') ? Icons.videocam : Icons.image,
+                          size: 16,
+                          color: const Color(0xFF64748B),
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            _step5Media[label]!.path.split('/').last,
+                            style: AppFont.style(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF475569),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _step5Media.remove(label);
+                            });
+                          },
+                          child: const Icon(
+                            Icons.close,
+                            size: 16,
+                            color: Color(0xFFEF4444),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _buildMediaActionBtn(
+                        icon: Icons.photo_camera_outlined,
+                        text: 'Upload',
+                        onTap: () => _pickMedia(label, ImageSource.gallery, false),
+                      ),
+                      _buildMediaActionBtn(
+                        icon: Icons.camera_alt_outlined,
+                        text: 'Capture Photo',
+                        onTap: () => _pickMedia(label, ImageSource.camera, false),
+                      ),
+                      _buildMediaActionBtn(
+                        icon: Icons.videocam_outlined,
+                        text: 'Capture Video',
+                        onTap: () => _pickMedia(label, ImageSource.camera, true),
+                      ),
+                    ],
+                  ),
+          ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildMediaActionBtn({required IconData icon, required String text, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: const Color(0xFF1565C0)),
+            const SizedBox(width: 6),
+            Text(
+              text,
+              style: AppFont.style(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF1565C0),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

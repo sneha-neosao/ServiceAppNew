@@ -30,6 +30,8 @@ import '../models/commissioning_report_step3_autofill_model/commissioning_report
 import '../models/commissioning_report_step4_autofill_model/commissioning_report_step4_autofill_response.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step4_autofill_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step4_usecase.dart';
+import '../models/commissioning_report_step5_autofill_model/commissioning_report_step5_autofill_response.dart' hide SavedDescription;
+import '../../features/my_commissioning/domain/usecase/commissioning_step5_usecase.dart';
 
 sealed class RemoteDataSource {
 
@@ -62,6 +64,10 @@ sealed class RemoteDataSource {
   Future<CommissioningReportStep4AutoFillResponse> commissioningReportStep4Autofill(String id, String token);
 
   Future<CommissioningReportStep4AutoFillResponse> commissioningReportStep4(CommissioningStep4Params params, String token);
+
+  Future<CommissioningReportStep5AutoFillResponse> commissioningReportStep5Autofill(String id);
+
+  Future<CommissioningReportStep5AutoFillResponse> commissioningReportStep5(CommissioningStep5Params params);
 
   Future<void> logout();
 }
@@ -554,6 +560,63 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       return;
     } catch (e) {
       logger.e(e);
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<CommissioningReportStep5AutoFillResponse> commissioningReportStep5Autofill(String id) async {
+    try {
+      final response = await _helper.execute(
+        url: '${ApiUrl.commissioningWorkReportStep5AutoFill}/$id',
+        method: Method.get,
+      );
+
+      final respData = CommissioningReportStep5AutoFillResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<CommissioningReportStep5AutoFillResponse> commissioningReportStep5(CommissioningStep5Params params) async {
+    try {
+      final payload = {
+        "id": params.id,
+        "is_mechanical_checklist_na": params.isMechanicalChecklistNa,
+        "is_pipeline_checklist_na": params.isPipelineChecklistNa,
+        "is_electrical_checklist_na": params.isElectricalChecklistNa,
+        "checklist_items": params.checklistItems.map((e) => e.toJson()).toList(),
+      };
+
+      final response = await _helper.execute(
+        url: ApiUrl.commissioningWorkReportStep5,
+        method: Method.post,
+        data: payload,
+      );
+
+      final respData = CommissioningReportStep5AutoFillResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
       throw ServerException();
     }
   }

@@ -1,10 +1,12 @@
-class CommissioningReportStep5AutoFillResponse {
+import 'package:equatable/equatable.dart';
+
+class CommissioningReportStep5AutoFillResponse extends Equatable {
   final int status;
   final bool success;
-  final CommissioningData data;
+  final CommissioningStep5Data data;
   final String message;
 
-  CommissioningReportStep5AutoFillResponse({
+  const CommissioningReportStep5AutoFillResponse({
     required this.status,
     required this.success,
     required this.data,
@@ -15,7 +17,7 @@ class CommissioningReportStep5AutoFillResponse {
     return CommissioningReportStep5AutoFillResponse(
       status: json['status'],
       success: json['success'],
-      data: CommissioningData.fromJson(json['data']),
+      data: CommissioningStep5Data.fromJson(json['data']),
       message: json['message'],
     );
   }
@@ -28,40 +30,50 @@ class CommissioningReportStep5AutoFillResponse {
       'message': message,
     };
   }
+
+  @override
+  List<Object?> get props => [status, success, data, message];
 }
 
-class CommissioningData {
+class CommissioningStep5Data extends Equatable {
   final String id;
-  final String commissioningWorkId;
-  final String dealerName;
-  final String customerName;
-  final String siteName;
-  final String applicationOfEquipment;
-  final List<Technician> assignedTechnicians;
+  final bool? isTechnicalNa;
+  final Map<String, dynamic>? technicalDetails;
+  final bool isMechanicalChecklistNa;
+  final bool isPipelineChecklistNa;
+  final bool isElectricalChecklistNa;
+  final List<SavedChecklist> savedChecklists;
+  final List<SavedDescription>? savedDescriptions;
   final int lastCompletedStep;
 
-  CommissioningData({
+  const CommissioningStep5Data({
     required this.id,
-    required this.commissioningWorkId,
-    required this.dealerName,
-    required this.customerName,
-    required this.siteName,
-    required this.applicationOfEquipment,
-    required this.assignedTechnicians,
+    this.isTechnicalNa,
+    this.technicalDetails,
+    required this.isMechanicalChecklistNa,
+    required this.isPipelineChecklistNa,
+    required this.isElectricalChecklistNa,
+    required this.savedChecklists,
+    this.savedDescriptions,
     required this.lastCompletedStep,
   });
 
-  factory CommissioningData.fromJson(Map<String, dynamic> json) {
-    return CommissioningData(
+  factory CommissioningStep5Data.fromJson(Map<String, dynamic> json) {
+    return CommissioningStep5Data(
       id: json['id'],
-      commissioningWorkId: json['commissioning_work_id'],
-      dealerName: json['dealer_name'],
-      customerName: json['customer_name'],
-      siteName: json['site_name'],
-      applicationOfEquipment: json['application_of_equipment'],
-      assignedTechnicians: (json['assigned_technicians'] as List)
-          .map((e) => Technician.fromJson(e))
+      isTechnicalNa: json['is_technical_na'],
+      technicalDetails: json['technical_details'],
+      isMechanicalChecklistNa: json['is_mechanical_checklist_na'],
+      isPipelineChecklistNa: json['is_pipeline_checklist_na'],
+      isElectricalChecklistNa: json['is_electrical_checklist_na'],
+      savedChecklists: (json['saved_checklists'] as List)
+          .map((e) => SavedChecklist.fromJson(e))
           .toList(),
+      savedDescriptions: json['saved_descriptions'] != null
+          ? (json['saved_descriptions'] as List)
+          .map((e) => SavedDescription.fromJson(e))
+          .toList()
+          : null,
       lastCompletedStep: json['last_completed_step'],
     );
   }
@@ -69,38 +81,106 @@ class CommissioningData {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'commissioning_work_id': commissioningWorkId,
-      'dealer_name': dealerName,
-      'customer_name': customerName,
-      'site_name': siteName,
-      'application_of_equipment': applicationOfEquipment,
-      'assigned_technicians':
-      assignedTechnicians.map((e) => e.toJson()).toList(),
+      'is_technical_na': isTechnicalNa,
+      'technical_details': technicalDetails ?? {},
+      'is_mechanical_checklist_na': isMechanicalChecklistNa,
+      'is_pipeline_checklist_na': isPipelineChecklistNa,
+      'is_electrical_checklist_na': isElectricalChecklistNa,
+      'saved_checklists': savedChecklists.map((e) => e.toJson()).toList(),
+      'saved_descriptions':
+      savedDescriptions?.map((e) => e.toJson()).toList() ?? [],
       'last_completed_step': lastCompletedStep,
     };
   }
+
+  @override
+  List<Object?> get props => [
+    id,
+    isTechnicalNa,
+    technicalDetails,
+    isMechanicalChecklistNa,
+    isPipelineChecklistNa,
+    isElectricalChecklistNa,
+    savedChecklists,
+    savedDescriptions,
+    lastCompletedStep,
+  ];
 }
 
-class Technician {
+class SavedChecklist extends Equatable {
   final String id;
-  final String name;
+  final String checkType;
+  final String keyChecklist;
+  final String valueChecklist;
+  final String? photo;
+  final String? video;
+  final String? existingPhotoUrl;
+  final String? existingVideoUrl;
 
-  Technician({
+  const SavedChecklist({
     required this.id,
-    required this.name,
+    required this.checkType,
+    required this.keyChecklist,
+    required this.valueChecklist,
+    this.photo,
+    this.video,
+    this.existingPhotoUrl,
+    this.existingVideoUrl,
   });
 
-  factory Technician.fromJson(Map<String, dynamic> json) {
-    return Technician(
-      id: json['id'],
-      name: json['name'],
+  factory SavedChecklist.fromJson(Map<String, dynamic> json) {
+    return SavedChecklist(
+      id: json['id'] ?? '',
+      checkType: json['check_type'],
+      keyChecklist: json['key_checklist'],
+      valueChecklist: json['value_checklist'],
+      photo: json['photo'],
+      video: json['video'],
+      existingPhotoUrl: json['existing_photo_url'],
+      existingVideoUrl: json['existing_video_url'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'name': name,
+      'check_type': checkType,
+      'key_checklist': keyChecklist,
+      'value_checklist': valueChecklist,
+      'photo': photo,
+      'video': video,
+      'existing_photo_url': existingPhotoUrl,
+      'existing_video_url': existingVideoUrl,
     };
   }
+
+  @override
+  List<Object?> get props =>
+      [id, checkType, keyChecklist, valueChecklist, photo, video, existingPhotoUrl, existingVideoUrl];
+}
+
+class SavedDescription extends Equatable {
+  final int srNo;
+  final String description;
+
+  const SavedDescription({
+    required this.srNo,
+    required this.description,
+  });
+
+  factory SavedDescription.fromJson(Map<String, dynamic> json) {
+    return SavedDescription(
+      srNo: json['sr_no'],
+      description: json['description'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'sr_no': srNo,
+      'description': description,
+    };
+  }
+
+  @override
+  List<Object?> get props => [srNo, description];
 }

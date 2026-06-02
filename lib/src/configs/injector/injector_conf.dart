@@ -16,8 +16,12 @@ import '../../features/my_commissioning/domain/usecase/commissioning_step3_autof
 import '../../features/my_commissioning/domain/usecase/commissioning_step3_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step4_autofill_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step4_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step5_autofill_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step5_usecase.dart';
 import '../../features/my_commissioning/bloc/commissioning_step4_autofill_bloc/commissioning_step4_autofill_bloc.dart';
 import '../../features/my_commissioning/bloc/commissioning_step4_bloc/commissioning_step4_bloc.dart';
+import '../../features/my_commissioning/bloc/commissioning_step5_autofill_bloc/commissioning_step5_autofill_bloc.dart';
+import '../../features/my_commissioning/bloc/commissioning_step5_bloc/commissioning_step5_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -235,6 +239,30 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
         () => CommissioningStep4AutofillUsecase(
+      getIt<AuthRepositoryImpl>(),
+    ),
+  );
+
+  getIt.registerFactory(
+        () => CommissioningStep5Bloc(
+      getIt<CommissioningStep5Usecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+        () => CommissioningStep5Usecase(
+      getIt<AuthRepositoryImpl>(),
+    ),
+  );
+
+  getIt.registerFactory(
+        () => CommissioningStep5AutoFillBloc(
+      getIt<CommissioningStep5AutofillUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+        () => CommissioningStep5AutofillUsecase(
       getIt<AuthRepositoryImpl>(),
     ),
   );
