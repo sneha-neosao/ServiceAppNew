@@ -3,6 +3,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:signature/signature.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
@@ -386,6 +388,7 @@ class _CreateCommissioningReportScreenState
     } else if (_currentStep == 6) {
       if (_submitStep6Bloc.state is CommissioningStep6LoadingState) return;
 
+      print("🚀 Submitting Step 6: technicianRepresentative = '$_selectedTechnicianRepId'");
       _submitStep6Bloc.add(CommissioningStep6SubmitEvent(
         commissioning_report_id: _commissioningReportId ?? widget.commissioningWorkId,
         technicianRemarks: _technicianRemarksController.text.trim(),
@@ -902,71 +905,77 @@ class _CreateCommissioningReportScreenState
                                       return BlocBuilder<CommissioningStep5Bloc, CommissioningStep5State>(
                                         bloc: _submitStep5Bloc,
                                         builder: (context, submitStep5State) {
-                                          bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
-                                                              (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState) ||
-                                                              (_currentStep == 3 && submitStep3State is CommissioningStep3LoadingState) ||
-                                                              (_currentStep == 4 && submitStep4State is CommissioningStep4LoadingState) ||
-                                                              (_currentStep == 5 && submitStep5State is CommissioningStep5LoadingState);
-                                          return Container(
-                                      height: 56,
-                                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF1565C0),
-                                        borderRadius: BorderRadius.circular(16),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: const Color(0xFF1565C0).withValues(alpha: 0.2),
-                                            blurRadius: 15,
-                                            offset: const Offset(0, 8),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          if (_currentStep == 6)
-                                            const Icon(
-                                              Icons.check_box_outlined,
-                                              size: 20,
-                                              color: Colors.white,
-                                            )
-                                          else
-                                            const SizedBox.shrink(),
-                                          if (_currentStep == 6)
-                                            const SizedBox(width: 12)
-                                          else
-                                            const SizedBox.shrink(),
-                                          if (isSubmitting)
-                                            const SizedBox(
-                                              width: 20,
-                                              height: 20,
-                                              child: CircularProgressIndicator(
-                                                color: Colors.white,
-                                                strokeWidth: 2.5,
-                                              ),
-                                            )
-                                          else
-                                            Text(
-                                              _currentStep == 6
-                                                  ? 'create_report_btn_submit'.tr().toUpperCase()
-                                                  : 'create_report_btn_next'.tr().toUpperCase(),
-                                              style: AppFont.style(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w800,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          if (_currentStep < 6 && !isSubmitting) ...[
-                                            const SizedBox(width: 12),
-                                            const Icon(
-                                              Icons.arrow_forward,
-                                              size: 18,
-                                              color: Colors.white,
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                      );
+                                          return BlocBuilder<CommissioningStep6Bloc, CommissioningStep6State>(
+                                            bloc: _submitStep6Bloc,
+                                            builder: (context, submitStep6State) {
+                                              bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
+                                                                  (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState) ||
+                                                                  (_currentStep == 3 && submitStep3State is CommissioningStep3LoadingState) ||
+                                                                  (_currentStep == 4 && submitStep4State is CommissioningStep4LoadingState) ||
+                                                                  (_currentStep == 5 && submitStep5State is CommissioningStep5LoadingState) ||
+                                                                  (_currentStep == 6 && submitStep6State is CommissioningStep6LoadingState);
+                                              return Container(
+                                                height: 56,
+                                                padding: const EdgeInsets.symmetric(horizontal: 32),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0xFF1565C0),
+                                                  borderRadius: BorderRadius.circular(16),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: const Color(0xFF1565C0).withValues(alpha: 0.2),
+                                                      blurRadius: 15,
+                                                      offset: const Offset(0, 8),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    if (_currentStep == 6 && !isSubmitting)
+                                                      const Icon(
+                                                        Icons.check_box_outlined,
+                                                        size: 20,
+                                                        color: Colors.white,
+                                                      )
+                                                    else
+                                                      const SizedBox.shrink(),
+                                                    if (_currentStep == 6 && !isSubmitting)
+                                                      const SizedBox(width: 12)
+                                                    else
+                                                      const SizedBox.shrink(),
+                                                    if (isSubmitting)
+                                                      const SizedBox(
+                                                        width: 20,
+                                                        height: 20,
+                                                        child: CircularProgressIndicator(
+                                                          color: Colors.white,
+                                                          strokeWidth: 2.5,
+                                                        ),
+                                                      )
+                                                    else
+                                                      Text(
+                                                        _currentStep == 6
+                                                            ? 'SUBMIT REPORT'
+                                                            : 'create_report_btn_next'.tr().toUpperCase(),
+                                                        style: AppFont.style(
+                                                          fontSize: 14,
+                                                          fontWeight: FontWeight.w800,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    if (_currentStep < 6 && !isSubmitting) ...[
+                                                      const SizedBox(width: 12),
+                                                      const Icon(
+                                                        Icons.arrow_forward,
+                                                        size: 18,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ],
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          );
                                         },
                                       );
                                   },
@@ -1110,14 +1119,17 @@ class _CreateCommissioningReportScreenState
             if (techState is AssignedTechnicianRepresentativeSuccessState) {
               setState(() {
                 _assignedTechniciansList = techState.data.data;
+                print("👤 Assigned technicians loaded: ${_assignedTechniciansList.map((t) => '${t.name} (assignId: ${t.assignId}, technicianId: ${t.technicianId})').toList()}");
                 if (_autofilledTechRepName != null && _assignedTechniciansList.isNotEmpty) {
                   final matched = _assignedTechniciansList.firstWhere(
                     (t) => t.name.toLowerCase() == _autofilledTechRepName!.toLowerCase(),
                     orElse: () => _assignedTechniciansList.first,
                   );
-                  _selectedTechnicianRepId = matched.technicianId;
+                  _selectedTechnicianRepId = matched.assignId;
+                  print("🎯 _selectedTechnicianRepId set via _autofilledTechRepName to: $_selectedTechnicianRepId");
                 } else if (_selectedTechnicianRepId == null && _assignedTechniciansList.isNotEmpty) {
-                  _selectedTechnicianRepId = _assignedTechniciansList.first.technicianId;
+                  _selectedTechnicianRepId = _assignedTechniciansList.first.assignId;
+                  print("🎯 _selectedTechnicianRepId defaulted to: $_selectedTechnicianRepId");
                 }
               });
             }
@@ -1140,12 +1152,14 @@ class _CreateCommissioningReportScreenState
                     }
                     if (data.technicianRepresentativeName.isNotEmpty) {
                       _autofilledTechRepName = data.technicianRepresentativeName;
+                      print("📋 Autofilled tech rep name: $_autofilledTechRepName");
                       if (_assignedTechniciansList.isNotEmpty) {
                         final matched = _assignedTechniciansList.firstWhere(
                           (t) => t.name.toLowerCase() == data.technicianRepresentativeName.toLowerCase(),
                           orElse: () => _assignedTechniciansList.first,
                         );
-                        _selectedTechnicianRepId = matched.technicianId;
+                        _selectedTechnicianRepId = matched.assignId;
+                        print("🎯 _selectedTechnicianRepId set via autofill match to: $_selectedTechnicianRepId");
                       }
                     }
                     _existingTechnicianSignatureUrl = data.technicianSignature;
@@ -2590,7 +2604,7 @@ class _CreateCommissioningReportScreenState
                     ),
                     items: _assignedTechniciansList.map((tech) {
                       return DropdownMenuItem<String>(
-                        value: tech.technicianId,
+                        value: tech.assignId,
                         child: Text(tech.name),
                       );
                     }).toList(),
@@ -2612,7 +2626,7 @@ class _CreateCommissioningReportScreenState
           signatureFile: _technicianSignatureFile,
           existingUrl: _existingTechnicianSignatureUrl,
           onTap: () {
-            _showImagePickerOption(context, (file) {
+            _showSignatureDrawingPad(context, (file) {
               setState(() {
                 _technicianSignatureFile = file;
               });
@@ -2697,7 +2711,7 @@ class _CreateCommissioningReportScreenState
           signatureFile: _customerSignatureFile,
           existingUrl: _existingCustomerSignatureUrl,
           onTap: () {
-            _showImagePickerOption(context, (file) {
+            _showSignatureDrawingPad(context, (file) {
               setState(() {
                 _customerSignatureFile = file;
               });
@@ -2913,6 +2927,137 @@ class _CreateCommissioningReportScreenState
         );
       },
     );
+  }
+
+  Future<void> _showSignatureDrawingPad(BuildContext context, Function(File) onSignatureDrawn) async {
+    final SignatureController signatureController = SignatureController(
+      penStrokeWidth: 4,
+      penColor: const Color(0xFF0D121F),
+      exportBackgroundColor: Colors.white,
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Draw Your Signature',
+                        style: AppFont.style(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF9FAFB),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Signature(
+                        controller: signatureController,
+                        height: 200,
+                        backgroundColor: const Color(0xFFF9FAFB),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            signatureController.clear();
+                          },
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Color(0xFFCDD0D8)),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            'Clear',
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF6B7280),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (signatureController.isEmpty) {
+                              return;
+                            }
+                            final bytes = await signatureController.toPngBytes();
+                            if (bytes != null) {
+                              final tempDir = await getTemporaryDirectory();
+                              final file = File(
+                                '${tempDir.path}/signature_${DateTime.now().millisecondsSinceEpoch}.png',
+                              );
+                              await file.writeAsBytes(bytes);
+                              onSignatureDrawn(file);
+                              Navigator.pop(context);
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1565C0),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            'Done',
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    ).then((_) => signatureController.dispose());
   }
 
   Widget _buildRemarksBox(String placeholder, TextEditingController controller) {

@@ -68,7 +68,12 @@ class ApiHelper {
     } on SocketException {
       throw FetchDataException('No Internet connection');
     } on DioException catch (e) {
-      logger.e(e.message);
+      logger.e("🔥 DioException: ${e.message}");
+      if (e.response != null) {
+        logger.e("🔥 Response status: ${e.response?.statusCode}");
+        logger.e("🔥 Response data: ${e.response?.data}");
+        logger.e("🔥 Response headers: ${e.response?.headers}");
+      }
       throw ApiException(e.message ?? "Network error");
     }
   }
