@@ -40,6 +40,10 @@ import '../../features/my_commissioning/domain/usecase/commissioning_work_update
 import '../../features/my_commissioning/bloc/commissioning_work_update_bloc/commissioning_work_update_bloc.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_delete_usecase.dart';
 import '../../features/my_commissioning/bloc/commissioning_work_delete_bloc/commissioning_work_delete_bloc.dart';
+import '../../features/service_calls/domain/usecase/assigned_service_calls_usecase.dart';
+import '../../features/service_calls/bloc/assigned_service_calls_bloc/assigned_service_calls_bloc.dart';
+import '../../features/service_calls/domain/usecase/pending_service_calls_usecase.dart';
+import '../../features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -299,6 +303,26 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => CommissioningWorkDeleteUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => AssignedServiceCallsBloc(
+      getIt<AssignedServiceCallsUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => AssignedServiceCallsUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => PendingServiceCallsBloc(
+      getIt<PendingServiceCallsUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => PendingServiceCallsUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper

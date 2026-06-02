@@ -8,6 +8,14 @@ import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
 import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
+import 'package:service_app/src/features/service_calls/bloc/assigned_service_calls_bloc/assigned_service_calls_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/assigned_service_calls_bloc/assigned_service_calls_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/assigned_service_calls_bloc/assigned_service_calls_state.dart';
+import 'package:service_app/src/remote/models/service_calls_model/assigned_service_calls_response.dart';
+import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_state.dart';
+import 'package:service_app/src/remote/models/service_calls_model/pending_serbice_calls_response.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/assign_technician_dialog.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/complaint_report_dialog.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/service_call_card.dart';
@@ -26,12 +34,18 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
 
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
+  late AssignedServiceCallsBloc _assignedServiceCallsBloc;
+  late PendingServiceCallsBloc _pendingServiceCallsBloc;
+
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController _complaintController = TextEditingController();
 
   String? _selectedCustomerName;
   String? _selectedCustomerId;
 
   String? _selectedSiteName;
   String? _selectedSiteId;
+  String? _selectedDate;
 
   @override
   void initState() {
@@ -40,13 +54,55 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
     _sitesBloc = getIt<SitesBloc>();
+    
+    _assignedServiceCallsBloc = getIt<AssignedServiceCallsBloc>()
+      ..add(const AssignedServiceCallsGetEvent());
+      
+    _pendingServiceCallsBloc = getIt<PendingServiceCallsBloc>()
+      ..add(const PendingServiceCallsGetEvent());
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        if (_tabController.index == 0) {
+          _fetchServiceCalls(isRefresh: false, isAssignedOnly: true);
+        } else {
+          _fetchServiceCalls(isRefresh: false, isPendingOnly: true);
+        }
+      }
+    });
+  }
+
+  void _fetchServiceCalls({bool isRefresh = false, bool isAssignedOnly = false, bool isPendingOnly = false}) {
+    final complaintText = _complaintController.text.trim();
+    if (!isPendingOnly) {
+      _assignedServiceCallsBloc.add(AssignedServiceCallsGetEvent(
+        customerId: _selectedCustomerId,
+        siteId: _selectedSiteId,
+        complaintNumber: complaintText.isEmpty ? null : complaintText,
+        date: _selectedDate,
+        isRefresh: isRefresh,
+      ));
+    }
+    if (!isAssignedOnly) {
+      _pendingServiceCallsBloc.add(PendingServiceCallsGetEvent(
+        customerId: _selectedCustomerId,
+        siteId: _selectedSiteId,
+        complaintNumber: complaintText.isEmpty ? null : complaintText,
+        date: _selectedDate,
+        isRefresh: isRefresh,
+      ));
+    }
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _scrollController.dispose();
+    _complaintController.dispose();
     _customerBloc.close();
     _sitesBloc.close();
+    _assignedServiceCallsBloc.close();
+    _pendingServiceCallsBloc.close();
     super.dispose();
   }
 
@@ -127,6 +183,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                               _selectedSiteId = null;
                             });
                             _sitesBloc.add(SitesGetEvent(customer.id));
+                            _fetchServiceCalls(isRefresh: true);
                           },
                           offset: const Offset(0, 45),
                           itemBuilder: (ctx) => customers
@@ -166,6 +223,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                               _selectedSiteName = site.name;
                               _selectedSiteId = site.id;
                             });
+                            _fetchServiceCalls(isRefresh: true);
                           },
                           offset: const Offset(0, 45),
                           itemBuilder: (ctx) => sites
@@ -195,23 +253,29 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
               Row(
                 children: [
                   Expanded(
-                    child: _buildFilterInput(
-                      'Complaint No...',
-                      Icons.assignment_outlined,
-                    ),
+                    child: _buildComplaintInput(),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _buildFilterInput(
-                      'dd-mm-yyyy',
-                      Icons.calendar_today_outlined,
-                    ),
+                    child: _buildDateInput(),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
               // Clear Filters Button
-              Container(
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedCustomerName = null;
+                    _selectedCustomerId = null;
+                    _selectedSiteName = null;
+                    _selectedSiteId = null;
+                    _selectedDate = null;
+                    _complaintController.clear();
+                  });
+                  _fetchServiceCalls(isRefresh: true);
+                },
+                child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
@@ -232,6 +296,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                   ),
                 ),
               ),
+              ),
             ],
           ),
         ),
@@ -249,7 +314,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     );
   }
 
-  Widget _buildTab(String label, int count) {
+  Widget _buildTab(String label, int count, {bool isLoading = false}) {
     return Tab(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -259,10 +324,16 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
             style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w800),
           ),
           const SizedBox(width: 4),
-          Text(
-            '($count)',
-            style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w400),
-          ),
+          isLoading
+              ? const SizedBox(
+                  width: 12,
+                  height: 12,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1565C0)),
+                )
+              : Text(
+                  '($count)',
+                  style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w400),
+                ),
         ],
       ),
     );
@@ -315,7 +386,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     );
   }
 
-  Widget _buildFilterInput(String label, IconData icon) {
+  Widget _buildComplaintInput() {
     return Container(
       height: 44,
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -326,17 +397,28 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
       ),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFFA5ABB7), size: 18),
+          const Icon(Icons.assignment_outlined, color: Color(0xFFA5ABB7), size: 18),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
-              label,
+            child: TextField(
+              controller: _complaintController,
+              onSubmitted: (_) => _fetchServiceCalls(isRefresh: true),
               style: AppFont.style(
                 fontSize: 14,
-                color: const Color(0xFFA5ABB7),
+                color: const Color(0xFF0D121F),
                 fontWeight: FontWeight.w500,
               ),
-              overflow: TextOverflow.ellipsis,
+              decoration: InputDecoration(
+                hintText: 'Complaint No...',
+                hintStyle: AppFont.style(
+                  fontSize: 14,
+                  color: const Color(0xFFA5ABB7),
+                  fontWeight: FontWeight.w500,
+                ),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
             ),
           ),
         ],
@@ -344,60 +426,202 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     );
   }
 
-  Widget _buildOngoingList() {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        ServiceCallCard(
-          type: ServiceCallType.ongoing,
-          complaintNo: '#ABC-26-0492',
-          companyName: 'Reliance Mart',
-          location: 'CHILLER PLANT',
-          assignedTo: 'VINOD PATIL, PRASHANT SHINDE',
-          onView: () => _showReportDialog(context),
-          onEdit: () => _showAssignTechDialog(context),
-          onSubmit: () {
-            setState(() {
-              _isCreatingReport = true;
-            });
-          },
+  Widget _buildDateInput() {
+    return GestureDetector(
+      onTap: () async {
+        final date = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2100),
+        );
+        if (date != null) {
+          setState(() {
+            _selectedDate = DateFormat('yyyy-MM-dd').format(date);
+          });
+          _fetchServiceCalls(isRefresh: true);
+        }
+      },
+      child: Container(
+        height: 44,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
         ),
-      ],
+        child: Row(
+          children: [
+            const Icon(Icons.calendar_today_outlined, color: Color(0xFFA5ABB7), size: 18),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                _selectedDate != null ? DateFormat('dd MMM yyyy').format(DateTime.parse(_selectedDate!)) : 'dd-mm-yyyy',
+                style: AppFont.style(
+                  fontSize: 14,
+                  color: _selectedDate != null ? const Color(0xFF0D121F) : const Color(0xFFA5ABB7),
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOngoingList() {
+    return BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
+      bloc: _assignedServiceCallsBloc,
+      builder: (context, state) {
+        if (state is AssignedServiceCallsLoadingState || state is AssignedServiceCallsInitialState) {
+          return const Center(child: CircularProgressIndicator(color: Color(0xFF1565C0)));
+        }
+
+        AssignedServiceCallsResponse? data;
+        bool isPaginationLoading = false;
+
+        if (state is AssignedServiceCallsSuccessState) {
+          data = state.data;
+        } else if (state is AssignedServiceCallsPaginationLoadingState) {
+          data = state.currentData;
+          isPaginationLoading = true;
+        }
+
+        if (data != null) {
+          if (data.data.results.isEmpty) {
+            return Center(
+              child: Text(
+                'No Assigned Service Calls',
+                style: AppFont.style(fontSize: 14, color: const Color(0xFFA5ABB7)),
+              ),
+            );
+          }
+
+          return ListView.separated(
+            controller: _scrollController,
+            padding: const EdgeInsets.all(16),
+            itemCount: data.data.results.length + (isPaginationLoading ? 1 : 0),
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemBuilder: (context, index) {
+              if (index >= data!.data.results.length) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                  ),
+                );
+              }
+
+              final item = data.data.results[index];
+              final techs = item.assignedTechnicians.map((e) => e.name).join(', ');
+
+              return ServiceCallCard(
+                type: ServiceCallType.ongoing,
+                complaintNo: item.complaintNumber,
+                companyName: item.customerName,
+                location: item.siteName,
+                assignedTo: techs.isNotEmpty ? techs : 'UNASSIGNED',
+                onView: () => _showReportDialog(context),
+                onEdit: () => _showAssignTechDialog(context),
+                onSubmit: () {
+                  setState(() {
+                    _isCreatingReport = true;
+                  });
+                },
+              );
+            },
+          );
+        }
+
+        if (state is AssignedServiceCallsFailureState) {
+          return Center(
+            child: Text(
+              state.message,
+              style: AppFont.style(color: Colors.red),
+            ),
+          );
+        }
+
+        return const SizedBox();
+      },
     );
   }
 
   Widget _buildActiveList() {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        ServiceCallCard(
-          type: ServiceCallType.active,
-          complaintNo: '#ABC-26-0487',
-          companyName: 'Global Infotech',
-          location: 'MAIN SERVER ROOM',
-          onView: () => _showReportDialog(context),
-          onEdit: () => _showAssignTechDialog(context),
-          onSubmit: () {
-            setState(() {
-              _isCreatingReport = true;
-            });
-          },
-        ),
-        const SizedBox(height: 16),
-        ServiceCallCard(
-          type: ServiceCallType.active,
-          complaintNo: '#ABC-26-0501',
-          companyName: 'Tata Motors',
-          location: 'ASSEMBLY LINE 4',
-          onView: () => _showReportDialog(context),
-          onEdit: () => _showAssignTechDialog(context),
-          onSubmit: () {
-            setState(() {
-              _isCreatingReport = true;
-            });
-          },
-        ),
-      ],
+    return BlocBuilder<PendingServiceCallsBloc, PendingServiceCallsState>(
+      bloc: _pendingServiceCallsBloc,
+      builder: (context, state) {
+        if (state is PendingServiceCallsLoadingState || state is PendingServiceCallsInitialState) {
+          return const Center(child: CircularProgressIndicator(color: Color(0xFF1565C0)));
+        }
+
+        PendingServiceCallsResponse? data;
+        bool isPaginationLoading = false;
+
+        if (state is PendingServiceCallsSuccessState) {
+          data = state.data;
+        } else if (state is PendingServiceCallsPaginationLoadingState) {
+          data = state.currentData;
+          isPaginationLoading = true;
+        }
+
+        if (data != null) {
+          if (data.data.results.isEmpty) {
+            return Center(
+              child: Text(
+                'No Pending Service Calls',
+                style: AppFont.style(fontSize: 14, color: const Color(0xFFA5ABB7)),
+              ),
+            );
+          }
+
+          return ListView.separated(
+            controller: _scrollController,
+            padding: const EdgeInsets.all(16),
+            itemCount: data.data.results.length + (isPaginationLoading ? 1 : 0),
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemBuilder: (context, index) {
+              if (index >= data!.data.results.length) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                  ),
+                );
+              }
+
+              final item = data.data.results[index];
+
+              return ServiceCallCard(
+                type: ServiceCallType.active,
+                complaintNo: item.complaintNumber,
+                companyName: item.customerName,
+                location: item.siteName,
+                onView: () => _showReportDialog(context),
+                onEdit: () => _showAssignTechDialog(context),
+                onSubmit: () {
+                  setState(() {
+                    _isCreatingReport = true;
+                  });
+                },
+              );
+            },
+          );
+        }
+
+        if (state is PendingServiceCallsFailureState) {
+          return Center(
+            child: Text(
+              state.message,
+              style: AppFont.style(color: Colors.red),
+            ),
+          );
+        }
+
+        return const SizedBox();
+      },
     );
   }
 

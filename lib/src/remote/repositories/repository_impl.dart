@@ -5,13 +5,18 @@ import 'package:service_app/src/core/usecases/usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
 import 'package:service_app/src/features/home/domain/usecase/upcoming_amc_usecase.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
-import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_step1_autofill_usecase.dart';
+import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_work_update_usecase.dart';
+import 'package:service_app/src/features/service_calls/domain/usecase/assigned_service_calls_usecase.dart';
+import 'package:service_app/src/features/service_calls/domain/usecase/pending_service_calls_usecase.dart';
+import 'package:service_app/src/remote/models/service_calls_model/assigned_service_calls_response.dart';
+import 'package:service_app/src/remote/models/service_calls_model/pending_serbice_calls_response.dart';
 import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
 import 'package:service_app/src/remote/models/commissioning_report_step1_model/commissioning_report_step1_response.dart';
 import 'package:service_app/src/remote/models/commissioning_report_step2_autofill_model/commissioning_report_step2_response.dart';
 import 'package:service_app/src/remote/models/commissioning_work_model/commissioning_work_list_response.dart';
 import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
 import 'package:service_app/src/remote/models/profile_details_model/profile_details_model.dart';
+import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_step1_autofill_usecase.dart';
 import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
 import 'package:service_app/src/remote/models/technician_model/technician_response.dart';
 import 'package:service_app/src/remote/models/upcoming_amc_model/upcoming_amc_response.dart';
@@ -130,6 +135,12 @@ abstract class Repository {
 
   Future<Either<Failure, CommissioningWorkDetailsResponse>>
   commissioningWorkDetails(String workId);
+
+  Future<Either<Failure, AssignedServiceCallsResponse>> assignedServiceCalls(
+      AssignedServiceCallsParams params);
+
+  Future<Either<Failure, PendingServiceCallsResponse>> pendingServiceCalls(
+      PendingServiceCallsParams params);
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -1022,6 +1033,66 @@ class AuthRepositoryImpl implements Repository {
           } else {
             return Right(respData);
           }
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, AssignedServiceCallsResponse>> assignedServiceCalls(
+      AssignedServiceCallsParams params) {
+    return _networkInfo.check<AssignedServiceCallsResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final assignedServiceCallsResponse =
+              await _remoteDataSource.assignedServiceCalls(
+            params,
+            token,
+          );
+          return Right(assignedServiceCallsResponse);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, PendingServiceCallsResponse>> pendingServiceCalls(
+      PendingServiceCallsParams params) {
+    return _networkInfo.check<PendingServiceCallsResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final pendingServiceCallsResponse =
+              await _remoteDataSource.pendingServiceCalls(
+            params,
+            token,
+          );
+          return Right(pendingServiceCallsResponse);
         } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));

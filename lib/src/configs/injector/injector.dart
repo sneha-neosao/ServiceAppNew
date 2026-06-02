@@ -26,3 +26,5 @@ export '../../features/my_commissioning/bloc/commissioning_report_details_bloc/c
 export '../../features/my_commissioning/bloc/commissioning_work_details_bloc/commissioning_work_details_bloc.dart';
 export '../../features/my_commissioning/bloc/commissioning_work_update_bloc/commissioning_work_update_bloc.dart';
 export '../../features/my_commissioning/bloc/commissioning_work_delete_bloc/commissioning_work_delete_bloc.dart';
+export '../../features/service_calls/bloc/assigned_service_calls_bloc/assigned_service_calls_bloc.dart';
+export '../../features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_bloc.dart';

@@ -9,6 +9,10 @@ import 'package:service_app/src/remote/models/profile_details_model/profile_deta
 import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
 import 'package:service_app/src/remote/models/technician_model/technician_response.dart';
 import 'package:service_app/src/remote/models/upcoming_amc_model/upcoming_amc_response.dart';
+import 'package:service_app/src/remote/models/service_calls_model/assigned_service_calls_response.dart';
+import 'package:service_app/src/remote/models/service_calls_model/pending_serbice_calls_response.dart';
+import 'package:service_app/src/features/service_calls/domain/usecase/assigned_service_calls_usecase.dart';
+import 'package:service_app/src/features/service_calls/domain/usecase/pending_service_calls_usecase.dart';
 import '../../configs/injector/injector.dart';
 import '../../core/api/api_exception.dart';
 import '../../core/api/api_helper.dart';
@@ -154,6 +158,16 @@ sealed class RemoteDataSource {
   );
 
   Future<void> logout();
+  
+  Future<AssignedServiceCallsResponse> assignedServiceCalls(
+    AssignedServiceCallsParams params,
+    String token,
+  );
+
+  Future<PendingServiceCallsResponse> pendingServiceCalls(
+    PendingServiceCallsParams params,
+    String token,
+  );
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -1012,6 +1026,64 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       }
       if (e is ApiException) {
         throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<AssignedServiceCallsResponse> assignedServiceCalls(
+    AssignedServiceCallsParams params,
+    String token,
+  ) async {
+    try {
+      final queryParams = params.toMap();
+      final uri = Uri(path: "technician/service-calls/assigned", queryParameters: queryParams.map((k, v) => MapEntry(k, v.toString())));
+      final response = await _helper.execute(
+        method: Method.get,
+        url: uri.toString(),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      return AssignedServiceCallsResponse.fromJson(response);
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<PendingServiceCallsResponse> pendingServiceCalls(
+    PendingServiceCallsParams params,
+    String token,
+  ) async {
+    try {
+      final queryParams = params.toMap();
+      final uri = Uri(path: "technician/service-calls/pending", queryParameters: queryParams.map((k, v) => MapEntry(k, v.toString())));
+      final response = await _helper.execute(
+        method: Method.get,
+        url: uri.toString(),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      return PendingServiceCallsResponse.fromJson(response);
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
       }
       throw ServerException();
     }
