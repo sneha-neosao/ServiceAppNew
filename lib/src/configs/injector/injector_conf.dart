@@ -38,6 +38,8 @@ import '../../features/my_commissioning/domain/usecase/commissioning_work_detail
 import '../../features/my_commissioning/bloc/commissioning_work_details_bloc/commissioning_work_details_bloc.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_update_usecase.dart';
 import '../../features/my_commissioning/bloc/commissioning_work_update_bloc/commissioning_work_update_bloc.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_work_delete_usecase.dart';
+import '../../features/my_commissioning/bloc/commissioning_work_delete_bloc/commissioning_work_delete_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -287,6 +289,16 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => CommissioningWorkUpdateUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => CommissioningWorkDeleteBloc(
+      getIt<CommissioningWorkDeleteUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => CommissioningWorkDeleteUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper

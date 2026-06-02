@@ -119,6 +119,9 @@ abstract class Repository {
   Future<Either<Failure, CommissioningWorkCreateResponse>>
   commissioningWorkUpdate(CommissioningWorkUpdateParams params, String workId);
 
+  Future<Either<Failure, String>>
+  commissioningWorkDelete(String workId);
+
   Future<Either<Failure, CommissioningReportHistoryResponse>>
   commissioningReportHistory(CommissioningReportHistoryParams params);
 
@@ -888,6 +891,35 @@ class AuthRepositoryImpl implements Repository {
           } else {
             return Right(respData);
           }
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, String>>
+      commissioningWorkDelete(String workId) {
+    return _networkInfo.check<String>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final message = await _remoteDataSource.commissioningWorkDelete(
+            workId,
+            token,
+          );
+          return Right(message);
         } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));

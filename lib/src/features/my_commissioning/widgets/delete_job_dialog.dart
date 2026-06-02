@@ -4,8 +4,9 @@ import 'package:service_app/src/core/theme/app_font.dart';
 
 class DeleteJobDialog extends StatelessWidget {
   final VoidCallback onConfirm;
+  final bool isLoading;
 
-  const DeleteJobDialog({super.key, required this.onConfirm});
+  const DeleteJobDialog({super.key, required this.onConfirm, this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {
@@ -75,15 +76,24 @@ class DeleteJobDialog extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: Text(
-                  'delete_job_confirm'.tr(),
-                  style: AppFont.style(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    letterSpacing: 1.0,
-                  ),
-                ),
+                child: isLoading
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
+                      )
+                    : Text(
+                        'delete_job_confirm'.tr(),
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
               ),
             ),
 

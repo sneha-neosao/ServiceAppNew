@@ -133,6 +133,11 @@ sealed class RemoteDataSource {
     String token,
   );
 
+  Future<String> commissioningWorkDelete(
+    String workId,
+    String token,
+  );
+
   Future<CommissioningReportHistoryResponse> commissioningReportHistory(
     CommissioningReportHistoryParams params,
     String token,
@@ -850,6 +855,33 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
       final respData = CommissioningWorkCreateResponse.fromJson(response);
       return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<String> commissioningWorkDelete(
+    String workId,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.delete,
+        url: "${ApiUrl.commissioningWork}/$workId/delete",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      return response['message'] ?? 'Successfully deleted';
     } on EmptyException {
       throw AuthException();
     } catch (e) {

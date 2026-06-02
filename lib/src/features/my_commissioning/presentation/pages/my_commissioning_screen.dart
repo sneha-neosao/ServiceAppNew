@@ -7,6 +7,10 @@ import 'package:service_app/src/features/my_commissioning/bloc/commissioning_wor
 import 'package:service_app/src/features/my_commissioning/presentation/pages/add_commissioning_screen.dart';
 import 'package:service_app/src/features/my_commissioning/widgets/commissioning_card.dart';
 import 'package:service_app/src/features/my_commissioning/widgets/delete_job_dialog.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_delete_bloc/commissioning_work_delete_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_delete_bloc/commissioning_work_delete_event.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_delete_bloc/commissioning_work_delete_state.dart';
+import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 
 import 'create_commissioning_report_screen.dart';
 
@@ -150,7 +154,7 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                           );
                           _bloc.add(CommissioningWorkListGetEvent());
                         },
-                        onDelete: () => _showDeleteDialog(context),
+                        onDelete: () => _showDeleteDialog(context, item.id),
                         onSubmit: () async {
                           await Navigator.push(
                             context,
@@ -177,16 +181,38 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
     );
   }
 
-  void _showDeleteDialog(BuildContext context) {
+  void _showDeleteDialog(BuildContext context, String workId) {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        return DeleteJobDialog(
-          onConfirm: () {
-            // Handle deletion
-            Navigator.pop(context);
-          },
+      builder: (BuildContext dialogContext) {
+        return BlocProvider(
+          create: (_) => getIt<CommissioningWorkDeleteBloc>(),
+          child: BlocConsumer<CommissioningWorkDeleteBloc, CommissioningWorkDeleteState>(
+            listener: (context, state) {
+              if (state is CommissioningWorkDeleteSuccessState) {
+                Navigator.pop(dialogContext);
+                appSnackBar(context, const Color(0xFF4CAF50), state.message);
+                _bloc.add(CommissioningWorkListGetEvent());
+              } else if (state is CommissioningWorkDeleteFailureState) {
+                appSnackBar(context, const Color(0xFFF44336), state.message);
+                Navigator.pop(dialogContext);
+              }
+            },
+            builder: (context, state) {
+              final isLoading = state is CommissioningWorkDeleteLoadingState;
+              return DeleteJobDialog(
+                isLoading: isLoading,
+                onConfirm: isLoading
+                    ? () {}
+                    : () {
+                        context
+                            .read<CommissioningWorkDeleteBloc>()
+                            .add(CommissioningWorkDeleteSubmitEvent(workId));
+                      },
+              );
+            },
+          ),
         );
       },
     );

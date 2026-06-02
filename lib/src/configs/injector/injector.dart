@@ -25,3 +25,4 @@ export '../../features/my_commissioning/bloc/commissioning_work_create_bloc/comm
 export '../../features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_bloc.dart';
 export '../../features/my_commissioning/bloc/commissioning_work_details_bloc/commissioning_work_details_bloc.dart';
 export '../../features/my_commissioning/bloc/commissioning_work_update_bloc/commissioning_work_update_bloc.dart';
+export '../../features/my_commissioning/bloc/commissioning_work_delete_bloc/commissioning_work_delete_bloc.dart';
