@@ -525,7 +525,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                 location: item.siteName,
                 assignedTo: techs.isNotEmpty ? techs : 'UNASSIGNED',
                 onView: () => _showReportDialog(context),
-                onEdit: () => _showAssignTechDialog(context),
+                onEdit: () => _showAssignTechDialog(context, item.complaintNumber),
                 onSubmit: () {
                   setState(() {
                     _isCreatingReport = true;
@@ -601,18 +601,14 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                 companyName: item.customerName,
                 location: item.siteName,
                 onView: () => _showReportDialog(context),
-                onEdit: () => _showAssignTechDialog(context),
+                onEdit: () => _showAssignTechDialog(context, item.complaintNumber),
                 onCloseOverCall: () => _showCloseOverCallDialog(
                   context,
                   item.complaintNumber,
                   item.customerName,
                   item.siteName,
                 ),
-                onSubmit: () {
-                  setState(() {
-                    _isCreatingReport = true;
-                  });
-                },
+                onSubmit: () => _showAssignTechDialog(context, item.complaintNumber),
               );
             },
           );
@@ -666,12 +662,12 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     );
   }
 
-  void _showAssignTechDialog(BuildContext context) {
+  void _showAssignTechDialog(BuildContext context, String complaintNo) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        return const AssignTechnicianDialog();
+        return AssignTechnicianDialog(complaintNo: complaintNo);
       },
     );
   }

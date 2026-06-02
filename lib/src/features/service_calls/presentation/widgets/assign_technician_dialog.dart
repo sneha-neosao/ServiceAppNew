@@ -3,115 +3,159 @@ import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 
 class AssignTechnicianDialog extends StatelessWidget {
-  const AssignTechnicianDialog({super.key});
+  final String complaintNo;
+
+  const AssignTechnicianDialog({super.key, required this.complaintNo});
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      backgroundColor: Colors.white,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+            child: Row(
               children: [
+                const Icon(
+                  Icons.person_add_alt_1_outlined,
+                  color: Color(0xFF1565C0),
+                  size: 24,
+                ),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'assign_tech_title'.tr(),
-                        style: AppFont.style(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF0D121F),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'assign_tech_subtitle'.tr(),
-                        style: AppFont.style(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFFA5ABB7),
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    'Assign Service Technician',
+                    style: AppFont.style(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFF0D121F),
+                    ),
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.close, color: Color(0xFFA5ABB7), size: 20),
-                  onPressed: () => Navigator.pop(context),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: const Icon(
+                    Icons.close,
+                    color: Color(0xFFA5ABB7),
+                    size: 20,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 32),
-            // Selector
-            Text(
-              'assign_tech_select_label'.tr(),
-              style: AppFont.style(
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFFA5ABB7),
-                letterSpacing: 0.5,
-              ),
+          ),
+          const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+
+          // Body
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Complaint Number',
+                  style: AppFont.style(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFA5ABB7),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  complaintNo,
+                  style: AppFont.style(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF0D121F),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Select Multiple Technicians',
+                  style: AppFont.style(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF424B5C),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 44,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '-- Choose Technicians --',
+                          style: AppFont.style(
+                            fontSize: 14,
+                            color: const Color(0xFFA5ABB7),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            Container(
-              height: 56,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8F9FB),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFF1F2F6)),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      '2 Selected',
-                      style: AppFont.style(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF0D121F),
+          ),
+
+          const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+
+          // Footer
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'Cancel',
+                    style: AppFont.style(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF6B7280),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    height: 40,
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFB1C9DE),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Assign',
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
-                  const Icon(Icons.keyboard_arrow_down, color: Color(0xFF0D121F)),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-            // Assign Button
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0D47A1),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
                 ),
-                child: Text(
-                  'assign_tech_btn'.tr(),
-                  style: AppFont.style(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
