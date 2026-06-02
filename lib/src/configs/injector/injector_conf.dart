@@ -28,6 +28,8 @@ import '../../features/my_commissioning/bloc/commissioning_step5_bloc/commission
 import '../../features/my_commissioning/bloc/commissioning_step6_autofill_bloc/commissioning_step6_autofill_bloc.dart';
 import '../../features/my_commissioning/bloc/commissioning_step6_bloc/commissioning_step6_bloc.dart';
 import '../../features/my_commissioning/bloc/assigned_technician_representative_bloc/assigned_technician_representative_bloc.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_work_create_usecase.dart';
+import '../../features/my_commissioning/bloc/commissioning_work_create_bloc/commissioning_work_create_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -63,250 +65,180 @@ void configureDepedencies() {
 
   /// Other api blocs
 
-  getIt.registerFactory(
-        () => AuthLoginFormBloc(),
-  );
+  getIt.registerFactory(() => AuthLoginFormBloc());
 
   getIt.registerFactory(
-        () => AuthLoginBloc(
-        getIt<LoginUseCase>(),
-        // getIt<ForgotPasswordUseCase>(),
-        // getIt<AccountDeleteUseCase>()
+    () => AuthLoginBloc(
+      getIt<LoginUseCase>(),
+      // getIt<ForgotPasswordUseCase>(),
+      // getIt<AccountDeleteUseCase>()
     ),
+  );
+
+  getIt.registerLazySingleton(() => LoginUseCase(getIt<AuthRepositoryImpl>()));
+
+  getIt.registerFactory(
+    () => ProfileDetailsBloc(getIt<ProfileDetailsUseCase>()),
   );
 
   getIt.registerLazySingleton(
-        () => LoginUseCase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => ProfileDetailsUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(() => SitesBloc(getIt<SitesUseCase>()));
+
+  getIt.registerLazySingleton(() => SitesUseCase(getIt<AuthRepositoryImpl>()));
+
+  getIt.registerFactory(() => CustomerBloc(getIt<CustomerUseCase>()));
+
+  getIt.registerLazySingleton(
+    () => CustomerUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(() => TechnicianBloc(getIt<TechnicianUseCase>()));
+
+  getIt.registerLazySingleton(
+    () => TechnicianUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => ProfileDetailsBloc(
-      getIt<ProfileDetailsUseCase>(),
-    ),
+    () => CommissioningWorkListBloc(getIt<CommissioningWorkListUseCase>()),
   );
 
   getIt.registerLazySingleton(
-        () => ProfileDetailsUseCase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => CommissioningWorkListUseCase(getIt<AuthRepositoryImpl>()),
   );
 
-  getIt.registerFactory(
-        () => SitesBloc(
-      getIt<SitesUseCase>(),
-    ),
-  );
+  getIt.registerFactory(() => UpcomingAmcBloc(getIt<UpcomingAmcUseCase>()));
 
   getIt.registerLazySingleton(
-        () => SitesUseCase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => UpcomingAmcUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => CustomerBloc(
-      getIt<CustomerUseCase>(),
-    ),
-  );
-
-  getIt.registerLazySingleton(
-        () => CustomerUseCase(
-      getIt<AuthRepositoryImpl>(),
-    ),
-  );
-
-  getIt.registerFactory(
-        () => TechnicianBloc(
-      getIt<TechnicianUseCase>(),
-    ),
-  );
-
-  getIt.registerLazySingleton(
-        () => TechnicianUseCase(
-      getIt<AuthRepositoryImpl>(),
-    ),
-  );
-
-  getIt.registerFactory(
-        () => CommissioningWorkListBloc(
-      getIt<CommissioningWorkListUseCase>(),
-    ),
-  );
-
-  getIt.registerLazySingleton(
-        () => CommissioningWorkListUseCase(
-      getIt<AuthRepositoryImpl>(),
-    ),
-  );
-
-  getIt.registerFactory(
-        () => UpcomingAmcBloc(
-      getIt<UpcomingAmcUseCase>(),
-    ),
-  );
-
-  getIt.registerLazySingleton(
-        () => UpcomingAmcUseCase(
-      getIt<AuthRepositoryImpl>(),
-    ),
-  );
-
-  getIt.registerFactory(
-        () => CommissioningStep1AutoFillBloc(
+    () => CommissioningStep1AutoFillBloc(
       getIt<CommissioningStep1AutofillUsecase>(),
     ),
   );
 
   getIt.registerLazySingleton(
-        () => CommissioningStep1AutofillUsecase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => CommissioningStep1AutofillUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => CommissioningStep1Bloc(
-      getIt<CommissioningStep1Usecase>(),
-    ),
+    () => CommissioningStep1Bloc(getIt<CommissioningStep1Usecase>()),
   );
 
   getIt.registerLazySingleton(
-        () => CommissioningStep1Usecase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => CommissioningStep1Usecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => CommissioningStep2Bloc(
-      getIt<CommissioningStep2Usecase>(),
-    ),
+    () => CommissioningStep2Bloc(getIt<CommissioningStep2Usecase>()),
   );
 
   getIt.registerLazySingleton(
-        () => CommissioningStep2Usecase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => CommissioningStep2Usecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => CommissioningStep2AutoFillBloc(
+    () => CommissioningStep2AutoFillBloc(
       getIt<CommissioningStep2AutofillUsecase>(),
     ),
   );
 
   getIt.registerLazySingleton(
-        () => CommissioningStep2AutofillUsecase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => CommissioningStep2AutofillUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => CommissioningStep3Bloc(
-      getIt<CommissioningStep3Usecase>(),
-    ),
+    () => CommissioningStep3Bloc(getIt<CommissioningStep3Usecase>()),
   );
 
   getIt.registerLazySingleton(
-        () => CommissioningStep3Usecase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => CommissioningStep3Usecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => CommissioningStep3AutoFillBloc(
+    () => CommissioningStep3AutoFillBloc(
       getIt<CommissioningStep3AutofillUsecase>(),
     ),
   );
 
   getIt.registerLazySingleton(
-        () => CommissioningStep3AutofillUsecase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => CommissioningStep3AutofillUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => CommissioningStep4Bloc(
-      getIt<CommissioningStep4Usecase>(),
-    ),
+    () => CommissioningStep4Bloc(getIt<CommissioningStep4Usecase>()),
   );
 
   getIt.registerLazySingleton(
-        () => CommissioningStep4Usecase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => CommissioningStep4Usecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => CommissioningStep4AutoFillBloc(
+    () => CommissioningStep4AutoFillBloc(
       getIt<CommissioningStep4AutofillUsecase>(),
     ),
   );
 
   getIt.registerLazySingleton(
-        () => CommissioningStep4AutofillUsecase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => CommissioningStep4AutofillUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => CommissioningStep5Bloc(
-      getIt<CommissioningStep5Usecase>(),
-    ),
+    () => CommissioningStep5Bloc(getIt<CommissioningStep5Usecase>()),
   );
 
   getIt.registerLazySingleton(
-        () => CommissioningStep5Usecase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => CommissioningStep5Usecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => CommissioningStep5AutoFillBloc(
+    () => CommissioningStep5AutoFillBloc(
       getIt<CommissioningStep5AutofillUsecase>(),
     ),
   );
 
   getIt.registerLazySingleton(
-        () => CommissioningStep5AutofillUsecase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => CommissioningStep5AutofillUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => CommissioningStep6Bloc(
-      getIt<CommissioningStep6Usecase>(),
-    ),
+    () => CommissioningStep6Bloc(getIt<CommissioningStep6Usecase>()),
   );
 
   getIt.registerLazySingleton(
-        () => CommissioningStep6Usecase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => CommissioningStep6Usecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => CommissioningStep6AutoFillBloc(
+    () => CommissioningStep6AutoFillBloc(
       getIt<CommissioningStep6AutofillUsecase>(),
     ),
   );
 
   getIt.registerLazySingleton(
-        () => CommissioningStep6AutofillUsecase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => CommissioningStep6AutofillUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(
-        () => AssignedTechnicianRepresentativeBloc(
+    () => AssignedTechnicianRepresentativeBloc(
       getIt<AssignedTechnicianRepresentativeUsecase>(),
     ),
   );
 
   getIt.registerLazySingleton(
-        () => AssignedTechnicianRepresentativeUsecase(
-      getIt<AuthRepositoryImpl>(),
-    ),
+    () => AssignedTechnicianRepresentativeUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => CommissioningWorkCreateBloc(getIt<CommissioningWorkCreateUseCase>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => CommissioningWorkCreateUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper

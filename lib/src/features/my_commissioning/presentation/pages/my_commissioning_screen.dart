@@ -23,7 +23,8 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
   @override
   void initState() {
     super.initState();
-    _bloc = getIt<CommissioningWorkListBloc>()..add(CommissioningWorkListGetEvent());
+    _bloc = getIt<CommissioningWorkListBloc>()
+      ..add(CommissioningWorkListGetEvent());
   }
 
   @override
@@ -37,25 +38,19 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddCommissioningScreen(
-                onBack: () => Navigator.pop(context),
-              ),
+              builder: (context) =>
+                  AddCommissioningScreen(onBack: () => Navigator.pop(context)),
             ),
           );
+          _bloc.add(CommissioningWorkListGetEvent());
         },
         backgroundColor: const Color(0xFF0B68B9),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 30,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.add, color: Colors.white, size: 30),
       ),
       body: BlocBuilder<CommissioningWorkListBloc, CommissioningWorkListState>(
         bloc: _bloc,
@@ -124,21 +119,27 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                 // ── List ─────────────────────────────────────────────────────────────
                 Expanded(
                   child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
                     itemCount: items.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 16),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 16),
                     itemBuilder: (context, index) {
                       final item = items[index];
                       final membersString = item.assignedTechnicians.isNotEmpty
-                          ? item.assignedTechnicians.map((t) => t.name).join(', ')
+                          ? item.assignedTechnicians
+                                .map((t) => t.name)
+                                .join(', ')
                           : 'No technicians assigned';
 
                       return CommissioningCard(
                         companyName: item.customer.name,
                         location: item.site.name,
                         members: membersString,
-                        onEdit: () {
-                          Navigator.push(
+                        onEdit: () async {
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => AddCommissioningScreen(
@@ -149,18 +150,21 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                               ),
                             ),
                           );
+                          _bloc.add(CommissioningWorkListGetEvent());
                         },
                         onDelete: () => _showDeleteDialog(context),
-                        onSubmit: () {
-                          Navigator.push(
+                        onSubmit: () async {
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CreateCommissioningReportScreen(
-                                commissioningWorkId: item.id,
-                                onBack: () => Navigator.pop(context),
-                              ),
+                              builder: (context) =>
+                                  CreateCommissioningReportScreen(
+                                    commissioningWorkId: item.id,
+                                    onBack: () => Navigator.pop(context),
+                                  ),
                             ),
                           );
+                          _bloc.add(CommissioningWorkListGetEvent());
                         },
                       );
                     },

@@ -30,55 +30,97 @@ import '../models/commissioning_report_step3_autofill_model/commissioning_report
 import '../models/commissioning_report_step4_autofill_model/commissioning_report_step4_autofill_response.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step4_autofill_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step4_usecase.dart';
-import '../models/commissioning_report_step5_autofill_model/commissioning_report_step5_autofill_response.dart' hide SavedDescription;
+import '../models/commissioning_report_step5_autofill_model/commissioning_report_step5_autofill_response.dart'
+    hide SavedDescription;
 import '../../features/my_commissioning/domain/usecase/commissioning_step5_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step6_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step6_autofill_usecase.dart';
 import '../models/commissioning_report_step6_autofill_model/commissioning_report_step6_autofill_response.dart';
 import '../../features/my_commissioning/domain/usecase/assigned_technician_representative_usecase.dart';
 import '../models/assigned_technician_representative_model/assigned_technician_representative_response.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_work_create_usecase.dart';
+import '../models/commissioning_work_create_model/commissioning_work_create_response.dart';
 
 sealed class RemoteDataSource {
-
   Future<LoginResponse> login(LoginParams params);
 
   Future<ProfileDetailsResponse> profileDetails(String token);
 
   Future<CustomerResponse> customers(String token);
 
-  Future<SiteResponse> sites(SitesParams params,String token);
+  Future<SiteResponse> sites(SitesParams params, String token);
 
   Future<TechnicianResponse> technician(String token);
 
   Future<CommissioningWorkListResponse> commissioningWorkList(String token);
 
-  Future<UpcomingAmcVisitsResponse> upcomingAmc(UpcomingAmcParams params,String token);
+  Future<UpcomingAmcVisitsResponse> upcomingAmc(
+    UpcomingAmcParams params,
+    String token,
+  );
 
-  Future<CommissioningReportStep1AutoFillResponse> commissioningReportStep1Autofill(CommissioningStep1AutofillParams params,String token);
+  Future<CommissioningReportStep1AutoFillResponse>
+  commissioningReportStep1Autofill(
+    CommissioningStep1AutofillParams params,
+    String token,
+  );
 
-  Future<CommissioningStep1Response> commissioningReportStep1(CommissioningStep1Params params,String token);
+  Future<CommissioningStep1Response> commissioningReportStep1(
+    CommissioningStep1Params params,
+    String token,
+  );
 
-  Future<CommissioningStep2Response> commissioningReportStep2(CommissioningStep2Params params,String token);
+  Future<CommissioningStep2Response> commissioningReportStep2(
+    CommissioningStep2Params params,
+    String token,
+  );
 
-  Future<CommissioningReportStep2AutoFillResponse> commissioningReportStep2Autofill(CommissioningStep2AutofillParams params,String token);
+  Future<CommissioningReportStep2AutoFillResponse>
+  commissioningReportStep2Autofill(
+    CommissioningStep2AutofillParams params,
+    String token,
+  );
 
-  Future<CommissioningStep3Response> commissioningReportStep3(CommissioningStep3Params params,String token);
+  Future<CommissioningStep3Response> commissioningReportStep3(
+    CommissioningStep3Params params,
+    String token,
+  );
 
-  Future<CommissioningStep3Response> commissioningReportStep3Autofill(CommissioningStep3AutofillParams params,String token);
+  Future<CommissioningStep3Response> commissioningReportStep3Autofill(
+    CommissioningStep3AutofillParams params,
+    String token,
+  );
 
-  Future<CommissioningReportStep4AutoFillResponse> commissioningReportStep4Autofill(String id, String token);
+  Future<CommissioningReportStep4AutoFillResponse>
+  commissioningReportStep4Autofill(String id, String token);
 
-  Future<CommissioningReportStep4AutoFillResponse> commissioningReportStep4(CommissioningStep4Params params, String token);
+  Future<CommissioningReportStep4AutoFillResponse> commissioningReportStep4(
+    CommissioningStep4Params params,
+    String token,
+  );
 
-  Future<CommissioningReportStep5AutoFillResponse> commissioningReportStep5Autofill(String id);
+  Future<CommissioningReportStep5AutoFillResponse>
+  commissioningReportStep5Autofill(String id);
 
-  Future<CommissioningReportStep5AutoFillResponse> commissioningReportStep5(CommissioningStep5Params params);
+  Future<CommissioningReportStep5AutoFillResponse> commissioningReportStep5(
+    CommissioningStep5Params params,
+  );
 
-  Future<CommissioningReportStep6AutoFillResponse> commissioningReportStep6Autofill(String id);
+  Future<CommissioningReportStep6AutoFillResponse>
+  commissioningReportStep6Autofill(String id);
 
-  Future<CommissioningReportStep6AutoFillResponse> commissioningReportStep6(CommissioningStep6Params params);
+  Future<CommissioningReportStep6AutoFillResponse> commissioningReportStep6(
+    CommissioningStep6Params params,
+  );
 
-  Future<AssignedTechnicianResponse> assignedTechnicianRepresentative(String id);
+  Future<AssignedTechnicianResponse> assignedTechnicianRepresentative(
+    String id,
+  );
+
+  Future<CommissioningWorkCreateResponse> commissioningWorkCreate(
+    CommissioningWorkCreateParams params,
+    String token,
+  );
 
   Future<void> logout();
 }
@@ -94,16 +136,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<LoginResponse> login(LoginParams params) async {
     try {
-
-      var data = {
-        "phone": params.phone,
-        "password": params.password
-      };
+      var data = {"phone": params.phone, "password": params.password};
 
       final response = await _helper.execute(
-          method: Method.post,
-          url: ApiUrl.login,
-          data: data
+        method: Method.post,
+        url: ApiUrl.login,
+        data: data,
       );
 
       final respData = LoginResponse.fromJson(response);
@@ -126,15 +164,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<ProfileDetailsResponse> profileDetails(String token) async {
     try {
-
       final response = await _helper.execute(
-          method: Method.get,
-          url: ApiUrl.profileDetails,
-          options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        method: Method.get,
+        url: ApiUrl.profileDetails,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       final respData = ProfileDetailsResponse.fromJson(response);
@@ -157,15 +190,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<CustomerResponse> customers(String token) async {
     try {
-
       final response = await _helper.execute(
         method: Method.get,
         url: ApiUrl.customerDropdown,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       final respData = CustomerResponse.fromJson(response);
@@ -186,17 +214,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<SiteResponse> sites(SitesParams params,String token) async {
+  Future<SiteResponse> sites(SitesParams params, String token) async {
     try {
-
       final response = await _helper.execute(
         method: Method.get,
-        url: "$ApiUrl.siteDropdown?customer_id=${params.customer_id}",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        url: "${ApiUrl.siteDropdown}?customer_id=${params.customer_id}",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       final respData = SiteResponse.fromJson(response);
@@ -219,15 +242,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<TechnicianResponse> technician(String token) async {
     try {
-
       final response = await _helper.execute(
         method: Method.get,
         url: ApiUrl.technicians,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       final respData = TechnicianResponse.fromJson(response);
@@ -248,17 +266,14 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CommissioningWorkListResponse> commissioningWorkList(String token) async {
+  Future<CommissioningWorkListResponse> commissioningWorkList(
+    String token,
+  ) async {
     try {
-
       final response = await _helper.execute(
         method: Method.get,
         url: ApiUrl.commissioningWork,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       final respData = CommissioningWorkListResponse.fromJson(response);
@@ -279,17 +294,15 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<UpcomingAmcVisitsResponse> upcomingAmc(UpcomingAmcParams params,String token) async {
+  Future<UpcomingAmcVisitsResponse> upcomingAmc(
+    UpcomingAmcParams params,
+    String token,
+  ) async {
     try {
-
       final response = await _helper.execute(
         method: Method.get,
         url: ApiUrl.upcomingAmcVisits,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       final respData = UpcomingAmcVisitsResponse.fromJson(response);
@@ -310,20 +323,22 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CommissioningReportStep1AutoFillResponse> commissioningReportStep1Autofill(CommissioningStep1AutofillParams params,String token) async {
+  Future<CommissioningReportStep1AutoFillResponse>
+  commissioningReportStep1Autofill(
+    CommissioningStep1AutofillParams params,
+    String token,
+  ) async {
     try {
-
       final response = await _helper.execute(
         method: Method.get,
-        url: "${ApiUrl.commissioningWorkReportStep1AutoFill}/${params.commissioning_report_id}",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        url:
+            "${ApiUrl.commissioningWorkReportStep1AutoFill}/${params.commissioning_report_id}",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
-      final respData = CommissioningReportStep1AutoFillResponse.fromJson(response);
+      final respData = CommissioningReportStep1AutoFillResponse.fromJson(
+        response,
+      );
       return respData;
     } on EmptyException {
       throw AuthException();
@@ -341,9 +356,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CommissioningStep1Response> commissioningReportStep1(CommissioningStep1Params params,String token) async {
+  Future<CommissioningStep1Response> commissioningReportStep1(
+    CommissioningStep1Params params,
+    String token,
+  ) async {
     try {
-
       final response = await _helper.execute(
         method: Method.post,
         url: ApiUrl.commissioningWorkReportStep1,
@@ -351,11 +368,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
           "commissioning_work_id": params.commissioningWorkId,
           "technician_ids": params.technicianIds,
         },
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       final respData = CommissioningStep1Response.fromJson(response);
@@ -376,9 +389,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CommissioningStep2Response> commissioningReportStep2(CommissioningStep2Params params,String token) async {
+  Future<CommissioningStep2Response> commissioningReportStep2(
+    CommissioningStep2Params params,
+    String token,
+  ) async {
     try {
-
       final response = await _helper.execute(
         method: Method.post,
         url: ApiUrl.commissioningWorkReportStep2,
@@ -388,11 +403,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
           "member_presents_customer_side": params.memberPresentsCustomerSide,
           "agenda": params.agenda,
         },
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       final respData = CommissioningStep2Response.fromJson(response);
@@ -413,20 +424,22 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CommissioningReportStep2AutoFillResponse> commissioningReportStep2Autofill(CommissioningStep2AutofillParams params,String token) async {
+  Future<CommissioningReportStep2AutoFillResponse>
+  commissioningReportStep2Autofill(
+    CommissioningStep2AutofillParams params,
+    String token,
+  ) async {
     try {
-
       final response = await _helper.execute(
         method: Method.get,
-        url: "${ApiUrl.commissioningWorkReportStep2AutoFill}/${params.commissioning_report_id}",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        url:
+            "${ApiUrl.commissioningWorkReportStep2AutoFill}/${params.commissioning_report_id}",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
-      final respData = CommissioningReportStep2AutoFillResponse.fromJson(response);
+      final respData = CommissioningReportStep2AutoFillResponse.fromJson(
+        response,
+      );
       return respData;
     } on EmptyException {
       throw AuthException();
@@ -444,20 +457,21 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CommissioningStep3Response> commissioningReportStep3(CommissioningStep3Params params, String token) async {
+  Future<CommissioningStep3Response> commissioningReportStep3(
+    CommissioningStep3Params params,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.post,
         url: ApiUrl.commissioningWorkReportStep3,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
         data: {
           "id": params.id,
           "is_technical_na": params.isTechnicalNa,
-          "technical_details": params.isTechnicalNa ? {} : params.technicalDetails?.toJson() ?? {},
+          "technical_details": params.isTechnicalNa
+              ? {}
+              : params.technicalDetails?.toJson() ?? {},
         },
       );
       final respData = CommissioningStep3Response.fromJson(response);
@@ -477,16 +491,15 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CommissioningStep3Response> commissioningReportStep3Autofill(CommissioningStep3AutofillParams params, String token) async {
+  Future<CommissioningStep3Response> commissioningReportStep3Autofill(
+    CommissioningStep3AutofillParams params,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
         url: "${ApiUrl.commissioningWorkReportStep3AutoFill}/${params.id}",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       final respData = CommissioningStep3Response.fromJson(response);
       return respData;
@@ -505,18 +518,17 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CommissioningReportStep4AutoFillResponse> commissioningReportStep4Autofill(String id, String token) async {
+  Future<CommissioningReportStep4AutoFillResponse>
+  commissioningReportStep4Autofill(String id, String token) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
         url: "${ApiUrl.commissioningWorkReportStep4AutoFill}/$id",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-      final respData = CommissioningReportStep4AutoFillResponse.fromJson(response);
+      final respData = CommissioningReportStep4AutoFillResponse.fromJson(
+        response,
+      );
       return respData;
     } on EmptyException {
       throw AuthException();
@@ -533,22 +545,25 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CommissioningReportStep4AutoFillResponse> commissioningReportStep4(CommissioningStep4Params params, String token) async {
+  Future<CommissioningReportStep4AutoFillResponse> commissioningReportStep4(
+    CommissioningStep4Params params,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.post,
         url: ApiUrl.commissioningWorkReportStep4AutoFill,
         data: {
           "id": params.id,
-          "descriptions": params.descriptions.map((SavedDescription e) => e.toJson()).toList(),
+          "descriptions": params.descriptions
+              .map((SavedDescription e) => e.toJson())
+              .toList(),
         },
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-      final respData = CommissioningReportStep4AutoFillResponse.fromJson(response);
+      final respData = CommissioningReportStep4AutoFillResponse.fromJson(
+        response,
+      );
       return respData;
     } on EmptyException {
       throw AuthException();
@@ -576,14 +591,17 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CommissioningReportStep5AutoFillResponse> commissioningReportStep5Autofill(String id) async {
+  Future<CommissioningReportStep5AutoFillResponse>
+  commissioningReportStep5Autofill(String id) async {
     try {
       final response = await _helper.execute(
         url: '${ApiUrl.commissioningWorkReportStep5AutoFill}/$id',
         method: Method.get,
       );
 
-      final respData = CommissioningReportStep5AutoFillResponse.fromJson(response);
+      final respData = CommissioningReportStep5AutoFillResponse.fromJson(
+        response,
+      );
       return respData;
     } on EmptyException {
       throw AuthException();
@@ -600,14 +618,18 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CommissioningReportStep5AutoFillResponse> commissioningReportStep5(CommissioningStep5Params params) async {
+  Future<CommissioningReportStep5AutoFillResponse> commissioningReportStep5(
+    CommissioningStep5Params params,
+  ) async {
     try {
       final payload = {
         "id": params.id,
         "is_mechanical_checklist_na": params.isMechanicalChecklistNa,
         "is_pipeline_checklist_na": params.isPipelineChecklistNa,
         "is_electrical_checklist_na": params.isElectricalChecklistNa,
-        "checklist_items": params.checklistItems.map((e) => e.toJson()).toList(),
+        "checklist_items": params.checklistItems
+            .map((e) => e.toJson())
+            .toList(),
       };
 
       final response = await _helper.execute(
@@ -616,7 +638,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         data: payload,
       );
 
-      final respData = CommissioningReportStep5AutoFillResponse.fromJson(response);
+      final respData = CommissioningReportStep5AutoFillResponse.fromJson(
+        response,
+      );
       return respData;
     } on EmptyException {
       throw AuthException();
@@ -633,14 +657,17 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CommissioningReportStep6AutoFillResponse> commissioningReportStep6Autofill(String id) async {
+  Future<CommissioningReportStep6AutoFillResponse>
+  commissioningReportStep6Autofill(String id) async {
     try {
       final response = await _helper.execute(
         url: "${ApiUrl.commissioningWorkReportStep6AutoFill}/$id",
         method: Method.get,
       );
 
-      final respData = CommissioningReportStep6AutoFillResponse.fromJson(response);
+      final respData = CommissioningReportStep6AutoFillResponse.fromJson(
+        response,
+      );
       return respData;
     } on EmptyException {
       throw AuthException();
@@ -657,7 +684,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CommissioningReportStep6AutoFillResponse> commissioningReportStep6(CommissioningStep6Params params) async {
+  Future<CommissioningReportStep6AutoFillResponse> commissioningReportStep6(
+    CommissioningStep6Params params,
+  ) async {
     try {
       final Map<String, dynamic> map = {
         "id": params.id,
@@ -667,14 +696,16 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         "customer_representative_name": params.customerRepresentativeName,
       };
 
-      if (params.technicianSignaturePath != null && params.technicianSignaturePath!.isNotEmpty) {
+      if (params.technicianSignaturePath != null &&
+          params.technicianSignaturePath!.isNotEmpty) {
         map["technician_signature"] = await MultipartFile.fromFile(
           params.technicianSignaturePath!,
           filename: params.technicianSignaturePath!.split('/').last,
         );
       }
 
-      if (params.customerSignaturePath != null && params.customerSignaturePath!.isNotEmpty) {
+      if (params.customerSignaturePath != null &&
+          params.customerSignaturePath!.isNotEmpty) {
         map["customer_signature"] = await MultipartFile.fromFile(
           params.customerSignaturePath!,
           filename: params.customerSignaturePath!.split('/').last,
@@ -685,10 +716,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         final List<MultipartFile> files = [];
         for (final path in params.workPhotosPaths) {
           if (path.isNotEmpty) {
-            files.add(await MultipartFile.fromFile(
-              path,
-              filename: path.split('/').last,
-            ));
+            files.add(
+              await MultipartFile.fromFile(
+                path,
+                filename: path.split('/').last,
+              ),
+            );
           }
         }
         map["work_photos"] = files;
@@ -702,7 +735,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         data: formData,
       );
 
-      final respData = CommissioningReportStep6AutoFillResponse.fromJson(response);
+      final respData = CommissioningReportStep6AutoFillResponse.fromJson(
+        response,
+      );
       return respData;
     } on EmptyException {
       throw AuthException();
@@ -719,7 +754,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<AssignedTechnicianResponse> assignedTechnicianRepresentative(String id) async {
+  Future<AssignedTechnicianResponse> assignedTechnicianRepresentative(
+    String id,
+  ) async {
     try {
       final response = await _helper.execute(
         url: "${ApiUrl.commissioningWorkReportTechnicians}/$id/technicians",
@@ -741,5 +778,37 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       throw ServerException();
     }
   }
-}
 
+  @override
+  Future<CommissioningWorkCreateResponse> commissioningWorkCreate(
+    CommissioningWorkCreateParams params,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.post,
+        url: ApiUrl.commissioningWorkCreate,
+        data: params.toJson(),
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      final respData = CommissioningWorkCreateResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+}

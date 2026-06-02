@@ -6,6 +6,8 @@ import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_create_bloc/commissioning_work_create_bloc.dart';
+import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 
 class AddCommissioningScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -37,8 +39,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   String? _selectedSite;
 
   // ── Equipment ─────────────────────────────────────────────────────────────
-  final List<String> _equipments = ['HVAC Cooling', 'Pump System', 'Generator'];
-  String? _selectedEquipment;
+  late TextEditingController _equipmentController;
 
   // ── Technicians ───────────────────────────────────────────────────────────
   List<String> _technicians = [];
@@ -47,6 +48,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
   late TechnicianBloc _technicianBloc;
+  late CommissioningWorkCreateBloc _createBloc;
 
   @override
   void initState() {
@@ -55,6 +57,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
     _sitesBloc = getIt<SitesBloc>();
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
+    _createBloc = getIt<CommissioningWorkCreateBloc>();
+    _equipmentController = TextEditingController(text: widget.initialEquipment);
 
     // ── Customer ─────────────────────────────────────────────────────────────
     if (widget.initialCustomer != null) {
@@ -72,12 +76,6 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
       _selectedSite = widget.initialSite;
     }
 
-    // ── Equipment ─────────────────────────────────────────────────────────────
-    _selectedEquipment = (widget.initialEquipment != null &&
-            _equipments.contains(widget.initialEquipment))
-        ? widget.initialEquipment
-        : null;
-
     // ── Technician — only set if the value exists as a single list item ───────
     // initialTechnicians may be a comma-joined string like "A, B"; guard it.
     if (widget.initialTechnicians != null) {
@@ -93,6 +91,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     _customerBloc.close();
     _sitesBloc.close();
     _technicianBloc.close();
+    _createBloc.close();
+    _equipmentController.dispose();
     super.dispose();
   }
 
@@ -142,7 +142,11 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                         shape: BoxShape.circle,
                         border: Border.all(color: const Color(0xFFF1F2F6)),
                       ),
-                      child: const Icon(Icons.close, size: 16, color: Color(0xFFA5ABB7)),
+                      child: const Icon(
+                        Icons.close,
+                        size: 16,
+                        color: Color(0xFFA5ABB7),
+                      ),
                     ),
                   ),
                 ],
@@ -176,7 +180,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                   filled: true,
                   fillColor: const Color(0xFFF8F9FB),
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
@@ -188,7 +194,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: const BorderSide(
-                        color: Color(0xFF1565C0), width: 1.5),
+                      color: Color(0xFF1565C0),
+                      width: 1.5,
+                    ),
                   ),
                 ),
               ),
@@ -218,7 +226,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1565C0), // matching the blue
+                    backgroundColor: const Color(
+                      0xFF1565C0,
+                    ), // matching the blue
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -240,226 +250,367 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
   // ── Assign button handler ──────────────────────────────────────────────────
   void _onAssign() {
-    widget.onBack();
+    String customerId = "";
+    final customerState = _customerBloc.state;
+    if (customerState is CustomerSuccessState) {
+      for (var c in customerState.data.data) {
+        if (c.name == _selectedCustomer) {
+          customerId = c.id;
+          break;
+        }
+      }
+    }
+
+    String siteId = "";
+    final siteState = _sitesBloc.state;
+    if (siteState is SitesSuccessState) {
+      for (var s in siteState.data.data) {
+        if (s.name == _selectedSite) {
+          siteId = s.id;
+          break;
+        }
+      }
+    }
+
+    final appOfEquipment = _equipmentController.text.trim();
+
+    String technicianId = "";
+    final techState = _technicianBloc.state;
+    if (techState is TechnicianSuccessState) {
+      for (var t in techState.data.data) {
+        if (t.name == _selectedTechnician) {
+          technicianId = t.id;
+          break;
+        }
+      }
+    }
+
+    _createBloc.add(
+      CommissioningWorkCreateSubmitEvent(
+        customerId: customerId,
+        siteId: siteId,
+        applicationOfEquipment: appOfEquipment,
+        technicians: technicianId.isNotEmpty ? [technicianId] : [],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      // Intercept Android system back button
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) widget.onBack();
+    return BlocListener<
+      CommissioningWorkCreateBloc,
+      CommissioningWorkCreateState
+    >(
+      bloc: _createBloc,
+      listener: (context, state) {
+        if (state is CommissioningWorkCreateSuccessState) {
+          appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+          widget.onBack();
+        } else if (state is CommissioningWorkCreateFailureState) {
+          appSnackBar(context, const Color(0xFFF44336), state.message);
+        }
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Column(
-            children: [
-              // ── Top bar ─────────────────────────────────────────────────
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: widget.onBack,
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF8F9FB),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                              color: const Color(0xFFF1F2F6)),
-                        ),
-                        child: const Icon(Icons.arrow_back_ios_new,
-                            size: 16, color: Color(0xFF0D121F)),
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Text(
-                      widget.initialCustomer != null
-                          ? 'Edit Commissioning Job'
-                          : 'Add Commissioning Job',
-                      style: AppFont.style(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF0D121F),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-
-              // ── Form body ────────────────────────────────────────────────
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      child: PopScope(
+        // Intercept Android system back button
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) widget.onBack();
+        },
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: Column(
+              children: [
+                // ── Top bar ─────────────────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  child: Row(
                     children: [
-                      const SizedBox(height: 8),
-
-                      // ── SELECT CUSTOMER ────────────────────────────────
-                      _buildSectionHeader(
-                        label: 'SELECT CUSTOMER',
-                        onAddTap: () => _showAddBottomSheet(
-                          fieldLabel: 'Customer',
-                          list: _customers,
-                          onSaved: (val) => setState(() {
-                            _customers.insert(0, val);
-                            _selectedCustomer = val;
-                          }),
-                        ),
-                      ),
-                      BlocBuilder<CustomerBloc, CustomerState>(
-                        bloc: _customerBloc,
-                        builder: (context, state) {
-                          bool isLoading = state is CustomerLoadingState;
-                          if (state is CustomerSuccessState) {
-                            final apiNames = state.data.data.map((e) => e.name).toList();
-                            for (var name in apiNames) {
-                              if (!_customers.contains(name)) _customers.add(name);
-                            }
-                          }
-                          return _buildDropdown(
-                            hint: 'Choose customer...',
-                            value: _selectedCustomer,
-                            items: _customers,
-                            isLoading: isLoading,
-                            onChanged: (v) {
-                              setState(() => _selectedCustomer = v);
-                              if (v != null && state is CustomerSuccessState) {
-                                final cList = state.data.data.where((x) => x.name == v);
-                                if (cList.isNotEmpty) {
-                                  _sitesBloc.add(SitesGetEvent(cList.first.id));
-                                }
-                              }
-                            },
-                          );
-                        },
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // ── SELECT SITE ────────────────────────────────────
-                      _buildSectionHeader(
-                        label: 'SELECT SITE / LOCATION',
-                        onAddTap: () => _showAddBottomSheet(
-                          fieldLabel: 'Site',
-                          list: _sites,
-                          onSaved: (val) => setState(() {
-                            _sites.insert(0, val);
-                            _selectedSite = val;
-                          }),
-                        ),
-                      ),
-                      BlocBuilder<SitesBloc, SitesState>(
-                        bloc: _sitesBloc,
-                        builder: (context, state) {
-                          bool isLoading = state is SitesLoadingState;
-                          if (state is SitesSuccessState) {
-                            final apiNames = state.data.data.map((e) => e.name).toList();
-                            for (var name in apiNames) {
-                              if (!_sites.contains(name)) _sites.add(name);
-                            }
-                          }
-                          return _buildDropdown(
-                            hint: 'Choose site...',
-                            value: _selectedSite,
-                            items: _sites,
-                            isLoading: isLoading,
-                            onChanged: (v) => setState(() => _selectedSite = v),
-                          );
-                        },
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // ── SELECT EQUIPMENT ───────────────────────────────
-                      _buildSectionHeader(
-                        label: 'SELECT EQUIPMENT',
-                        showAdd: false,
-                      ),
-                      _buildDropdown(
-                        hint: 'Choose equipment...',
-                        value: _selectedEquipment,
-                        items: _equipments,
-                        onChanged: (v) =>
-                            setState(() => _selectedEquipment = v),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // ── SELECT TECHNICIAN ──────────────────────────────
-                      _buildSectionHeader(
-                        label: 'ASSIGN TECHNICIAN',
-                        showAdd: false,
-                      ),
-                      BlocBuilder<TechnicianBloc, TechnicianState>(
-                        bloc: _technicianBloc,
-                        builder: (context, state) {
-                          bool isLoading = state is TechnicianLoadingState;
-                          if (state is TechnicianSuccessState) {
-                            final apiNames = state.data.data.map((e) => e.name).toList();
-                            for (var name in apiNames) {
-                              if (!_technicians.contains(name)) _technicians.add(name);
-                            }
-                          }
-                          return _buildDropdown(
-                            hint: 'Choose technician...',
-                            value: _selectedTechnician,
-                            items: _technicians,
-                            isLoading: isLoading,
-                            onChanged: (v) => setState(() => _selectedTechnician = v),
-                          );
-                        },
-                      ),
-
-                      const SizedBox(height: 40),
-
-                      // ── Assign Button ──────────────────────────────────
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: _onAssign,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1565C0),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            size: 20,
+                            color: Color(0xFF5C616E),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'ASSIGN JOB',
-                                style: AppFont.style(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.white,
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              const Icon(Icons.arrow_forward, size: 18),
-                            ],
+                          onPressed: widget.onBack,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Container(
+                        width: 4,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0B68B9),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          widget.initialCustomer != null
+                              ? 'Edit Commissioning Work'
+                              : 'Assign For New Commissioning Work',
+                          style: AppFont.style(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF002C5E),
                           ),
                         ),
                       ),
-
-                      const SizedBox(height: 30),
                     ],
                   ),
                 ),
-              ),
-            ],
+
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Color(0xFFF1F2F6),
+                ),
+
+                // ── Form body ────────────────────────────────────────────────
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 8),
+
+                        // ── STEP 1: SELECT CUSTOMER ──────────────────────────
+                        _buildSectionHeader(
+                          label: 'STEP 1: SELECT CUSTOMER',
+                          onAddTap: () => _showAddBottomSheet(
+                            fieldLabel: 'Customer',
+                            list: _customers,
+                            onSaved: (val) => setState(() {
+                              _customers.insert(0, val);
+                              _selectedCustomer = val;
+                              _selectedSite = null;
+                              _sites.clear();
+                            }),
+                          ),
+                        ),
+                        BlocBuilder<CustomerBloc, CustomerState>(
+                          bloc: _customerBloc,
+                          builder: (context, state) {
+                            bool isLoading = state is CustomerLoadingState;
+                            if (state is CustomerSuccessState) {
+                              final apiNames = state.data.data
+                                  .map((e) => e.name)
+                                  .toList();
+                              for (var name in apiNames) {
+                                if (!_customers.contains(name)) {
+                                  _customers.add(name);
+                                }
+                              }
+                            }
+                            return _buildDropdown(
+                              hint: 'Select Customer',
+                              value: _selectedCustomer,
+                              items: _customers,
+                              isLoading: isLoading,
+                              onChanged: (v) {
+                                setState(() {
+                                  _selectedCustomer = v;
+                                  _selectedSite = null;
+                                  _sites.clear();
+                                });
+                                if (v != null &&
+                                    state is CustomerSuccessState) {
+                                  final cList = state.data.data.where(
+                                    (x) => x.name == v,
+                                  );
+                                  if (cList.isNotEmpty) {
+                                    _sitesBloc.add(
+                                      SitesGetEvent(cList.first.id),
+                                    );
+                                  }
+                                }
+                              },
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // ── STEP 2: SELECT SITE ──────────────────────────────
+                        _buildSectionHeader(
+                          label: 'STEP 2: SELECT SITE',
+                          onAddTap: _selectedCustomer != null
+                              ? () => _showAddBottomSheet(
+                                  fieldLabel: 'Site',
+                                  list: _sites,
+                                  onSaved: (val) => setState(() {
+                                    _sites.insert(0, val);
+                                    _selectedSite = val;
+                                  }),
+                                )
+                              : null,
+                        ),
+                        BlocBuilder<SitesBloc, SitesState>(
+                          bloc: _sitesBloc,
+                          builder: (context, state) {
+                            bool isLoading = state is SitesLoadingState;
+                            if (state is SitesSuccessState) {
+                              final apiNames = state.data.data
+                                  .map((e) => e.name)
+                                  .toList();
+                              for (var name in apiNames) {
+                                if (!_sites.contains(name)) _sites.add(name);
+                              }
+                            }
+                            return _buildDropdown(
+                              hint: 'Choose Site...',
+                              value: _selectedSite,
+                              items: _sites,
+                              isLoading: isLoading,
+                              onChanged: _selectedCustomer != null
+                                  ? (v) => setState(() => _selectedSite = v)
+                                  : null,
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // ── STEP 3: APPLICATION OF EQUIPMENT ─────────────────
+                        _buildSectionHeader(
+                          label: 'STEP 3: APPLICATION OF EQUIPMENT',
+                          showAdd: false,
+                        ),
+                        _buildTextField(
+                          hint: 'Enter Application of Equipment',
+                          controller: _equipmentController,
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // ── STEP 4: ASSIGN TECHNICIANS ───────────────────────
+                        _buildSectionHeader(
+                          label: 'STEP 4: ASSIGN TECHNICIANS',
+                          showAdd: false,
+                        ),
+                        BlocBuilder<TechnicianBloc, TechnicianState>(
+                          bloc: _technicianBloc,
+                          builder: (context, state) {
+                            bool isLoading = state is TechnicianLoadingState;
+                            if (state is TechnicianSuccessState) {
+                              final apiNames = state.data.data
+                                  .map((e) => e.name)
+                                  .toList();
+                              for (var name in apiNames) {
+                                if (!_technicians.contains(name))
+                                  _technicians.add(name);
+                              }
+                            }
+                            return _buildDropdown(
+                              hint: 'Choose Technicians...',
+                              value: _selectedTechnician,
+                              items: _technicians,
+                              isLoading: isLoading,
+                              onChanged: (v) =>
+                                  setState(() => _selectedTechnician = v),
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 48),
+
+                        // ── Assign Button ──────────────────────────────────
+                        Container(
+                          width: double.infinity,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(
+                                  0xFF1565C0,
+                                ).withOpacity(0.18),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child:
+                              BlocBuilder<
+                                CommissioningWorkCreateBloc,
+                                CommissioningWorkCreateState
+                              >(
+                                bloc: _createBloc,
+                                builder: (context, state) {
+                                  final isLoading =
+                                      state
+                                          is CommissioningWorkCreateLoadingState;
+                                  return ElevatedButton(
+                                    onPressed: isLoading ? null : _onAssign,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF1565C0),
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                    ),
+                                    child: isLoading
+                                        ? const SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2.5,
+                                            ),
+                                          )
+                                        : Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'ASSIGN',
+                                                style: AppFont.style(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w900,
+                                                  color: Colors.white,
+                                                  letterSpacing: 1.2,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              const Icon(
+                                                Icons.arrow_forward,
+                                                size: 18,
+                                              ),
+                                            ],
+                                          ),
+                                  );
+                                },
+                              ),
+                        ),
+
+                        const SizedBox(height: 30),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -473,30 +624,49 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     VoidCallback? onAddTap,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: AppFont.style(
-              fontSize: 11,
-              fontWeight: FontWeight.w900,
-              color: const Color(0xFFA5ABB7),
-              letterSpacing: 0.7,
+          RichText(
+            text: TextSpan(
+              text: label,
+              style: AppFont.style(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w900,
+                color: const Color(0xFFA2AEC0),
+                letterSpacing: 0.8,
+              ),
+              children: [
+                TextSpan(
+                  text: ' *',
+                  style: AppFont.style(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF0B68B9),
+                  ),
+                ),
+              ],
             ),
           ),
           if (showAdd && onAddTap != null)
             GestureDetector(
               onTap: onAddTap,
               child: Container(
-                width: 28,
-                height: 28,
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEAF2FF),
-                  borderRadius: BorderRadius.circular(6),
+                  color: const Color(0xFFF1F8FF),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: const Color(0xFF1565C0).withOpacity(0.15),
+                  ),
                 ),
-                child: const Icon(Icons.add, size: 18, color: Color(0xFF1565C0)),
+                child: const Icon(
+                  Icons.add,
+                  size: 20,
+                  color: Color(0xFF1565C0),
+                ),
               ),
             ),
         ],
@@ -509,7 +679,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     required String hint,
     required String? value,
     required List<String> items,
-    required ValueChanged<String?> onChanged,
+    required ValueChanged<String?>? onChanged,
     bool isLoading = false,
   }) {
     // Make sure current value is in items to avoid DropdownButton error
@@ -518,11 +688,13 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
       validItems.add(value);
     }
 
+    final bool isEnabled = onChanged != null;
+
     return Container(
       height: 56,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FB),
+        color: isEnabled ? const Color(0xFFF8F9FB) : const Color(0xFFF1F2F6),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFF1F2F6)),
       ),
@@ -546,16 +718,24 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                   style: AppFont.style(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
-                    color: const Color(0xFFA5ABB7),
+                    color: isEnabled
+                        ? const Color(0xFFA5ABB7)
+                        : const Color(0xFFCBD5E1),
                   ),
                 ),
-                icon: const Icon(Icons.keyboard_arrow_down,
-                    color: Color(0xFFA5ABB7)),
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: isEnabled
+                      ? const Color(0xFFA5ABB7)
+                      : const Color(0xFFCBD5E1),
+                ),
                 dropdownColor: Colors.white,
                 style: AppFont.style(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF0D121F),
+                  color: isEnabled
+                      ? const Color(0xFF0D121F)
+                      : const Color(0xFFA5ABB7),
                 ),
                 onChanged: onChanged,
                 items: validItems
@@ -563,6 +743,42 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                     .toList(),
               ),
             ),
+    );
+  }
+
+  // ── Styled text field ──────────────────────────────────────────────────────
+  Widget _buildTextField({
+    required String hint,
+    required TextEditingController controller,
+  }) {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F9FB),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFF1F2F6)),
+      ),
+      child: TextField(
+        controller: controller,
+        style: AppFont.style(
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+          color: const Color(0xFF0D121F),
+        ),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: AppFont.style(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: const Color(0xFFA5ABB7),
+          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+        ),
+      ),
     );
   }
 }

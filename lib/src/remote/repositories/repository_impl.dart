@@ -40,6 +40,8 @@ import '../../features/my_commissioning/domain/usecase/commissioning_step6_autof
 import '../../features/my_commissioning/domain/usecase/commissioning_step6_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/assigned_technician_representative_usecase.dart';
 import '../models/assigned_technician_representative_model/assigned_technician_representative_response.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_work_create_usecase.dart';
+import '../models/commissioning_work_create_model/commissioning_work_create_response.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -84,6 +86,8 @@ abstract class Repository {
   Future<Either<Failure, CommissioningReportStep6AutoFillResponse>> commissioning_report_step6(CommissioningStep6Params params);
 
   Future<Either<Failure, AssignedTechnicianResponse>> assigned_technician_representative(AssignedTechnicianRepresentativeParams params);
+
+  Future<Either<Failure, CommissioningWorkCreateResponse>> commissioningWorkCreate(CommissioningWorkCreateParams params);
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -751,6 +755,36 @@ class AuthRepositoryImpl implements Repository {
           final respData = await _remoteDataSource.assignedTechnicianRepresentative(params.id);
 
           if (respData.status != 200) {
+            return Left(ServerFailure(respData.message));
+          } else {
+            return Right(respData);
+          }
+        } catch(e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, CommissioningWorkCreateResponse>> commissioningWorkCreate(CommissioningWorkCreateParams params) {
+    return _networkInfo.check<CommissioningWorkCreateResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.commissioningWorkCreate(params, token);
+
+          if (respData.status != 200 && respData.status != 201) {
             return Left(ServerFailure(respData.message));
           } else {
             return Right(respData);

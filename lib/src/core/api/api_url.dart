@@ -24,6 +24,8 @@ class ApiUrl {
 
   static const commissioningWork = "technician/commissioning-works";
 
+  static const commissioningWorkCreate = "technician/commissioning-work/create";
+
   static const commissioningWorkUpdate = "technician/commissioning-works";
 
   static const commissioningWorkDelete = "technician/commissioning-works";
