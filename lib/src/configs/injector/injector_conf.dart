@@ -18,10 +18,16 @@ import '../../features/my_commissioning/domain/usecase/commissioning_step4_autof
 import '../../features/my_commissioning/domain/usecase/commissioning_step4_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step5_autofill_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step5_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step6_autofill_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step6_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/assigned_technician_representative_usecase.dart';
 import '../../features/my_commissioning/bloc/commissioning_step4_autofill_bloc/commissioning_step4_autofill_bloc.dart';
 import '../../features/my_commissioning/bloc/commissioning_step4_bloc/commissioning_step4_bloc.dart';
 import '../../features/my_commissioning/bloc/commissioning_step5_autofill_bloc/commissioning_step5_autofill_bloc.dart';
 import '../../features/my_commissioning/bloc/commissioning_step5_bloc/commissioning_step5_bloc.dart';
+import '../../features/my_commissioning/bloc/commissioning_step6_autofill_bloc/commissioning_step6_autofill_bloc.dart';
+import '../../features/my_commissioning/bloc/commissioning_step6_bloc/commissioning_step6_bloc.dart';
+import '../../features/my_commissioning/bloc/assigned_technician_representative_bloc/assigned_technician_representative_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -263,6 +269,42 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
         () => CommissioningStep5AutofillUsecase(
+      getIt<AuthRepositoryImpl>(),
+    ),
+  );
+
+  getIt.registerFactory(
+        () => CommissioningStep6Bloc(
+      getIt<CommissioningStep6Usecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+        () => CommissioningStep6Usecase(
+      getIt<AuthRepositoryImpl>(),
+    ),
+  );
+
+  getIt.registerFactory(
+        () => CommissioningStep6AutoFillBloc(
+      getIt<CommissioningStep6AutofillUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+        () => CommissioningStep6AutofillUsecase(
+      getIt<AuthRepositoryImpl>(),
+    ),
+  );
+
+  getIt.registerFactory(
+        () => AssignedTechnicianRepresentativeBloc(
+      getIt<AssignedTechnicianRepresentativeUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+        () => AssignedTechnicianRepresentativeUsecase(
       getIt<AuthRepositoryImpl>(),
     ),
   );

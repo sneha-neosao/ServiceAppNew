@@ -1,10 +1,12 @@
-class CommissioningReportStep6AutoFillResponse {
+import 'package:equatable/equatable.dart';
+
+class CommissioningReportStep6AutoFillResponse extends Equatable {
   final int status;
   final bool success;
-  final CommissioningData data;
+  final CommissioningStep6Data data;
   final String message;
 
-  CommissioningReportStep6AutoFillResponse({
+  const CommissioningReportStep6AutoFillResponse({
     required this.status,
     required this.success,
     required this.data,
@@ -15,7 +17,7 @@ class CommissioningReportStep6AutoFillResponse {
     return CommissioningReportStep6AutoFillResponse(
       status: json['status'],
       success: json['success'],
-      data: CommissioningData.fromJson(json['data']),
+      data: CommissioningStep6Data.fromJson(json['data']),
       message: json['message'],
     );
   }
@@ -28,79 +30,72 @@ class CommissioningReportStep6AutoFillResponse {
       'message': message,
     };
   }
+
+  @override
+  List<Object?> get props => [status, success, data, message];
 }
 
-class CommissioningData {
+class CommissioningStep6Data extends Equatable {
   final String id;
-  final String commissioningWorkId;
-  final String dealerName;
-  final String customerName;
-  final String siteName;
-  final String applicationOfEquipment;
-  final List<Technician> assignedTechnicians;
+  final String technicianRemarks;
+  final String customerRemarks;
+  final String technicianSignature;
+  final String customerRepresentativeName;
+  final String customerSignature;
+  final List<String> savedWorkPhotos;
+  final String technicianRepresentativeName;
   final int lastCompletedStep;
 
-  CommissioningData({
+  const CommissioningStep6Data({
     required this.id,
-    required this.commissioningWorkId,
-    required this.dealerName,
-    required this.customerName,
-    required this.siteName,
-    required this.applicationOfEquipment,
-    required this.assignedTechnicians,
+    required this.technicianRemarks,
+    required this.customerRemarks,
+    required this.technicianSignature,
+    required this.customerRepresentativeName,
+    required this.customerSignature,
+    required this.savedWorkPhotos,
+    required this.technicianRepresentativeName,
     required this.lastCompletedStep,
   });
 
-  factory CommissioningData.fromJson(Map<String, dynamic> json) {
-    return CommissioningData(
+  factory CommissioningStep6Data.fromJson(Map<String, dynamic> json) {
+    return CommissioningStep6Data(
       id: json['id'],
-      commissioningWorkId: json['commissioning_work_id'],
-      dealerName: json['dealer_name'],
-      customerName: json['customer_name'],
-      siteName: json['site_name'],
-      applicationOfEquipment: json['application_of_equipment'],
-      assignedTechnicians: (json['assigned_technicians'] as List)
-          .map((e) => Technician.fromJson(e))
-          .toList(),
-      lastCompletedStep: json['last_completed_step'],
+      technicianRemarks: json['technician_remarks'] ?? '',
+      customerRemarks: json['customer_remarks'] ?? '',
+      technicianSignature: json['technician_signature'] ?? '',
+      customerRepresentativeName: json['customer_representative_name'] ?? '',
+      customerSignature: json['customer_signature'] ?? '',
+      savedWorkPhotos: List<String>.from(json['saved_work_photos'] ?? []),
+      technicianRepresentativeName: json['technician_representative_name'] ?? '',
+      lastCompletedStep: json['last_completed_step'] ?? 5,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'commissioning_work_id': commissioningWorkId,
-      'dealer_name': dealerName,
-      'customer_name': customerName,
-      'site_name': siteName,
-      'application_of_equipment': applicationOfEquipment,
-      'assigned_technicians':
-      assignedTechnicians.map((e) => e.toJson()).toList(),
+      'technician_remarks': technicianRemarks,
+      'customer_remarks': customerRemarks,
+      'technician_signature': technicianSignature,
+      'customer_representative_name': customerRepresentativeName,
+      'customer_signature': customerSignature,
+      'saved_work_photos': savedWorkPhotos,
+      'technician_representative_name': technicianRepresentativeName,
       'last_completed_step': lastCompletedStep,
     };
   }
-}
 
-class Technician {
-  final String id;
-  final String name;
-
-  Technician({
-    required this.id,
-    required this.name,
-  });
-
-  factory Technician.fromJson(Map<String, dynamic> json) {
-    return Technician(
-      id: json['id'],
-      name: json['name'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
-  }
+  @override
+  List<Object?> get props => [
+    id,
+    technicianRemarks,
+    customerRemarks,
+    technicianSignature,
+    customerRepresentativeName,
+    customerSignature,
+    savedWorkPhotos,
+    technicianRepresentativeName,
+    lastCompletedStep,
+  ];
 }

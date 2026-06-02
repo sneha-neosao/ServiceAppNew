@@ -32,6 +32,11 @@ import '../../features/my_commissioning/domain/usecase/commissioning_step4_autof
 import '../../features/my_commissioning/domain/usecase/commissioning_step4_usecase.dart';
 import '../models/commissioning_report_step5_autofill_model/commissioning_report_step5_autofill_response.dart' hide SavedDescription;
 import '../../features/my_commissioning/domain/usecase/commissioning_step5_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step6_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step6_autofill_usecase.dart';
+import '../models/commissioning_report_step6_autofill_model/commissioning_report_step6_autofill_response.dart';
+import '../../features/my_commissioning/domain/usecase/assigned_technician_representative_usecase.dart';
+import '../models/assigned_technician_representative_model/assigned_technician_representative_response.dart';
 
 sealed class RemoteDataSource {
 
@@ -68,6 +73,12 @@ sealed class RemoteDataSource {
   Future<CommissioningReportStep5AutoFillResponse> commissioningReportStep5Autofill(String id);
 
   Future<CommissioningReportStep5AutoFillResponse> commissioningReportStep5(CommissioningStep5Params params);
+
+  Future<CommissioningReportStep6AutoFillResponse> commissioningReportStep6Autofill(String id);
+
+  Future<CommissioningReportStep6AutoFillResponse> commissioningReportStep6(CommissioningStep6Params params);
+
+  Future<AssignedTechnicianResponse> assignedTechnicianRepresentative(String id);
 
   Future<void> logout();
 }
@@ -620,4 +631,115 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       throw ServerException();
     }
   }
+
+  @override
+  Future<CommissioningReportStep6AutoFillResponse> commissioningReportStep6Autofill(String id) async {
+    try {
+      final response = await _helper.execute(
+        url: "${ApiUrl.commissioningWorkReportStep6AutoFill}/$id",
+        method: Method.get,
+      );
+
+      final respData = CommissioningReportStep6AutoFillResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<CommissioningReportStep6AutoFillResponse> commissioningReportStep6(CommissioningStep6Params params) async {
+    try {
+      final Map<String, dynamic> map = {
+        "id": params.id,
+        "technician_remarks": params.technicianRemarks,
+        "customer_remarks": params.customerRemarks,
+        "technician_representative": params.technicianRepresentative,
+        "customer_representative_name": params.customerRepresentativeName,
+      };
+
+      if (params.technicianSignaturePath != null && params.technicianSignaturePath!.isNotEmpty) {
+        map["technician_signature"] = await MultipartFile.fromFile(
+          params.technicianSignaturePath!,
+          filename: params.technicianSignaturePath!.split('/').last,
+        );
+      }
+
+      if (params.customerSignaturePath != null && params.customerSignaturePath!.isNotEmpty) {
+        map["customer_signature"] = await MultipartFile.fromFile(
+          params.customerSignaturePath!,
+          filename: params.customerSignaturePath!.split('/').last,
+        );
+      }
+
+      if (params.workPhotosPaths.isNotEmpty) {
+        final List<MultipartFile> files = [];
+        for (final path in params.workPhotosPaths) {
+          if (path.isNotEmpty) {
+            files.add(await MultipartFile.fromFile(
+              path,
+              filename: path.split('/').last,
+            ));
+          }
+        }
+        map["work_photos"] = files;
+      }
+
+      final formData = FormData.fromMap(map);
+
+      final response = await _helper.execute(
+        url: ApiUrl.commissioningWorkReportStep6,
+        method: Method.post,
+        data: formData,
+      );
+
+      final respData = CommissioningReportStep6AutoFillResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<AssignedTechnicianResponse> assignedTechnicianRepresentative(String id) async {
+    try {
+      final response = await _helper.execute(
+        url: "${ApiUrl.commissioningWorkReportTechnicians}/$id/technicians",
+        method: Method.get,
+      );
+
+      final respData = AssignedTechnicianResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
 }
+

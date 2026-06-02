@@ -37,6 +37,18 @@ import '../../bloc/commissioning_work_list_bloc/commissioning_work_list_bloc.dar
 import '../../domain/usecase/commissioning_step5_usecase.dart';
 import '../../../../remote/models/commissioning_report_step4_autofill_model/commissioning_report_step4_autofill_response.dart' hide CommissioningData, Technician;
 import '../../../../remote/models/commissioning_report_step5_autofill_model/commissioning_report_step5_autofill_response.dart' hide SavedDescription;
+import '../../bloc/commissioning_step6_autofill_bloc/commissioning_step6_autofill_bloc.dart';
+import '../../bloc/commissioning_step6_autofill_bloc/commissioning_step6_autofill_event.dart';
+import '../../bloc/commissioning_step6_autofill_bloc/commissioning_step6_autofill_state.dart';
+import '../../bloc/commissioning_step6_bloc/commissioning_step6_bloc.dart';
+import '../../bloc/commissioning_step6_bloc/commissioning_step6_event.dart';
+import '../../bloc/commissioning_step6_bloc/commissioning_step6_state.dart';
+import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_bloc.dart';
+import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_event.dart';
+import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_state.dart';
+import '../../../../remote/models/commissioning_report_step6_autofill_model/commissioning_report_step6_autofill_response.dart';
+import '../../../../remote/models/assigned_technician_representative_model/assigned_technician_representative_response.dart';
+
 
 class CreateCommissioningReportScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -108,6 +120,29 @@ class _CreateCommissioningReportScreenState
   late CommissioningStep5AutoFillBloc _step5Bloc;
   late CommissioningStep5Bloc _submitStep5Bloc;
 
+  late CommissioningStep6AutoFillBloc _step6Bloc;
+  late CommissioningStep6Bloc _submitStep6Bloc;
+  late AssignedTechnicianRepresentativeBloc _assignedTechniciansBloc;
+
+  // Step 6 Controllers & variables
+  final _technicianRemarksController = TextEditingController();
+  final _customerRemarksController = TextEditingController();
+  final _customerRepNameController = TextEditingController();
+
+  String? _selectedTechnicianRepId;
+  String? _autofilledTechRepName;
+  List<AssignedTechnician> _assignedTechniciansList = [];
+
+  File? _technicianSignatureFile;
+  File? _customerSignatureFile;
+
+  String? _existingTechnicianSignatureUrl;
+  String? _existingCustomerSignatureUrl;
+
+  final List<File> _workPhotos = [];
+  List<String> _existingWorkPhotosUrls = [];
+
+
   // Step 3 Controllers
   final _pumpMakeController = TextEditingController();
   final _pumpModelController = TextEditingController();
@@ -169,6 +204,9 @@ class _CreateCommissioningReportScreenState
     _submitStep4Bloc = getIt<CommissioningStep4Bloc>();
     _step5Bloc = getIt<CommissioningStep5AutoFillBloc>();
     _submitStep5Bloc = getIt<CommissioningStep5Bloc>();
+    _step6Bloc = getIt<CommissioningStep6AutoFillBloc>();
+    _submitStep6Bloc = getIt<CommissioningStep6Bloc>();
+    _assignedTechniciansBloc = getIt<AssignedTechnicianRepresentativeBloc>();
     _agendaController = TextEditingController();
 
     _technicians = [TextEditingController()];
@@ -188,6 +226,12 @@ class _CreateCommissioningReportScreenState
     _submitStep4Bloc.close();
     _step5Bloc.close();
     _submitStep5Bloc.close();
+    _step6Bloc.close();
+    _submitStep6Bloc.close();
+    _assignedTechniciansBloc.close();
+    _technicianRemarksController.dispose();
+    _customerRemarksController.dispose();
+    _customerRepNameController.dispose();
     _agendaController.dispose();
     _pumpMakeController.dispose();
     _pumpModelController.dispose();
@@ -339,12 +383,19 @@ class _CreateCommissioningReportScreenState
         _elecNA,
         savedChecklists,
       ));
-    } else if (_currentStep < 6) {
-      setState(() {
-        _currentStep++;
-      });
-    } else {
-      _showSuccessDialog();
+    } else if (_currentStep == 6) {
+      if (_submitStep6Bloc.state is CommissioningStep6LoadingState) return;
+
+      _submitStep6Bloc.add(CommissioningStep6SubmitEvent(
+        commissioning_report_id: _commissioningReportId ?? widget.commissioningWorkId,
+        technicianRemarks: _technicianRemarksController.text.trim(),
+        customerRemarks: _customerRemarksController.text.trim(),
+        technicianRepresentative: _selectedTechnicianRepId ?? '',
+        customerRepresentativeName: _customerRepNameController.text.trim(),
+        technicianSignaturePath: _technicianSignatureFile?.path,
+        customerSignaturePath: _customerSignatureFile?.path,
+        workPhotosPaths: _workPhotos.map((f) => f.path).toList(),
+      ));
     }
   }
 
@@ -646,6 +697,10 @@ class _CreateCommissioningReportScreenState
             appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
             setState(() {
               _currentStep++;
+              if (_currentStep == 6 && _commissioningReportId != null) {
+                _step6Bloc.add(CommissioningStep6AutoFillGetEvent(_commissioningReportId!));
+                _assignedTechniciansBloc.add(AssignedTechnicianRepresentativeGetEvent(_commissioningReportId!));
+              }
             });
           } else if (state is CommissioningStep5FailureState) {
             appSnackBar(context, const Color(0xFFF44336), state.message);
@@ -702,7 +757,17 @@ class _CreateCommissioningReportScreenState
             setState(() {});
           }
         },
-      child: Scaffold(
+      child: BlocListener<CommissioningStep6Bloc, CommissioningStep6State>(
+        bloc: _submitStep6Bloc,
+        listener: (context, state) {
+          if (state is CommissioningStep6SuccessState) {
+            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+            _showSuccessDialog();
+          } else if (state is CommissioningStep6FailureState) {
+            appSnackBar(context, const Color(0xFFF44336), state.message);
+          }
+        },
+        child: Scaffold(
         backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
@@ -920,6 +985,7 @@ class _CreateCommissioningReportScreenState
       ), // Column
       ), // SafeArea
       ), // Scaffold
+      ), // Step 6 Submit
       ), // Step 5 AutoFill
       ), // Step 5 Submit
       ), // Step 4 AutoFill
@@ -1038,7 +1104,71 @@ class _CreateCommissioningReportScreenState
           },
         );
       case 6:
-        return _buildStep6();
+        return BlocConsumer<AssignedTechnicianRepresentativeBloc, AssignedTechnicianRepresentativeState>(
+          bloc: _assignedTechniciansBloc,
+          listener: (context, techState) {
+            if (techState is AssignedTechnicianRepresentativeSuccessState) {
+              setState(() {
+                _assignedTechniciansList = techState.data.data;
+                if (_autofilledTechRepName != null && _assignedTechniciansList.isNotEmpty) {
+                  final matched = _assignedTechniciansList.firstWhere(
+                    (t) => t.name.toLowerCase() == _autofilledTechRepName!.toLowerCase(),
+                    orElse: () => _assignedTechniciansList.first,
+                  );
+                  _selectedTechnicianRepId = matched.technicianId;
+                } else if (_selectedTechnicianRepId == null && _assignedTechniciansList.isNotEmpty) {
+                  _selectedTechnicianRepId = _assignedTechniciansList.first.technicianId;
+                }
+              });
+            }
+          },
+          builder: (context, techState) {
+            return BlocConsumer<CommissioningStep6AutoFillBloc, CommissioningStep6AutoFillState>(
+              bloc: _step6Bloc,
+              listener: (context, step6State) {
+                if (step6State is CommissioningStep6AutoFillSuccessState) {
+                  final data = step6State.data.data;
+                  setState(() {
+                    if (data.technicianRemarks.isNotEmpty) {
+                      _technicianRemarksController.text = data.technicianRemarks;
+                    }
+                    if (data.customerRemarks.isNotEmpty) {
+                      _customerRemarksController.text = data.customerRemarks;
+                    }
+                    if (data.customerRepresentativeName.isNotEmpty) {
+                      _customerRepNameController.text = data.customerRepresentativeName;
+                    }
+                    if (data.technicianRepresentativeName.isNotEmpty) {
+                      _autofilledTechRepName = data.technicianRepresentativeName;
+                      if (_assignedTechniciansList.isNotEmpty) {
+                        final matched = _assignedTechniciansList.firstWhere(
+                          (t) => t.name.toLowerCase() == data.technicianRepresentativeName.toLowerCase(),
+                          orElse: () => _assignedTechniciansList.first,
+                        );
+                        _selectedTechnicianRepId = matched.technicianId;
+                      }
+                    }
+                    _existingTechnicianSignatureUrl = data.technicianSignature;
+                    _existingCustomerSignatureUrl = data.customerSignature;
+                    _existingWorkPhotosUrls = data.savedWorkPhotos;
+                  });
+                }
+              },
+              builder: (context, step6State) {
+                if (techState is AssignedTechnicianRepresentativeLoadingState ||
+                    step6State is CommissioningStep6AutoFillLoadingState) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                    ),
+                  );
+                }
+                return _buildStep6();
+              },
+            );
+          },
+        );
       default:
         return const Center(child: Text("Coming Soon"));
     }
@@ -2371,7 +2501,7 @@ class _CreateCommissioningReportScreenState
           ),
         ),
         const SizedBox(height: 10),
-        _buildRemarksBox('Technician side remarks...'),
+        _buildRemarksBox('Technician side remarks...', _technicianRemarksController),
 
         const SizedBox(height: 28),
 
@@ -2385,7 +2515,7 @@ class _CreateCommissioningReportScreenState
           ),
         ),
         const SizedBox(height: 10),
-        _buildRemarksBox('Customer side remarks...'),
+        _buildRemarksBox('Customer side remarks...', _customerRemarksController),
 
         const SizedBox(height: 36),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
@@ -2415,9 +2545,86 @@ class _CreateCommissioningReportScreenState
         const SizedBox(height: 16),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 16),
-        _buildInfoRow('Name', 'Vinod Patil'),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 60,
+              child: Text(
+                'Name',
+                style: AppFont.style(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF8E9BAE),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedTechnicianRepId,
+                    isExpanded: true,
+                    icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
+                    style: AppFont.style(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFF0D121F),
+                    ),
+                    hint: Text(
+                      'Select Technician',
+                      style: AppFont.style(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFA5ABB7),
+                      ),
+                    ),
+                    items: _assignedTechniciansList.map((tech) {
+                      return DropdownMenuItem<String>(
+                        value: tech.technicianId,
+                        child: Text(tech.name),
+                      );
+                    }).toList(),
+                    onChanged: (val) {
+                      setState(() {
+                        _selectedTechnicianRepId = val;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 16),
-        _buildSignatureBox('Sign', 'Digitally Signed'),
+        _buildSignatureBox(
+          label: 'Sign',
+          placeholder: 'Tap to sign',
+          signatureFile: _technicianSignatureFile,
+          existingUrl: _existingTechnicianSignatureUrl,
+          onTap: () {
+            _showImagePickerOption(context, (file) {
+              setState(() {
+                _technicianSignatureFile = file;
+              });
+            });
+          },
+          onClear: () {
+            setState(() {
+              _technicianSignatureFile = null;
+              _existingTechnicianSignatureUrl = null;
+            });
+          },
+        ),
 
         const SizedBox(height: 36),
 
@@ -2454,6 +2661,7 @@ class _CreateCommissioningReportScreenState
             const SizedBox(width: 8),
             Expanded(
               child: TextField(
+                controller: _customerRepNameController,
                 style: AppFont.style(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
@@ -2483,7 +2691,25 @@ class _CreateCommissioningReportScreenState
           ],
         ),
         const SizedBox(height: 16),
-        _buildSignatureBox('Sign', 'Signature Box'),
+        _buildSignatureBox(
+          label: 'Sign',
+          placeholder: 'Tap to sign',
+          signatureFile: _customerSignatureFile,
+          existingUrl: _existingCustomerSignatureUrl,
+          onTap: () {
+            _showImagePickerOption(context, (file) {
+              setState(() {
+                _customerSignatureFile = file;
+              });
+            });
+          },
+          onClear: () {
+            setState(() {
+              _customerSignatureFile = null;
+              _existingCustomerSignatureUrl = null;
+            });
+          },
+        ),
 
         const SizedBox(height: 36),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
@@ -2500,40 +2726,147 @@ class _CreateCommissioningReportScreenState
         ),
         const SizedBox(height: 16),
 
-        // Add Photo tile
-        GestureDetector(
-          onTap: () {}, // Add photo logic here
-          child: Container(
-            width: 110,
-            height: 110,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: const Color(0xFFCDD0D8),
-                width: 1.5,
-                style: BorderStyle.solid,
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.camera_alt_outlined,
-                  size: 28,
-                  color: Color(0xFFA5ABB7),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'ADD+',
-                  style: AppFont.style(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            // Render existing network photos
+            ..._existingWorkPhotosUrls.map((url) {
+              return Stack(
+                children: [
+                  Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        url,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Center(child: Icon(Icons.broken_image, color: Colors.grey));
+                        },
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _existingWorkPhotosUrls.remove(url);
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
+
+            // Render selected local photos
+            ..._workPhotos.map((file) {
+              return Stack(
+                children: [
+                  Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(
+                        file,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _workPhotos.remove(file);
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
+
+            // Add Photo tile
+            GestureDetector(
+              onTap: () {
+                _showImagePickerOption(context, (file) {
+                  setState(() {
+                    _workPhotos.add(file);
+                  });
+                });
+              },
+              child: Container(
+                width: 110,
+                height: 110,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: const Color(0xFFCDD0D8),
+                    width: 1.5,
+                    style: BorderStyle.solid,
                   ),
                 ),
-              ],
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.camera_alt_outlined,
+                      size: 28,
+                      color: Color(0xFFA5ABB7),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'ADD+',
+                      style: AppFont.style(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFA5ABB7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
+          ],
         ),
 
         const SizedBox(height: 40),
@@ -2541,7 +2874,48 @@ class _CreateCommissioningReportScreenState
     );
   }
 
-  Widget _buildRemarksBox(String placeholder) {
+  Future<void> _showImagePickerOption(BuildContext context, Function(File) onImageSelected) async {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Gallery'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final ImagePicker picker = ImagePicker();
+                  final XFile? file = await picker.pickImage(source: ImageSource.gallery);
+                  if (file != null) {
+                    onImageSelected(File(file.path));
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera),
+                title: const Text('Camera'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final ImagePicker picker = ImagePicker();
+                  final XFile? file = await picker.pickImage(source: ImageSource.camera);
+                  if (file != null) {
+                    onImageSelected(File(file.path));
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildRemarksBox(String placeholder, TextEditingController controller) {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFF9FAFB),
@@ -2551,6 +2925,7 @@ class _CreateCommissioningReportScreenState
       child: Stack(
         children: [
           TextField(
+            controller: controller,
             maxLines: 4,
             style: AppFont.style(
               fontSize: 16,
@@ -2591,7 +2966,14 @@ class _CreateCommissioningReportScreenState
     );
   }
 
-  Widget _buildSignatureBox(String label, String placeholder) {
+  Widget _buildSignatureBox({
+    required String label,
+    required String placeholder,
+    required File? signatureFile,
+    required String? existingUrl,
+    required VoidCallback onTap,
+    required VoidCallback onClear,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2610,21 +2992,79 @@ class _CreateCommissioningReportScreenState
         const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
         const SizedBox(width: 8),
         Expanded(
-          child: Container(
-            height: 100,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF9FAFB),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-            ),
-            child: Center(
-              child: Text(
-                placeholder,
-                style: AppFont.style(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFFCDD0D8),
-                ),
+          child: GestureDetector(
+            onTap: (signatureFile == null && (existingUrl == null || existingUrl.isEmpty)) ? onTap : null,
+            child: Container(
+              height: 120,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF9FAFB),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFE5E7EB)),
+              ),
+              child: Stack(
+                children: [
+                  if (signatureFile != null)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.file(
+                          signatureFile,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    )
+                  else if (existingUrl != null && existingUrl.isNotEmpty)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.network(
+                          existingUrl,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(child: Icon(Icons.broken_image, color: Colors.grey));
+                          },
+                        ),
+                      ),
+                    )
+                  else
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.edit_outlined, color: Color(0xFFA5ABB7)),
+                          const SizedBox(height: 8),
+                          Text(
+                            placeholder,
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFFCDD0D8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (signatureFile != null || (existingUrl != null && existingUrl.isNotEmpty))
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: GestureDetector(
+                        onTap: onClear,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            size: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),

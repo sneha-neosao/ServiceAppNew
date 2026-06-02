@@ -35,6 +35,12 @@ import '../../features/my_commissioning/domain/usecase/commissioning_step4_useca
 import '../models/commissioning_report_step5_autofill_model/commissioning_report_step5_autofill_response.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step5_autofill_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step5_usecase.dart';
+import '../models/commissioning_report_step6_autofill_model/commissioning_report_step6_autofill_response.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step6_autofill_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_step6_usecase.dart';
+import '../../features/my_commissioning/domain/usecase/assigned_technician_representative_usecase.dart';
+import '../models/assigned_technician_representative_model/assigned_technician_representative_response.dart';
+
 /// Abstract Repository interface defining all data operations for the app
 
 abstract class Repository {
@@ -73,6 +79,11 @@ abstract class Repository {
 
   Future<Either<Failure, CommissioningReportStep5AutoFillResponse>> commissioning_report_step5(CommissioningStep5Params params);
 
+  Future<Either<Failure, CommissioningReportStep6AutoFillResponse>> commissioning_report_step6_autofill(CommissioningStep6AutofillParams params);
+
+  Future<Either<Failure, CommissioningReportStep6AutoFillResponse>> commissioning_report_step6(CommissioningStep6Params params);
+
+  Future<Either<Failure, AssignedTechnicianResponse>> assigned_technician_representative(AssignedTechnicianRepresentativeParams params);
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -651,6 +662,93 @@ class AuthRepositoryImpl implements Repository {
       connected: () async {
         try {
           final respData = await _remoteDataSource.commissioningReportStep5(params);
+
+          if (respData.status != 200) {
+            return Left(ServerFailure(respData.message));
+          } else {
+            return Right(respData);
+          }
+        } catch(e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, CommissioningReportStep6AutoFillResponse>> commissioning_report_step6_autofill(CommissioningStep6AutofillParams params) {
+    return _networkInfo.check<CommissioningReportStep6AutoFillResponse>(
+      connected: () async {
+        try {
+          final respData = await _remoteDataSource.commissioningReportStep6Autofill(params.id);
+
+          if (respData.status != 200) {
+            return Left(ServerFailure(respData.message));
+          } else {
+            return Right(respData);
+          }
+        } catch(e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, CommissioningReportStep6AutoFillResponse>> commissioning_report_step6(CommissioningStep6Params params) {
+    return _networkInfo.check<CommissioningReportStep6AutoFillResponse>(
+      connected: () async {
+        try {
+          final respData = await _remoteDataSource.commissioningReportStep6(params);
+
+          if (respData.status != 200) {
+            return Left(ServerFailure(respData.message));
+          } else {
+            return Right(respData);
+          }
+        } catch(e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, AssignedTechnicianResponse>> assigned_technician_representative(AssignedTechnicianRepresentativeParams params) {
+    return _networkInfo.check<AssignedTechnicianResponse>(
+      connected: () async {
+        try {
+          final respData = await _remoteDataSource.assignedTechnicianRepresentative(params.id);
 
           if (respData.status != 200) {
             return Left(ServerFailure(respData.message));
