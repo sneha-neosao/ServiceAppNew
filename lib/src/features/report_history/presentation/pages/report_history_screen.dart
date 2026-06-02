@@ -189,6 +189,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   item.technicianRepresentativeName ??
                                   'No representative',
                               technicianId: item.dealerName,
+                              feedbackSubmitted: item.feedbackSubmitted,
                               onViewTap: (id) {
                                 _detailsBloc.add(
                                   CommissioningReportDetailsGetEvent(id),
@@ -223,6 +224,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           date: '28 Apr 2026',
           technician: 'Pravin Patil',
           technicianId: 'T-101',
+          feedbackSubmitted: false,
         ),
       ];
     } else if (_selectedTab == 1) {
@@ -237,6 +239,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           complaintNo: '#ABC-26-0821',
           technician: 'Pravin Patil',
           technicianId: 'T-101',
+          feedbackSubmitted: false,
         ),
         const SizedBox(height: 16),
         _ReportCard(
@@ -248,6 +251,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           complaintNo: '#ABC-26-0715',
           technician: 'Pravin Patil',
           technicianId: 'T-101',
+          feedbackSubmitted: true,
         ),
       ];
     } else {
@@ -261,6 +265,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           date: '30 Apr 2026',
           technician: 'Pravin Patil',
           technicianId: 'T-101',
+          feedbackSubmitted: false,
         ),
       ];
     }
@@ -616,6 +621,7 @@ class _ReportCard extends StatelessWidget {
   final String? complaintNo;
   final String technician;
   final String technicianId;
+  final bool feedbackSubmitted;
   final void Function(String reportId)? onViewTap;
 
   const _ReportCard({
@@ -628,6 +634,7 @@ class _ReportCard extends StatelessWidget {
     this.complaintNo,
     required this.technician,
     required this.technicianId,
+    required this.feedbackSubmitted,
     this.onViewTap,
   });
 
@@ -851,13 +858,28 @@ class _ReportCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              // QR Code icon button
+              // QR Code icon button or Checkmark
               Expanded(
-                child: _buildIconActionButton(
-                  icon: Icons.qr_code_2_outlined,
-                  iconColor: const Color(0xFFF59E0B),
-                  onTap: () {},
-                ),
+                child: feedbackSubmitted
+                    ? Container(
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.check_circle,
+                            color: Colors.green,
+                          ),
+                        ),
+                      )
+                    : _buildIconActionButton(
+                        icon: Icons.qr_code_2_outlined,
+                        iconColor: const Color(0xFFF59E0B),
+                        onTap: () {},
+                      ),
               ),
             ],
           ),
