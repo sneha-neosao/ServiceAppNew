@@ -19,6 +19,7 @@ import 'package:service_app/src/remote/models/service_calls_model/pending_serbic
 import 'package:service_app/src/features/service_calls/presentation/widgets/assign_technician_dialog.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/complaint_report_dialog.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/service_call_card.dart';
+import 'package:service_app/src/features/service_calls/presentation/widgets/close_over_call_dialog.dart';
 
 class ServiceCallsScreen extends StatefulWidget {
   const ServiceCallsScreen({super.key});
@@ -601,6 +602,12 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                 location: item.siteName,
                 onView: () => _showReportDialog(context),
                 onEdit: () => _showAssignTechDialog(context),
+                onCloseOverCall: () => _showCloseOverCallDialog(
+                  context,
+                  item.complaintNumber,
+                  item.customerName,
+                  item.siteName,
+                ),
                 onSubmit: () {
                   setState(() {
                     _isCreatingReport = true;
@@ -665,6 +672,20 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
       barrierDismissible: false,
       builder: (context) {
         return const AssignTechnicianDialog();
+      },
+    );
+  }
+
+  void _showCloseOverCallDialog(BuildContext context, String complaintNo, String customerName, String siteName) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return CloseOverCallDialog(
+          complaintNo: complaintNo,
+          customerName: customerName,
+          siteName: siteName,
+        );
       },
     );
   }

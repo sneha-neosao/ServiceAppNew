@@ -14,6 +14,7 @@ class ServiceCallCard extends StatelessWidget {
   final VoidCallback onView;
   final VoidCallback onEdit;
   final VoidCallback? onSubmit;
+  final VoidCallback? onCloseOverCall;
 
   const ServiceCallCard({
     super.key,
@@ -26,6 +27,7 @@ class ServiceCallCard extends StatelessWidget {
     required this.onView,
     required this.onEdit,
     this.onSubmit,
+    this.onCloseOverCall,
   });
 
   @override
@@ -168,9 +170,12 @@ class ServiceCallCard extends StatelessWidget {
               children: [
                 if (type == ServiceCallType.active)
                   Expanded(
-                    child: _buildSecondaryButton(
-                      'CLOSE OVER CALL',
-                      Icons.phone_disabled_outlined,
+                    child: GestureDetector(
+                      onTap: onCloseOverCall,
+                      child: _buildSecondaryButton(
+                        'CLOSE OVER CALL',
+                        Icons.phone_disabled_outlined,
+                      ),
                     ),
                   ),
                 if (type == ServiceCallType.completed)
