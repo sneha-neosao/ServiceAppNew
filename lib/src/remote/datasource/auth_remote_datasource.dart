@@ -11,6 +11,7 @@ import 'package:service_app/src/remote/models/technician_model/technician_respon
 import 'package:service_app/src/remote/models/upcoming_amc_model/upcoming_amc_response.dart';
 import 'package:service_app/src/remote/models/service_calls_model/assigned_service_calls_response.dart';
 import 'package:service_app/src/remote/models/service_calls_model/pending_serbice_calls_response.dart';
+import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/assigned_service_calls_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/pending_service_calls_usecase.dart';
 import '../../configs/injector/injector.dart';
@@ -166,6 +167,10 @@ sealed class RemoteDataSource {
 
   Future<PendingServiceCallsResponse> pendingServiceCalls(
     PendingServiceCallsParams params,
+    String token,
+  );
+
+  Future<ActiveTechniciansServiceCallsResponse> activeTechniciansServiceCalls(
     String token,
   );
 }
@@ -1084,6 +1089,33 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       }
       if (e is ApiException) {
         throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<ActiveTechniciansServiceCallsResponse> activeTechniciansServiceCalls(
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: ApiUrl.activeTechniciansServiceCalls,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = ActiveTechniciansServiceCallsResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
       }
       throw ServerException();
     }

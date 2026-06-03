@@ -10,6 +10,7 @@ import 'package:service_app/src/features/service_calls/domain/usecase/assigned_s
 import 'package:service_app/src/features/service_calls/domain/usecase/pending_service_calls_usecase.dart';
 import 'package:service_app/src/remote/models/service_calls_model/assigned_service_calls_response.dart';
 import 'package:service_app/src/remote/models/service_calls_model/pending_serbice_calls_response.dart';
+import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
 import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
 import 'package:service_app/src/remote/models/commissioning_report_step1_model/commissioning_report_step1_response.dart';
 import 'package:service_app/src/remote/models/commissioning_report_step2_autofill_model/commissioning_report_step2_response.dart';
@@ -141,6 +142,8 @@ abstract class Repository {
 
   Future<Either<Failure, PendingServiceCallsResponse>> pendingServiceCalls(
       PendingServiceCallsParams params);
+
+  Future<Either<Failure, ActiveTechniciansServiceCallsResponse>> activeTechniciansServiceCalls(NoParams params);
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -1093,6 +1096,36 @@ class AuthRepositoryImpl implements Repository {
             token,
           );
           return Right(pendingServiceCallsResponse);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, ActiveTechniciansServiceCallsResponse>> activeTechniciansServiceCalls(NoParams params) {
+    return _networkInfo.check<ActiveTechniciansServiceCallsResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.activeTechniciansServiceCalls(token);
+          
+          if (response.status != 200) {
+            return Left(CredentialFailure(response.message));
+          }
+          
+          return Right(response);
         } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));

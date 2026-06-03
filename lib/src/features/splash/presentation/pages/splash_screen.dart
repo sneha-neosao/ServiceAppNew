@@ -41,13 +41,15 @@ class _SplashScreenState extends State<SplashScreen>
   /// Requests camera and photo-library permissions.
   /// Navigation continues regardless of the user's choice.
   Future<void> _requestPermissions() async {
-    // On Android 13+ READ_MEDIA_IMAGES is the relevant permission;
-    // on older versions READ_EXTERNAL_STORAGE is used instead.
-    await [
-      Permission.camera,
-      Permission.photos,        // iOS + Android 13+
-      Permission.storage,       // Android < 13 fallback
-    ].request();
+    List<Permission> permissionsToRequest = [];
+
+    if ((await Permission.camera.status).isDenied) {
+      permissionsToRequest.add(Permission.camera);
+    }
+
+    if (permissionsToRequest.isNotEmpty) {
+      await permissionsToRequest.request();
+    }
   }
 
   @override

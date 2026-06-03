@@ -1,11 +1,39 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_state.dart';
+import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
-class AssignTechnicianDialog extends StatelessWidget {
+class AssignTechnicianDialog extends StatefulWidget {
   final String complaintNo;
 
   const AssignTechnicianDialog({super.key, required this.complaintNo});
+
+  @override
+  State<AssignTechnicianDialog> createState() => _AssignTechnicianDialogState();
+}
+
+class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
+  late ActiveTechniciansServiceCallsBloc _bloc;
+  List<Technician> _selectedTechnicians = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = getIt<ActiveTechniciansServiceCallsBloc>()
+      ..add(const ActiveTechniciansServiceCallsGetEvent());
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +94,7 @@ class AssignTechnicianDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  complaintNo,
+                  widget.complaintNo,
                   style: AppFont.style(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
@@ -83,29 +111,84 @@ class AssignTechnicianDialog extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Container(
-                  height: 44,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '-- Choose Technicians --',
-                          style: AppFont.style(
+                BlocBuilder<ActiveTechniciansServiceCallsBloc, ActiveTechniciansServiceCallsState>(
+                  bloc: _bloc,
+                  builder: (context, state) {
+                    if (state is ActiveTechniciansServiceCallsLoadingState || state is ActiveTechniciansServiceCallsInitialState) {
+                      return Container(
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                        ),
+                        child: const Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1565C0)),
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (state is ActiveTechniciansServiceCallsFailureState) {
+                      return Text(
+                        'Failed to load technicians: ${state.message}',
+                        style: AppFont.style(color: Colors.red, fontSize: 12),
+                      );
+                    }
+
+                    List<Technician> technicians = [];
+                    if (state is ActiveTechniciansServiceCallsSuccessState) {
+                      technicians = state.data.data;
+                    }
+
+                    return DropdownSearch<Technician>.multiSelection(
+                      items: technicians,
+                      itemAsString: (Technician t) => t.name,
+                      onChanged: (List<Technician> selected) {
+                        setState(() {
+                          _selectedTechnicians = selected;
+                        });
+                      },
+                      dropdownDecoratorProps: DropDownDecoratorProps(
+                        dropdownSearchDecoration: InputDecoration(
+                          hintText: '-- Choose Technicians --',
+                          hintStyle: AppFont.style(
                             fontSize: 14,
                             color: const Color(0xFFA5ABB7),
                             fontWeight: FontWeight.w500,
                           ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFF1565C0)),
+                          ),
                         ),
                       ),
-                      const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
-                    ],
-                  ),
+                      popupProps: PopupPropsMultiSelection.menu(
+                        showSearchBox: true,
+                        searchFieldProps: TextFieldProps(
+                          decoration: InputDecoration(
+                            hintText: "Search technician...",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -132,12 +215,15 @@ class AssignTechnicianDialog extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 GestureDetector(
-                  onTap: () => Navigator.pop(context),
+                  onTap: () {
+                    // TODO: Implement assignment logic with _selectedTechnicians
+                    Navigator.pop(context);
+                  },
                   child: Container(
                     height: 40,
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFB1C9DE),
+                      color: const Color(0xFF1565C0), // Active button color instead of disabled
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(

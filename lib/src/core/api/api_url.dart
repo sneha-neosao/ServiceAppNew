@@ -21,6 +21,8 @@ class ApiUrl {
   static const siteDropdown = "technician/dropdowns/sites";
 
   static const technicians = "technician/dropdowns/technicians";
+  
+  static const activeTechniciansServiceCalls = "technician/service-calls/technicians/dropdown";
 
   static const commissioningWork = "technician/commissioning-works";
 

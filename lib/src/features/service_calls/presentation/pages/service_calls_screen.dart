@@ -142,19 +142,45 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
         ),
 
         // ── Custom Tab Bar ──────────────────────────────────────────────────
-        TabBar(
-          controller: _tabController,
-          labelColor: const Color(0xFF1565C0),
-          unselectedLabelColor: const Color(0xFFA5ABB7),
-          indicatorColor: const Color(0xFF1565C0),
-          indicatorSize: TabBarIndicatorSize.tab,
-          indicatorWeight: 3,
-          labelPadding: const EdgeInsets.symmetric(vertical: 8),
-          dividerColor: const Color(0xFFF1F2F6),
-          tabs: [
-            _buildTab('ASSIGNED SERVICE CALLS', 1),
-            _buildTab('PENDING SERVICE CALLS', 2),
-          ],
+        BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
+          bloc: _assignedServiceCallsBloc,
+          builder: (context, assignedState) {
+            return BlocBuilder<PendingServiceCallsBloc, PendingServiceCallsState>(
+              bloc: _pendingServiceCallsBloc,
+              builder: (context, pendingState) {
+                int assignedCount = 0;
+                bool isAssignedLoading = assignedState is AssignedServiceCallsLoadingState || assignedState is AssignedServiceCallsInitialState;
+                if (assignedState is AssignedServiceCallsSuccessState) {
+                  assignedCount = assignedState.data.data.pagination.totalItems;
+                } else if (assignedState is AssignedServiceCallsPaginationLoadingState) {
+                  assignedCount = assignedState.currentData.data.pagination.totalItems;
+                }
+
+                int pendingCount = 0;
+                bool isPendingLoading = pendingState is PendingServiceCallsLoadingState || pendingState is PendingServiceCallsInitialState;
+                if (pendingState is PendingServiceCallsSuccessState) {
+                  pendingCount = pendingState.data.data.pagination.totalItems;
+                } else if (pendingState is PendingServiceCallsPaginationLoadingState) {
+                  pendingCount = pendingState.currentData.data.pagination.totalItems;
+                }
+
+                return TabBar(
+                  controller: _tabController,
+                  labelColor: const Color(0xFF1565C0),
+                  unselectedLabelColor: const Color(0xFFA5ABB7),
+                  indicatorColor: const Color(0xFF1565C0),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorWeight: 3,
+                  labelPadding: const EdgeInsets.symmetric(vertical: 8),
+                  dividerColor: const Color(0xFFF1F2F6),
+                  tabs: [
+                    _buildTab('ASSIGNED SERVICE CALLS', assignedCount, isLoading: isAssignedLoading),
+                    _buildTab('PENDING SERVICE CALLS', pendingCount, isLoading: isPendingLoading),
+                  ],
+                );
+              },
+            );
+          },
         ),
 
         // ── Search & Filters ────────────────────────────────────────────────
