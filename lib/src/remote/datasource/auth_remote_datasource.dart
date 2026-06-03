@@ -17,6 +17,7 @@ import 'package:service_app/src/remote/models/close_over_call_model/close_over_c
 import 'package:service_app/src/remote/models/servicecall_report_step1_model/servicecall_report_step1_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step2_model/servicecall_report_step2_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step3_model/servicecall_report_step3_response.dart';
+import 'package:service_app/src/remote/models/servicecall_report_step4_model/servicecall_report_step4_response.dart' hide SavedDescription;
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step1_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step2_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step3_usecase.dart';
@@ -211,6 +212,12 @@ sealed class RemoteDataSource {
 
   Future<ServiceCallStep3Response> serviceCallReportStep3AutoFill(
       String reportId, String token);
+
+  Future<ServiceCallStep4Response> serviceCallReportStep4AutoFill(
+      String reportId, String token);
+
+  Future<ServiceCallStep4Response> serviceCallReportStep4(
+      String reportId, List<Map<String, dynamic>> descriptions, String token);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -1361,6 +1368,61 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = ServiceCallStep3Response.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<ServiceCallStep4Response> serviceCallReportStep4AutoFill(
+      String reportId, String token) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: "${ApiUrl.serviceCallReportStep4AutoFill}$reportId",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = ServiceCallStep4Response.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+  @override
+  Future<ServiceCallStep4Response> serviceCallReportStep4(
+      String reportId, List<Map<String, dynamic>> descriptions, String token) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.post,
+        url: ApiUrl.serviceCallReportStep4,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        data: {
+          "id": reportId,
+          "descriptions": descriptions,
+        },
+      );
+
+      final respData = ServiceCallStep4Response.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

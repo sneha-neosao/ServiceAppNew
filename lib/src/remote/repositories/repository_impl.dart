@@ -16,6 +16,7 @@ import 'package:service_app/src/remote/models/close_over_call_model/close_over_c
 import 'package:service_app/src/remote/models/servicecall_report_step1_model/servicecall_report_step1_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step2_model/servicecall_report_step2_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step3_model/servicecall_report_step3_response.dart';
+import 'package:service_app/src/remote/models/servicecall_report_step4_model/servicecall_report_step4_response.dart' hide SavedDescription;
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step1_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step2_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step3_usecase.dart';
@@ -180,6 +181,12 @@ abstract class Repository {
 
   Future<Either<Failure, ServiceCallStep3Response>> serviceCallReportStep3AutoFill(
       String reportId);
+
+  Future<Either<Failure, ServiceCallStep4Response>> serviceCallReportStep4AutoFill(
+      String reportId);
+
+  Future<Either<Failure, ServiceCallStep4Response>> serviceCallReportStep4(
+      String reportId, List<Map<String, dynamic>> descriptions);
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -1404,6 +1411,68 @@ class AuthRepositoryImpl implements Repository {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           final response = await _remoteDataSource.serviceCallReportStep3AutoFill(reportId, token);
+          
+          if (response.status != 200) {
+            return Left(CredentialFailure(response.message));
+          }
+          
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, ServiceCallStep4Response>> serviceCallReportStep4AutoFill(
+      String reportId) {
+    return _networkInfo.check<ServiceCallStep4Response>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.serviceCallReportStep4AutoFill(reportId, token);
+          
+          if (response.status != 200) {
+            return Left(CredentialFailure(response.message));
+          }
+          
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, ServiceCallStep4Response>> serviceCallReportStep4(
+      String reportId, List<Map<String, dynamic>> descriptions) {
+    return _networkInfo.check<ServiceCallStep4Response>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.serviceCallReportStep4(reportId, descriptions, token);
           
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
