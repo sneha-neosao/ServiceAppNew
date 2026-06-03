@@ -58,6 +58,13 @@ import 'package:service_app/src/features/service_calls/bloc/service_call_report_
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step2_bloc/service_call_report_step2_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step2_bloc/service_call_report_step2_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step2_bloc/service_call_report_step2_state.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step3_bloc/service_call_report_step3_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step3_bloc/service_call_report_step3_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step3_bloc/service_call_report_step3_state.dart';
+import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step3_usecase.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step3_autofill_bloc/service_call_report_step3_autofill_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step3_autofill_bloc/service_call_report_step3_autofill_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step3_autofill_bloc/service_call_report_step3_autofill_state.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step2_usecase.dart';
 import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_bloc.dart';
 import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_event.dart';
@@ -144,7 +151,9 @@ class _CreateCommissioningReportScreenState
   late ServiceCallReportStep1Bloc _submitServiceCallStep1Bloc;
   late ServiceCallReportStep1AutoFillBloc _serviceCallStep1AutoFillBloc;
   late ServiceCallReportStep2AutoFillBloc _serviceCallStep2AutoFillBloc;
+  late ServiceCallReportStep3AutoFillBloc _serviceCallStep3AutoFillBloc;
   late ServiceCallReportStep2Bloc _submitServiceCallStep2Bloc;
+  late ServiceCallReportStep3Bloc _submitServiceCallStep3Bloc;
 
   // Step 6 Controllers & variables
   final _technicianRemarksController = TextEditingController();
@@ -230,6 +239,8 @@ class _CreateCommissioningReportScreenState
     _step2Bloc = getIt<CommissioningStep2AutoFillBloc>();
     _serviceCallStep2AutoFillBloc = getIt<ServiceCallReportStep2AutoFillBloc>();
     _submitServiceCallStep2Bloc = getIt<ServiceCallReportStep2Bloc>();
+    _serviceCallStep3AutoFillBloc = getIt<ServiceCallReportStep3AutoFillBloc>();
+    _submitServiceCallStep3Bloc = getIt<ServiceCallReportStep3Bloc>();
     _step3Bloc = getIt<CommissioningStep3AutoFillBloc>();
     _submitStep3Bloc = getIt<CommissioningStep3Bloc>();
     _step4Bloc = getIt<CommissioningStep4AutoFillBloc>();
@@ -264,8 +275,10 @@ class _CreateCommissioningReportScreenState
     _assignedTechniciansBloc.close();
     _submitServiceCallStep1Bloc.close();
     _submitServiceCallStep2Bloc.close();
+    _submitServiceCallStep3Bloc.close();
     _serviceCallStep1AutoFillBloc.close();
     _serviceCallStep2AutoFillBloc.close();
+    _serviceCallStep3AutoFillBloc.close();
     _technicianRemarksController.dispose();
     _customerRemarksController.dispose();
     _customerRepNameController.dispose();
@@ -361,8 +374,6 @@ class _CreateCommissioningReportScreenState
         ));
       }
     } else if (_currentStep == 3) {
-      if (_submitStep3Bloc.state is CommissioningStep3LoadingState) return;
-
       final techDetails = _isTechnicalDetailsNA ? null : TechnicalDetails(
         pumpMake: _pumpMakeController.text,
         pumpModel: _pumpModelController.text,
@@ -381,11 +392,25 @@ class _CreateCommissioningReportScreenState
         panelSerialModel: _panelSerialModelController.text,
       );
 
-      _submitStep3Bloc.add(CommissioningStep3GetEvent(
-        _commissioningReportId ?? widget.commissioningWorkId,
-        _isTechnicalDetailsNA,
-        techDetails,
-      ));
+      if (widget.isServiceReport) {
+        if (_submitServiceCallStep3Bloc.state is ServiceCallReportStep3LoadingState) return;
+
+        _submitServiceCallStep3Bloc.add(ServiceCallReportStep3PostEvent(
+          ServiceCallReportStep3Params(
+            id: _commissioningReportId ?? widget.commissioningWorkId,
+            isTechnicalNa: _isTechnicalDetailsNA,
+            technicalDetails: techDetails,
+          ),
+        ));
+      } else {
+        if (_submitStep3Bloc.state is CommissioningStep3LoadingState) return;
+
+        _submitStep3Bloc.add(CommissioningStep3GetEvent(
+          _commissioningReportId ?? widget.commissioningWorkId,
+          _isTechnicalDetailsNA,
+          techDetails,
+        ));
+      }
     } else if (_currentStep == 4) {
       if (_submitStep4Bloc.state is CommissioningStep4LoadingState) return;
 
@@ -484,8 +509,15 @@ class _CreateCommissioningReportScreenState
             }
           }
         } else if (_currentStep == 3) {
-          if (_commissioningReportId != null) {
-            _step3Bloc.add(CommissioningStep3AutoFillGetEvent(_commissioningReportId!));
+          if (widget.isServiceReport) {
+            final idToUse = _commissioningReportId ?? widget.commissioningWorkId;
+            if (idToUse.isNotEmpty) {
+              _serviceCallStep3AutoFillBloc.add(ServiceCallReportStep3AutoFillGetEvent(idToUse));
+            }
+          } else {
+            if (_commissioningReportId != null) {
+              _step3Bloc.add(CommissioningStep3AutoFillGetEvent(_commissioningReportId!));
+            }
           }
         } else if (_currentStep == 4) {
           if (_commissioningReportId != null) {
@@ -639,18 +671,30 @@ class _CreateCommissioningReportScreenState
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ServiceCallReportStep2Bloc, ServiceCallReportStep2State>(
+    return BlocListener<ServiceCallReportStep3Bloc, ServiceCallReportStep3State>(
+      bloc: _submitServiceCallStep3Bloc,
+      listener: (context, state) {
+        if (state is ServiceCallReportStep3SuccessState) {
+          appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+          setState(() {
+            _currentStep++;
+            if (_currentStep == 4 && _commissioningReportId != null) {
+              _step4Bloc.add(CommissioningStep4AutoFillGetEvent(_commissioningReportId!));
+            }
+          });
+        } else if (state is ServiceCallReportStep3FailureState) {
+          appSnackBar(context, const Color(0xFFF44336), state.message);
+        }
+      },
+      child: BlocListener<ServiceCallReportStep2Bloc, ServiceCallReportStep2State>(
       bloc: _submitServiceCallStep2Bloc,
       listener: (context, state) {
         if (state is ServiceCallReportStep2SuccessState) {
           appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
           setState(() {
             _currentStep++;
-            // Note: service call flow stops after step 2? Wait, the user didn't mention step 3 for service call yet, but if it exists, it should be handled.
-            // But let's keep _currentStep++ which navigates to step 3. 
-            // The step3Bloc might fetch CommissioningStep3 data if it is not restricted.
             if (_currentStep == 3 && _commissioningReportId != null) {
-              _step3Bloc.add(CommissioningStep3AutoFillGetEvent(_commissioningReportId!));
+              _serviceCallStep3AutoFillBloc.add(ServiceCallReportStep3AutoFillGetEvent(_commissioningReportId!));
             }
           });
         } else if (state is ServiceCallReportStep2FailureState) {
@@ -718,6 +762,50 @@ class _CreateCommissioningReportScreenState
             });
           } else if (state is CommissioningStep3FailureState) {
             appSnackBar(context, const Color(0xFFF44336), state.message);
+          }
+        },
+      child: BlocListener<ServiceCallReportStep3AutoFillBloc, ServiceCallReportStep3AutoFillState>(
+        bloc: _serviceCallStep3AutoFillBloc,
+        listener: (context, state) {
+          if (state is ServiceCallReportStep3AutoFillSuccessState) {
+            final data = state.data.data;
+            setState(() {
+              _isTechnicalDetailsNA = data.isTechnicalNa;
+              final techDetails = data.technicalDetails;
+              if (techDetails.isNotEmpty) {
+                _pumpMakeController.text = techDetails['pump_make'] ?? '';
+                _pumpModelController.text = techDetails['pump_model'] ?? '';
+                _pumpSerialNumberController.text = techDetails['pump_serial_number'] ?? '';
+                _pumpFlowLPMController.text = techDetails['pump_flow_lpm'] ?? '';
+                _pumpFlowM3HRController.text = techDetails['pump_flow_m3hr'] ?? '';
+                _pumpFlowLPSController.text = techDetails['pump_flow_lps'] ?? '';
+                _pumpFlowUSGPMController.text = techDetails['pump_flow_usgpm'] ?? '';
+                _pumpHeadMTRController.text = techDetails['pump_head_mtr'] ?? '';
+                _driverMakeController.text = techDetails['driver_make'] ?? '';
+                _driverSerialNumberController.text = techDetails['driver_serial_number'] ?? '';
+                _ratingKWController.text = techDetails['rating_kw'] ?? '';
+                _ratingHPController.text = techDetails['rating_hp'] ?? '';
+                _rpmController.text = techDetails['rpm'] ?? '';
+                _controlPanelMakeController.text = techDetails['control_panel_make'] ?? '';
+                _panelSerialModelController.text = techDetails['panel_serial_model'] ?? '';
+              } else {
+                _pumpMakeController.text = '';
+                _pumpModelController.text = '';
+                _pumpSerialNumberController.text = '';
+                _pumpFlowLPMController.text = '';
+                _pumpFlowM3HRController.text = '';
+                _pumpFlowLPSController.text = '';
+                _pumpFlowUSGPMController.text = '';
+                _pumpHeadMTRController.text = '';
+                _driverMakeController.text = '';
+                _driverSerialNumberController.text = '';
+                _ratingKWController.text = '';
+                _ratingHPController.text = '';
+                _rpmController.text = '';
+                _controlPanelMakeController.text = '';
+                _panelSerialModelController.text = '';
+              }
+            });
           }
         },
       child: BlocListener<CommissioningStep3AutoFillBloc, CommissioningStep3AutoFillState>(
@@ -1002,8 +1090,11 @@ class _CreateCommissioningReportScreenState
                         return BlocBuilder<ServiceCallReportStep2Bloc, ServiceCallReportStep2State>(
                           bloc: _submitServiceCallStep2Bloc,
                           builder: (context, serviceCallStep2State) {
-                            return BlocBuilder<CommissioningStep2Bloc, CommissioningStep2State>(
-                              bloc: _submitStep2Bloc,
+                            return BlocBuilder<ServiceCallReportStep3Bloc, ServiceCallReportStep3State>(
+                              bloc: _submitServiceCallStep3Bloc,
+                              builder: (context, serviceCallStep3State) {
+                                return BlocBuilder<CommissioningStep2Bloc, CommissioningStep2State>(
+                                  bloc: _submitStep2Bloc,
                           builder: (context, submitStep2State) {
                             return BlocBuilder<CommissioningStep1Bloc, CommissioningStep1State>(
                               bloc: _submitStep1Bloc,
@@ -1025,6 +1116,7 @@ class _CreateCommissioningReportScreenState
                                                                       (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState) ||
                                                                       (_currentStep == 2 && serviceCallStep2State is ServiceCallReportStep2LoadingState) ||
                                                                       (_currentStep == 3 && submitStep3State is CommissioningStep3LoadingState) ||
+                                                                      (_currentStep == 3 && serviceCallStep3State is ServiceCallReportStep3LoadingState) ||
                                                                       (_currentStep == 4 && submitStep4State is CommissioningStep4LoadingState) ||
                                                                       (_currentStep == 5 && submitStep5State is CommissioningStep5LoadingState) ||
                                                                       (_currentStep == 6 && submitStep6State is CommissioningStep6LoadingState);
@@ -1102,6 +1194,8 @@ class _CreateCommissioningReportScreenState
                         );
                       },
                     );
+                      },
+                    );
                   },
                 ),
               ),
@@ -1118,8 +1212,10 @@ class _CreateCommissioningReportScreenState
       ), // Step 4 AutoFill
       ), // Step 4 Submit
       ), // Step 3 AutoFill
+      ), // Service Call Step 3 AutoFill
       ), // Step 3 Submit
       ), // Service Call Step 1 Listener
+      ), // Service Call Step 3 Listener
       ), // Step 1 Submit
       ), // Step 2 Submit
     ); // Step 2 Service Call Submit
@@ -1252,20 +1348,37 @@ class _CreateCommissioningReportScreenState
           );
         }
       case 3:
-        return BlocBuilder<CommissioningStep3AutoFillBloc, CommissioningStep3AutoFillState>(
-          bloc: _step3Bloc,
-          builder: (context, state) {
-            if (state is CommissioningStep3AutoFillLoadingState || state is CommissioningStep3AutoFillInitialState) {
-              return const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(32.0),
-                  child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                ),
-              );
-            }
-            return _buildStep3();
-          },
-        );
+        if (widget.isServiceReport) {
+          return BlocBuilder<ServiceCallReportStep3AutoFillBloc, ServiceCallReportStep3AutoFillState>(
+            bloc: _serviceCallStep3AutoFillBloc,
+            builder: (context, state) {
+              if (state is ServiceCallReportStep3AutoFillLoadingState || state is ServiceCallReportStep3AutoFillInitialState) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                  ),
+                );
+              }
+              return _buildStep3();
+            },
+          );
+        } else {
+          return BlocBuilder<CommissioningStep3AutoFillBloc, CommissioningStep3AutoFillState>(
+            bloc: _step3Bloc,
+            builder: (context, state) {
+              if (state is CommissioningStep3AutoFillLoadingState || state is CommissioningStep3AutoFillInitialState) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                  ),
+                );
+              }
+              return _buildStep3();
+            },
+          );
+        }
       case 4:
         return BlocBuilder<CommissioningStep4AutoFillBloc, CommissioningStep4AutoFillState>(
           bloc: _step4Bloc,
