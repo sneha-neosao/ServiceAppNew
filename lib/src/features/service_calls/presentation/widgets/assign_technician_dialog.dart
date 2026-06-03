@@ -19,8 +19,14 @@ import 'package:service_app/src/features/service_calls/bloc/pending_service_call
 class AssignTechnicianDialog extends StatefulWidget {
   final String complaintId;
   final String complaintNo;
+  final VoidCallback onSuccess;
 
-  const AssignTechnicianDialog({super.key, required this.complaintId, required this.complaintNo});
+  const AssignTechnicianDialog({
+    super.key,
+    required this.complaintId,
+    required this.complaintNo,
+    required this.onSuccess,
+  });
 
   @override
   State<AssignTechnicianDialog> createState() => _AssignTechnicianDialogState();
@@ -264,9 +270,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                   bloc: _assignBloc,
                   listener: (context, state) {
                     if (state is AssignTechnicianServiceCallsSuccessState) {
-                      // Refresh both assigned and pending APIs
-                      getIt<AssignedServiceCallsBloc>().add(const AssignedServiceCallsGetEvent());
-                      getIt<PendingServiceCallsBloc>().add(const PendingServiceCallsGetEvent());
+                      widget.onSuccess();
                       
                       // Show success snackbar
                       ScaffoldMessenger.of(context).showSnackBar(

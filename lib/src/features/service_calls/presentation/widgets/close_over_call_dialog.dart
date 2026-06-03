@@ -16,6 +16,7 @@ class CloseOverCallDialog extends StatefulWidget {
   final String complaintNo;
   final String customerName;
   final String siteName;
+  final VoidCallback onSuccess;
 
   const CloseOverCallDialog({
     super.key,
@@ -23,6 +24,7 @@ class CloseOverCallDialog extends StatefulWidget {
     required this.complaintNo,
     required this.customerName,
     required this.siteName,
+    required this.onSuccess,
   });
 
   @override
@@ -246,8 +248,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                   bloc: _bloc,
                   listener: (context, state) {
                     if (state is CloseOverCallSuccessState) {
-                      getIt<AssignedServiceCallsBloc>().add(const AssignedServiceCallsGetEvent());
-                      getIt<PendingServiceCallsBloc>().add(const PendingServiceCallsGetEvent());
+                      widget.onSuccess();
                       
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

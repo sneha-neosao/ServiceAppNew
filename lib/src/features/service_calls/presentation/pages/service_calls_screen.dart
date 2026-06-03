@@ -694,7 +694,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        return AssignTechnicianDialog(complaintId: complaintId, complaintNo: complaintNo);
+        return AssignTechnicianDialog(
+          complaintId: complaintId, 
+          complaintNo: complaintNo,
+          onSuccess: () => _fetchServiceCalls(isRefresh: true),
+        );
       },
     );
   }
@@ -709,6 +713,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
           complaintNo: complaintNo,
           customerName: customerName,
           siteName: siteName,
+          onSuccess: () => _fetchServiceCalls(isRefresh: true),
         );
       },
     );
