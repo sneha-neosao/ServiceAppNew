@@ -46,6 +46,8 @@ import '../../features/service_calls/domain/usecase/pending_service_calls_usecas
 import '../../features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_bloc.dart';
 import '../../features/service_calls/domain/usecase/active_technicians_service_calls_usecase.dart';
 import '../../features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_bloc.dart';
+import '../../features/service_calls/domain/usecase/assign_technician_service_calls_usecase.dart';
+import '../../features/service_calls/bloc/assign_technician_service_calls_bloc/assign_technician_service_calls_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -335,6 +337,16 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => ActiveTechniciansServiceCallsUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => AssignTechnicianServiceCallsBloc(
+      assignTechnicianServiceCallsUsecase: getIt<AssignTechnicianServiceCallsUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => AssignTechnicianServiceCallsUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper

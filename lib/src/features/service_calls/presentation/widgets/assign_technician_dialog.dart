@@ -7,31 +7,42 @@ import 'package:service_app/src/features/service_calls/bloc/active_technicians_s
 import 'package:service_app/src/features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_state.dart';
 import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
-import 'package:dropdown_search/dropdown_search.dart';
+import 'package:service_app/src/features/service_calls/bloc/assign_technician_service_calls_bloc/assign_technician_service_calls_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/assign_technician_service_calls_bloc/assign_technician_service_calls_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/assign_technician_service_calls_bloc/assign_technician_service_calls_state.dart';
+import 'package:service_app/src/features/service_calls/domain/usecase/assign_technician_service_calls_usecase.dart';
+import 'package:service_app/src/features/service_calls/bloc/assigned_service_calls_bloc/assigned_service_calls_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/assigned_service_calls_bloc/assigned_service_calls_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_event.dart';
 
 class AssignTechnicianDialog extends StatefulWidget {
+  final String complaintId;
   final String complaintNo;
 
-  const AssignTechnicianDialog({super.key, required this.complaintNo});
+  const AssignTechnicianDialog({super.key, required this.complaintId, required this.complaintNo});
 
   @override
   State<AssignTechnicianDialog> createState() => _AssignTechnicianDialogState();
 }
 
 class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
-  late ActiveTechniciansServiceCallsBloc _bloc;
+  late ActiveTechniciansServiceCallsBloc _activeTechsBloc;
+  late AssignTechnicianServiceCallsBloc _assignBloc;
   List<Technician> _selectedTechnicians = [];
 
   @override
   void initState() {
     super.initState();
-    _bloc = getIt<ActiveTechniciansServiceCallsBloc>()
+    _activeTechsBloc = getIt<ActiveTechniciansServiceCallsBloc>()
       ..add(const ActiveTechniciansServiceCallsGetEvent());
+    _assignBloc = getIt<AssignTechnicianServiceCallsBloc>();
   }
 
   @override
   void dispose() {
-    _bloc.close();
+    _activeTechsBloc.close();
+    _assignBloc.close();
     super.dispose();
   }
 
@@ -79,14 +90,15 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
           const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
           // Body
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Complaint Number',
-                  style: AppFont.style(
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Complaint Number',
+                    style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFFA5ABB7),
@@ -112,7 +124,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                 ),
                 const SizedBox(height: 8),
                 BlocBuilder<ActiveTechniciansServiceCallsBloc, ActiveTechniciansServiceCallsState>(
-                  bloc: _bloc,
+                  bloc: _activeTechsBloc,
                   builder: (context, state) {
                     if (state is ActiveTechniciansServiceCallsLoadingState || state is ActiveTechniciansServiceCallsInitialState) {
                       return Container(
@@ -144,57 +156,91 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                       technicians = state.data.data;
                     }
 
-                    return DropdownSearch<Technician>.multiSelection(
-                      items: technicians,
-                      itemAsString: (Technician t) => t.name,
-                      onChanged: (List<Technician> selected) {
-                        setState(() {
-                          _selectedTechnicians = selected;
-                        });
-                      },
-                      dropdownDecoratorProps: DropDownDecoratorProps(
-                        dropdownSearchDecoration: InputDecoration(
-                          hintText: '-- Choose Technicians --',
-                          hintStyle: AppFont.style(
-                            fontSize: 14,
-                            color: const Color(0xFFA5ABB7),
-                            fontWeight: FontWeight.w500,
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (_selectedTechnicians.isNotEmpty) ...[
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: _selectedTechnicians.map((tech) {
+                              return Chip(
+                                label: Text(
+                                  tech.name,
+                                  style: AppFont.style(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                backgroundColor: const Color(0xFF1565C0),
+                                deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
+                                deleteIconColor: Colors.white,
+                                onDeleted: () {
+                                  setState(() {
+                                    _selectedTechnicians.remove(tech);
+                                  });
+                                },
+                              );
+                            }).toList(),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          border: OutlineInputBorder(
+                          const SizedBox(height: 12),
+                        ],
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                            border: Border.all(color: const Color(0xFFE5E7EB)),
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFF1565C0)),
-                          ),
-                        ),
-                      ),
-                      popupProps: PopupPropsMultiSelection.menu(
-                        showSearchBox: true,
-                        searchFieldProps: TextFieldProps(
-                          decoration: InputDecoration(
-                            hintText: "Search technician...",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<Technician>(
+                              isExpanded: true,
+                              value: null,
+                              hint: Text(
+                                '-- Choose Technicians --',
+                                style: AppFont.style(
+                                  fontSize: 14,
+                                  color: const Color(0xFFA5ABB7),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
+                              items: technicians
+                                  .where((tech) => !_selectedTechnicians.any((selected) => selected.id == tech.id))
+                                  .map(
+                                    (tech) => DropdownMenuItem<Technician>(
+                                      value: tech,
+                                      child: Text(
+                                        tech.name,
+                                        style: AppFont.style(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: const Color(0xFF0D121F),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (tech) {
+                                if (tech != null) {
+                                  setState(() {
+                                    _selectedTechnicians.add(tech);
+                                  });
+                                }
+                              },
                             ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           ),
                         ),
-                      ),
+                      ],
                     );
                   },
                 ),
               ],
             ),
           ),
+        ),
 
-          const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
           // Footer
           Padding(
@@ -214,29 +260,83 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                GestureDetector(
-                  onTap: () {
-                    // TODO: Implement assignment logic with _selectedTechnicians
-                    Navigator.pop(context);
+                BlocConsumer<AssignTechnicianServiceCallsBloc, AssignTechnicianServiceCallsState>(
+                  bloc: _assignBloc,
+                  listener: (context, state) {
+                    if (state is AssignTechnicianServiceCallsSuccessState) {
+                      // Refresh both assigned and pending APIs
+                      getIt<AssignedServiceCallsBloc>().add(const AssignedServiceCallsGetEvent());
+                      getIt<PendingServiceCallsBloc>().add(const PendingServiceCallsGetEvent());
+                      
+                      // Show success snackbar
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Technicians assigned successfully'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                      
+                      Navigator.pop(context);
+                    } else if (state is AssignTechnicianServiceCallsFailureState) {
+                      // Show error snackbar
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   },
-                  child: Container(
-                    height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1565C0), // Active button color instead of disabled
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Assign',
-                        style: AppFont.style(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
+                  builder: (context, state) {
+                    return GestureDetector(
+                      onTap: () {
+                        if (state is AssignTechnicianServiceCallsLoadingState) return;
+                        
+                        if (_selectedTechnicians.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please select at least one technician'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        final params = AssignTechnicianServiceCallsParams(
+                          complaintId: widget.complaintId,
+                          technicianIds: _selectedTechnicians.map((e) => e.id).toList(),
+                        );
+                        _assignBloc.add(AssignTechnicianServiceCallsPostEvent(params));
+                      },
+                      child: Container(
+                        height: 40,
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1565C0), // Active button color instead of disabled
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: state is AssignTechnicianServiceCallsLoadingState
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(
+                                  'Assign',
+                                  style: AppFont.style(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  }
                 ),
               ],
             ),

@@ -11,6 +11,7 @@ import 'package:service_app/src/features/service_calls/domain/usecase/pending_se
 import 'package:service_app/src/remote/models/service_calls_model/assigned_service_calls_response.dart';
 import 'package:service_app/src/remote/models/service_calls_model/pending_serbice_calls_response.dart';
 import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
+import 'package:service_app/src/remote/models/assign_technician_service_call_model/assign_technician_service_calls_response.dart';
 import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
 import 'package:service_app/src/remote/models/commissioning_report_step1_model/commissioning_report_step1_response.dart';
 import 'package:service_app/src/remote/models/commissioning_report_step2_autofill_model/commissioning_report_step2_response.dart';
@@ -55,6 +56,8 @@ import '../models/commissioning_report_history_model/commissioning_report_detail
 import '../../features/my_commissioning/domain/usecase/commissioning_work_update_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_details_usecase.dart';
 import '../models/commissioning_work_model/commissioning_work_details_response.dart';
+
+import '../../features/service_calls/domain/usecase/assign_technician_service_calls_usecase.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -144,6 +147,9 @@ abstract class Repository {
       PendingServiceCallsParams params);
 
   Future<Either<Failure, ActiveTechniciansServiceCallsResponse>> activeTechniciansServiceCalls(NoParams params);
+
+  Future<Either<Failure, AssignTechnicianServiceCallsResponse>> assignTechnicianServiceCalls(
+      AssignTechnicianServiceCallsParams params);
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -1120,6 +1126,37 @@ class AuthRepositoryImpl implements Repository {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           final response = await _remoteDataSource.activeTechniciansServiceCalls(token);
+          
+          if (response.status != 200) {
+            return Left(CredentialFailure(response.message));
+          }
+          
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, AssignTechnicianServiceCallsResponse>> assignTechnicianServiceCalls(
+      AssignTechnicianServiceCallsParams params) {
+    return _networkInfo.check<AssignTechnicianServiceCallsResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.assignTechnicianServiceCalls(params, token);
           
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
