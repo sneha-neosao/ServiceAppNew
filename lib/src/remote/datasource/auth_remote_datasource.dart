@@ -13,9 +13,11 @@ import 'package:service_app/src/remote/models/service_calls_model/assigned_servi
 import 'package:service_app/src/remote/models/service_calls_model/pending_serbice_calls_response.dart';
 import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
 import 'package:service_app/src/remote/models/assign_technician_service_call_model/assign_technician_service_calls_response.dart';
+import 'package:service_app/src/remote/models/close_over_call_model/close_over_call_response.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/assigned_service_calls_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/pending_service_calls_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/assign_technician_service_calls_usecase.dart';
+import 'package:service_app/src/features/service_calls/domain/usecase/close_over_call_usecase.dart';
 import '../../configs/injector/injector.dart';
 import '../../core/api/api_exception.dart';
 import '../../core/api/api_helper.dart';
@@ -178,6 +180,11 @@ sealed class RemoteDataSource {
 
   Future<AssignTechnicianServiceCallsResponse> assignTechnicianServiceCalls(
     AssignTechnicianServiceCallsParams params,
+    String token,
+  );
+
+  Future<CloseOverCallResponse> closeOverCall(
+    CloseOverCallParams params,
     String token,
   );
 }
@@ -1142,6 +1149,35 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = AssignTechnicianServiceCallsResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<CloseOverCallResponse> closeOverCall(
+    CloseOverCallParams params,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.post,
+        url: ApiUrl.closeOverCall,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        data: params.toMap(),
+      );
+
+      final respData = CloseOverCallResponse.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

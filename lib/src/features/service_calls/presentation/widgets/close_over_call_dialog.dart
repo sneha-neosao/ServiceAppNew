@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/features/service_calls/bloc/assigned_service_calls_bloc/assigned_service_calls_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/assigned_service_calls_bloc/assigned_service_calls_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_event.dart';
+import 'package:service_app/src/features/service_calls/domain/usecase/close_over_call_usecase.dart';
+import 'package:service_app/src/features/service_calls/bloc/close_over_call_bloc/close_over_call_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/close_over_call_bloc/close_over_call_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/close_over_call_bloc/close_over_call_state.dart';
 
 class CloseOverCallDialog extends StatefulWidget {
+  final String complaintId;
   final String complaintNo;
   final String customerName;
   final String siteName;
 
   const CloseOverCallDialog({
     super.key,
+    required this.complaintId,
     required this.complaintNo,
     required this.customerName,
     required this.siteName,
@@ -20,6 +32,13 @@ class CloseOverCallDialog extends StatefulWidget {
 class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
   final TextEditingController _resolutionController = TextEditingController();
   bool _isError = false;
+  late CloseOverCallBloc _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = getIt<CloseOverCallBloc>();
+  }
 
   void _submit() {
     if (_resolutionController.text.trim().length < 10) {
@@ -28,12 +47,17 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
       });
       return;
     }
-    // TODO: integrate API for Close Over Call
-    Navigator.pop(context);
+    
+    final params = CloseOverCallParams(
+      complaintId: widget.complaintId,
+      serviceCallDetails: _resolutionController.text.trim(),
+    );
+    _bloc.add(CloseOverCallPostEvent(params));
   }
 
   @override
   void dispose() {
+    _bloc.close();
     _resolutionController.dispose();
     super.dispose();
   }
@@ -218,34 +242,74 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                GestureDetector(
-                  onTap: _submit,
-                  child: Container(
-                    height: 44,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF8BAECE), // Similar to image
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.phone_disabled_outlined,
-                          size: 18,
-                          color: Colors.white,
+                BlocConsumer<CloseOverCallBloc, CloseOverCallState>(
+                  bloc: _bloc,
+                  listener: (context, state) {
+                    if (state is CloseOverCallSuccessState) {
+                      getIt<AssignedServiceCallsBloc>().add(const AssignedServiceCallsGetEvent());
+                      getIt<PendingServiceCallsBloc>().add(const PendingServiceCallsGetEvent());
+                      
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Service call closed successfully'),
+                          backgroundColor: Colors.green,
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'CLOSE OVER CALL',
-                          style: AppFont.style(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
+                      );
+                      Navigator.pop(context);
+                    } else if (state is CloseOverCallFailureState) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: Colors.red,
                         ),
-                      ],
-                    ),
-                  ),
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    return GestureDetector(
+                      onTap: () {
+                        if (state is! CloseOverCallLoadingState) {
+                          _submit();
+                        }
+                      },
+                      child: Container(
+                        height: 44,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1565C0), // Make it primary blue when active
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            if (state is CloseOverCallLoadingState)
+                              const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            else
+                              const Icon(
+                                Icons.phone_disabled_outlined,
+                                size: 18,
+                                color: Colors.white,
+                              ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'CLOSE OVER CALL',
+                              style: AppFont.style(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
                 ),
               ],
             ),

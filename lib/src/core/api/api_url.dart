@@ -36,6 +36,8 @@ class ApiUrl {
 
   static const serviceCallsPending = "/api/v1/technician/service-calls/pending";
 
+  static const closeOverCall = "technician/service-calls/close-over-call";
+
   static const createNewCustomer = "dealer/customers/";
 
   static const commissioningWorkReportStep1AutoFill = "technician/commissioning-report/step1";

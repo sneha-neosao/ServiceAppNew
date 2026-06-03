@@ -630,6 +630,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                 onEdit: () => _showAssignTechDialog(context, item.id, item.complaintNumber),
                 onCloseOverCall: () => _showCloseOverCallDialog(
                   context,
+                  item.id,
                   item.complaintNumber,
                   item.customerName,
                   item.siteName,
@@ -698,12 +699,13 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     );
   }
 
-  void _showCloseOverCallDialog(BuildContext context, String complaintNo, String customerName, String siteName) {
+  void _showCloseOverCallDialog(BuildContext context, String complaintId, String complaintNo, String customerName, String siteName) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
         return CloseOverCallDialog(
+          complaintId: complaintId,
           complaintNo: complaintNo,
           customerName: customerName,
           siteName: siteName,

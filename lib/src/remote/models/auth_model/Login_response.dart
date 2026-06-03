@@ -91,11 +91,11 @@ class Technician {
 
   factory Technician.fromJson(Map<String, dynamic> json) {
     return Technician(
-      id: json['id'],
-      name: json['name'],
-      code: json['code'],
-      phone: json['phone'],
-      email: json['email'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      code: json['code'] ?? '',
+      phone: json['phone'] ?? '',
+      email: json['email'] ?? '',
     );
   }
 
@@ -123,9 +123,9 @@ class Dealer {
 
   factory Dealer.fromJson(Map<String, dynamic> json) {
     return Dealer(
-      id: json['id'],
-      name: json['name'],
-      code: json['code'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      code: json['code'] ?? '',
     );
   }
 

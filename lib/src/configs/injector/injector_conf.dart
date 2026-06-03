@@ -48,6 +48,8 @@ import '../../features/service_calls/domain/usecase/active_technicians_service_c
 import '../../features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_bloc.dart';
 import '../../features/service_calls/domain/usecase/assign_technician_service_calls_usecase.dart';
 import '../../features/service_calls/bloc/assign_technician_service_calls_bloc/assign_technician_service_calls_bloc.dart';
+import '../../features/service_calls/domain/usecase/close_over_call_usecase.dart';
+import '../../features/service_calls/bloc/close_over_call_bloc/close_over_call_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -347,6 +349,16 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => AssignTechnicianServiceCallsUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => CloseOverCallBloc(
+      closeOverCallUsecase: getIt<CloseOverCallUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => CloseOverCallUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper
