@@ -31,7 +31,6 @@ class ServiceCallsScreen extends StatefulWidget {
 class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  bool _isCreatingReport = false;
 
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
@@ -109,18 +108,6 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
 
   @override
   Widget build(BuildContext context) {
-    // if (_isCreatingReport) {
-    //   return CreateCommissioningReportScreen(
-    //     isServiceReport: true,
-    //     onBack: () {
-    //       setState(() {
-    //         _isCreatingReport = false;
-    //       });
-    //     },
-    //     commissioningWorkId: '',
-    //   );
-    // }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -553,9 +540,16 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                 onView: () => _showReportDialog(context),
                 onEdit: () => _showAssignTechDialog(context, item.id, item.complaintNumber),
                 onSubmit: () {
-                  setState(() {
-                    _isCreatingReport = true;
-                  });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CreateCommissioningReportScreen(
+                        isServiceReport: true,
+                        onBack: () => Navigator.pop(context),
+                        commissioningWorkId: '',
+                      ),
+                    ),
+                  );
                 },
               );
             },
