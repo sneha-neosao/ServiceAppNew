@@ -45,6 +45,13 @@ import '../../bloc/commissioning_step6_autofill_bloc/commissioning_step6_autofil
 import '../../bloc/commissioning_step6_bloc/commissioning_step6_bloc.dart';
 import '../../bloc/commissioning_step6_bloc/commissioning_step6_event.dart';
 import '../../bloc/commissioning_step6_bloc/commissioning_step6_state.dart';
+import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step1_usecase.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step1_bloc/service_call_report_step1_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step1_bloc/service_call_report_step1_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step1_bloc/service_call_report_step1_state.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step1_autofill_bloc/service_call_report_step1_autofill_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step1_autofill_bloc/service_call_report_step1_autofill_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step1_autofill_bloc/service_call_report_step1_autofill_state.dart';
 import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_bloc.dart';
 import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_event.dart';
 import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_state.dart';
@@ -56,12 +63,14 @@ class CreateCommissioningReportScreen extends StatefulWidget {
   final VoidCallback onBack;
   final bool isServiceReport;
   final String commissioningWorkId;
+  final String? complaintNo;
 
   const CreateCommissioningReportScreen({
     super.key,
     required this.onBack,
-    this.isServiceReport = false,
     required this.commissioningWorkId,
+    this.isServiceReport = false,
+    this.complaintNo,
   });
 
   @override
@@ -125,6 +134,8 @@ class _CreateCommissioningReportScreenState
   late CommissioningStep6AutoFillBloc _step6Bloc;
   late CommissioningStep6Bloc _submitStep6Bloc;
   late AssignedTechnicianRepresentativeBloc _assignedTechniciansBloc;
+  late ServiceCallReportStep1Bloc _submitServiceCallStep1Bloc;
+  late ServiceCallReportStep1AutoFillBloc _serviceCallStep1AutoFillBloc;
 
   // Step 6 Controllers & variables
   final _technicianRemarksController = TextEditingController();
@@ -196,8 +207,16 @@ class _CreateCommissioningReportScreenState
     super.initState();
     _submitStep1Bloc = getIt<CommissioningStep1Bloc>();
     _submitStep2Bloc = getIt<CommissioningStep2Bloc>();
-    _step1Bloc = getIt<CommissioningStep1AutoFillBloc>()
-      ..add(CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId));
+    
+    _step1Bloc = getIt<CommissioningStep1AutoFillBloc>();
+    _serviceCallStep1AutoFillBloc = getIt<ServiceCallReportStep1AutoFillBloc>();
+    
+    if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
+      _serviceCallStep1AutoFillBloc.add(ServiceCallReportStep1AutoFillGetEvent(widget.commissioningWorkId));
+    } else {
+      _step1Bloc.add(CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId));
+    }
+    
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
     _step2Bloc = getIt<CommissioningStep2AutoFillBloc>();
     _step3Bloc = getIt<CommissioningStep3AutoFillBloc>();
@@ -209,6 +228,7 @@ class _CreateCommissioningReportScreenState
     _step6Bloc = getIt<CommissioningStep6AutoFillBloc>();
     _submitStep6Bloc = getIt<CommissioningStep6Bloc>();
     _assignedTechniciansBloc = getIt<AssignedTechnicianRepresentativeBloc>();
+    _submitServiceCallStep1Bloc = getIt<ServiceCallReportStep1Bloc>();
     _agendaController = TextEditingController();
 
     _technicians = [TextEditingController()];
@@ -231,6 +251,8 @@ class _CreateCommissioningReportScreenState
     _step6Bloc.close();
     _submitStep6Bloc.close();
     _assignedTechniciansBloc.close();
+    _submitServiceCallStep1Bloc.close();
+    _serviceCallStep1AutoFillBloc.close();
     _technicianRemarksController.dispose();
     _customerRemarksController.dispose();
     _customerRepNameController.dispose();
@@ -264,14 +286,25 @@ class _CreateCommissioningReportScreenState
 
   void _nextStep() {
     if (_currentStep == 1) {
-      if (_submitStep1Bloc.state is CommissioningStep1LoadingState) return;
       List<String> technicianIds = [];
       for (var controller in _technicians) {
         if (controller.text.isNotEmpty) {
           technicianIds.add(controller.text);
         }
       }
-      _submitStep1Bloc.add(CommissioningStep1GetEvent(widget.commissioningWorkId, technicianIds));
+
+      if (widget.isServiceReport) {
+        if (_submitServiceCallStep1Bloc.state is ServiceCallReportStep1LoadingState) return;
+        _submitServiceCallStep1Bloc.add(ServiceCallReportStep1PostEvent(
+          ServiceCallReportStep1Params(
+            complaintId: widget.commissioningWorkId,
+            technicianIds: technicianIds,
+          ),
+        ));
+      } else {
+        if (_submitStep1Bloc.state is CommissioningStep1LoadingState) return;
+        _submitStep1Bloc.add(CommissioningStep1GetEvent(widget.commissioningWorkId, technicianIds));
+      }
     } else if (_currentStep == 2) {
       if (_submitStep2Bloc.state is CommissioningStep2LoadingState) return;
       
@@ -407,7 +440,11 @@ class _CreateCommissioningReportScreenState
       setState(() {
         _currentStep--;
         if (_currentStep == 1) {
-          _step1Bloc.add(CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId));
+          if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
+            _serviceCallStep1AutoFillBloc.add(ServiceCallReportStep1AutoFillGetEvent(widget.commissioningWorkId));
+          } else {
+            _step1Bloc.add(CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId));
+          }
         } else if (_currentStep == 2) {
           if (_commissioningReportId != null) {
             _step2Bloc.add(CommissioningStep2AutoFillGetEvent(_commissioningReportId!));
@@ -599,6 +636,19 @@ class _CreateCommissioningReportScreenState
           appSnackBar(context, const Color(0xFFF44336), state.message);
         }
       },
+      child: BlocListener<ServiceCallReportStep1Bloc, ServiceCallReportStep1State>(
+        bloc: _submitServiceCallStep1Bloc,
+        listener: (context, state) {
+          if (state is ServiceCallReportStep1SuccessState) {
+            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+            // Move to step 2 for service calls if needed
+            setState(() {
+              _currentStep++;
+            });
+          } else if (state is ServiceCallReportStep1FailureState) {
+            appSnackBar(context, const Color(0xFFF44336), state.message);
+          }
+        },
       child: BlocListener<CommissioningStep3Bloc, CommissioningStep3State>(
         bloc: _submitStep3Bloc,
         listener: (context, state) {
@@ -890,31 +940,35 @@ class _CreateCommissioningReportScreenState
                   const Spacer(),
                   GestureDetector(
                     onTap: _nextStep,
-                    child: BlocBuilder<CommissioningStep2Bloc, CommissioningStep2State>(
-                      bloc: _submitStep2Bloc,
-                      builder: (context, submitStep2State) {
-                        return BlocBuilder<CommissioningStep1Bloc, CommissioningStep1State>(
-                          bloc: _submitStep1Bloc,
-                          builder: (context, submitState) {
-                            return BlocBuilder<CommissioningStep3Bloc, CommissioningStep3State>(
-                              bloc: _submitStep3Bloc,
-                              builder: (context, submitStep3State) {
-                                return BlocBuilder<CommissioningStep4Bloc, CommissioningStep4State>(
-                                  bloc: _submitStep4Bloc,
-                                  builder: (context, submitStep4State) {
-                                      return BlocBuilder<CommissioningStep5Bloc, CommissioningStep5State>(
-                                        bloc: _submitStep5Bloc,
-                                        builder: (context, submitStep5State) {
-                                          return BlocBuilder<CommissioningStep6Bloc, CommissioningStep6State>(
-                                            bloc: _submitStep6Bloc,
-                                            builder: (context, submitStep6State) {
-                                              bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
-                                                                  (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState) ||
-                                                                  (_currentStep == 3 && submitStep3State is CommissioningStep3LoadingState) ||
-                                                                  (_currentStep == 4 && submitStep4State is CommissioningStep4LoadingState) ||
-                                                                  (_currentStep == 5 && submitStep5State is CommissioningStep5LoadingState) ||
-                                                                  (_currentStep == 6 && submitStep6State is CommissioningStep6LoadingState);
-                                              return Container(
+                    child: BlocBuilder<ServiceCallReportStep1Bloc, ServiceCallReportStep1State>(
+                      bloc: _submitServiceCallStep1Bloc,
+                      builder: (context, serviceCallStep1State) {
+                        return BlocBuilder<CommissioningStep2Bloc, CommissioningStep2State>(
+                          bloc: _submitStep2Bloc,
+                          builder: (context, submitStep2State) {
+                            return BlocBuilder<CommissioningStep1Bloc, CommissioningStep1State>(
+                              bloc: _submitStep1Bloc,
+                              builder: (context, submitState) {
+                                return BlocBuilder<CommissioningStep3Bloc, CommissioningStep3State>(
+                                  bloc: _submitStep3Bloc,
+                                  builder: (context, submitStep3State) {
+                                    return BlocBuilder<CommissioningStep4Bloc, CommissioningStep4State>(
+                                      bloc: _submitStep4Bloc,
+                                      builder: (context, submitStep4State) {
+                                          return BlocBuilder<CommissioningStep5Bloc, CommissioningStep5State>(
+                                            bloc: _submitStep5Bloc,
+                                            builder: (context, submitStep5State) {
+                                              return BlocBuilder<CommissioningStep6Bloc, CommissioningStep6State>(
+                                                bloc: _submitStep6Bloc,
+                                                builder: (context, submitStep6State) {
+                                                  bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
+                                                                      (_currentStep == 1 && serviceCallStep1State is ServiceCallReportStep1LoadingState) ||
+                                                                      (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState) ||
+                                                                      (_currentStep == 3 && submitStep3State is CommissioningStep3LoadingState) ||
+                                                                      (_currentStep == 4 && submitStep4State is CommissioningStep4LoadingState) ||
+                                                                      (_currentStep == 5 && submitStep5State is CommissioningStep5LoadingState) ||
+                                                                      (_currentStep == 6 && submitStep6State is CommissioningStep6LoadingState);
+                                                  return Container(
                                                 height: 56,
                                                 padding: const EdgeInsets.symmetric(horizontal: 32),
                                                 decoration: BoxDecoration(
@@ -974,10 +1028,12 @@ class _CreateCommissioningReportScreenState
                                                   ],
                                                 ),
                                               );
+                                                },
+                                              );
                                             },
                                           );
-                                        },
-                                      );
+                                      },
+                                    );
                                   },
                                 );
                               },
@@ -991,7 +1047,7 @@ class _CreateCommissioningReportScreenState
               ),
             ),
           ],
-      ), // Column
+        ), // Column
       ), // SafeArea
       ), // Scaffold
       ), // Step 6 Submit
@@ -1001,6 +1057,7 @@ class _CreateCommissioningReportScreenState
       ), // Step 4 Submit
       ), // Step 3 AutoFill
       ), // Step 3 Submit
+      ), // Service Call Step 1 Listener
       ), // Step 1 Submit
     ); // Step 2 Submit
   }
@@ -1008,33 +1065,66 @@ class _CreateCommissioningReportScreenState
   Widget _buildBodyContent() {
     switch (_currentStep) {
       case 1:
-        return BlocConsumer<CommissioningStep1AutoFillBloc, CommissioningStep1AutoFillState>(
-          bloc: _step1Bloc,
-          listener: (context, state) {
-            if (state is CommissioningStep1AutoFillSuccessState) {
-              _commissioningReportId = state.data.data.id;
-              setState(() {
-                if (state.data.data.assignedTechnicians.isNotEmpty) {
-                  _technicians.clear();
-                  _technicians.addAll(state.data.data.assignedTechnicians
-                      .map((t) => TextEditingController(text: t.id)));
-                }
-              });
-            }
-          },
-          builder: (context, state) {
-            if (state is CommissioningStep1AutoFillLoadingState || state is CommissioningStep1AutoFillInitialState) {
-              return const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(32.0),
-                  child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                ),
-              );
-            }
-            final data = state is CommissioningStep1AutoFillSuccessState ? state.data.data : null;
-            return _buildStep1(data);
-          },
-        );
+        if (widget.isServiceReport) {
+          return BlocConsumer<ServiceCallReportStep1AutoFillBloc, ServiceCallReportStep1AutoFillState>(
+            bloc: _serviceCallStep1AutoFillBloc,
+            listener: (context, state) {
+              if (state is ServiceCallReportStep1AutoFillSuccessState) {
+                // For service calls, the ID mapping might be different or not needed, but we keep complaint ID
+                setState(() {
+                  if (state.data.data.assignedTechnicians.isNotEmpty) {
+                    _technicians.clear();
+                    _technicians.addAll(state.data.data.assignedTechnicians
+                        .map((t) => TextEditingController(text: t.id)));
+                  }
+                });
+              }
+            },
+            builder: (context, state) {
+              if (state is ServiceCallReportStep1AutoFillLoadingState || state is ServiceCallReportStep1AutoFillInitialState) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                  ),
+                );
+              }
+              // Since _buildStep1 expects CommissioningWorkData, and ServiceCallData has different fields,
+              // we might need to handle this. But wait, _buildStep1 takes 'data' as dynamic or specific type?
+              // Let's pass the data as it is.
+              final data = state is ServiceCallReportStep1AutoFillSuccessState ? state.data.data : null;
+              return _buildStep1(data);
+            },
+          );
+        } else {
+          return BlocConsumer<CommissioningStep1AutoFillBloc, CommissioningStep1AutoFillState>(
+            bloc: _step1Bloc,
+            listener: (context, state) {
+              if (state is CommissioningStep1AutoFillSuccessState) {
+                _commissioningReportId = state.data.data.id;
+                setState(() {
+                  if (state.data.data.assignedTechnicians.isNotEmpty) {
+                    _technicians.clear();
+                    _technicians.addAll(state.data.data.assignedTechnicians
+                        .map((t) => TextEditingController(text: t.id)));
+                  }
+                });
+              }
+            },
+            builder: (context, state) {
+              if (state is CommissioningStep1AutoFillLoadingState || state is CommissioningStep1AutoFillInitialState) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                  ),
+                );
+              }
+              final data = state is CommissioningStep1AutoFillSuccessState ? state.data.data : null;
+              return _buildStep1(data);
+            },
+          );
+        }
       case 2:
         return BlocConsumer<CommissioningStep2AutoFillBloc, CommissioningStep2AutoFillState>(
           bloc: _step2Bloc,
@@ -1188,7 +1278,7 @@ class _CreateCommissioningReportScreenState
     }
   }
 
-  Widget _buildStep1([CommissioningData? data]) {
+  Widget _buildStep1([dynamic data]) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1407,7 +1497,9 @@ class _CreateCommissioningReportScreenState
                                       color: const Color(0xFFA5ABB7),
                                     ),
                                   ),
-                                  icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
+                                  icon: widget.isServiceReport 
+                                      ? const SizedBox.shrink() 
+                                      : const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
                                   style: AppFont.style(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w900,
@@ -1463,7 +1555,10 @@ class _CreateCommissioningReportScreenState
         const SizedBox(height: 24),
         _buildInfoRow('Project / Site Name', data?.siteName ?? 'Main Server Room'),
         const SizedBox(height: 24),
-        _buildInfoRow('Application Of Equipment', data?.applicationOfEquipment ?? 'Pump Application'),
+        if (widget.isServiceReport)
+          _buildInfoRow('Complaint Number', widget.complaintNo ?? 'ABC-26-0492')
+        else
+          _buildInfoRow('Application Of Equipment', data?.applicationOfEquipment ?? 'Pump Application'),
 
         const SizedBox(height: 40),
       ],

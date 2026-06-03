@@ -34,9 +34,12 @@ class ApiUrl {
 
   static const serviceCallsAssigned = "technician/service-calls/assign-technicians";
 
-  static const serviceCallsPending = "/api/v1/technician/service-calls/pending";
+  static const String assignTechnicianServiceCalls = 'technician/service-calls/assign-technicians';
+  static const String closeOverCall = 'technician/service-calls/close-over-call';
+  static const String serviceCallReportStep1 = 'technician/service-call-report-step1';
+  static const String serviceCallReportStep1AutoFill = 'technician/service-call-report-step1/';
 
-  static const closeOverCall = "technician/service-calls/close-over-call";
+  static const serviceCallsPending = "/api/v1/technician/service-calls/pending";
 
   static const createNewCustomer = "dealer/customers/";
 

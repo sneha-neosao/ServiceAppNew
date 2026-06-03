@@ -13,6 +13,7 @@ import 'package:service_app/src/remote/models/service_calls_model/pending_serbic
 import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
 import 'package:service_app/src/remote/models/assign_technician_service_call_model/assign_technician_service_calls_response.dart';
 import 'package:service_app/src/remote/models/close_over_call_model/close_over_call_response.dart';
+import 'package:service_app/src/remote/models/servicecall_report_step1_model/servicecall_report_step1_response.dart';
 import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
 import 'package:service_app/src/remote/models/commissioning_report_step1_model/commissioning_report_step1_response.dart';
 import 'package:service_app/src/remote/models/commissioning_report_step2_autofill_model/commissioning_report_step2_response.dart';
@@ -60,6 +61,7 @@ import '../models/commissioning_work_model/commissioning_work_details_response.d
 
 import '../../features/service_calls/domain/usecase/assign_technician_service_calls_usecase.dart';
 import '../../features/service_calls/domain/usecase/close_over_call_usecase.dart';
+import '../../features/service_calls/domain/usecase/service_call_report_step1_usecase.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -155,6 +157,12 @@ abstract class Repository {
 
   Future<Either<Failure, CloseOverCallResponse>> closeOverCall(
       CloseOverCallParams params);
+
+  Future<Either<Failure, ServiceCallStep1Response>> serviceCallReportStep1(
+      ServiceCallReportStep1Params params);
+
+  Future<Either<Failure, ServiceCallStep1Response>> serviceCallReportStep1AutoFill(
+      String complaintId);
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -1193,6 +1201,68 @@ class AuthRepositoryImpl implements Repository {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           final response = await _remoteDataSource.closeOverCall(params, token);
+          
+          if (response.status != 200) {
+            return Left(CredentialFailure(response.message));
+          }
+          
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, ServiceCallStep1Response>> serviceCallReportStep1(
+      ServiceCallReportStep1Params params) {
+    return _networkInfo.check<ServiceCallStep1Response>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.serviceCallReportStep1(params, token);
+          
+          if (response.status != 200) {
+            return Left(CredentialFailure(response.message));
+          }
+          
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, ServiceCallStep1Response>> serviceCallReportStep1AutoFill(
+      String complaintId) {
+    return _networkInfo.check<ServiceCallStep1Response>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.serviceCallReportStep1AutoFill(complaintId, token);
           
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));

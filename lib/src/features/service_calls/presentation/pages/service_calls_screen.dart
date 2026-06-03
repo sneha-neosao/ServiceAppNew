@@ -546,7 +546,8 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                       builder: (context) => CreateCommissioningReportScreen(
                         isServiceReport: true,
                         onBack: () => Navigator.pop(context),
-                        commissioningWorkId: '',
+                        commissioningWorkId: item.id,
+                        complaintNo: item.complaintNumber,
                       ),
                     ),
                   );
