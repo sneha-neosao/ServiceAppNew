@@ -466,6 +466,12 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
+    () => ServiceCallReportStep5Bloc(
+      usecase: getIt<ServiceCallReportStep5Usecase>(),
+    ),
+  );
+
+  getIt.registerFactory(
     () => ServiceCallReportStep5AutoFillBloc(
       usecase: getIt<ServiceCallReportStep5AutoFillUsecase>(),
     ),
