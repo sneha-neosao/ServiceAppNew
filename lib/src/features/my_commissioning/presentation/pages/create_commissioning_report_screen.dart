@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -81,12 +82,22 @@ import 'package:service_app/src/features/service_calls/bloc/service_call_report_
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step5_autofill_bloc/service_call_report_step5_autofill_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step5_autofill_bloc/service_call_report_step5_autofill_state.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step2_usecase.dart';
+import 'package:service_app/src/features/service_calls/bloc/assigned_servicecall_technician_bloc/assigned_servicecall_technician_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/assigned_servicecall_technician_bloc/assigned_servicecall_technician_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/assigned_servicecall_technician_bloc/assigned_servicecall_technician_state.dart';
 import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_bloc.dart';
 import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_event.dart';
 import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_state.dart';
 import '../../../../remote/models/commissioning_report_step6_autofill_model/commissioning_report_step6_autofill_response.dart';
 import '../../../../remote/models/assigned_technician_representative_model/assigned_technician_representative_response.dart';
-
+import 'package:service_app/src/remote/models/assigned_servicecall_technician_model/assigned_servicecall_technician_response.dart' as service_tech_model;
+import '../../bloc/commissioning_work_create_bloc/commissioning_work_create_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_bloc/service_call_report_step6_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_bloc/service_call_report_step6_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_bloc/service_call_report_step6_state.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_autofill_bloc/service_call_report_step6_autofill_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_autofill_bloc/service_call_report_step6_autofill_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_autofill_bloc/service_call_report_step6_autofill_state.dart';
 
 class CreateCommissioningReportScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -163,6 +174,8 @@ class _CreateCommissioningReportScreenState
   late CommissioningStep6AutoFillBloc _step6Bloc;
   late CommissioningStep6Bloc _submitStep6Bloc;
   late AssignedTechnicianRepresentativeBloc _assignedTechniciansBloc;
+  late AssignedServicecallTechnicianBloc _assignedServiceCallTechnicianBloc;
+  late CommissioningWorkCreateBloc _createBloc;
   late ServiceCallReportStep1Bloc _submitServiceCallStep1Bloc;
   late ServiceCallReportStep1AutoFillBloc _serviceCallStep1AutoFillBloc;
   late ServiceCallReportStep2AutoFillBloc _serviceCallStep2AutoFillBloc;
@@ -173,6 +186,8 @@ class _CreateCommissioningReportScreenState
   late ServiceCallReportStep3Bloc _submitServiceCallStep3Bloc;
   late ServiceCallReportStep4Bloc _submitServiceCallStep4Bloc;
   late ServiceCallReportStep5Bloc _submitServiceCallStep5Bloc;
+  late ServiceCallReportStep6Bloc _submitServiceCallStep6Bloc;
+  late ServiceCallReportStep6AutoFillBloc _serviceCallStep6AutoFillBloc;
 
   // Step 6 Controllers & variables
   final _technicianRemarksController = TextEditingController();
@@ -182,6 +197,7 @@ class _CreateCommissioningReportScreenState
   String? _selectedTechnicianRepId;
   String? _autofilledTechRepName;
   List<AssignedTechnician> _assignedTechniciansList = [];
+  List<service_tech_model.AssignedTechnician> _assignedServiceCallTechniciansList = [];
 
   File? _technicianSignatureFile;
   File? _customerSignatureFile;
@@ -264,6 +280,8 @@ class _CreateCommissioningReportScreenState
     _submitServiceCallStep3Bloc = getIt<ServiceCallReportStep3Bloc>();
     _submitServiceCallStep4Bloc = getIt<ServiceCallReportStep4Bloc>();
     _submitServiceCallStep5Bloc = getIt<ServiceCallReportStep5Bloc>();
+    _submitServiceCallStep6Bloc = getIt<ServiceCallReportStep6Bloc>();
+    _serviceCallStep6AutoFillBloc = getIt<ServiceCallReportStep6AutoFillBloc>();
     _step3Bloc = getIt<CommissioningStep3AutoFillBloc>();
     _submitStep3Bloc = getIt<CommissioningStep3Bloc>();
     _step4Bloc = getIt<CommissioningStep4AutoFillBloc>();
@@ -273,6 +291,8 @@ class _CreateCommissioningReportScreenState
     _step6Bloc = getIt<CommissioningStep6AutoFillBloc>();
     _submitStep6Bloc = getIt<CommissioningStep6Bloc>();
     _assignedTechniciansBloc = getIt<AssignedTechnicianRepresentativeBloc>();
+    _assignedServiceCallTechnicianBloc = getIt<AssignedServicecallTechnicianBloc>();
+    _createBloc = getIt<CommissioningWorkCreateBloc>();
     _submitServiceCallStep1Bloc = getIt<ServiceCallReportStep1Bloc>();
     _agendaController = TextEditingController();
 
@@ -285,6 +305,10 @@ class _CreateCommissioningReportScreenState
     _step1Bloc.close();
     _technicianBloc.close();
     _submitStep1Bloc.close();
+    _step6Bloc.close();
+    _assignedTechniciansBloc.close();
+    _assignedServiceCallTechnicianBloc.close();
+    _createBloc.close();
     _submitStep2Bloc.close();
     _step2Bloc.close();
     _step3Bloc.close();
@@ -301,6 +325,8 @@ class _CreateCommissioningReportScreenState
     _submitServiceCallStep3Bloc.close();
     _submitServiceCallStep4Bloc.close();
     _submitServiceCallStep5Bloc.close();
+    _submitServiceCallStep6Bloc.close();
+    _serviceCallStep6AutoFillBloc.close();
     _serviceCallStep1AutoFillBloc.close();
     _serviceCallStep2AutoFillBloc.close();
     _serviceCallStep3AutoFillBloc.close();
@@ -521,19 +547,52 @@ class _CreateCommissioningReportScreenState
         ));
       }
     } else if (_currentStep == 6) {
-      if (_submitStep6Bloc.state is CommissioningStep6LoadingState) return;
+      if (_submitStep6Bloc.state is CommissioningStep6LoadingState || 
+          _submitServiceCallStep6Bloc.state is ServiceCallReportStep6LoadingState) return;
 
       print("🚀 Submitting Step 6: technicianRepresentative = '$_selectedTechnicianRepId'");
-      _submitStep6Bloc.add(CommissioningStep6SubmitEvent(
-        commissioning_report_id: _commissioningReportId ?? widget.commissioningWorkId,
-        technicianRemarks: _technicianRemarksController.text.trim(),
-        customerRemarks: _customerRemarksController.text.trim(),
-        technicianRepresentative: _selectedTechnicianRepId ?? '',
-        customerRepresentativeName: _customerRepNameController.text.trim(),
-        technicianSignaturePath: _technicianSignatureFile?.path,
-        customerSignaturePath: _customerSignatureFile?.path,
-        workPhotosPaths: _workPhotos.map((f) => f.path).toList(),
-      ));
+      
+      if (widget.isServiceReport) {
+        String? techSignaturePath = _technicianSignatureFile?.path;
+        if (techSignaturePath == null && _existingTechnicianSignatureUrl != null && _existingTechnicianSignatureUrl!.isNotEmpty) {
+          techSignaturePath = _existingTechnicianSignatureUrl;
+        }
+
+        String? custSignaturePath = _customerSignatureFile?.path;
+        if (custSignaturePath == null && _existingCustomerSignatureUrl != null && _existingCustomerSignatureUrl!.isNotEmpty) {
+          custSignaturePath = _existingCustomerSignatureUrl;
+        }
+
+        List<String> workPhotosPaths = _workPhotos.map((f) => f.path).toList();
+        if (workPhotosPaths.isEmpty && _existingWorkPhotosUrls.isNotEmpty) {
+          workPhotosPaths = List.from(_existingWorkPhotosUrls);
+        } else if (_existingWorkPhotosUrls.isNotEmpty) {
+          workPhotosPaths.addAll(_existingWorkPhotosUrls);
+        }
+
+        _submitServiceCallStep6Bloc.add(ServiceCallReportStep6SubmitEvent(
+          reportId: _commissioningReportId ?? widget.commissioningWorkId,
+          technicianRemarks: _technicianRemarksController.text.trim(),
+          customerRemarks: _customerRemarksController.text.trim(),
+          technicianRepresentative: _selectedTechnicianRepId ?? '',
+          customerRepresentativeName: _customerRepNameController.text.trim(),
+          technicianSignaturePath: techSignaturePath,
+          customerSignaturePath: custSignaturePath,
+          workPhotosPaths: workPhotosPaths,
+        ));
+
+      } else {
+        _submitStep6Bloc.add(CommissioningStep6SubmitEvent(
+          commissioning_report_id: _commissioningReportId ?? widget.commissioningWorkId,
+          technicianRemarks: _technicianRemarksController.text.trim(),
+          customerRemarks: _customerRemarksController.text.trim(),
+          technicianRepresentative: _selectedTechnicianRepId ?? '',
+          customerRepresentativeName: _customerRepNameController.text.trim(),
+          technicianSignaturePath: _technicianSignatureFile?.path,
+          customerSignaturePath: _customerSignatureFile?.path,
+          workPhotosPaths: _workPhotos.map((f) => f.path).toList(),
+        ));
+      }
     }
   }
 
@@ -735,7 +794,33 @@ class _CreateCommissioningReportScreenState
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ServiceCallReportStep3Bloc, ServiceCallReportStep3State>(
+    return BlocListener<ServiceCallReportStep6AutoFillBloc, ServiceCallReportStep6AutoFillState>(
+      bloc: _serviceCallStep6AutoFillBloc,
+      listener: (context, state) {
+        if (state is ServiceCallReportStep6AutoFillSuccessState) {
+          final data = state.data.data;
+          _technicianRemarksController.text = data.technicianRemarks;
+          _customerRemarksController.text = data.customerRemarks;
+          _customerRepNameController.text = data.customerRepresentativeName;
+          
+          if (data.technicianRepresentativeName.isNotEmpty) {
+             _autofilledTechRepName = data.technicianRepresentativeName;
+          }
+
+          if (data.technicianSignature.isNotEmpty) {
+            _existingTechnicianSignatureUrl = data.technicianSignature;
+          }
+          if (data.customerSignature.isNotEmpty) {
+            _existingCustomerSignatureUrl = data.customerSignature;
+          }
+          if (data.savedWorkPhotos.isNotEmpty) {
+            _existingWorkPhotosUrls = data.savedWorkPhotos;
+          }
+          
+          setState(() {});
+        }
+      },
+      child: BlocListener<ServiceCallReportStep3Bloc, ServiceCallReportStep3State>(
       bloc: _submitServiceCallStep3Bloc,
       listener: (context, state) {
         if (state is ServiceCallReportStep3SuccessState) {
@@ -994,7 +1079,10 @@ class _CreateCommissioningReportScreenState
             appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
             setState(() {
               _currentStep++;
-              // Note: Step 6 for service call is not yet implemented for autofill
+              if (_currentStep == 6 && _commissioningReportId != null) {
+                _assignedServiceCallTechnicianBloc.add(AssignedServicecallTechnicianGetEvent(_commissioningReportId!));
+                _serviceCallStep6AutoFillBloc.add(ServiceCallReportStep6AutoFillGetEvent(_commissioningReportId!));
+              }
             });
           } else if (state is ServiceCallReportStep5FailureState) {
             appSnackBar(context, const Color(0xFFF44336), state.message);
@@ -1116,6 +1204,16 @@ class _CreateCommissioningReportScreenState
               else if (key == "Control Panel Wiring") _panelWiring = val;
             }
             setState(() {});
+          }
+        },
+      child: BlocListener<ServiceCallReportStep6Bloc, ServiceCallReportStep6State>(
+        bloc: _submitServiceCallStep6Bloc,
+        listener: (context, state) {
+          if (state is ServiceCallReportStep6SuccessState) {
+            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+            _showSuccessDialog();
+          } else if (state is ServiceCallReportStep6FailureState) {
+            appSnackBar(context, const Color(0xFFF44336), state.message);
           }
         },
       child: BlocListener<CommissioningStep6Bloc, CommissioningStep6State>(
@@ -1281,18 +1379,22 @@ class _CreateCommissioningReportScreenState
                                               return BlocBuilder<CommissioningStep6Bloc, CommissioningStep6State>(
                                                 bloc: _submitStep6Bloc,
                                                 builder: (context, submitStep6State) {
-                                                  bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
-                                                                      (_currentStep == 1 && serviceCallStep1State is ServiceCallReportStep1LoadingState) ||
-                                                                      (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState) ||
-                                                                      (_currentStep == 2 && serviceCallStep2State is ServiceCallReportStep2LoadingState) ||
-                                                                      (_currentStep == 3 && submitStep3State is CommissioningStep3LoadingState) ||
-                                                                      (_currentStep == 3 && serviceCallStep3State is ServiceCallReportStep3LoadingState) ||
-                                                                      (_currentStep == 4 && submitStep4State is CommissioningStep4LoadingState) ||
-                                                                      (_currentStep == 4 && serviceCallStep4State is ServiceCallReportStep4LoadingState) ||
-                                                                      (_currentStep == 5 && submitStep5State is CommissioningStep5LoadingState) ||
-                                                                      (_currentStep == 5 && serviceCallStep5State is ServiceCallReportStep5LoadingState) ||
-                                                                      (_currentStep == 6 && submitStep6State is CommissioningStep6LoadingState);
-                                                  return Container(
+                                                  return BlocBuilder<ServiceCallReportStep6AutoFillBloc, ServiceCallReportStep6AutoFillState>(
+                                                    bloc: _serviceCallStep6AutoFillBloc,
+                                                    builder: (context, serviceCallStep6AutoFillState) {
+                                                      bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
+                                                                          (_currentStep == 1 && serviceCallStep1State is ServiceCallReportStep1LoadingState) ||
+                                                                          (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState) ||
+                                                                          (_currentStep == 2 && serviceCallStep2State is ServiceCallReportStep2LoadingState) ||
+                                                                          (_currentStep == 3 && submitStep3State is CommissioningStep3LoadingState) ||
+                                                                          (_currentStep == 3 && serviceCallStep3State is ServiceCallReportStep3LoadingState) ||
+                                                                          (_currentStep == 4 && submitStep4State is CommissioningStep4LoadingState) ||
+                                                                          (_currentStep == 4 && serviceCallStep4State is ServiceCallReportStep4LoadingState) ||
+                                                                          (_currentStep == 5 && submitStep5State is CommissioningStep5LoadingState) ||
+                                                                          (_currentStep == 5 && serviceCallStep5State is ServiceCallReportStep5LoadingState) ||
+                                                                          (_currentStep == 6 && submitStep6State is CommissioningStep6LoadingState) ||
+                                                                          (_currentStep == 6 && serviceCallStep6AutoFillState is ServiceCallReportStep6AutoFillLoadingState);
+                                                      return Container(
                                                 height: 56,
                                                 padding: const EdgeInsets.symmetric(horizontal: 32),
                                                 decoration: BoxDecoration(
@@ -1368,20 +1470,23 @@ class _CreateCommissioningReportScreenState
                     );
                   },
                 );
-                      },
-                    );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-            ),
-          ),
-          ],
-        ), // Column
-      ), // SafeArea
-      ), // Scaffold
+              },
+            );
+          },
+        );
+      },
+    ); // BlocBuilder 2
+  },
+), // BlocBuilder 1
+), // GestureDetector
+], // Row children
+), // Row
+), // Container
+], // Column children
+), // Column
+), // SafeArea
+), // Scaffold
+      ), // Service Call Step 6 Submit
       ), // Step 6 Submit
       ), // Service Call Step 5 AutoFill
       ), // Step 5 AutoFill
@@ -1398,7 +1503,8 @@ class _CreateCommissioningReportScreenState
       ), // Service Call Step 3 Listener
       ), // Step 1 Submit
       ), // Step 2 Submit
-    ); // Step 2 Service Call Submit
+      ), // Step 2 Service Call Submit
+    ); // Service Call Step 6 AutoFill Submit
   }
 
   Widget _buildBodyContent() {
@@ -1624,7 +1730,40 @@ class _CreateCommissioningReportScreenState
           );
         }
       case 6:
-        return BlocConsumer<AssignedTechnicianRepresentativeBloc, AssignedTechnicianRepresentativeState>(
+        if (widget.isServiceReport) {
+          return BlocConsumer<AssignedServicecallTechnicianBloc, AssignedServicecallTechnicianState>(
+            bloc: _assignedServiceCallTechnicianBloc,
+            listener: (context, techState) {
+              if (techState is AssignedServicecallTechnicianSuccessState) {
+                setState(() {
+                  _assignedServiceCallTechniciansList = techState.data.data;
+                  print("👤 Service Call Assigned technicians loaded: ${_assignedServiceCallTechniciansList.map((t) => '${t.name} (assignId: ${t.assignId}, technicianId: ${t.technicianId})').toList()}");
+                  if (_autofilledTechRepName != null && _assignedServiceCallTechniciansList.isNotEmpty) {
+                    final matched = _assignedServiceCallTechniciansList.firstWhere(
+                      (t) => t.name.toLowerCase() == _autofilledTechRepName!.toLowerCase(),
+                      orElse: () => _assignedServiceCallTechniciansList.first,
+                    );
+                    _selectedTechnicianRepId = matched.assignId;
+                    print("🎯 _selectedTechnicianRepId set via _autofilledTechRepName to: $_selectedTechnicianRepId");
+                  }
+                });
+              }
+            },
+            builder: (context, techState) {
+              // Service report step 6 autofill is not fully implemented yet, but we handle the loading
+              if (techState is AssignedServicecallTechnicianLoadingState) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                  ),
+                );
+              }
+              return _buildStep6();
+            },
+          );
+        } else {
+          return BlocConsumer<AssignedTechnicianRepresentativeBloc, AssignedTechnicianRepresentativeState>(
           bloc: _assignedTechniciansBloc,
           listener: (context, techState) {
             if (techState is AssignedTechnicianRepresentativeSuccessState) {
@@ -1638,9 +1777,6 @@ class _CreateCommissioningReportScreenState
                   );
                   _selectedTechnicianRepId = matched.assignId;
                   print("🎯 _selectedTechnicianRepId set via _autofilledTechRepName to: $_selectedTechnicianRepId");
-                } else if (_selectedTechnicianRepId == null && _assignedTechniciansList.isNotEmpty) {
-                  _selectedTechnicianRepId = _assignedTechniciansList.first.assignId;
-                  print("🎯 _selectedTechnicianRepId defaulted to: $_selectedTechnicianRepId");
                 }
               });
             }
@@ -1694,6 +1830,7 @@ class _CreateCommissioningReportScreenState
             );
           },
         );
+        }
       default:
         return const Center(child: Text("Coming Soon"));
     }
@@ -3118,12 +3255,19 @@ class _CreateCommissioningReportScreenState
                         color: const Color(0xFFA5ABB7),
                       ),
                     ),
-                    items: _assignedTechniciansList.map((tech) {
-                      return DropdownMenuItem<String>(
-                        value: tech.assignId,
-                        child: Text(tech.name),
-                      );
-                    }).toList(),
+                    items: widget.isServiceReport 
+                        ? _assignedServiceCallTechniciansList.map<DropdownMenuItem<String>>((service_tech_model.AssignedTechnician tech) {
+                            return DropdownMenuItem<String>(
+                              value: tech.assignId,
+                              child: Text(tech.name),
+                            );
+                          }).toList()
+                        : _assignedTechniciansList.map<DropdownMenuItem<String>>((AssignedTechnician tech) {
+                            return DropdownMenuItem<String>(
+                              value: tech.assignId,
+                              child: Text(tech.name),
+                            );
+                          }).toList(),
                     onChanged: (val) {
                       setState(() {
                         _selectedTechnicianRepId = val;

@@ -13,15 +13,19 @@ import 'package:service_app/src/remote/models/service_calls_model/assigned_servi
 import 'package:service_app/src/remote/models/service_calls_model/pending_serbice_calls_response.dart';
 import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
 import 'package:service_app/src/remote/models/assign_technician_service_call_model/assign_technician_service_calls_response.dart';
+import 'package:service_app/src/remote/models/assigned_servicecall_technician_model/assigned_servicecall_technician_response.dart';
 import 'package:service_app/src/remote/models/close_over_call_model/close_over_call_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step1_model/servicecall_report_step1_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step2_model/servicecall_report_step2_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step3_model/servicecall_report_step3_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step4_model/servicecall_report_step4_response.dart' hide SavedDescription;
 import 'package:service_app/src/remote/models/servicecall_report_step5_model/servicecall_report_step5_response.dart' hide SavedChecklist;
+import 'package:service_app/src/remote/models/servicecall_report_step6_model/servicecall_report_step6_response.dart';
+import 'package:service_app/src/remote/models/servicecall_report_step6_autofill_model/servicecall_report_step6_autofill_response.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step1_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step2_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step3_usecase.dart';
+import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step6_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/assigned_service_calls_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/pending_service_calls_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/assign_technician_service_calls_usecase.dart';
@@ -229,6 +233,15 @@ sealed class RemoteDataSource {
       String token);
 
   Future<ServiceCallStep5Response> serviceCallReportStep5AutoFill(
+      String reportId, String token);
+
+  Future<AssignedServiceCallTechnicianResponse> assignedServiceCallTechnicians(
+      String reportId, String token);
+
+  Future<ServiceCallStep6Response> serviceCallReportStep6(
+      ServiceCallReportStep6Params params, String token);
+
+  Future<ServiceCallReportStep6AutoFillResponse> serviceCallReportStep6AutoFill(
       String reportId, String token);
 }
 
@@ -1500,6 +1513,134 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       
       final respData = ServiceCallStep5Response.fromJson(response);
       return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<AssignedServiceCallTechnicianResponse> assignedServiceCallTechnicians(
+      String reportId, String token) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: "${ApiUrl.assignedServiceCallTechnicians}$reportId/technicians",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      
+      final respData = AssignedServiceCallTechnicianResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<ServiceCallStep6Response> serviceCallReportStep6(
+      ServiceCallReportStep6Params params, String token) async {
+    try {
+      final Map<String, dynamic> map = {
+        "id": params.id,
+        "technician_remarks": params.technicianRemarks,
+        "customer_remarks": params.customerRemarks,
+        "technician_representative": params.technicianRepresentative,
+        "customer_representative_name": params.customerRepresentativeName,
+      };
+
+      if (params.technicianSignaturePath != null &&
+          params.technicianSignaturePath!.isNotEmpty) {
+        if (params.technicianSignaturePath!.startsWith('http')) {
+          map["technician_signature"] = params.technicianSignaturePath!;
+        } else {
+          map["technician_signature"] = await MultipartFile.fromFile(
+            params.technicianSignaturePath!,
+            filename: params.technicianSignaturePath!.split('/').last,
+          );
+        }
+      }
+
+      if (params.customerSignaturePath != null &&
+          params.customerSignaturePath!.isNotEmpty) {
+        if (params.customerSignaturePath!.startsWith('http')) {
+          map["customer_signature"] = params.customerSignaturePath!;
+        } else {
+          map["customer_signature"] = await MultipartFile.fromFile(
+            params.customerSignaturePath!,
+            filename: params.customerSignaturePath!.split('/').last,
+          );
+        }
+      }
+
+      if (params.workPhotosPaths.isNotEmpty) {
+        final List<dynamic> files = [];
+        for (final path in params.workPhotosPaths) {
+          if (path.isNotEmpty) {
+            if (path.startsWith('http')) {
+              files.add(path);
+            } else {
+              files.add(
+                await MultipartFile.fromFile(
+                  path,
+                  filename: path.split('/').last,
+                ),
+              );
+            }
+          }
+        }
+        map["work_photos"] = files;
+      }
+
+      final formData = FormData.fromMap(map);
+
+      final response = await _helper.execute(
+        method: Method.post,
+        url: ApiUrl.serviceCallReportStep6,
+        data: formData,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return ServiceCallStep6Response.fromJson(response);
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<ServiceCallReportStep6AutoFillResponse> serviceCallReportStep6AutoFill(
+      String reportId, String token) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: "${ApiUrl.serviceCallReportStep6AutoFill}$reportId",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return ServiceCallReportStep6AutoFillResponse.fromJson(response);
     } on EmptyException {
       throw AuthException();
     } catch (e) {

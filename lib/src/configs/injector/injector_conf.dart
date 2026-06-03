@@ -70,6 +70,12 @@ import '../../features/service_calls/domain/usecase/service_call_report_step5_us
 import '../../features/service_calls/bloc/service_call_report_step5_bloc/service_call_report_step5_bloc.dart';
 import '../../features/service_calls/domain/usecase/service_call_report_step5_autofill_usecase.dart';
 import '../../features/service_calls/bloc/service_call_report_step5_autofill_bloc/service_call_report_step5_autofill_bloc.dart';
+import '../../features/service_calls/domain/usecase/assigned_servicecall_technician_usecase.dart';
+import '../../features/service_calls/bloc/assigned_servicecall_technician_bloc/assigned_servicecall_technician_bloc.dart';
+import '../../features/service_calls/domain/usecase/service_call_report_step6_usecase.dart';
+import '../../features/service_calls/bloc/service_call_report_step6_bloc/service_call_report_step6_bloc.dart';
+import '../../features/service_calls/domain/usecase/service_call_report_step6_autofill_usecase.dart';
+import '../../features/service_calls/bloc/service_call_report_step6_autofill_bloc/service_call_report_step6_autofill_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -479,6 +485,36 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => ServiceCallReportStep5AutoFillUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => AssignedServicecallTechnicianBloc(
+      usecase: getIt<AssignedServicecallTechnicianUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => AssignedServicecallTechnicianUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => ServiceCallReportStep6Bloc(
+      usecase: getIt<ServiceCallReportStep6Usecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => ServiceCallReportStep6Usecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => ServiceCallReportStep6AutoFillBloc(
+      getIt<ServiceCallReportStep6AutoFillUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => ServiceCallReportStep6AutoFillUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper

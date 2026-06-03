@@ -46,6 +46,9 @@ class ApiUrl {
   static const String serviceCallReportStep4AutoFill = 'technician/service-call-report-step4/';
   static const String serviceCallReportStep5 = 'technician/service-call-report-step5';
   static const String serviceCallReportStep5AutoFill = 'technician/service-call-report-step5/';
+  static const String serviceCallReportStep6 = 'technician/service-call-report-step6';
+  static const String serviceCallReportStep6AutoFill = 'technician/service-call-report-step6/';
+  static const String assignedServiceCallTechnicians = 'technician/service-call-report/';
 
   static const serviceCallsPending = "/api/v1/technician/service-calls/pending";
 
