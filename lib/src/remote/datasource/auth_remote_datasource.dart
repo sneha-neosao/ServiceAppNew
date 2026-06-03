@@ -18,6 +18,7 @@ import 'package:service_app/src/remote/models/servicecall_report_step1_model/ser
 import 'package:service_app/src/remote/models/servicecall_report_step2_model/servicecall_report_step2_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step3_model/servicecall_report_step3_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step4_model/servicecall_report_step4_response.dart' hide SavedDescription;
+import 'package:service_app/src/remote/models/servicecall_report_step5_model/servicecall_report_step5_response.dart' hide SavedChecklist;
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step1_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step2_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step3_usecase.dart';
@@ -218,6 +219,17 @@ sealed class RemoteDataSource {
 
   Future<ServiceCallStep4Response> serviceCallReportStep4(
       String reportId, List<Map<String, dynamic>> descriptions, String token);
+
+  Future<ServiceCallStep5Response> serviceCallReportStep5(
+      String reportId,
+      bool isMechanicalChecklistNa,
+      bool isPipelineChecklistNa,
+      bool isElectricalChecklistNa,
+      List<Map<String, dynamic>> checklistItems,
+      String token);
+
+  Future<ServiceCallStep5Response> serviceCallReportStep5AutoFill(
+      String reportId, String token);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -1423,6 +1435,70 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = ServiceCallStep4Response.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<ServiceCallStep5Response> serviceCallReportStep5(
+      String reportId,
+      bool isMechanicalChecklistNa,
+      bool isPipelineChecklistNa,
+      bool isElectricalChecklistNa,
+      List<Map<String, dynamic>> checklistItems,
+      String token) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.post,
+        url: ApiUrl.serviceCallReportStep5,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        data: {
+          "id": reportId,
+          "is_mechanical_checklist_na": isMechanicalChecklistNa,
+          "is_pipeline_checklist_na": isPipelineChecklistNa,
+          "is_electrical_checklist_na": isElectricalChecklistNa,
+          "checklist_items": checklistItems,
+        },
+      );
+
+      final respData = ServiceCallStep5Response.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<ServiceCallStep5Response> serviceCallReportStep5AutoFill(
+      String reportId, String token) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: "${ApiUrl.serviceCallReportStep5AutoFill}$reportId",
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      
+      final respData = ServiceCallStep5Response.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

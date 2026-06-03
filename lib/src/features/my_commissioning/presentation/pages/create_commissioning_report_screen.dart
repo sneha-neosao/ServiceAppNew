@@ -71,7 +71,15 @@ import 'package:service_app/src/features/service_calls/bloc/service_call_report_
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step4_usecase.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step4_bloc/service_call_report_step4_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step4_bloc/service_call_report_step4_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step4_bloc/service_call_report_step4_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step4_bloc/service_call_report_step4_state.dart';
+import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step5_usecase.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step5_bloc/service_call_report_step5_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step5_bloc/service_call_report_step5_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step5_bloc/service_call_report_step5_state.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step5_autofill_bloc/service_call_report_step5_autofill_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step5_autofill_bloc/service_call_report_step5_autofill_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_step5_autofill_bloc/service_call_report_step5_autofill_state.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step2_usecase.dart';
 import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_bloc.dart';
 import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_event.dart';
@@ -160,9 +168,11 @@ class _CreateCommissioningReportScreenState
   late ServiceCallReportStep2AutoFillBloc _serviceCallStep2AutoFillBloc;
   late ServiceCallReportStep3AutoFillBloc _serviceCallStep3AutoFillBloc;
   late ServiceCallReportStep4AutoFillBloc _serviceCallStep4AutoFillBloc;
+  late ServiceCallReportStep5AutoFillBloc _serviceCallStep5AutoFillBloc;
   late ServiceCallReportStep2Bloc _submitServiceCallStep2Bloc;
   late ServiceCallReportStep3Bloc _submitServiceCallStep3Bloc;
   late ServiceCallReportStep4Bloc _submitServiceCallStep4Bloc;
+  late ServiceCallReportStep5Bloc _submitServiceCallStep5Bloc;
 
   // Step 6 Controllers & variables
   final _technicianRemarksController = TextEditingController();
@@ -250,8 +260,10 @@ class _CreateCommissioningReportScreenState
     _submitServiceCallStep2Bloc = getIt<ServiceCallReportStep2Bloc>();
     _serviceCallStep3AutoFillBloc = getIt<ServiceCallReportStep3AutoFillBloc>();
     _serviceCallStep4AutoFillBloc = getIt<ServiceCallReportStep4AutoFillBloc>();
+    _serviceCallStep5AutoFillBloc = getIt<ServiceCallReportStep5AutoFillBloc>();
     _submitServiceCallStep3Bloc = getIt<ServiceCallReportStep3Bloc>();
     _submitServiceCallStep4Bloc = getIt<ServiceCallReportStep4Bloc>();
+    _submitServiceCallStep5Bloc = getIt<ServiceCallReportStep5Bloc>();
     _step3Bloc = getIt<CommissioningStep3AutoFillBloc>();
     _submitStep3Bloc = getIt<CommissioningStep3Bloc>();
     _step4Bloc = getIt<CommissioningStep4AutoFillBloc>();
@@ -288,10 +300,12 @@ class _CreateCommissioningReportScreenState
     _submitServiceCallStep2Bloc.close();
     _submitServiceCallStep3Bloc.close();
     _submitServiceCallStep4Bloc.close();
+    _submitServiceCallStep5Bloc.close();
     _serviceCallStep1AutoFillBloc.close();
     _serviceCallStep2AutoFillBloc.close();
     _serviceCallStep3AutoFillBloc.close();
     _serviceCallStep4AutoFillBloc.close();
+    _serviceCallStep5AutoFillBloc.close();
     _technicianRemarksController.dispose();
     _customerRemarksController.dispose();
     _customerRepNameController.dispose();
@@ -483,13 +497,29 @@ class _CreateCommissioningReportScreenState
         if (_panelWiring != null) savedChecklists.add(SavedChecklist(id: "", checkType: "electrical", keyChecklist: "Control Panel Wiring", valueChecklist: _panelWiring!, photo: _step5Media['Panel Wiring Checked:']?.path, video: _step5Media['Panel Wiring Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Control Panel Wiring'], existingVideoUrl: _step5ExistingVideos['Control Panel Wiring']));
       }
 
-      _submitStep5Bloc.add(CommissioningStep5GetEvent(
-        _commissioningReportId ?? widget.commissioningWorkId,
-        _mechNA,
-        _pipeNA,
-        _elecNA,
-        savedChecklists,
-      ));
+      if (widget.isServiceReport) {
+        _submitServiceCallStep5Bloc.add(ServiceCallReportStep5PostEvent(
+          reportId: _commissioningReportId ?? widget.commissioningWorkId,
+          isMechanicalChecklistNa: _mechNA,
+          isPipelineChecklistNa: _pipeNA,
+          isElectricalChecklistNa: _elecNA,
+          checklistItems: savedChecklists.map((e) => {
+            "check_type": e.checkType,
+            "key_checklist": e.keyChecklist,
+            "value_checklist": e.valueChecklist,
+            if (e.photo != null) "photo": e.photo,
+            if (e.video != null) "video": e.video,
+          }).toList(),
+        ));
+      } else {
+        _submitStep5Bloc.add(CommissioningStep5GetEvent(
+          _commissioningReportId ?? widget.commissioningWorkId,
+          _mechNA,
+          _pipeNA,
+          _elecNA,
+          savedChecklists,
+        ));
+      }
     } else if (_currentStep == 6) {
       if (_submitStep6Bloc.state is CommissioningStep6LoadingState) return;
 
@@ -551,8 +581,15 @@ class _CreateCommissioningReportScreenState
             }
           }
         } else if (_currentStep == 5) {
-          if (_commissioningReportId != null) {
-            _step5Bloc.add(CommissioningStep5AutoFillGetEvent(_commissioningReportId!));
+          if (widget.isServiceReport) {
+            final idToUse = _commissioningReportId ?? widget.commissioningWorkId;
+            if (idToUse.isNotEmpty) {
+              _serviceCallStep5AutoFillBloc.add(ServiceCallReportStep5AutoFillGetEvent(idToUse));
+            }
+          } else {
+            if (_commissioningReportId != null) {
+              _step5Bloc.add(CommissioningStep5AutoFillGetEvent(_commissioningReportId!));
+            }
           }
         }
       });
@@ -885,7 +922,9 @@ class _CreateCommissioningReportScreenState
             appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
             setState(() {
               _currentStep++;
-              // Note: Step 5 for service call is not yet implemented for autofill
+              if (_currentStep == 5 && _commissioningReportId != null) {
+                _serviceCallStep5AutoFillBloc.add(ServiceCallReportStep5AutoFillGetEvent(_commissioningReportId!));
+              }
             });
           } else if (state is ServiceCallReportStep4FailureState) {
             appSnackBar(context, const Color(0xFFF44336), state.message);
@@ -948,6 +987,19 @@ class _CreateCommissioningReportScreenState
             setState(() {});
           }
         },
+      child: BlocListener<ServiceCallReportStep5Bloc, ServiceCallReportStep5State>(
+        bloc: _submitServiceCallStep5Bloc,
+        listener: (context, state) {
+          if (state is ServiceCallReportStep5SuccessState) {
+            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+            setState(() {
+              _currentStep++;
+              // Note: Step 6 for service call is not yet implemented for autofill
+            });
+          } else if (state is ServiceCallReportStep5FailureState) {
+            appSnackBar(context, const Color(0xFFF44336), state.message);
+          }
+        },
       child: BlocListener<CommissioningStep5Bloc, CommissioningStep5State>(
         bloc: _submitStep5Bloc,
         listener: (context, state) {
@@ -968,6 +1020,57 @@ class _CreateCommissioningReportScreenState
         bloc: _step5Bloc,
         listener: (context, state) {
           if (state is CommissioningStep5AutoFillSuccessState) {
+            final data = state.data.data;
+            _mechNA = data.isMechanicalChecklistNa;
+            _pipeNA = data.isPipelineChecklistNa;
+            _elecNA = data.isElectricalChecklistNa;
+            
+            _bearingNoise = null;
+            _vibration = null;
+            _mechSeal = null;
+            _pumpDry = null;
+            _nrvValve = null;
+            _strainerValve = null;
+            _suctionLine = null;
+            _deliveryLine = null;
+            _suctionDelivery = null;
+            _pressureSwitch = null;
+            _elecFaults = null;
+            _voltage = null;
+            _phase = null;
+            _current = null;
+            _panelWiring = null;
+
+            for (var check in data.savedChecklists) {
+              final key = check.keyChecklist;
+              final val = check.valueChecklist;
+              
+              _step5ExistingPhotos[key] = check.photo;
+              _step5ExistingVideos[key] = check.video;
+
+              if (key == "Bearing noise") _bearingNoise = val;
+              else if (key == "Vibration") _vibration = val;
+              else if (key == "Mechanical seal") _mechSeal = val;
+              else if (key == "Pump not running dry") _pumpDry = val;
+              else if (key == "NRV") _nrvValve = val;
+              else if (key == "Strainer") _strainerValve = val;
+              else if (key == "Suction line") _suctionLine = val;
+              else if (key == "Delivery line") _deliveryLine = val;
+              else if (key == "Suction / Delivery Valve") _suctionDelivery = val;
+              else if (key == "Pressure switch") _pressureSwitch = val;
+              else if (key == "Electrical Faults") _elecFaults = val;
+              else if (key == "Voltage Check") _voltage = val;
+              else if (key == "Phase Check") _phase = val;
+              else if (key == "Current Check") _current = val;
+              else if (key == "Control Panel Wiring") _panelWiring = val;
+            }
+            setState(() {});
+          }
+        },
+      child: BlocListener<ServiceCallReportStep5AutoFillBloc, ServiceCallReportStep5AutoFillState>(
+        bloc: _serviceCallStep5AutoFillBloc,
+        listener: (context, state) {
+          if (state is ServiceCallReportStep5AutoFillSuccessState) {
             final data = state.data.data;
             _mechNA = data.isMechanicalChecklistNa;
             _pipeNA = data.isPipelineChecklistNa;
@@ -1157,8 +1260,11 @@ class _CreateCommissioningReportScreenState
                                 return BlocBuilder<ServiceCallReportStep4Bloc, ServiceCallReportStep4State>(
                                   bloc: _submitServiceCallStep4Bloc,
                                   builder: (context, serviceCallStep4State) {
-                                    return BlocBuilder<CommissioningStep2Bloc, CommissioningStep2State>(
-                                      bloc: _submitStep2Bloc,
+                                    return BlocBuilder<ServiceCallReportStep5Bloc, ServiceCallReportStep5State>(
+                                      bloc: _submitServiceCallStep5Bloc,
+                                      builder: (context, serviceCallStep5State) {
+                                        return BlocBuilder<CommissioningStep2Bloc, CommissioningStep2State>(
+                                          bloc: _submitStep2Bloc,
                               builder: (context, submitStep2State) {
                             return BlocBuilder<CommissioningStep1Bloc, CommissioningStep1State>(
                               bloc: _submitStep1Bloc,
@@ -1184,6 +1290,7 @@ class _CreateCommissioningReportScreenState
                                                                       (_currentStep == 4 && submitStep4State is CommissioningStep4LoadingState) ||
                                                                       (_currentStep == 4 && serviceCallStep4State is ServiceCallReportStep4LoadingState) ||
                                                                       (_currentStep == 5 && submitStep5State is CommissioningStep5LoadingState) ||
+                                                                      (_currentStep == 5 && serviceCallStep5State is ServiceCallReportStep5LoadingState) ||
                                                                       (_currentStep == 6 && submitStep6State is CommissioningStep6LoadingState);
                                                   return Container(
                                                 height: 56,
@@ -1259,6 +1366,8 @@ class _CreateCommissioningReportScreenState
                         );
                       },
                     );
+                  },
+                );
                       },
                     );
                       },
@@ -1274,8 +1383,10 @@ class _CreateCommissioningReportScreenState
       ), // SafeArea
       ), // Scaffold
       ), // Step 6 Submit
+      ), // Service Call Step 5 AutoFill
       ), // Step 5 AutoFill
       ), // Step 5 Submit
+      ), // Service Call Step 5 Listener
       ), // Step 4 AutoFill
       ), // Service Call Step 4 AutoFill
       ), // Step 4 Submit
@@ -1481,20 +1592,37 @@ class _CreateCommissioningReportScreenState
           );
         }
       case 5:
-        return BlocBuilder<CommissioningStep5AutoFillBloc, CommissioningStep5AutoFillState>(
-          bloc: _step5Bloc,
-          builder: (context, state) {
-            if (state is CommissioningStep5AutoFillLoadingState || state is CommissioningStep5AutoFillInitialState) {
-              return const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(32.0),
-                  child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                ),
-              );
-            }
-            return _buildStep5();
-          },
-        );
+        if (widget.isServiceReport) {
+          return BlocBuilder<ServiceCallReportStep5AutoFillBloc, ServiceCallReportStep5AutoFillState>(
+            bloc: _serviceCallStep5AutoFillBloc,
+            builder: (context, state) {
+              if (state is ServiceCallReportStep5AutoFillLoadingState || state is ServiceCallReportStep5AutoFillInitialState) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                  ),
+                );
+              }
+              return _buildStep5();
+            },
+          );
+        } else {
+          return BlocBuilder<CommissioningStep5AutoFillBloc, CommissioningStep5AutoFillState>(
+            bloc: _step5Bloc,
+            builder: (context, state) {
+              if (state is CommissioningStep5AutoFillLoadingState || state is CommissioningStep5AutoFillInitialState) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                  ),
+                );
+              }
+              return _buildStep5();
+            },
+          );
+        }
       case 6:
         return BlocConsumer<AssignedTechnicianRepresentativeBloc, AssignedTechnicianRepresentativeState>(
           bloc: _assignedTechniciansBloc,
