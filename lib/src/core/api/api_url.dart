@@ -38,6 +38,8 @@ class ApiUrl {
   static const String closeOverCall = 'technician/service-calls/close-over-call';
   static const String serviceCallReportStep1 = 'technician/service-call-report-step1';
   static const String serviceCallReportStep1AutoFill = 'technician/service-call-report-step1/';
+  static const String serviceCallReportStep2 = 'technician/service-call-report-step2';
+  static const String serviceCallReportStep2AutoFill = 'technician/service-call-report-step2/';
 
   static const serviceCallsPending = "/api/v1/technician/service-calls/pending";
 

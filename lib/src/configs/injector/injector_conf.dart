@@ -54,6 +54,10 @@ import '../../features/service_calls/domain/usecase/service_call_report_step1_us
 import '../../features/service_calls/bloc/service_call_report_step1_bloc/service_call_report_step1_bloc.dart';
 import '../../features/service_calls/domain/usecase/service_call_report_step1_autofill_usecase.dart';
 import '../../features/service_calls/bloc/service_call_report_step1_autofill_bloc/service_call_report_step1_autofill_bloc.dart';
+import '../../features/service_calls/domain/usecase/service_call_report_step2_autofill_usecase.dart';
+import '../../features/service_calls/bloc/service_call_report_step2_autofill_bloc/service_call_report_step2_autofill_bloc.dart';
+import '../../features/service_calls/domain/usecase/service_call_report_step2_usecase.dart';
+import '../../features/service_calls/bloc/service_call_report_step2_bloc/service_call_report_step2_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -383,6 +387,26 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => ServiceCallReportStep1AutoFillUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => ServiceCallReportStep2AutoFillBloc(
+      usecase: getIt<ServiceCallReportStep2AutoFillUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => ServiceCallReportStep2AutoFillUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => ServiceCallReportStep2Bloc(
+      usecase: getIt<ServiceCallReportStep2Usecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => ServiceCallReportStep2Usecase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper
