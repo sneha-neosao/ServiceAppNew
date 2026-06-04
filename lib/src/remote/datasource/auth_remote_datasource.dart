@@ -72,6 +72,7 @@ import '../models/create_new_customer_model/create_new_customer_response.dart';
 import '../../features/common/domain/usecase/create_new_customer_usecase.dart';
 import '../models/create_new_site_model/create_new_site_response.dart';
 import '../../features/common/domain/usecase/create_new_site_usecase.dart';
+import '../models/feedback_model/feedback_response.dart';
 
 sealed class RemoteDataSource {
   Future<LoginResponse> login(LoginParams params);
@@ -280,6 +281,11 @@ sealed class RemoteDataSource {
 
   Future<AddSiteResponse> createNewSite(
     CreateNewSiteParams params,
+    String token,
+  );
+
+  Future<FeedbackResponse> getCommissioningReportFeedback(
+    String reportId,
     String token,
   );
 }
@@ -1784,6 +1790,34 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = AddSiteResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<FeedbackResponse> getCommissioningReportFeedback(
+    String reportId,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: '${ApiUrl.commissioningReportDetails}/$reportId/check-feedback',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = FeedbackResponse.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

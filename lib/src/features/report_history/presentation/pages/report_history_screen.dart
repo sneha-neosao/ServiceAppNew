@@ -869,14 +869,17 @@ class _ReportCard extends StatelessWidget {
                         icon: Icons.check_circle,
                         iconColor: Colors.green,
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => FeedbackDetailsScreen(
-                                onBack: () => Navigator.pop(context),
+                          if (reportId != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FeedbackDetailsScreen(
+                                  reportId: reportId!,
+                                  onBack: () => Navigator.pop(context),
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          }
                         },
                       )
                     : _buildIconActionButton(

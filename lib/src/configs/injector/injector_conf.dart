@@ -34,6 +34,8 @@ import '../../features/my_commissioning/domain/usecase/commissioning_report_hist
 import '../../features/my_commissioning/bloc/commissioning_report_history_bloc/commissioning_report_history_bloc.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_report_details_usecase.dart';
 import '../../features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_bloc.dart';
+import '../../features/my_commissioning/domain/usecase/commissioning_report_check_feedback_usecase.dart';
+import '../../features/my_commissioning/bloc/check_feedback_bloc/check_feedback_bloc.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_details_usecase.dart';
 import '../../features/my_commissioning/bloc/commissioning_work_details_bloc/commissioning_work_details_bloc.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_update_usecase.dart';
@@ -295,6 +297,14 @@ void configureDepedencies() {
     () => CommissioningReportHistoryBloc(
       getIt<CommissioningReportHistoryUseCase>(),
     ),
+  );
+
+  getIt.registerLazySingleton(
+    () => CommissioningReportCheckFeedbackUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => CheckFeedbackBloc(usecase: getIt<CommissioningReportCheckFeedbackUsecase>()),
   );
 
   getIt.registerLazySingleton(
