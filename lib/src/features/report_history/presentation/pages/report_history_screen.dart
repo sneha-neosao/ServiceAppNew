@@ -13,6 +13,7 @@ import 'package:service_app/src/remote/models/customer_model/customer_response.d
 import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
 import 'package:service_app/src/remote/models/technician_model/technician_response.dart';
 import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_report_history_usecase.dart';
+import 'package:service_app/src/features/report_history/presentation/pages/feedback_details_screen.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_event.dart';
 
@@ -864,16 +865,19 @@ class _ReportCard extends StatelessWidget {
               // QR Code icon button or Checkmark
               Expanded(
                 child: feedbackSubmitted
-                    ? Container(
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
-                        ),
-                        child: const Center(
-                          child: Icon(Icons.check_circle, color: Colors.green),
-                        ),
+                    ? _buildIconActionButton(
+                        icon: Icons.check_circle,
+                        iconColor: Colors.green,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FeedbackDetailsScreen(
+                                onBack: () => Navigator.pop(context),
+                              ),
+                            ),
+                          );
+                        },
                       )
                     : _buildIconActionButton(
                         icon: Icons.qr_code_2_outlined,
