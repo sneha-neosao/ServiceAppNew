@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
 
 class CreateAmcReportScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -677,7 +678,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     );
   }
 
-  Widget _buildInputField(String hint, {bool showMic = false}) {
+  Widget _buildInputField(String hint, {bool showMic = false, TextEditingController? controller}) {
     return Container(
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -689,8 +690,17 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              hint,
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: hint,
+                border: InputBorder.none,
+                hintStyle: AppFont.style(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFF0D121F),
+                ),
+              ),
               style: AppFont.style(
                 fontSize: 15,
                 fontWeight: FontWeight.w900,
@@ -698,18 +708,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               ),
             ),
           ),
-          if (showMic)
-            const Icon(
-              Icons.mic_off_outlined,
-              color: Color(0xFFA5ABB7),
-              size: 20,
-            ),
+          if (showMic && controller != null)
+            SpeechToTextMicButton(controller: controller),
         ],
       ),
     );
   }
 
-  Widget _buildTextArea(String hint) {
+  Widget _buildTextArea(String hint, {TextEditingController? controller}) {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFF9FAFB),
@@ -719,6 +725,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
       child: Stack(
         children: [
           TextField(
+            controller: controller,
             maxLines: 4,
             decoration: InputDecoration(
               hintText: hint,
@@ -736,15 +743,12 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               color: const Color(0xFF0D121F),
             ),
           ),
-          const Positioned(
-            top: 16,
-            right: 16,
-            child: Icon(
-              Icons.mic_off_outlined,
-              color: Color(0xFFA5ABB7),
-              size: 20,
+          if (controller != null)
+            Positioned(
+              top: 16,
+              right: 16,
+              child: SpeechToTextMicButton(controller: controller),
             ),
-          ),
           const Positioned(
             bottom: 8,
             right: 8,

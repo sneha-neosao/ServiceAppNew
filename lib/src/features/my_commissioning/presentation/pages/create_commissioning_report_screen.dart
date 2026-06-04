@@ -10,6 +10,7 @@ import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step1_bloc/commissioning_step1_bloc.dart';
+import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step1_autofill_bloc/commissioning_step1_autofill_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step2_autofill_bloc/commissioning_step2_autofill_bloc.dart';
@@ -2243,11 +2244,7 @@ class _CreateCommissioningReportScreenState
                                 ),
                               ),
                             ),
-                            const Icon(
-                              Icons.mic_off_outlined,
-                              color: Color(0xFFA5ABB7),
-                              size: 20,
-                            ),
+                            SpeechToTextMicButton(controller: controller),
                             const SizedBox(width: 12),
                             if (isFirst)
                               GestureDetector(
@@ -2411,14 +2408,10 @@ class _CreateCommissioningReportScreenState
                   contentPadding: const EdgeInsets.all(16),
                 ),
               ),
-              const Positioned(
+              Positioned(
                 top: 16,
                 right: 16,
-                child: Icon(
-                  Icons.mic_off_outlined,
-                  color: Color(0xFFA5ABB7),
-                  size: 20,
-                ),
+                  child: SpeechToTextMicButton(controller: _agendaController),
               ),
               const Positioned(
                 bottom: 8,
@@ -2710,14 +2703,10 @@ class _CreateCommissioningReportScreenState
                       contentPadding: const EdgeInsets.all(16),
                     ),
                   ),
-                  const Positioned(
+                  Positioned(
                     top: 16,
                     right: 16,
-                    child: Icon(
-                      Icons.mic_off_outlined,
-                      color: Color(0xFFA5ABB7),
-                      size: 20,
-                    ),
+                    child: SpeechToTextMicButton(controller: controller),
                   ),
                   const Positioned(
                     bottom: 8,
@@ -3756,14 +3745,10 @@ class _CreateCommissioningReportScreenState
               contentPadding: const EdgeInsets.all(16),
             ),
           ),
-          const Positioned(
+          Positioned(
             top: 16,
             right: 16,
-            child: Icon(
-              Icons.mic_off_outlined,
-              color: Color(0xFFA5ABB7),
-              size: 20,
-            ),
+            child: SpeechToTextMicButton(controller: controller),
           ),
           const Positioned(
             bottom: 8,

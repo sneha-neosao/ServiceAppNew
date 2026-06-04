@@ -7,6 +7,7 @@ import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
+import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
 
 class CreateReportScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -48,10 +49,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   final List<TextEditingController> _memberControllers = [
     TextEditingController(),
   ];
-  // Mic toggle state per member row (false = off, true = on/active)
-  final List<bool> _memberMicActive = [false];
   // Mic toggle state for agenda field
-  bool _agendaMicActive = false;
   final TextEditingController _agendaController = TextEditingController();
 
   // ── Step 2: Technical Details ───────────────────────────────────────────────
@@ -81,7 +79,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   void _addMemberField() {
     setState(() {
       _memberControllers.add(TextEditingController());
-      _memberMicActive.add(false);
     });
   }
 
@@ -89,7 +86,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     setState(() {
       _memberControllers[index].dispose();
       _memberControllers.removeAt(index);
-      _memberMicActive.removeAt(index);
     });
   }
 
@@ -156,8 +152,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   final TextEditingController _remarksTechCtrl = TextEditingController();
   final TextEditingController _remarksCustomerCtrl = TextEditingController();
   final TextEditingController _customerRepNameCtrl = TextEditingController();
-  bool _remarksTechMicActive = false;
-  bool _remarksCustomerMicActive = false;
   final List<XFile> _pickedPhotos = [];
   final ImagePicker _imagePicker = ImagePicker();
 
@@ -173,17 +167,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   void _removePhoto(int index) {
     setState(() => _pickedPhotos.removeAt(index));
-  }
-
-  void _simulateSpeech(TextEditingController controller) {
-    setState(() {
-      controller.text = controller.text.isEmpty
-          ? "Spoken text added via mic"
-          : "${controller.text} Spoken text added via mic";
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Simulated Speech-to-Text input')),
-    );
   }
 
   void _nextStep() {
@@ -997,20 +980,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _memberMicActive[index] = !_memberMicActive[index];
-                      });
-                      if (_memberMicActive[index]) _simulateSpeech(ctrl);
-                    },
-                    child: Icon(
-                      _memberMicActive[index] ? Icons.mic_none : Icons.mic_off,
-                      color: _memberMicActive[index]
-                          ? const Color(0xFF1565C0)
-                          : const Color(0xFFA5ABB7),
-                    ),
-                  ),
+                  SpeechToTextMicButton(controller: ctrl),
                   if (!isFirst) ...[
                     const SizedBox(width: 8),
                     GestureDetector(
@@ -1072,18 +1042,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               ),
               Align(
                 alignment: Alignment.topRight,
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() => _agendaMicActive = !_agendaMicActive);
-                    if (_agendaMicActive) _simulateSpeech(_agendaController);
-                  },
-                  child: Icon(
-                    _agendaMicActive ? Icons.mic_none : Icons.mic_off,
-                    color: _agendaMicActive
-                        ? const Color(0xFF1565C0)
-                        : const Color(0xFFA5ABB7),
-                  ),
-                ),
+                child: SpeechToTextMicButton(controller: _agendaController),
               ),
             ],
           ),
@@ -1341,15 +1300,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                           ),
                                         ),
                                       ),
-                                      GestureDetector(
-                                        onTap: () => _simulateSpeech(
-                                          _workDescControllers[index],
-                                        ),
-                                        child: const Icon(
-                                          Icons.mic_off,
-                                          size: 18,
-                                          color: Color(0xFFA5ABB7),
-                                        ),
+                                      SpeechToTextMicButton(
+                                        controller: _workDescControllers[index],
                                       ),
                                     ],
                                   ),
@@ -1769,11 +1721,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         _buildRemarksBox(
           controller: _remarksTechCtrl,
           hint: 'Technician side remarks...',
-          micActive: _remarksTechMicActive,
-          onMicTap: () {
-            setState(() => _remarksTechMicActive = !_remarksTechMicActive);
-            if (_remarksTechMicActive) _simulateSpeech(_remarksTechCtrl);
-          },
         ),
 
         const SizedBox(height: 28),
@@ -1791,14 +1738,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         _buildRemarksBox(
           controller: _remarksCustomerCtrl,
           hint: 'Customer side remarks...',
-          micActive: _remarksCustomerMicActive,
-          onMicTap: () {
-            setState(
-              () => _remarksCustomerMicActive = !_remarksCustomerMicActive,
-            );
-            if (_remarksCustomerMicActive)
-              _simulateSpeech(_remarksCustomerCtrl);
-          },
         ),
 
         const SizedBox(height: 36),
@@ -2013,8 +1952,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   Widget _buildRemarksBox({
     required TextEditingController controller,
     required String hint,
-    required bool micActive,
-    required VoidCallback onMicTap,
   }) {
     return Container(
       padding: const EdgeInsets.all(14),
@@ -2049,16 +1986,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               ),
             ),
           ),
-          GestureDetector(
-            onTap: onMicTap,
-            child: Icon(
-              micActive ? Icons.mic_none : Icons.mic_off,
-              color: micActive
-                  ? const Color(0xFF1565C0)
-                  : const Color(0xFFA5ABB7),
-              size: 20,
-            ),
-          ),
+          SpeechToTextMicButton(controller: controller),
         ],
       ),
     );

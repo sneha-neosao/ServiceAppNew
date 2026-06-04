@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
 
 class ReportLabel extends StatelessWidget {
   final String text;
@@ -127,8 +128,9 @@ class ReportInfoRow extends StatelessWidget {
 
 class ReportRemarksBox extends StatelessWidget {
   final String placeholder;
+  final TextEditingController? controller;
 
-  const ReportRemarksBox({super.key, required this.placeholder});
+  const ReportRemarksBox({super.key, required this.placeholder, this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -145,16 +147,29 @@ class ReportRemarksBox extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Text(
-                  placeholder,
+                child: TextField(
+                  controller: controller,
+                  maxLines: null,
                   style: AppFont.style(
-                    fontSize: 18,
+                    fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
+                    color: const Color(0xFF0D121F),
+                  ),
+                  decoration: InputDecoration(
+                    hintText: placeholder,
+                    hintStyle: AppFont.style(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFFA5ABB7),
+                    ),
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
                   ),
                 ),
               ),
-              const Icon(Icons.mic_none, color: Color(0xFFA5ABB7)),
+              if (controller != null)
+                SpeechToTextMicButton(controller: controller!),
             ],
           ),
           const SizedBox(height: 80),

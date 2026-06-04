@@ -10,6 +10,7 @@ import 'package:service_app/src/features/service_calls/domain/usecase/close_over
 import 'package:service_app/src/features/service_calls/bloc/close_over_call_bloc/close_over_call_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/close_over_call_bloc/close_over_call_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/close_over_call_bloc/close_over_call_state.dart';
+import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
 
 class CloseOverCallDialog extends StatefulWidget {
   final String complaintId;
@@ -164,11 +165,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     color: const Color(0xFFA5ABB7),
                   ),
                 ),
-                const Icon(
-                  Icons.mic_off_outlined,
-                  size: 16,
-                  color: Color(0xFFA5ABB7),
-                ),
+                SpeechToTextMicButton(controller: _resolutionController),
               ],
             ),
             const SizedBox(height: 8),
