@@ -290,6 +290,11 @@ sealed class RemoteDataSource {
     String token,
   );
 
+  Future<FeedbackResponse> getServiceCallReportFeedback(
+    String reportId,
+    String token,
+  );
+
   Future<ServiceCallReportResponse> getServiceCallsReportHistory(String token);
 }
 
@@ -1817,6 +1822,34 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       final response = await _helper.execute(
         method: Method.get,
         url: '${ApiUrl.commissioningReportDetails}/$reportId/check-feedback',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = FeedbackResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<FeedbackResponse> getServiceCallReportFeedback(
+    String reportId,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: '${ApiUrl.serviceCallCheckFeedback}/$reportId/check-feedback',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 

@@ -929,8 +929,8 @@ class _ReportCard extends StatelessWidget {
             ],
           ),
         ),
-        // Extra action buttons — only for commissioning type
-        if (type == ReportType.commissioning) ...[
+        // Extra action buttons — for commissioning and service types
+        if (type == ReportType.commissioning || type == ReportType.service) ...[
           const SizedBox(height: 12),
           Row(
             children: [
@@ -960,6 +960,10 @@ class _ReportCard extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (context) => FeedbackDetailsScreen(
                                   reportId: reportId!,
+                                  isServiceCall: type == ReportType.service,
+                                  title: type == ReportType.service
+                                      ? 'Service Call Feedback Details'
+                                      : 'Commissioning Feedback Details',
                                   onBack: () => Navigator.pop(context),
                                 ),
                               ),

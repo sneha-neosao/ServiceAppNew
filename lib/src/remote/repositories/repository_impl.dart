@@ -243,6 +243,10 @@ abstract class Repository {
     String reportId,
   );
 
+  Future<Either<Failure, FeedbackResponse>> getServiceCallReportFeedback(
+    String reportId,
+  );
+
   Future<Either<Failure, ServiceCallReportResponse>> getServiceCallsReportHistory();
 }
 
@@ -1826,6 +1830,41 @@ class AuthRepositoryImpl implements Repository {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           final response = await _remoteDataSource.getCommissioningReportFeedback(
+            reportId,
+            token,
+          );
+
+          if (response.status != 200) {
+            return Left(CredentialFailure(response.message));
+          }
+
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, FeedbackResponse>> getServiceCallReportFeedback(
+    String reportId,
+  ) {
+    return _networkInfo.check<FeedbackResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.getServiceCallReportFeedback(
             reportId,
             token,
           );
