@@ -8,154 +8,160 @@ class NotificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // ── Header Section ────────────────────────────────────────────────
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // ── Header Section ────────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    size: 20,
-                    color: Color(0xFF5C616E),
-                  ),
-                  onPressed: onBack,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Text(
-                'notif_header_title'.tr(),
-                style: AppFont.style(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF0D121F),
-                ),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF1F8FF),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.refresh,
-                      size: 16,
-                      color: Color(0xFF1565C0),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'notif_clear_filters'.tr(),
-                      style: AppFont.style(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF1565C0),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        size: 20,
+                        color: Color(0xFF5C616E),
                       ),
+                      onPressed: onBack,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 16),
+                  Text(
+                    'notif_header_title'.tr(),
+                    style: AppFont.style(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0D121F),
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F8FF),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.refresh,
+                          size: 16,
+                          color: Color(0xFF1565C0),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'notif_clear_filters'.tr(),
+                          style: AppFont.style(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF1565C0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
 
-        // ── Filters ───────────────────────────────────────────────────────
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: [
-              _buildFilterDropdown(
-                'notif_filter_customer'.tr(),
-                Icons.business_outlined,
+            // ── Filters ───────────────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  _buildFilterDropdown(
+                    'notif_filter_customer'.tr(),
+                    Icons.business_outlined,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildFilterDropdown(
+                    'notif_filter_site'.tr(),
+                    Icons.location_on_outlined,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildFilterField(
+                    'notif_filter_date'.tr(),
+                    Icons.calendar_today_outlined,
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              _buildFilterDropdown(
-                'notif_filter_site'.tr(),
-                Icons.location_on_outlined,
-              ),
-              const SizedBox(height: 12),
-              _buildFilterField(
-                'notif_filter_date'.tr(),
-                Icons.calendar_today_outlined,
-              ),
-            ],
-          ),
-        ),
+            ),
 
-        const SizedBox(height: 20),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+            const SizedBox(height: 20),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
-        // ── Notifications List ────────────────────────────────────────────
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
-              _NotificationCard(
-                type: NotificationType.info,
-                title: 'New Service Call Assigned',
-                description:
-                    'You have been assigned a new service call for Site "Galaxy Residency" (SRV-2024-001).',
-                tags: ['GALAXY GROUP', 'GALAXY RESIDENCY'],
-                time: '10:30 AM',
-                date: '2024-03-20',
-                isNew: true,
+            // ── Notifications List ────────────────────────────────────────────
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  _NotificationCard(
+                    type: NotificationType.info,
+                    title: 'New Service Call Assigned',
+                    description:
+                        'You have been assigned a new service call for Site "Galaxy Residency" (SRV-2024-001).',
+                    tags: ['GALAXY GROUP', 'GALAXY RESIDENCY'],
+                    time: '10:30 AM',
+                    date: '2024-03-20',
+                    isNew: true,
+                  ),
+                  const SizedBox(height: 16),
+                  _NotificationCard(
+                    type: NotificationType.warning,
+                    title: 'AMC Renewal Due',
+                    description:
+                        'Customer "Tech Center" AMC is expiring in 5 days. Please follow up for renewal.',
+                    tags: ['TECH CENTER', 'MAIN OFFICE'],
+                    time: '09:15 AM',
+                    date: '2024-03-20',
+                    isNew: true,
+                  ),
+                  const SizedBox(height: 16),
+                  _NotificationCard(
+                    type: NotificationType.success,
+                    title: 'Service Report Approved',
+                    description:
+                        'The service report for Complaint #1024 has been approved by the admin.',
+                    tags: ['METRO MALL', 'LOBBY AC'],
+                    time: '04:45 PM',
+                    date: '2024-03-19',
+                  ),
+                  const SizedBox(height: 16),
+                  _NotificationCard(
+                    type: NotificationType.error,
+                    title: 'Escalated Complaint',
+                    description:
+                        'Complaint #1098 has been escalated due to delay. Immediate action required.',
+                    tags: ['CITY HOSPITAL', 'ICU WING'],
+                    time: '11:20 AM',
+                    date: '2024-03-19',
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              _NotificationCard(
-                type: NotificationType.warning,
-                title: 'AMC Renewal Due',
-                description:
-                    'Customer "Tech Center" AMC is expiring in 5 days. Please follow up for renewal.',
-                tags: ['TECH CENTER', 'MAIN OFFICE'],
-                time: '09:15 AM',
-                date: '2024-03-20',
-                isNew: true,
-              ),
-              const SizedBox(height: 16),
-              _NotificationCard(
-                type: NotificationType.success,
-                title: 'Service Report Approved',
-                description:
-                    'The service report for Complaint #1024 has been approved by the admin.',
-                tags: ['METRO MALL', 'LOBBY AC'],
-                time: '04:45 PM',
-                date: '2024-03-19',
-              ),
-              const SizedBox(height: 16),
-              _NotificationCard(
-                type: NotificationType.error,
-                title: 'Escalated Complaint',
-                description:
-                    'Complaint #1098 has been escalated due to delay. Immediate action required.',
-                tags: ['CITY HOSPITAL', 'ICU WING'],
-                time: '11:20 AM',
-                date: '2024-03-19',
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 

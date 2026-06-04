@@ -46,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   int _selectedIndex = 0;
-  bool _showNotifications = false;
   bool _showCreateReport = false;
   _AmcViewState _amcViewState = _AmcViewState.dashboard;
   int _amcReportsCreated = 0;
@@ -86,7 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
       _selectedIndex = index;
       _amcViewState = _AmcViewState.dashboard;
       _amcReportsCreated = 0;
-      _showNotifications = false;
       _showCreateReport = false;
     });
   }
@@ -129,7 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               _selectedIndex = 0;
                               _amcViewState = _AmcViewState.dashboard;
                               _amcReportsCreated = 0;
-                              _showNotifications = false;
                               _showCreateReport = false;
                             });
                             Navigator.push(
@@ -157,10 +154,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(width: 8),
                         // ── Notification ───────────────────────────────────
                         GestureDetector(
-                          onTap: () => setState(() {
-                            _showNotifications = true;
-                            _showCreateReport = false;
-                          }),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => NotificationScreen(
+                                  onBack: () => Navigator.pop(context),
+                                ),
+                              ),
+                            );
+                          },
                           child: Container(
                             width: 40,
                             height: 40,
@@ -247,12 +250,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildCurrentView() {
-    if (_showNotifications) {
-      return NotificationScreen(
-        onBack: () => setState(() => _showNotifications = false),
-      );
-    }
-
     switch (_selectedIndex) {
       case 0:
         return _buildHomeTab();

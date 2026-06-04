@@ -333,20 +333,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // Back arrow
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: widget.onBack,
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFE5E7EB)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.04),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(
                           Icons.arrow_back,
-                          color: Colors.white,
-                          size: 18,
+                          size: 20,
+                          color: Color(0xFF5C616E),
                         ),
+                        onPressed: widget.onBack,
                       ),
                     ),
                   ),
