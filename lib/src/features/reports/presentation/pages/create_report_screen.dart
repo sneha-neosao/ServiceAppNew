@@ -8,7 +8,7 @@ import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
-
+import 'package:service_app/src/features/widgets/custom_searchable_dropdown.dart';
 class CreateReportScreen extends StatefulWidget {
   final VoidCallback onBack;
   const CreateReportScreen({super.key, required this.onBack});
@@ -778,44 +778,24 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   if (!_customersList.contains(name)) _customersList.add(name);
                 }
               }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (!isLoading) {
-                        setState(() {
-                          _isCustomerDropdownOpen = !_isCustomerDropdownOpen;
-                          _isSiteDropdownOpen = false;
-                        });
-                      }
-                    },
-                    child: _buildDropdownField(
-                      isLoading ? 'Loading...' : _selectedCustomer,
-                      _isCustomerDropdownOpen,
-                      isLoading: isLoading,
-                    ),
-                  ),
-                  if (_isCustomerDropdownOpen)
-                    _buildDropdownList(
-                      title: 'Select Customer',
-                      items: _customersList,
-                      onSelect: (val) {
-                        setState(() {
-                          _selectedCustomer = val;
-                          _isCustomerDropdownOpen = false;
-                        });
-                        if (state is CustomerSuccessState) {
-                          final cList = state.data.data.where(
-                            (x) => x.name == val,
-                          );
-                          if (cList.isNotEmpty) {
-                            _sitesBloc.add(SitesGetEvent(cList.first.id));
-                          }
-                        }
-                      },
-                    ),
-                ],
+              return CustomSearchableDropdown<String>(
+                hint: 'Select Customer',
+                value: _selectedCustomer.isEmpty ? null : _selectedCustomer,
+                items: _customersList,
+                isLoading: isLoading,
+                onChanged: (val) {
+                  setState(() {
+                    _selectedCustomer = val ?? '';
+                  });
+                  if (val != null && state is CustomerSuccessState) {
+                    final cList = state.data.data.where(
+                      (x) => x.name == val,
+                    );
+                    if (cList.isNotEmpty) {
+                      _sitesBloc.add(SitesGetEvent(cList.first.id));
+                    }
+                  }
+                },
               );
             },
           ),
@@ -885,36 +865,16 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   if (!_sitesList.contains(name)) _sitesList.add(name);
                 }
               }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (!isLoading) {
-                        setState(() {
-                          _isSiteDropdownOpen = !_isSiteDropdownOpen;
-                          _isCustomerDropdownOpen = false;
-                        });
-                      }
-                    },
-                    child: _buildDropdownField(
-                      isLoading ? 'Loading...' : _selectedSite,
-                      _isSiteDropdownOpen,
-                      isLoading: isLoading,
-                    ),
-                  ),
-                  if (_isSiteDropdownOpen)
-                    _buildDropdownList(
-                      title: 'Select Site',
-                      items: _sitesList,
-                      onSelect: (val) {
-                        setState(() {
-                          _selectedSite = val;
-                          _isSiteDropdownOpen = false;
-                        });
-                      },
-                    ),
-                ],
+              return CustomSearchableDropdown<String>(
+                hint: 'Select Site',
+                value: _selectedSite.isEmpty ? null : _selectedSite,
+                items: _sitesList,
+                isLoading: isLoading,
+                onChanged: (val) {
+                  setState(() {
+                    _selectedSite = val ?? '';
+                  });
+                },
               );
             },
           ),

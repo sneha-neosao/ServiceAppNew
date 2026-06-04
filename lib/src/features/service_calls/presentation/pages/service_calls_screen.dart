@@ -4,6 +4,7 @@ import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/my_commissioning/presentation/pages/create_commissioning_report_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
+import 'package:service_app/src/features/widgets/custom_searchable_dropdown.dart';
 import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
@@ -206,36 +207,26 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         if (state is CustomerSuccessState) {
                           customers.addAll(state.data.data);
                         }
-                        return PopupMenuButton<Customer>(
-                          color: Colors.white,
-                          surfaceTintColor: Colors.white,
-                          onSelected: (customer) {
-                            setState(() {
-                              _selectedCustomerName = customer.name;
-                              _selectedCustomerId = customer.id;
-                              _selectedSiteName = null;
-                              _selectedSiteId = null;
-                            });
-                            _sitesBloc.add(SitesGetEvent(customer.id));
-                            _fetchServiceCalls(isRefresh: true);
+                        return CustomSearchableDropdown<Customer>(
+                          height: 44,
+                          hint: 'Select Customer',
+                          value: customers.where((c) => c.id == _selectedCustomerId).firstOrNull,
+                          items: customers,
+                          isLoading: state is CustomerLoadingState,
+                          itemAsString: (c) => c.name,
+                          compareFn: (a, b) => a.id == b.id,
+                          onChanged: (customer) {
+                            if (customer != null) {
+                              setState(() {
+                                _selectedCustomerName = customer.name;
+                                _selectedCustomerId = customer.id;
+                                _selectedSiteName = null;
+                                _selectedSiteId = null;
+                              });
+                              _sitesBloc.add(SitesGetEvent(customer.id));
+                              _fetchServiceCalls(isRefresh: true);
+                            }
                           },
-                          offset: const Offset(0, 45),
-                          itemBuilder: (ctx) => customers
-                              .map(
-                                (c) => PopupMenuItem<Customer>(
-                                  value: c,
-                                  child: Text(
-                                    c.name,
-                                    style: AppFont.style(color: Colors.black),
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                          child: _buildFilterDropdown(
-                            _selectedCustomerName ?? 'Select Customer',
-                            Icons.person_outline,
-                            isLoading: state is CustomerLoadingState,
-                          ),
                         );
                       },
                     ),
@@ -249,33 +240,23 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         if (state is SitesSuccessState) {
                           sites.addAll(state.data.data);
                         }
-                        return PopupMenuButton<Site>(
-                          color: Colors.white,
-                          surfaceTintColor: Colors.white,
-                          onSelected: (site) {
-                            setState(() {
-                              _selectedSiteName = site.name;
-                              _selectedSiteId = site.id;
-                            });
-                            _fetchServiceCalls(isRefresh: true);
+                        return CustomSearchableDropdown<Site>(
+                          height: 44,
+                          hint: 'Select Site',
+                          value: sites.where((s) => s.id == _selectedSiteId).firstOrNull,
+                          items: sites,
+                          isLoading: state is SitesLoadingState,
+                          itemAsString: (s) => s.name,
+                          compareFn: (a, b) => a.id == b.id,
+                          onChanged: (site) {
+                            if (site != null) {
+                              setState(() {
+                                _selectedSiteName = site.name;
+                                _selectedSiteId = site.id;
+                              });
+                              _fetchServiceCalls(isRefresh: true);
+                            }
                           },
-                          offset: const Offset(0, 45),
-                          itemBuilder: (ctx) => sites
-                              .map(
-                                (s) => PopupMenuItem<Site>(
-                                  value: s,
-                                  child: Text(
-                                    s.name,
-                                    style: AppFont.style(color: Colors.black),
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                          child: _buildFilterDropdown(
-                            _selectedSiteName ?? 'Select Site',
-                            Icons.location_on_outlined,
-                            isLoading: state is SitesLoadingState,
-                          ),
                         );
                       },
                     ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
+import 'package:service_app/src/features/widgets/custom_searchable_dropdown.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_history_bloc/commissioning_report_history_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_history_bloc/commissioning_report_history_event.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_history_bloc/commissioning_report_history_state.dart';
@@ -22,6 +23,9 @@ import 'package:service_app/src/features/service_calls/bloc/service_call_report_
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_pdf_bloc/commissioning_report_pdf_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_pdf_bloc/commissioning_report_pdf_event.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_pdf_bloc/commissioning_report_pdf_state.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_pdf_bloc/service_call_report_pdf_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_pdf_bloc/service_call_report_pdf_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_pdf_bloc/service_call_report_pdf_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
@@ -41,6 +45,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   late ServiceCallReportHistoryBloc _serviceCallHistoryBloc;
   late CommissioningReportDetailsBloc _detailsBloc;
   late CommissioningReportPdfBloc _pdfBloc;
+  late ServiceCallReportPdfBloc _serviceCallPdfBloc;
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
   late TechnicianBloc _technicianBloc;
@@ -75,6 +80,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     _serviceCallHistoryBloc = getIt<ServiceCallReportHistoryBloc>();
     _detailsBloc = getIt<CommissioningReportDetailsBloc>();
     _pdfBloc = getIt<CommissioningReportPdfBloc>();
+    _serviceCallPdfBloc = getIt<ServiceCallReportPdfBloc>();
     _fetchReportHistory();
     _fetchServiceCallHistory();
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
@@ -88,6 +94,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     _serviceCallHistoryBloc.close();
     _detailsBloc.close();
     _pdfBloc.close();
+    _serviceCallPdfBloc.close();
     _customerBloc.close();
     _sitesBloc.close();
     _technicianBloc.close();
@@ -136,32 +143,63 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CommissioningReportPdfBloc, CommissioningReportPdfState>(
-      bloc: _pdfBloc,
-      listener: (context, state) {
-        if (state is CommissioningReportPdfLoading) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => const Center(child: CircularProgressIndicator(color: Color(0xFF1565C0))),
-          );
-        } else if (state is CommissioningReportPdfError) {
-          Navigator.pop(context);
-          appSnackBar(context, const Color(0xFFF44336), state.message);
-        } else if (state is CommissioningReportPdfLoaded) {
-          Navigator.pop(context);
-          final url = state.response.data?.pdfUrl;
-          if (url != null && url.isNotEmpty) {
-            if (state.action == PdfAction.view) {
-              launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-            } else if (state.action == PdfAction.download) {
-              _downloadPdf(url);
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<CommissioningReportPdfBloc, CommissioningReportPdfState>(
+          bloc: _pdfBloc,
+          listener: (context, state) {
+            if (state is CommissioningReportPdfLoading) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => const Center(child: CircularProgressIndicator(color: Color(0xFF1565C0))),
+              );
+            } else if (state is CommissioningReportPdfError) {
+              Navigator.pop(context);
+              appSnackBar(context, const Color(0xFFF44336), state.message);
+            } else if (state is CommissioningReportPdfLoaded) {
+              Navigator.pop(context);
+              final url = state.response.data?.pdfUrl;
+              if (url != null && url.isNotEmpty) {
+                if (state.action == PdfAction.view) {
+                  launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                } else if (state.action == PdfAction.download) {
+                  _downloadPdf(url);
+                }
+              } else {
+                appSnackBar(context, const Color(0xFFF44336), 'PDF URL is empty');
+              }
             }
-          } else {
-            appSnackBar(context, const Color(0xFFF44336), 'PDF URL is empty');
-          }
-        }
-      },
+          },
+        ),
+        BlocListener<ServiceCallReportPdfBloc, ServiceCallReportPdfState>(
+          bloc: _serviceCallPdfBloc,
+          listener: (context, state) {
+            if (state is ServiceCallReportPdfLoading) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => const Center(child: CircularProgressIndicator(color: Color(0xFF1565C0))),
+              );
+            } else if (state is ServiceCallReportPdfError) {
+              Navigator.pop(context);
+              appSnackBar(context, const Color(0xFFF44336), state.message);
+            } else if (state is ServiceCallReportPdfLoaded) {
+              Navigator.pop(context);
+              final url = state.response.data?.pdfUrl;
+              if (url != null && url.isNotEmpty) {
+                if (state.action == PdfAction.view) {
+                  launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                } else if (state.action == PdfAction.download) {
+                  _downloadPdf(url);
+                }
+              } else {
+                appSnackBar(context, const Color(0xFFF44336), 'PDF URL is empty');
+              }
+            }
+          },
+        ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -364,6 +402,18 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   technicianId: item.dealerName,
                                   feedbackSubmitted: item.feedbackSubmitted,
                                   qrCodeImage: item.qrCodeImage,
+                                  onViewPdfTap: (id) {
+                                    _serviceCallPdfBloc.add(FetchServiceCallReportPdfEvent(
+                                      reportId: id,
+                                      action: PdfAction.view,
+                                    ));
+                                  },
+                                  onDownloadPdfTap: (id) {
+                                    _serviceCallPdfBloc.add(FetchServiceCallReportPdfEvent(
+                                      reportId: id,
+                                      action: PdfAction.download,
+                                    ));
+                                  },
                                 );
                               },
                             );
@@ -505,36 +555,25 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     if (state is CustomerSuccessState) {
                       customers.addAll(state.data.data);
                     }
-                    return PopupMenuButton<Customer>(
-                      color: Colors.white,
-                      surfaceTintColor: Colors.white,
-                      onSelected: (customer) {
-                        setState(() {
-                          _selectedCustomerName = customer.name;
-                          _selectedCustomerId = customer.id;
-                          _selectedSiteName = null;
-                          _selectedSiteId = null;
-                        });
-                        _sitesBloc.add(SitesGetEvent(customer.id));
-                        _fetchReportHistory();
+                    return CustomSearchableDropdown<Customer>(
+                      height: 44,
+                      hint: 'Select Customer',
+                      value: customers.where((c) => c.id == _selectedCustomerId).firstOrNull,
+                      items: customers,
+                      isLoading: state is CustomerLoadingState,
+                      itemAsString: (c) => c.name,
+                      onChanged: (customer) {
+                        if (customer != null) {
+                          setState(() {
+                            _selectedCustomerName = customer.name;
+                            _selectedCustomerId = customer.id;
+                            _selectedSiteName = null;
+                            _selectedSiteId = null;
+                          });
+                          _sitesBloc.add(SitesGetEvent(customer.id));
+                          _fetchReportHistory();
+                        }
                       },
-                      offset: const Offset(0, 45),
-                      itemBuilder: (ctx) => customers
-                          .map(
-                            (c) => PopupMenuItem<Customer>(
-                              value: c,
-                              child: Text(
-                                c.name,
-                                style: AppFont.style(color: Colors.black),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                      child: _buildFilterDropdown(
-                        _selectedCustomerName ?? 'Select Customer',
-                        Icons.business_outlined,
-                        isLoading: state is CustomerLoadingState,
-                      ),
                     );
                   },
                 ),
@@ -548,33 +587,22 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     if (state is SitesSuccessState) {
                       sites.addAll(state.data.data);
                     }
-                    return PopupMenuButton<Site>(
-                      color: Colors.white,
-                      surfaceTintColor: Colors.white,
-                      onSelected: (site) {
-                        setState(() {
-                          _selectedSiteName = site.name;
-                          _selectedSiteId = site.id;
-                        });
-                        _fetchReportHistory();
+                    return CustomSearchableDropdown<Site>(
+                      height: 44,
+                      hint: 'Select Site',
+                      value: sites.where((s) => s.id == _selectedSiteId).firstOrNull,
+                      items: sites,
+                      isLoading: state is SitesLoadingState,
+                      itemAsString: (s) => s.name,
+                      onChanged: (site) {
+                        if (site != null) {
+                          setState(() {
+                            _selectedSiteName = site.name;
+                            _selectedSiteId = site.id;
+                          });
+                          _fetchReportHistory();
+                        }
                       },
-                      offset: const Offset(0, 45),
-                      itemBuilder: (ctx) => sites
-                          .map(
-                            (s) => PopupMenuItem<Site>(
-                              value: s,
-                              child: Text(
-                                s.name,
-                                style: AppFont.style(color: Colors.black),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                      child: _buildFilterDropdown(
-                        _selectedSiteName ?? 'Select Site',
-                        Icons.location_on_outlined,
-                        isLoading: state is SitesLoadingState,
-                      ),
                     );
                   },
                 ),
@@ -606,33 +634,22 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     if (state is TechnicianSuccessState) {
                       technicians.addAll(state.data.data);
                     }
-                    return PopupMenuButton<Technician>(
-                      color: Colors.white,
-                      surfaceTintColor: Colors.white,
-                      onSelected: (tech) {
-                        setState(() {
-                          _selectedTechnicianName = tech.name;
-                          _selectedTechnicianId = tech.id;
-                        });
-                        _fetchReportHistory();
+                    return CustomSearchableDropdown<Technician>(
+                      height: 44,
+                      hint: 'Select Technician',
+                      value: technicians.where((t) => t.id == _selectedTechnicianId).firstOrNull,
+                      items: technicians,
+                      isLoading: state is TechnicianLoadingState,
+                      itemAsString: (t) => t.name,
+                      onChanged: (tech) {
+                        if (tech != null) {
+                          setState(() {
+                            _selectedTechnicianName = tech.name;
+                            _selectedTechnicianId = tech.id;
+                          });
+                          _fetchReportHistory();
+                        }
                       },
-                      offset: const Offset(0, 45),
-                      itemBuilder: (ctx) => technicians
-                          .map(
-                            (t) => PopupMenuItem<Technician>(
-                              value: t,
-                              child: Text(
-                                t.name,
-                                style: AppFont.style(color: Colors.black),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                      child: _buildFilterDropdown(
-                        _selectedTechnicianName ?? 'Select Technician',
-                        Icons.person_outline,
-                        isLoading: state is TechnicianLoadingState,
-                      ),
                     );
                   },
                 ),
@@ -1002,7 +1019,7 @@ class _ReportCard extends StatelessWidget {
       children: [
         InkWell(
           onTap: () {
-            if (type == ReportType.commissioning && onViewPdfTap != null && reportId != null) {
+            if ((type == ReportType.commissioning || type == ReportType.service) && onViewPdfTap != null && reportId != null) {
               onViewPdfTap!(reportId!);
             } else if (onViewTap != null && reportId != null) {
               onViewTap!(reportId!);
@@ -1044,7 +1061,7 @@ class _ReportCard extends StatelessWidget {
                   iconColor: const Color(0xFF6B7280),
                   onTap: () {
                     if (reportId != null) {
-                      if (type == ReportType.commissioning && onDownloadPdfTap != null) {
+                      if ((type == ReportType.commissioning || type == ReportType.service) && onDownloadPdfTap != null) {
                         onDownloadPdfTap!(reportId!);
                       } else {
                         onViewTap?.call(reportId!);
