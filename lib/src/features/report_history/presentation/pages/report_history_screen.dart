@@ -190,6 +190,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   'No representative',
                               technicianId: item.dealerName,
                               feedbackSubmitted: item.feedbackSubmitted,
+                              qrCodeImage: item.qrCodeImage,
                               onViewTap: (id) {
                                 _detailsBloc.add(
                                   CommissioningReportDetailsGetEvent(id),
@@ -622,6 +623,7 @@ class _ReportCard extends StatelessWidget {
   final String technician;
   final String technicianId;
   final bool feedbackSubmitted;
+  final String? qrCodeImage;
   final void Function(String reportId)? onViewTap;
 
   const _ReportCard({
@@ -635,6 +637,7 @@ class _ReportCard extends StatelessWidget {
     required this.technician,
     required this.technicianId,
     required this.feedbackSubmitted,
+    this.qrCodeImage,
     this.onViewTap,
   });
 
@@ -801,14 +804,14 @@ class _ReportCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            _buildViewButton(),
+            _buildViewButton(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildViewButton() {
+  Widget _buildViewButton(BuildContext context) {
     String btnText = 'VIEW SERVICE REPORT';
     if (type == ReportType.commissioning) {
       btnText = 'VIEW COMMISSIONING REPORT';
@@ -875,7 +878,17 @@ class _ReportCard extends StatelessWidget {
                     : _buildIconActionButton(
                         icon: Icons.qr_code_2_outlined,
                         iconColor: const Color(0xFFF59E0B),
-                        onTap: () {},
+                        onTap: () {
+                          if (qrCodeImage != null && qrCodeImage!.isNotEmpty) {
+                            _showQrCodeDialog(context);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('QR Code not available'),
+                              ),
+                            );
+                          }
+                        },
                       ),
               ),
             ],
@@ -901,6 +914,125 @@ class _ReportCard extends StatelessWidget {
         ),
         child: Center(child: Icon(icon, size: 22, color: iconColor)),
       ),
+    );
+  }
+
+  void _showQrCodeDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Color(0xFFA5ABB7)),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFE8F5E9),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_circle,
+                    color: Color(0xFF4CAF50),
+                    size: 40,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'create_report_success_title'.tr(),
+                  style: AppFont.style(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF0D121F),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'create_report_success_subtitle'.tr(),
+                  style: AppFont.style(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFA5ABB7),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Color(0xFFF1F2F6),
+                ),
+                const SizedBox(height: 32),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8F9FB),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFF1F2F6)),
+                  ),
+                  child: qrCodeImage != null && qrCodeImage!.isNotEmpty
+                      ? Image.network(
+                          qrCodeImage!,
+                          width: 180,
+                          height: 180,
+                          fit: BoxFit.contain,
+                        )
+                      : const Icon(
+                          Icons.qr_code_2,
+                          size: 180,
+                          color: Color(0xFF0D121F),
+                        ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'create_report_scan_feedback'.tr(),
+                  style: AppFont.style(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFA5ABB7),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1565C0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'Done',
+                      style: AppFont.style(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

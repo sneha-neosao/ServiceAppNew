@@ -82,6 +82,8 @@ class CommissioningWorkResult extends Equatable {
   final String submittedAt;
   final bool feedbackSubmitted;
   final int lastCompletedStep;
+  final String? qrCodeUrl;
+  final String? qrCodeImage;
 
   const CommissioningWorkResult({
     required this.id,
@@ -99,6 +101,8 @@ class CommissioningWorkResult extends Equatable {
     required this.submittedAt,
     required this.feedbackSubmitted,
     required this.lastCompletedStep,
+    this.qrCodeUrl,
+    this.qrCodeImage,
   });
 
   factory CommissioningWorkResult.fromJson(Map<String, dynamic> json) {
@@ -118,6 +122,8 @@ class CommissioningWorkResult extends Equatable {
       submittedAt: json['submitted_at'],
       feedbackSubmitted: json['feedback_submitted'],
       lastCompletedStep: json['last_completed_step'],
+      qrCodeUrl: json['qr_code_url'],
+      qrCodeImage: json['qr_code_image'],
     );
   }
 
@@ -138,6 +144,8 @@ class CommissioningWorkResult extends Equatable {
       'submitted_at': submittedAt,
       'feedback_submitted': feedbackSubmitted,
       'last_completed_step': lastCompletedStep,
+      'qr_code_url': qrCodeUrl,
+      'qr_code_image': qrCodeImage,
     };
   }
 
@@ -158,6 +166,8 @@ class CommissioningWorkResult extends Equatable {
     submittedAt,
     feedbackSubmitted,
     lastCompletedStep,
+    qrCodeUrl,
+    qrCodeImage,
   ];
 }
 
