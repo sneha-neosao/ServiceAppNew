@@ -17,7 +17,8 @@ import 'package:service_app/src/features/reports/presentation/pages/create_repor
 import 'package:service_app/src/features/service_calls/presentation/pages/service_calls_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final int initialIndex;
+  const HomeScreen({super.key, this.initialIndex = 0});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -45,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  int _selectedIndex = 0;
+  late int _selectedIndex = widget.initialIndex;
   bool _showCreateReport = false;
   _AmcViewState _amcViewState = _AmcViewState.dashboard;
   int _amcReportsCreated = 0;

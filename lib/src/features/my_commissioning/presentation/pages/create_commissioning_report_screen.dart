@@ -128,7 +128,7 @@ class _CreateCommissioningReportScreenState
   String? _commissioningReportId;
   late List<TextEditingController> _technicians;
   late List<TextEditingController> _representatives;
-  String _selectedWarranty = '1 YEAR';
+  String? _selectedWarranty;
   bool _isTechnicalDetailsNA = false;
   int _workDescriptionRows = 5;
 
@@ -409,23 +409,23 @@ class _CreateCommissioningReportScreenState
         }
       }
 
-      if (repNames.isEmpty) {
-        appSnackBar(
-          context,
-          const Color(0xFFF44336),
-          "Please add at least one representative",
-        );
-        return;
-      }
+      // if (repNames.isEmpty) {
+      //   appSnackBar(
+      //     context,
+      //     const Color(0xFFF44336),
+      //     "Please add at least one representative",
+      //   );
+      //   return;
+      // }
 
-      if (_agendaController.text.trim().isEmpty) {
-        appSnackBar(
-          context,
-          const Color(0xFFF44336),
-          "Please enter the agenda/purpose of visit",
-        );
-        return;
-      }
+      // if (_agendaController.text.trim().isEmpty) {
+      //   appSnackBar(
+      //     context,
+      //     const Color(0xFFF44336),
+      //     "Please enter the agenda/purpose of visit",
+      //   );
+      //   return;
+      // }
 
       if (widget.isServiceReport) {
         if (_submitServiceCallStep2Bloc.state
@@ -444,8 +444,18 @@ class _CreateCommissioningReportScreenState
       } else {
         if (_submitStep2Bloc.state is CommissioningStep2LoadingState) return;
 
-        int warrantyYears =
-            int.tryParse(_selectedWarranty.split(' ').first) ?? 1;
+        if (!widget.isServiceReport && _selectedWarranty == null) {
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'Please select warranty period',
+          );
+          return;
+        }
+
+        int warrantyYears = _selectedWarranty != null
+            ? (int.tryParse(_selectedWarranty!.split(' ').first) ?? 1)
+            : 1;
 
         _submitStep2Bloc.add(
           CommissioningStep2GetEvent(
@@ -494,6 +504,69 @@ class _CreateCommissioningReportScreenState
       } else {
         if (_submitStep3Bloc.state is CommissioningStep3LoadingState) return;
 
+        if (!_isTechnicalDetailsNA) {
+          if (_pumpMakeController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Make');
+            return;
+          }
+          if (_pumpModelController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Model');
+            return;
+          }
+          if (_pumpSerialNumberController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Serial Number');
+            return;
+          }
+          if (_pumpFlowLPMController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (LPM)');
+            return;
+          }
+          if (_pumpFlowM3HRController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (M3/HR)');
+            return;
+          }
+          if (_pumpFlowLPSController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (LPS)');
+            return;
+          }
+          if (_pumpFlowUSGPMController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (USGPM)');
+            return;
+          }
+          if (_pumpHeadMTRController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Head (MTR)');
+            return;
+          }
+          if (_driverMakeController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Driver Make');
+            return;
+          }
+          if (_driverSerialNumberController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Driver Serial Number');
+            return;
+          }
+          if (_ratingKWController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Rating (KW)');
+            return;
+          }
+          if (_ratingHPController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Rating (HP)');
+            return;
+          }
+          if (_rpmController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter RPM');
+            return;
+          }
+          if (_controlPanelMakeController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Control Panel Make');
+            return;
+          }
+          if (_panelSerialModelController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Panel Serial / Model');
+            return;
+          }
+        }
+
         _submitStep3Bloc.add(
           CommissioningStep3GetEvent(
             _commissioningReportId ?? widget.commissioningWorkId,
@@ -513,14 +586,14 @@ class _CreateCommissioningReportScreenState
         }
       }
 
-      if (descriptions.isEmpty) {
-        appSnackBar(
-          context,
-          const Color(0xFFF44336),
-          "Please enter at least one work description",
-        );
-        return;
-      }
+      // if (descriptions.isEmpty) {
+      //   appSnackBar(
+      //     context,
+      //     const Color(0xFFF44336),
+      //     "Please enter at least one work description",
+      //   );
+      //   return;
+      // }
 
       if (widget.isServiceReport) {
         _submitServiceCallStep4Bloc.add(
@@ -798,6 +871,78 @@ class _CreateCommissioningReportScreenState
           ),
         );
       } else {
+        // Validate mechanical section
+        if (!_mechNA) {
+          if (_bearingNoise == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Bearing Noise / Abnormal Sound');
+            return;
+          }
+          if (_vibration == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Vibration');
+            return;
+          }
+          if (_mechSeal == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Mechanical Seal / Gland Leakage');
+            return;
+          }
+          if (_pumpDry == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Pump Not Running Dry');
+            return;
+          }
+        }
+
+        // Validate pipeline section
+        if (!_pipeNA) {
+          if (_nrvValve == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select NRV / Butterfly Valve / Gate Valve Condition');
+            return;
+          }
+          if (_strainerValve == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Strainer / Foot Valve Condition');
+            return;
+          }
+          if (_suctionLine == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Suction Line');
+            return;
+          }
+          if (_deliveryLine == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Delivery Line');
+            return;
+          }
+          if (_suctionDelivery == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Suction / Delivery Valve Condition');
+            return;
+          }
+          if (_pressureSwitch == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Pressure Switch / Pressure Transmitter');
+            return;
+          }
+        }
+
+        // Validate electrical section
+        if (!_elecNA) {
+          if (_elecFaults == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Electrical Faults');
+            return;
+          }
+          if (_voltage == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Voltage');
+            return;
+          }
+          if (_phase == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Phase');
+            return;
+          }
+          if (_current == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Current');
+            return;
+          }
+          if (_panelWiring == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Control Panel Wiring');
+            return;
+          }
+        }
+
         _submitStep5Bloc.add(
           CommissioningStep5GetEvent(
             _commissioningReportId ?? widget.commissioningWorkId,
@@ -840,6 +985,28 @@ class _CreateCommissioningReportScreenState
           workPhotosPaths.addAll(_existingWorkPhotosUrls);
         }
 
+        // Validation
+        if (_selectedTechnicianRepId == null || _selectedTechnicianRepId!.isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Technician Representative');
+          return;
+        }
+        if (techSignaturePath == null || techSignaturePath.isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please add Technician Signature');
+          return;
+        }
+        if (_customerRepNameController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Customer Representative Name');
+          return;
+        }
+        if (custSignaturePath == null || custSignaturePath.isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please add Customer Signature');
+          return;
+        }
+        if (workPhotosPaths.isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please upload at least one Work Photo');
+          return;
+        }
+
         _submitServiceCallStep6Bloc.add(
           ServiceCallReportStep6SubmitEvent(
             reportId: _commissioningReportId ?? widget.commissioningWorkId,
@@ -853,6 +1020,31 @@ class _CreateCommissioningReportScreenState
           ),
         );
       } else {
+        // Validation for commissioning flow
+        if (_selectedTechnicianRepId == null || _selectedTechnicianRepId!.isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Technician Representative');
+          return;
+        }
+        if (_technicianSignatureFile == null &&
+            (_existingTechnicianSignatureUrl == null || _existingTechnicianSignatureUrl!.isEmpty)) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please add Technician Signature');
+          return;
+        }
+        if (_customerRepNameController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Customer Representative Name');
+          return;
+        }
+        if (_customerSignatureFile == null &&
+            (_existingCustomerSignatureUrl == null || _existingCustomerSignatureUrl!.isEmpty)) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please add Customer Signature');
+          return;
+        }
+        final allWorkPhotos = [..._workPhotos, ..._existingWorkPhotosUrls];
+        if (allWorkPhotos.isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please upload at least one Work Photo');
+          return;
+        }
+
         _submitStep6Bloc.add(
           CommissioningStep6SubmitEvent(
             commissioning_report_id:
@@ -1934,34 +2126,51 @@ class _CreateCommissioningReportScreenState
                                                                                                       children: [
                                                                                                         Row(
                                                                                                           children: [
-                                                                                                            IconButton(
-                                                                                                              icon: const Icon(
-                                                                                                                Icons.arrow_back,
-                                                                                                                color: Color(
-                                                                                                                  0xFFA5ABB7,
+                                                                                                            Container(
+                                                                                                              width: 44,
+                                                                                                              height: 44,
+                                                                                                              decoration: BoxDecoration(
+                                                                                                                color: Colors.white,
+                                                                                                                borderRadius: BorderRadius.circular(12),
+                                                                                                                border: Border.all(color: const Color(0xFFE5E7EB)),
+                                                                                                                boxShadow: [
+                                                                                                                  BoxShadow(
+                                                                                                                    color: Colors.black.withOpacity(0.04),
+                                                                                                                    blurRadius: 8,
+                                                                                                                    offset: const Offset(0, 2),
+                                                                                                                  ),
+                                                                                                                ],
+                                                                                                              ),
+                                                                                                              child: IconButton(
+                                                                                                                icon: const Icon(
+                                                                                                                  Icons.arrow_back,
+                                                                                                                  size: 20,
+                                                                                                                  color: Color(0xFF5C616E),
+                                                                                                                ),
+                                                                                                                onPressed: _previousStep,
+                                                                                                              ),
+                                                                                                            ),
+                                                                                                            const SizedBox(width: 16),
+                                                                                                            Container(
+                                                                                                              width: 4,
+                                                                                                              height: 24,
+                                                                                                              decoration: BoxDecoration(
+                                                                                                                color: const Color(0xFF0B68B9),
+                                                                                                                borderRadius: BorderRadius.circular(2),
+                                                                                                              ),
+                                                                                                            ),
+                                                                                                            const SizedBox(width: 12),
+                                                                                                            Expanded(
+                                                                                                              child: Text(
+                                                                                                                widget.isServiceReport
+                                                                                                                    ? 'SERVICE REPORT'
+                                                                                                                    : 'COMMISSIONING REPORT',
+                                                                                                                style: AppFont.style(
+                                                                                                                  fontSize: 17,
+                                                                                                                  fontWeight: FontWeight.w900,
+                                                                                                                  color: const Color(0xFF0D121F),
                                                                                                                 ),
                                                                                                               ),
-                                                                                                              onPressed: _previousStep,
-                                                                                                            ),
-                                                                                                            const SizedBox(
-                                                                                                              width: 8,
-                                                                                                            ),
-                                                                                                            Column(
-                                                                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                                              children: [
-                                                                                                                Text(
-                                                                                                                  widget.isServiceReport
-                                                                                                                      ? 'SERVICE REPORT'
-                                                                                                                      : 'COMMISSIONING REPORT',
-                                                                                                                  style: AppFont.style(
-                                                                                                                    fontSize: 22,
-                                                                                                                    fontWeight: FontWeight.w900,
-                                                                                                                    color: const Color(
-                                                                                                                      0xFF0D121F,
-                                                                                                                    ),
-                                                                                                                  ),
-                                                                                                                ),
-                                                                                                              ],
                                                                                                             ),
                                                                                                           ],
                                                                                                         ),
@@ -2934,12 +3143,26 @@ class _CreateCommissioningReportScreenState
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Technician Name(s) :',
-              style: AppFont.style(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF5C6672),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Technician Name(s) :',
+                    style: AppFont.style(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF5C6672),
+                    ),
+                  ),
+                  const TextSpan(
+                    text: ' *',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF0B68B9),
+                    ),
+                  ),
+                ],
               ),
             ),
             GestureDetector(
@@ -3306,72 +3529,83 @@ class _CreateCommissioningReportScreenState
         // ── Select Warranty Period (Hidden for Service Report) ───────────
         if (!widget.isServiceReport) ...[
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                width: 150,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 12.0),
-                  child: Text(
-                    'Select Warranty Period',
-                    style: AppFont.style(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF5C6672),
-                    ),
+                width: 170,
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Select Warranty Period',
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF8E9BAE),
+                        ),
+                      ),
+                      const TextSpan(
+                        text: ' *',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF0B68B9),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 12.0),
-                child: Text(
-                  ':',
-                  style: AppFont.style(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFE5E7EB),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 8),
+              const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+              const SizedBox(width: 8),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: _selectedWarranty,
-                        isExpanded: true,
-                        icon: const SizedBox.shrink(),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 4,
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _selectedWarranty,
+                      isExpanded: true,
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down,
+                        color: Color(0xFFA5ABB7),
+                      ),
+                      style: AppFont.style(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF0D121F),
+                      ),
+                      hint: Text(
+                        'Select Period',
                         style: AppFont.style(
                           fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          color: const Color(0xFF0D121F),
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFFA5ABB7),
                         ),
-                        items:
-                            ['1 YEAR', '2 YEAR', '3 YEAR', '4 YEAR', '5 YEAR']
-                                .map(
-                                  (val) => DropdownMenuItem(
-                                    value: val,
-                                    child: Text(val),
-                                  ),
-                                )
-                                .toList(),
-                        onChanged: (val) {
-                          if (val != null) {
-                            setState(() {
-                              _selectedWarranty = val;
-                            });
-                          }
-                        },
                       ),
+                      items: ['1 YEAR', '2 YEAR', '3 YEAR', '4 YEAR', '5 YEAR']
+                          .map(
+                            (val) => DropdownMenuItem(
+                              value: val,
+                              child: Text(val),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (val) {
+                        setState(() {
+                          _selectedWarranty = val;
+                        });
+                      },
                     ),
-                    const Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: Color(0xFF1565C0),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ],
@@ -3556,12 +3790,26 @@ class _CreateCommissioningReportScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: AppFont.style(
-              fontSize: 14,
-              fontWeight: FontWeight.w900,
-              color: const Color(0xFF3A4152),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: label,
+                  style: AppFont.style(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF3A4152),
+                  ),
+                ),
+                const TextSpan(
+                  text: ' *',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF0B68B9),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 8),
@@ -3598,12 +3846,26 @@ class _CreateCommissioningReportScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: AppFont.style(
-              fontSize: 14,
-              fontWeight: FontWeight.w900,
-              color: const Color(0xFF3A4152),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: label,
+                  style: AppFont.style(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF3A4152),
+                  ),
+                ),
+                const TextSpan(
+                  text: ' *',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF0B68B9),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 16),
@@ -4017,12 +4279,26 @@ class _CreateCommissioningReportScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: AppFont.style(
-              fontSize: 13,
-              fontWeight: FontWeight.w900,
-              color: const Color(0xFF3A4152),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: label,
+                  style: AppFont.style(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF3A4152),
+                  ),
+                ),
+                const TextSpan(
+                  text: ' *',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF0B68B9),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 10),
@@ -4084,83 +4360,6 @@ class _CreateCommissioningReportScreenState
               );
             }),
           ),
-          // if (selected == 'not_ok') ...[
-          //   const SizedBox(height: 12),
-          //   _step5Media.containsKey(label)
-          //       ? Container(
-          //           padding: const EdgeInsets.symmetric(
-          //             horizontal: 12,
-          //             vertical: 8,
-          //           ),
-          //           decoration: BoxDecoration(
-          //             color: const Color(0xFFF1F5F9),
-          //             borderRadius: BorderRadius.circular(8),
-          //             border: Border.all(color: const Color(0xFFE2E8F0)),
-          //           ),
-          //           child: Row(
-          //             mainAxisSize: MainAxisSize.min,
-          //             children: [
-          //               Icon(
-          //                 _step5Media[label]!.path.endsWith('.mp4')
-          //                     ? Icons.videocam
-          //                     : Icons.image,
-          //                 size: 16,
-          //                 color: const Color(0xFF64748B),
-          //               ),
-          //               const SizedBox(width: 8),
-          //               Flexible(
-          //                 child: Text(
-          //                   _step5Media[label]!.path.split('/').last,
-          //                   style: AppFont.style(
-          //                     fontSize: 12,
-          //                     fontWeight: FontWeight.w600,
-          //                     color: const Color(0xFF475569),
-          //                   ),
-          //                   maxLines: 1,
-          //                   overflow: TextOverflow.ellipsis,
-          //                 ),
-          //               ),
-          //               const SizedBox(width: 12),
-          //               GestureDetector(
-          //                 onTap: () {
-          //                   setState(() {
-          //                     _step5Media.remove(label);
-          //                   });
-          //                 },
-          //                 child: const Icon(
-          //                   Icons.close,
-          //                   size: 16,
-          //                   color: Color(0xFFEF4444),
-          //                 ),
-          //               ),
-          //             ],
-          //           ),
-          //         )
-          //       : Wrap(
-          //           spacing: 8,
-          //           runSpacing: 8,
-          //           children: [
-          //             _buildMediaActionBtn(
-          //               icon: Icons.photo_camera_outlined,
-          //               text: 'Upload',
-          //               onTap: () =>
-          //                   _pickMedia(label, ImageSource.gallery, false),
-          //             ),
-          //             _buildMediaActionBtn(
-          //               icon: Icons.camera_alt_outlined,
-          //               text: 'Capture Photo',
-          //               onTap: () =>
-          //                   _pickMedia(label, ImageSource.camera, false),
-          //             ),
-          //             _buildMediaActionBtn(
-          //               icon: Icons.videocam_outlined,
-          //               text: 'Capture Video',
-          //               onTap: () =>
-          //                   _pickMedia(label, ImageSource.camera, true),
-          //             ),
-          //           ],
-          //         ),
-          // ],
         ],
       ),
     );
@@ -4268,12 +4467,26 @@ class _CreateCommissioningReportScreenState
           children: [
             SizedBox(
               width: 60,
-              child: Text(
-                'Name',
-                style: AppFont.style(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF8E9BAE),
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Name',
+                      style: AppFont.style(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF8E9BAE),
+                      ),
+                    ),
+                    const TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0B68B9),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -4346,7 +4559,7 @@ class _CreateCommissioningReportScreenState
         ),
         const SizedBox(height: 16),
         _buildSignatureBox(
-          label: 'Sign',
+          label: 'Sign *',
           placeholder: 'Tap to sign',
           signatureFile: _technicianSignatureFile,
           existingUrl: _existingTechnicianSignatureUrl,
@@ -4386,12 +4599,26 @@ class _CreateCommissioningReportScreenState
           children: [
             SizedBox(
               width: 60,
-              child: Text(
-                'Name',
-                style: AppFont.style(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF8E9BAE),
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Name',
+                      style: AppFont.style(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF8E9BAE),
+                      ),
+                    ),
+                    const TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0B68B9),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -4431,7 +4658,7 @@ class _CreateCommissioningReportScreenState
         ),
         const SizedBox(height: 16),
         _buildSignatureBox(
-          label: 'Sign',
+          label: 'Sign *',
           placeholder: 'Tap to sign',
           signatureFile: _customerSignatureFile,
           existingUrl: _existingCustomerSignatureUrl,
@@ -4455,12 +4682,26 @@ class _CreateCommissioningReportScreenState
         const SizedBox(height: 28),
 
         // ── Upload / Capture Work Photos ──────────────────────────────
-        Text(
-          'Upload / Capture Work Photos :',
-          style: AppFont.style(
-            fontSize: 15,
-            fontWeight: FontWeight.w900,
-            color: const Color(0xFF0D121F),
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'Upload / Capture Work Photos :',
+                style: AppFont.style(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFF0D121F),
+                ),
+              ),
+              const TextSpan(
+                text: ' *',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF0B68B9),
+                ),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 16),

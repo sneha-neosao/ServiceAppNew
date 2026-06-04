@@ -94,7 +94,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           child: Row(
             children: [
               Text(
-                'Reports History',
+                'REPORTS HISTORY',
                 style: AppFont.style(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,

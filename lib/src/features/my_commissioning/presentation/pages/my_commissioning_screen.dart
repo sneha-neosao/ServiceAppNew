@@ -12,6 +12,7 @@ import 'package:service_app/src/features/my_commissioning/bloc/commissioning_wor
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_delete_bloc/commissioning_work_delete_state.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 
+import 'package:service_app/src/features/home/presentation/pages/home_screen.dart';
 import 'create_commissioning_report_screen.dart';
 
 class MyCommissioningScreen extends StatefulWidget {
@@ -90,9 +91,9 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                         child: Text(
                           'commissioning_section_title'.tr(),
                           style: AppFont.style(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFF1A1A1A),
+                            color: const Color(0xFF0D121F),
                           ),
                         ),
                       ),
@@ -162,7 +163,13 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                               builder: (context) =>
                                   CreateCommissioningReportScreen(
                                     commissioningWorkId: item.id,
-                                    onBack: () => Navigator.pop(context),
+                                    onBack: () => Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const HomeScreen(initialIndex: 1),
+                                      ),
+                                      (route) => false,
+                                    ),
                                   ),
                             ),
                           );

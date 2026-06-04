@@ -126,7 +126,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
           child: Row(
             children: [
               Text(
-                'Service Calls',
+                'SERVICE CALLS',
                 style: AppFont.style(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
