@@ -19,6 +19,14 @@ import 'package:service_app/src/features/my_commissioning/bloc/commissioning_rep
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_history_bloc/service_call_report_history_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_history_bloc/service_call_report_history_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_history_bloc/service_call_report_history_state.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_pdf_bloc/commissioning_report_pdf_bloc.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_pdf_bloc/commissioning_report_pdf_event.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_pdf_bloc/commissioning_report_pdf_state.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 
 class ReportHistoryScreen extends StatefulWidget {
   const ReportHistoryScreen({super.key});
@@ -32,6 +40,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   late CommissioningReportHistoryBloc _historyBloc;
   late ServiceCallReportHistoryBloc _serviceCallHistoryBloc;
   late CommissioningReportDetailsBloc _detailsBloc;
+  late CommissioningReportPdfBloc _pdfBloc;
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
   late TechnicianBloc _technicianBloc;
@@ -65,6 +74,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     _historyBloc = getIt<CommissioningReportHistoryBloc>();
     _serviceCallHistoryBloc = getIt<ServiceCallReportHistoryBloc>();
     _detailsBloc = getIt<CommissioningReportDetailsBloc>();
+    _pdfBloc = getIt<CommissioningReportPdfBloc>();
     _fetchReportHistory();
     _fetchServiceCallHistory();
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
@@ -77,33 +87,100 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     _historyBloc.close();
     _serviceCallHistoryBloc.close();
     _detailsBloc.close();
+    _pdfBloc.close();
     _customerBloc.close();
     _sitesBloc.close();
     _technicianBloc.close();
     super.dispose();
   }
 
+  Future<void> _downloadPdf(String url) async {
+    try {
+      if (Platform.isAndroid) {
+        var status = await Permission.storage.status;
+        if (!status.isGranted) {
+          status = await Permission.manageExternalStorage.request();
+          if (!status.isGranted) {
+            status = await Permission.storage.request();
+          }
+        }
+      }
+
+      final dir = Directory('/storage/emulated/0/Download/Mainten');
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
+
+      String fileName = 'Commissioning_Report_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      if (url.contains('.pdf')) {
+        fileName = url.split('/').last.split('?').first;
+      }
+
+      final savePath = '${dir.path}/$fileName';
+      
+      if (mounted) {
+        appSnackBar(context, const Color(0xFF1565C0), 'Downloading report...');
+      }
+
+      await Dio().download(url, savePath);
+
+      if (mounted) {
+        appSnackBar(context, const Color(0xFF4CAF50), 'Downloaded successfully to $savePath');
+      }
+    } catch (e) {
+      if (mounted) {
+        appSnackBar(context, const Color(0xFFF44336), 'Download failed: $e');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // ── Reports History Header ──────────────────────────────────────────
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-          child: Row(
-            children: [
-              Text(
-                'REPORTS HISTORY',
-                style: AppFont.style(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF0D121F),
+    return BlocListener<CommissioningReportPdfBloc, CommissioningReportPdfState>(
+      bloc: _pdfBloc,
+      listener: (context, state) {
+        if (state is CommissioningReportPdfLoading) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => const Center(child: CircularProgressIndicator(color: Color(0xFF1565C0))),
+          );
+        } else if (state is CommissioningReportPdfError) {
+          Navigator.pop(context);
+          appSnackBar(context, const Color(0xFFF44336), state.message);
+        } else if (state is CommissioningReportPdfLoaded) {
+          Navigator.pop(context);
+          final url = state.response.data?.pdfUrl;
+          if (url != null && url.isNotEmpty) {
+            if (state.action == PdfAction.view) {
+              launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+            } else if (state.action == PdfAction.download) {
+              _downloadPdf(url);
+            }
+          } else {
+            appSnackBar(context, const Color(0xFFF44336), 'PDF URL is empty');
+          }
+        }
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Reports History Header ──────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+            child: Row(
+              children: [
+                Text(
+                  'REPORTS HISTORY',
+                  style: AppFont.style(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF0D121F),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
 
         // ── Segmented Tab Control ───────────────────────────────────────────
         Padding(
@@ -208,6 +285,18 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   CommissioningReportDetailsGetEvent(id),
                                 );
                               },
+                              onViewPdfTap: (id) {
+                                _pdfBloc.add(FetchCommissioningReportPdfEvent(
+                                  reportId: id, 
+                                  action: PdfAction.view,
+                                ));
+                              },
+                              onDownloadPdfTap: (id) {
+                                _pdfBloc.add(FetchCommissioningReportPdfEvent(
+                                  reportId: id, 
+                                  action: PdfAction.download,
+                                ));
+                              },
                             );
                           },
                         );
@@ -289,6 +378,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           ),
         ),
       ],
+    ),
     );
   }
 
@@ -711,6 +801,8 @@ class _ReportCard extends StatelessWidget {
   final bool feedbackSubmitted;
   final String? qrCodeImage;
   final void Function(String reportId)? onViewTap;
+  final void Function(String reportId)? onViewPdfTap;
+  final void Function(String reportId)? onDownloadPdfTap;
 
   const _ReportCard({
     required this.id,
@@ -725,6 +817,8 @@ class _ReportCard extends StatelessWidget {
     required this.feedbackSubmitted,
     this.qrCodeImage,
     this.onViewTap,
+    this.onViewPdfTap,
+    this.onDownloadPdfTap,
   });
 
   @override
@@ -906,27 +1000,36 @@ class _ReportCard extends StatelessWidget {
     }
     return Column(
       children: [
-        Container(
-          height: 44,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: const Color(0xFF1565C0),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                btnText,
-                style: AppFont.style(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
+        InkWell(
+          onTap: () {
+            if (type == ReportType.commissioning && onViewPdfTap != null && reportId != null) {
+              onViewPdfTap!(reportId!);
+            } else if (onViewTap != null && reportId != null) {
+              onViewTap!(reportId!);
+            }
+          },
+          child: Container(
+            height: 44,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1565C0),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  btnText,
+                  style: AppFont.style(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              const Icon(Icons.chevron_right, size: 16, color: Colors.white),
-            ],
+                const SizedBox(width: 8),
+                const Icon(Icons.chevron_right, size: 16, color: Colors.white),
+              ],
+            ),
           ),
         ),
         // Extra action buttons — for commissioning and service types
@@ -941,7 +1044,11 @@ class _ReportCard extends StatelessWidget {
                   iconColor: const Color(0xFF6B7280),
                   onTap: () {
                     if (reportId != null) {
-                      onViewTap?.call(reportId!);
+                      if (type == ReportType.commissioning && onDownloadPdfTap != null) {
+                        onDownloadPdfTap!(reportId!);
+                      } else {
+                        onViewTap?.call(reportId!);
+                      }
                     }
                   },
                 ),
@@ -978,11 +1085,7 @@ class _ReportCard extends StatelessWidget {
                           if (qrCodeImage != null && qrCodeImage!.isNotEmpty) {
                             _showQrCodeDialog(context);
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('QR Code not available'),
-                              ),
-                            );
+                            appSnackBar(context, const Color(0xFFF44336), 'QR Code not available');
                           }
                         },
                       ),

@@ -64,6 +64,7 @@ import '../models/assigned_technician_representative_model/assigned_technician_r
 import '../models/commissioning_work_create_model/commissioning_work_create_response.dart';
 import '../models/commissioning_report_history_model/commissioning_report_history_response.dart';
 import '../models/commissioning_report_history_model/commissioning_report_details_response.dart';
+import '../models/commissioning_report_history_model/commissioning_report_pdf_response.dart';
 import '../models/commissioning_work_model/commissioning_work_details_response.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_create_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_update_usecase.dart';
@@ -286,6 +287,11 @@ sealed class RemoteDataSource {
   );
 
   Future<FeedbackResponse> getCommissioningReportFeedback(
+    String reportId,
+    String token,
+  );
+
+  Future<CommissioningReportPdfResponse> getCommissioningReportPdf(
     String reportId,
     String token,
   );
@@ -1826,6 +1832,34 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = FeedbackResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<CommissioningReportPdfResponse> getCommissioningReportPdf(
+    String reportId,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: '${ApiUrl.commissioningReportDetails}/$reportId/pdf',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = CommissioningReportPdfResponse.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

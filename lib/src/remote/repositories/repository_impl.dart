@@ -69,6 +69,7 @@ import '../../features/my_commissioning/domain/usecase/commissioning_work_create
 import '../../features/my_commissioning/domain/usecase/commissioning_report_history_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_report_details_usecase.dart';
 import '../models/commissioning_report_history_model/commissioning_report_details_response.dart';
+import '../models/commissioning_report_history_model/commissioning_report_pdf_response.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_update_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_details_usecase.dart';
 import '../models/commissioning_work_model/commissioning_work_details_response.dart';
@@ -240,6 +241,10 @@ abstract class Repository {
   );
 
   Future<Either<Failure, FeedbackResponse>> getCommissioningReportFeedback(
+    String reportId,
+  );
+
+  Future<Either<Failure, CommissioningReportPdfResponse>> getCommissioningReportPdf(
     String reportId,
   );
 
@@ -1830,6 +1835,41 @@ class AuthRepositoryImpl implements Repository {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           final response = await _remoteDataSource.getCommissioningReportFeedback(
+            reportId,
+            token,
+          );
+
+          if (response.status != 200) {
+            return Left(CredentialFailure(response.message));
+          }
+
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, CommissioningReportPdfResponse>> getCommissioningReportPdf(
+    String reportId,
+  ) {
+    return _networkInfo.check<CommissioningReportPdfResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.getCommissioningReportPdf(
             reportId,
             token,
           );
