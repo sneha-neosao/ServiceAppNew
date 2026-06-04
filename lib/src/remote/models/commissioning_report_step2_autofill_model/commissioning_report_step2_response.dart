@@ -58,15 +58,16 @@ class CommissioningStep2Data extends Equatable {
 
   factory CommissioningStep2Data.fromJson(Map<String, dynamic> json) {
     return CommissioningStep2Data(
-      id: json['id'],
-      warrantyPeriodYears: json['warranty_period_years'],
-      warrantyStartDate: json['warranty_start_date'],
-      warrantyExpiryDate: json['warranty_expiry_date'],
-      warrantyStatus: json['warranty_status'],
-      memberPresentsCustomerSide:
-      List<String>.from(json['member_presents_customer_side']),
-      agenda: json['agenda'],
-      lastCompletedStep: json['last_completed_step'],
+      id: json['id'] ?? '',
+      warrantyPeriodYears: json['warranty_period_years'] ?? 0,
+      warrantyStartDate: json['warranty_start_date'] ?? '',
+      warrantyExpiryDate: json['warranty_expiry_date'] ?? '',
+      warrantyStatus: json['warranty_status'] ?? '',
+      memberPresentsCustomerSide: json['member_presents_customer_side'] != null
+          ? List<String>.from(json['member_presents_customer_side'])
+          : [],
+      agenda: json['agenda'] ?? '',
+      lastCompletedStep: json['last_completed_step'] ?? 0,
     );
   }
 

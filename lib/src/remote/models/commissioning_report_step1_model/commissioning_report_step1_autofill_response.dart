@@ -53,16 +53,18 @@ class CommissioningData {
 
   factory CommissioningData.fromJson(Map<String, dynamic> json) {
     return CommissioningData(
-      id: json['id'],
-      commissioningWorkId: json['commissioning_work_id'],
-      dealerName: json['dealer_name'],
-      customerName: json['customer_name'],
-      siteName: json['site_name'],
-      applicationOfEquipment: json['application_of_equipment'],
-      assignedTechnicians: (json['assigned_technicians'] as List)
-          .map((e) => Technician.fromJson(e))
-          .toList(),
-      lastCompletedStep: json['last_completed_step'],
+      id: json['id'] ?? '',
+      commissioningWorkId: json['commissioning_work_id'] ?? '',
+      dealerName: json['dealer_name'] ?? '',
+      customerName: json['customer_name'] ?? '',
+      siteName: json['site_name'] ?? '',
+      applicationOfEquipment: json['application_of_equipment'] ?? '',
+      assignedTechnicians: json['assigned_technicians'] != null
+          ? (json['assigned_technicians'] as List)
+              .map((e) => Technician.fromJson(e))
+              .toList()
+          : [],
+      lastCompletedStep: json['last_completed_step'] ?? 0,
     );
   }
 
@@ -92,8 +94,8 @@ class Technician {
 
   factory Technician.fromJson(Map<String, dynamic> json) {
     return Technician(
-      id: json['id'],
-      name: json['name'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
     );
   }
 

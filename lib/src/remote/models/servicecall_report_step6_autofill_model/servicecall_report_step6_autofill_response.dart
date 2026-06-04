@@ -45,6 +45,8 @@ class ServiceCallStep6Data extends Equatable {
   final List<String> savedWorkPhotos;
   final String technicianRepresentativeName;
   final int lastCompletedStep;
+  final String qrCodeUrl;
+  final String qrCodeImage;
 
   const ServiceCallStep6Data({
     required this.id,
@@ -56,6 +58,8 @@ class ServiceCallStep6Data extends Equatable {
     required this.savedWorkPhotos,
     required this.technicianRepresentativeName,
     required this.lastCompletedStep,
+    required this.qrCodeUrl,
+    required this.qrCodeImage,
   });
 
   const ServiceCallStep6Data.empty()
@@ -67,7 +71,9 @@ class ServiceCallStep6Data extends Equatable {
         customerSignature = '',
         savedWorkPhotos = const [],
         technicianRepresentativeName = '',
-        lastCompletedStep = 5;
+        lastCompletedStep = 5,
+        qrCodeUrl = '',
+        qrCodeImage = '';
 
   factory ServiceCallStep6Data.fromJson(Map<String, dynamic> json) {
     return ServiceCallStep6Data(
@@ -80,6 +86,8 @@ class ServiceCallStep6Data extends Equatable {
       savedWorkPhotos: List<String>.from(json['saved_work_photos'] ?? []),
       technicianRepresentativeName: json['technician_representative_name'] ?? '',
       lastCompletedStep: json['last_completed_step'] ?? 5,
+      qrCodeUrl: json['qr_code_url'] ?? '',
+      qrCodeImage: json['qr_code_image'] ?? '',
     );
   }
 
@@ -94,6 +102,8 @@ class ServiceCallStep6Data extends Equatable {
       'saved_work_photos': savedWorkPhotos,
       'technician_representative_name': technicianRepresentativeName,
       'last_completed_step': lastCompletedStep,
+      'qr_code_url': qrCodeUrl,
+      'qr_code_image': qrCodeImage,
     };
   }
 
@@ -108,5 +118,7 @@ class ServiceCallStep6Data extends Equatable {
     savedWorkPhotos,
     technicianRepresentativeName,
     lastCompletedStep,
+    qrCodeUrl,
+    qrCodeImage,
   ];
 }

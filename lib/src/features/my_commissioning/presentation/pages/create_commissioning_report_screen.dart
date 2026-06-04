@@ -657,7 +657,7 @@ class _CreateCommissioningReportScreenState
     }
   }
 
-  void _showSuccessDialog() {
+  void _showSuccessDialog({String? qrCodeImage}) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -722,13 +722,20 @@ class _CreateCommissioningReportScreenState
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8F9FB),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Color(0xFFF1F2F6)),
+                    border: Border.all(color: const Color(0xFFF1F2F6)),
                   ),
-                  child: const Icon(
-                    Icons.qr_code_2,
-                    size: 180,
-                    color: Color(0xFF0D121F),
-                  ),
+                  child: qrCodeImage != null && qrCodeImage.isNotEmpty
+                      ? Image.network(
+                          qrCodeImage,
+                          width: 180,
+                          height: 180,
+                          fit: BoxFit.contain,
+                        )
+                      : const Icon(
+                          Icons.qr_code_2,
+                          size: 180,
+                          color: Color(0xFF0D121F),
+                        ),
                 ),
                 const SizedBox(height: 24),
                 Text(
@@ -1211,7 +1218,8 @@ class _CreateCommissioningReportScreenState
         listener: (context, state) {
           if (state is ServiceCallReportStep6SuccessState) {
             appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-            _showSuccessDialog();
+            // If ServiceCallStep6Response is ever updated to include data, it would be passed here
+            _showSuccessDialog(qrCodeImage: state.data.data.qrCodeImage);
           } else if (state is ServiceCallReportStep6FailureState) {
             appSnackBar(context, const Color(0xFFF44336), state.message);
           }
@@ -1221,7 +1229,7 @@ class _CreateCommissioningReportScreenState
         listener: (context, state) {
           if (state is CommissioningStep6SuccessState) {
             appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-            _showSuccessDialog();
+            _showSuccessDialog(qrCodeImage: state.data.data.qrCodeImage);
           } else if (state is CommissioningStep6FailureState) {
             appSnackBar(context, const Color(0xFFF44336), state.message);
           }
