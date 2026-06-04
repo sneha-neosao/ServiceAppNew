@@ -689,7 +689,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           style: AppFont.style(
                             fontSize: 17,
                             fontWeight: FontWeight.w900,
-                            color: const Color(0xFF002C5E),
+                            color: const Color(0xFF0D121F),
                           ),
                         ),
                       ),

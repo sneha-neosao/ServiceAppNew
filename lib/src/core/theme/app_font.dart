@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Centralized font definition for the entire app.
 /// Font family: Albert Sans.
@@ -9,9 +8,9 @@ class AppFont {
   AppFont._();
 
   // ── Single source of truth ─────────────────────────────────────────────────
-  static const String _fontFamily = 'Albert Sans';
+  static const String _fontFamily = 'sans-serif';
 
-  /// Returns an Albert Sans [TextStyle].
+  /// Returns a sans-serif [TextStyle].
   /// Only pass [fontSize], [fontWeight], [color], [height], [letterSpacing] —
   /// never hard-code the font family in individual screens.
   static TextStyle style({
@@ -22,7 +21,8 @@ class AppFont {
     double? letterSpacing,
     TextDecoration? decoration,
   }) {
-    return GoogleFonts.albertSans(
+    return TextStyle(
+      fontFamily: _fontFamily,
       fontSize: fontSize,
       fontWeight: fontWeight,
       color: color,
@@ -34,13 +34,13 @@ class AppFont {
 
   // ── Legacy helpers (kept for existing theme wiring) ────────────────────────
   static TextStyle get normal =>
-      GoogleFonts.albertSans(fontWeight: FontWeight.normal);
+      const TextStyle(fontFamily: _fontFamily, fontWeight: FontWeight.normal);
 
   static TextStyle get bold =>
-      GoogleFonts.albertSans(fontWeight: FontWeight.bold);
+      const TextStyle(fontFamily: _fontFamily, fontWeight: FontWeight.bold);
 
   /// The raw font family string — used in ThemeData.fontFamily.
-  static String get family => GoogleFonts.albertSans().fontFamily!;
+  static String get family => _fontFamily;
 }
 
 // ── Size extension (unchanged) ─────────────────────────────────────────────────
