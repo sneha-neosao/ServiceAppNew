@@ -488,6 +488,69 @@ class _CreateCommissioningReportScreenState
               panelSerialModel: _panelSerialModelController.text,
             );
 
+      if (!_isTechnicalDetailsNA) {
+        if (_pumpMakeController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Make');
+          return;
+        }
+        if (_pumpModelController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Model');
+          return;
+        }
+        if (_pumpSerialNumberController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Serial Number');
+          return;
+        }
+        if (_pumpFlowLPMController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (LPM)');
+          return;
+        }
+        if (_pumpFlowM3HRController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (M3/HR)');
+          return;
+        }
+        if (_pumpFlowLPSController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (LPS)');
+          return;
+        }
+        if (_pumpFlowUSGPMController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (USGPM)');
+          return;
+        }
+        if (_pumpHeadMTRController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Head (MTR)');
+          return;
+        }
+        if (_driverMakeController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Driver Make');
+          return;
+        }
+        if (_driverSerialNumberController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Driver Serial Number');
+          return;
+        }
+        if (_ratingKWController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Rating (KW)');
+          return;
+        }
+        if (_ratingHPController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Rating (HP)');
+          return;
+        }
+        if (_rpmController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter RPM');
+          return;
+        }
+        if (_controlPanelMakeController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Control Panel Make');
+          return;
+        }
+        if (_panelSerialModelController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please enter Panel Serial / Model');
+          return;
+        }
+      }
+
       if (widget.isServiceReport) {
         if (_submitServiceCallStep3Bloc.state
             is ServiceCallReportStep3LoadingState)
@@ -504,69 +567,6 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         if (_submitStep3Bloc.state is CommissioningStep3LoadingState) return;
-
-        if (!_isTechnicalDetailsNA) {
-          if (_pumpMakeController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Make');
-            return;
-          }
-          if (_pumpModelController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Model');
-            return;
-          }
-          if (_pumpSerialNumberController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Serial Number');
-            return;
-          }
-          if (_pumpFlowLPMController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (LPM)');
-            return;
-          }
-          if (_pumpFlowM3HRController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (M3/HR)');
-            return;
-          }
-          if (_pumpFlowLPSController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (LPS)');
-            return;
-          }
-          if (_pumpFlowUSGPMController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (USGPM)');
-            return;
-          }
-          if (_pumpHeadMTRController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Head (MTR)');
-            return;
-          }
-          if (_driverMakeController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Driver Make');
-            return;
-          }
-          if (_driverSerialNumberController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Driver Serial Number');
-            return;
-          }
-          if (_ratingKWController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Rating (KW)');
-            return;
-          }
-          if (_ratingHPController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Rating (HP)');
-            return;
-          }
-          if (_rpmController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter RPM');
-            return;
-          }
-          if (_controlPanelMakeController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Control Panel Make');
-            return;
-          }
-          if (_panelSerialModelController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Panel Serial / Model');
-            return;
-          }
-        }
 
         _submitStep3Bloc.add(
           CommissioningStep3GetEvent(
@@ -851,6 +851,78 @@ class _CreateCommissioningReportScreenState
           );
       }
 
+      // Validate mechanical section
+      if (!_mechNA) {
+        if (_bearingNoise == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Bearing Noise / Abnormal Sound');
+          return;
+        }
+        if (_vibration == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Vibration');
+          return;
+        }
+        if (_mechSeal == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Mechanical Seal / Gland Leakage');
+          return;
+        }
+        if (_pumpDry == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Pump Not Running Dry');
+          return;
+        }
+      }
+
+      // Validate pipeline section
+      if (!_pipeNA) {
+        if (_nrvValve == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select NRV / Butterfly Valve / Gate Valve Condition');
+          return;
+        }
+        if (_strainerValve == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Strainer / Foot Valve Condition');
+          return;
+        }
+        if (_suctionLine == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Suction Line');
+          return;
+        }
+        if (_deliveryLine == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Delivery Line');
+          return;
+        }
+        if (_suctionDelivery == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Suction / Delivery Valve Condition');
+          return;
+        }
+        if (_pressureSwitch == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Pressure Switch / Pressure Transmitter');
+          return;
+        }
+      }
+
+      // Validate electrical section
+      if (!_elecNA) {
+        if (_elecFaults == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Electrical Faults');
+          return;
+        }
+        if (_voltage == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Voltage');
+          return;
+        }
+        if (_phase == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Phase');
+          return;
+        }
+        if (_current == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Current');
+          return;
+        }
+        if (_panelWiring == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'Please select Control Panel Wiring');
+          return;
+        }
+      }
+
       if (widget.isServiceReport) {
         _submitServiceCallStep5Bloc.add(
           ServiceCallReportStep5PostEvent(
@@ -872,78 +944,6 @@ class _CreateCommissioningReportScreenState
           ),
         );
       } else {
-        // Validate mechanical section
-        if (!_mechNA) {
-          if (_bearingNoise == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Bearing Noise / Abnormal Sound');
-            return;
-          }
-          if (_vibration == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Vibration');
-            return;
-          }
-          if (_mechSeal == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Mechanical Seal / Gland Leakage');
-            return;
-          }
-          if (_pumpDry == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Pump Not Running Dry');
-            return;
-          }
-        }
-
-        // Validate pipeline section
-        if (!_pipeNA) {
-          if (_nrvValve == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select NRV / Butterfly Valve / Gate Valve Condition');
-            return;
-          }
-          if (_strainerValve == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Strainer / Foot Valve Condition');
-            return;
-          }
-          if (_suctionLine == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Suction Line');
-            return;
-          }
-          if (_deliveryLine == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Delivery Line');
-            return;
-          }
-          if (_suctionDelivery == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Suction / Delivery Valve Condition');
-            return;
-          }
-          if (_pressureSwitch == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Pressure Switch / Pressure Transmitter');
-            return;
-          }
-        }
-
-        // Validate electrical section
-        if (!_elecNA) {
-          if (_elecFaults == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Electrical Faults');
-            return;
-          }
-          if (_voltage == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Voltage');
-            return;
-          }
-          if (_phase == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Phase');
-            return;
-          }
-          if (_current == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Current');
-            return;
-          }
-          if (_panelWiring == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Control Panel Wiring');
-            return;
-          }
-        }
-
         _submitStep5Bloc.add(
           CommissioningStep5GetEvent(
             _commissioningReportId ?? widget.commissioningWorkId,
@@ -1161,9 +1161,10 @@ class _CreateCommissioningReportScreenState
           ),
           child: Container(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -1267,6 +1268,7 @@ class _CreateCommissioningReportScreenState
                 ),
               ],
             ),
+          ),
           ),
         );
       },

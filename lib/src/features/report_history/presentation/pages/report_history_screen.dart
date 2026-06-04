@@ -1143,9 +1143,10 @@ class _ReportCard extends StatelessWidget {
           ),
           child: Container(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -1246,6 +1247,7 @@ class _ReportCard extends StatelessWidget {
                 ),
               ],
             ),
+          ),
           ),
         );
       },

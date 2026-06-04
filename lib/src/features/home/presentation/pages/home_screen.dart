@@ -95,9 +95,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
+    return WillPopScope(
+      onWillPop: () async {
+        if (_selectedIndex != 0) {
+          _onTabTapped(0);
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Column(
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
@@ -274,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             : const SizedBox(width: double.infinity, height: 0),
       ),
-    );
+    ));
   }
 
   Widget _buildCurrentView() {
