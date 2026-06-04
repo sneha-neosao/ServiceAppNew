@@ -118,8 +118,6 @@ class ApiUrl {
 
   static const commissioningReportDetails = "technician/commissioning-report";
 
-  static const serviceCallReportDetails = "technician/service-call-report";
-
   static const serviceCallCheckFeedback = "technician/service-call-report";
 
   static const serviceCallReportHistory = "technician/service-call-reports/history";

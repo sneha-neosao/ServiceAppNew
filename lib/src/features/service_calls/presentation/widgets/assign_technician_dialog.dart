@@ -15,7 +15,6 @@ import 'package:service_app/src/features/service_calls/bloc/assigned_service_cal
 import 'package:service_app/src/features/service_calls/bloc/assigned_service_calls_bloc/assigned_service_calls_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_event.dart';
-import 'package:service_app/src/features/widgets/custom_searchable_dropdown.dart';
 
 class AssignTechnicianDialog extends StatefulWidget {
   final String complaintId;
@@ -212,21 +211,50 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 color: const Color(0xFFE5E7EB),
                               ),
                             ),
-                            child: CustomSearchableDropdown<Technician>(
-                              hint: '-- Choose Technicians --',
-                              value: null,
-                              items: technicians
-                                  .where((tech) => !_selectedTechnicians
-                                      .any((selected) => selected.id == tech.id))
-                                  .toList(),
-                              itemAsString: (tech) => tech.name,
-                              onChanged: (tech) {
-                                if (tech != null) {
-                                  setState(() {
-                                    _selectedTechnicians.add(tech);
-                                  });
-                                }
-                              },
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<Technician>(
+                                isExpanded: true,
+                                value: null,
+                                hint: Text(
+                                  '-- Choose Technicians --',
+                                  style: AppFont.style(
+                                    fontSize: 14,
+                                    color: const Color(0xFFA5ABB7),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                icon: const Icon(
+                                  Icons.keyboard_arrow_down,
+                                  color: Color(0xFFA5ABB7),
+                                ),
+                                items: technicians
+                                    .where(
+                                      (tech) => !_selectedTechnicians.any(
+                                        (selected) => selected.id == tech.id,
+                                      ),
+                                    )
+                                    .map(
+                                      (tech) => DropdownMenuItem<Technician>(
+                                        value: tech,
+                                        child: Text(
+                                          tech.name,
+                                          style: AppFont.style(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: const Color(0xFF0D121F),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (tech) {
+                                  if (tech != null) {
+                                    setState(() {
+                                      _selectedTechnicians.add(tech);
+                                    });
+                                  }
+                                },
+                              ),
                             ),
                           ),
                         ],

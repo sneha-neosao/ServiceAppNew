@@ -12,7 +12,6 @@ import 'package:service_app/src/features/common/bloc/technician_bloc/technician_
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step1_bloc/commissioning_step1_bloc.dart';
 import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
-import 'package:service_app/src/features/widgets/custom_searchable_dropdown.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step1_autofill_bloc/commissioning_step1_autofill_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step2_autofill_bloc/commissioning_step2_autofill_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step2_bloc/commissioning_step2_bloc.dart';
@@ -488,69 +487,6 @@ class _CreateCommissioningReportScreenState
               panelSerialModel: _panelSerialModelController.text,
             );
 
-      if (!_isTechnicalDetailsNA) {
-        if (_pumpMakeController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Make');
-          return;
-        }
-        if (_pumpModelController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Model');
-          return;
-        }
-        if (_pumpSerialNumberController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Serial Number');
-          return;
-        }
-        if (_pumpFlowLPMController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (LPM)');
-          return;
-        }
-        if (_pumpFlowM3HRController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (M3/HR)');
-          return;
-        }
-        if (_pumpFlowLPSController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (LPS)');
-          return;
-        }
-        if (_pumpFlowUSGPMController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (USGPM)');
-          return;
-        }
-        if (_pumpHeadMTRController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Head (MTR)');
-          return;
-        }
-        if (_driverMakeController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Driver Make');
-          return;
-        }
-        if (_driverSerialNumberController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Driver Serial Number');
-          return;
-        }
-        if (_ratingKWController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Rating (KW)');
-          return;
-        }
-        if (_ratingHPController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Rating (HP)');
-          return;
-        }
-        if (_rpmController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter RPM');
-          return;
-        }
-        if (_controlPanelMakeController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Control Panel Make');
-          return;
-        }
-        if (_panelSerialModelController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Panel Serial / Model');
-          return;
-        }
-      }
-
       if (widget.isServiceReport) {
         if (_submitServiceCallStep3Bloc.state
             is ServiceCallReportStep3LoadingState)
@@ -567,6 +503,69 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         if (_submitStep3Bloc.state is CommissioningStep3LoadingState) return;
+
+        if (!_isTechnicalDetailsNA) {
+          if (_pumpMakeController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Make');
+            return;
+          }
+          if (_pumpModelController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Model');
+            return;
+          }
+          if (_pumpSerialNumberController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Serial Number');
+            return;
+          }
+          if (_pumpFlowLPMController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (LPM)');
+            return;
+          }
+          if (_pumpFlowM3HRController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (M3/HR)');
+            return;
+          }
+          if (_pumpFlowLPSController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (LPS)');
+            return;
+          }
+          if (_pumpFlowUSGPMController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (USGPM)');
+            return;
+          }
+          if (_pumpHeadMTRController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Head (MTR)');
+            return;
+          }
+          if (_driverMakeController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Driver Make');
+            return;
+          }
+          if (_driverSerialNumberController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Driver Serial Number');
+            return;
+          }
+          if (_ratingKWController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Rating (KW)');
+            return;
+          }
+          if (_ratingHPController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Rating (HP)');
+            return;
+          }
+          if (_rpmController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter RPM');
+            return;
+          }
+          if (_controlPanelMakeController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Control Panel Make');
+            return;
+          }
+          if (_panelSerialModelController.text.trim().isEmpty) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please enter Panel Serial / Model');
+            return;
+          }
+        }
 
         _submitStep3Bloc.add(
           CommissioningStep3GetEvent(
@@ -851,78 +850,6 @@ class _CreateCommissioningReportScreenState
           );
       }
 
-      // Validate mechanical section
-      if (!_mechNA) {
-        if (_bearingNoise == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Bearing Noise / Abnormal Sound');
-          return;
-        }
-        if (_vibration == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Vibration');
-          return;
-        }
-        if (_mechSeal == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Mechanical Seal / Gland Leakage');
-          return;
-        }
-        if (_pumpDry == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Pump Not Running Dry');
-          return;
-        }
-      }
-
-      // Validate pipeline section
-      if (!_pipeNA) {
-        if (_nrvValve == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select NRV / Butterfly Valve / Gate Valve Condition');
-          return;
-        }
-        if (_strainerValve == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Strainer / Foot Valve Condition');
-          return;
-        }
-        if (_suctionLine == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Suction Line');
-          return;
-        }
-        if (_deliveryLine == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Delivery Line');
-          return;
-        }
-        if (_suctionDelivery == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Suction / Delivery Valve Condition');
-          return;
-        }
-        if (_pressureSwitch == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Pressure Switch / Pressure Transmitter');
-          return;
-        }
-      }
-
-      // Validate electrical section
-      if (!_elecNA) {
-        if (_elecFaults == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Electrical Faults');
-          return;
-        }
-        if (_voltage == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Voltage');
-          return;
-        }
-        if (_phase == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Phase');
-          return;
-        }
-        if (_current == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Current');
-          return;
-        }
-        if (_panelWiring == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Control Panel Wiring');
-          return;
-        }
-      }
-
       if (widget.isServiceReport) {
         _submitServiceCallStep5Bloc.add(
           ServiceCallReportStep5PostEvent(
@@ -944,6 +871,78 @@ class _CreateCommissioningReportScreenState
           ),
         );
       } else {
+        // Validate mechanical section
+        if (!_mechNA) {
+          if (_bearingNoise == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Bearing Noise / Abnormal Sound');
+            return;
+          }
+          if (_vibration == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Vibration');
+            return;
+          }
+          if (_mechSeal == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Mechanical Seal / Gland Leakage');
+            return;
+          }
+          if (_pumpDry == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Pump Not Running Dry');
+            return;
+          }
+        }
+
+        // Validate pipeline section
+        if (!_pipeNA) {
+          if (_nrvValve == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select NRV / Butterfly Valve / Gate Valve Condition');
+            return;
+          }
+          if (_strainerValve == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Strainer / Foot Valve Condition');
+            return;
+          }
+          if (_suctionLine == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Suction Line');
+            return;
+          }
+          if (_deliveryLine == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Delivery Line');
+            return;
+          }
+          if (_suctionDelivery == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Suction / Delivery Valve Condition');
+            return;
+          }
+          if (_pressureSwitch == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Pressure Switch / Pressure Transmitter');
+            return;
+          }
+        }
+
+        // Validate electrical section
+        if (!_elecNA) {
+          if (_elecFaults == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Electrical Faults');
+            return;
+          }
+          if (_voltage == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Voltage');
+            return;
+          }
+          if (_phase == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Phase');
+            return;
+          }
+          if (_current == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Current');
+            return;
+          }
+          if (_panelWiring == null) {
+            appSnackBar(context, const Color(0xFFF44336), 'Please select Control Panel Wiring');
+            return;
+          }
+        }
+
         _submitStep5Bloc.add(
           CommissioningStep5GetEvent(
             _commissioningReportId ?? widget.commissioningWorkId,
@@ -1161,10 +1160,9 @@ class _CreateCommissioningReportScreenState
           ),
           child: Container(
             padding: const EdgeInsets.all(24),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -1268,7 +1266,6 @@ class _CreateCommissioningReportScreenState
                 ),
               ],
             ),
-          ),
           ),
         );
       },
@@ -3242,27 +3239,70 @@ class _CreateCommissioningReportScreenState
                         }
                       }
 
-                      dynamic selectedValue;
-                      if (controller.text.isNotEmpty) {
-                        for (var item in validItems) {
-                          if (item.id == controller.text) {
-                            selectedValue = item;
-                            break;
-                          }
-                        }
-                      }
-                      
-                      return CustomSearchableDropdown<dynamic>(
-                        hint: 'Select Technician',
-                        value: selectedValue,
-                        items: validItems,
-                        itemAsString: (e) => e.name.toString(),
-                        onChanged: (v) {
-                          if (v != null) {
-                            setState(() => controller.text = v.id);
-                          }
-                        },
-                        isLoading: isLoading,
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 4,
+                        ),
+                        child: isLoading
+                            ? const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Color(0xFF1565C0),
+                                      strokeWidth: 2.5,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  isExpanded: true,
+                                  value: controller.text.isNotEmpty
+                                      ? controller.text
+                                      : null,
+                                  hint: Text(
+                                    'Select Technician',
+                                    style: AppFont.style(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFFA5ABB7),
+                                    ),
+                                  ),
+                                  icon: widget.isServiceReport
+                                      ? const SizedBox.shrink()
+                                      : const Icon(
+                                          Icons.keyboard_arrow_down,
+                                          color: Color(0xFFA5ABB7),
+                                        ),
+                                  style: AppFont.style(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                    color: const Color(0xFF0D121F),
+                                  ),
+                                  onChanged: (v) {
+                                    if (v != null) {
+                                      setState(() => controller.text = v);
+                                    }
+                                  },
+                                  items: validItems
+                                      .map<DropdownMenuItem<String>>(
+                                        (e) => DropdownMenuItem(
+                                          value: e.id,
+                                          child: Text(e.name),
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              ),
                       );
                     },
                   ),
@@ -3530,15 +3570,41 @@ class _CreateCommissioningReportScreenState
                     horizontal: 20,
                     vertical: 4,
                   ),
-                  child: CustomSearchableDropdown<String>(
-                    value: _selectedWarranty,
-                    hint: 'Select Period',
-                    items: const ['1 YEAR', '2 YEAR', '3 YEAR', '4 YEAR', '5 YEAR'],
-                    onChanged: (val) {
-                      setState(() {
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _selectedWarranty,
+                      isExpanded: true,
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down,
+                        color: Color(0xFFA5ABB7),
+                      ),
+                      style: AppFont.style(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF0D121F),
+                      ),
+                      hint: Text(
+                        'Select Period',
+                        style: AppFont.style(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFFA5ABB7),
+                        ),
+                      ),
+                      items: ['1 YEAR', '2 YEAR', '3 YEAR', '4 YEAR', '5 YEAR']
+                          .map(
+                            (val) => DropdownMenuItem(
+                              value: val,
+                              child: Text(val),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (val) {
+                        setState(() {
                           _selectedWarranty = val;
                         });
                       },
+                    ),
                   ),
                 ),
               ),
@@ -4438,39 +4504,54 @@ class _CreateCommissioningReportScreenState
                   horizontal: 20,
                   vertical: 4,
                 ),
-                child: Builder(
-                  builder: (context) {
-                    dynamic selectedTech;
-                    if (_selectedTechnicianRepId != null) {
-                      if (widget.isServiceReport) {
-                        try {
-                          selectedTech = _assignedServiceCallTechniciansList.firstWhere(
-                            (t) => t.assignId == _selectedTechnicianRepId,
-                          );
-                        } catch (_) {}
-                      } else {
-                        try {
-                          selectedTech = _assignedTechniciansList.firstWhere(
-                            (t) => t.assignId == _selectedTechnicianRepId,
-                          );
-                        } catch (_) {}
-                      }
-                    }
-                    
-                    return CustomSearchableDropdown<dynamic>(
-                      value: selectedTech,
-                      hint: 'Select Technician',
-                      items: widget.isServiceReport
-                          ? _assignedServiceCallTechniciansList
-                          : _assignedTechniciansList,
-                      itemAsString: (e) => e.name.toString(),
-                      onChanged: (val) {
-                        setState(() {
-                          _selectedTechnicianRepId = val?.assignId;
-                        });
-                      },
-                    );
-                  }
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedTechnicianRepId,
+                    isExpanded: true,
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      color: Color(0xFFA5ABB7),
+                    ),
+                    style: AppFont.style(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFF0D121F),
+                    ),
+                    hint: Text(
+                      'Select Technician',
+                      style: AppFont.style(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFA5ABB7),
+                      ),
+                    ),
+                    items: widget.isServiceReport
+                        ? _assignedServiceCallTechniciansList
+                              .map<DropdownMenuItem<String>>((
+                                service_tech_model.AssignedTechnician tech,
+                              ) {
+                                return DropdownMenuItem<String>(
+                                  value: tech.assignId,
+                                  child: Text(tech.name),
+                                );
+                              })
+                              .toList()
+                        : _assignedTechniciansList
+                              .map<DropdownMenuItem<String>>((
+                                AssignedTechnician tech,
+                              ) {
+                                return DropdownMenuItem<String>(
+                                  value: tech.assignId,
+                                  child: Text(tech.name),
+                                );
+                              })
+                              .toList(),
+                    onChanged: (val) {
+                      setState(() {
+                        _selectedTechnicianRepId = val;
+                      });
+                    },
+                  ),
                 ),
               ),
             ),
