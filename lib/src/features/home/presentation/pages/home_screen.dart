@@ -81,12 +81,15 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
   ];
 
+  bool _showSystemBars = true;
+
   void _onTabTapped(int index) {
     setState(() {
       _selectedIndex = index;
       _amcViewState = _AmcViewState.dashboard;
       _amcReportsCreated = 0;
       _showCreateReport = false;
+      _showSystemBars = true;
     });
   }
 
@@ -94,175 +97,227 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(155),
-        child: Stack(
-          children: [
-            // ── Background + content ─────────────────────────────────────────
-            Container(
-              height: 155,
-              color: const Color(0xFFE9F5FF),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: 38,
-                    left: 16,
-                    right: 16,
-                  ),
-                  child: SafeArea(
-                    bottom: false,
-                    child: Row(
-                      children: [
-                        // ── Logo ───────────────────────────────────────────
-                        Image.asset(
-                          'assets/images/logo_tightcrop.png',
-                          width: 135,
-                          fit: BoxFit.fill,
-                        ),
-                        const Spacer(),
-                        // ── + button ───────────────────────────────────────
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedIndex = 0;
-                              _amcViewState = _AmcViewState.dashboard;
-                              _amcReportsCreated = 0;
-                              _showCreateReport = false;
-                            });
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => CreateReportScreen(
-                                  onBack: () => Navigator.pop(context),
+      body: Column(
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            height: _showSystemBars ? 155 : 0,
+            clipBehavior: Clip.hardEdge,
+            decoration: const BoxDecoration(),
+            child: Stack(
+              children: [
+                // ── Background + content ─────────────────────────────────────────
+                Container(
+                  height: 155,
+                  color: const Color(0xFFE9F5FF),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 38,
+                        left: 16,
+                        right: 16,
+                      ),
+                      child: SafeArea(
+                        bottom: false,
+                        child: Row(
+                          children: [
+                            // ── Logo ───────────────────────────────────────────
+                            Image.asset(
+                              'assets/images/logo_tightcrop.png',
+                              width: 135,
+                              fit: BoxFit.fill,
+                            ),
+                            const Spacer(),
+                            // ── + button ───────────────────────────────────────
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedIndex = 0;
+                                  _amcViewState = _AmcViewState.dashboard;
+                                  _amcReportsCreated = 0;
+                                  _showCreateReport = false;
+                                  _showSystemBars = true;
+                                });
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => CreateReportScreen(
+                                      onBack: () => Navigator.pop(context),
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF0B68B9),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Image.asset('assets/icons/add_icon.png'),
                                 ),
                               ),
-                            );
-                          },
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF0B68B9),
-                              shape: BoxShape.circle,
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Image.asset('assets/icons/add_icon.png'),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        // ── Notification ───────────────────────────────────
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => NotificationScreen(
-                                  onBack: () => Navigator.pop(context),
+                            const SizedBox(width: 8),
+                            // ── Notification ───────────────────────────────────
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => NotificationScreen(
+                                      onBack: () => Navigator.pop(context),
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF0B68B9),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Image.asset(
+                                    'assets/icons/notification_icon.png',
+                                  ),
                                 ),
                               ),
-                            );
-                          },
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF0B68B9),
-                              shape: BoxShape.circle,
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Image.asset(
-                                'assets/icons/notification_icon.png',
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        // ── Profile avatar ─────────────────────────────────
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ProfileScreen(
-                                  onBack: () => Navigator.pop(context),
+                            const SizedBox(width: 8),
+                            // ── Profile avatar ─────────────────────────────────
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ProfileScreen(
+                                      onBack: () => Navigator.pop(context),
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF0B68B9),
+                                  shape: BoxShape.circle,
                                 ),
+                                child: Image.asset('assets/icons/profile_icon.png'),
                               ),
-                            );
-                          },
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF0B68B9),
-                              shape: BoxShape.circle,
                             ),
-                            child: Image.asset('assets/icons/profile_icon.png'),
-                          ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            // ── Upper-left corner decoration ──────────────────────────────
-            Positioned(
-              top: -35,
-              left: -47,
-              child: IgnorePointer(
-                child: Image.asset(
-                  'assets/icons/upper_left_corner_image.png',
-                  height: 163,
-                  width: 181,
-                  fit: BoxFit.fill,
+                // ── Upper-left corner decoration ──────────────────────────────
+                Positioned(
+                  top: -35,
+                  left: -47,
+                  child: IgnorePointer(
+                    child: Image.asset(
+                      'assets/icons/upper_left_corner_image.png',
+                      height: 163,
+                      width: 181,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            // ── Upper-right corner decoration ─────────────────────────────
-            Positioned(
-              top: 0,
-              right: 0,
-              child: IgnorePointer(
-                child: Image.asset(
-                  'assets/icons/upper_right_corner_image.png',
-                  height: 160,
-                  width: 140,
-                  fit: BoxFit.fill,
+                // ── Upper-right corner decoration ─────────────────────────────
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IgnorePointer(
+                    child: Image.asset(
+                      'assets/icons/upper_right_corner_image.png',
+                      height: 160,
+                      width: 140,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            height: _showSystemBars ? 0 : MediaQuery.of(context).padding.top,
+          ),
+          Expanded(
+            child: SafeArea(
+              top: false,
+              bottom: true,
+              child: _buildCurrentView(),
+            ),
+          ),
+        ],
       ),
-      body: _buildCurrentView(),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: _CustomBottomNavBar(
-          selectedIndex: _selectedIndex,
-          onTap: _onTabTapped,
-          navItems: _navItems,
-        ),
+      bottomNavigationBar: AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        alignment: Alignment.topCenter,
+        child: _showSystemBars
+            ? SafeArea(
+                top: false,
+                child: _CustomBottomNavBar(
+                  selectedIndex: _selectedIndex,
+                  onTap: _onTabTapped,
+                  navItems: _navItems,
+                ),
+              )
+            : const SizedBox(width: double.infinity, height: 0),
       ),
     );
   }
 
   Widget _buildCurrentView() {
+    Widget child;
     switch (_selectedIndex) {
       case 0:
-        return _buildHomeTab();
+        child = _buildHomeTab();
+        break;
       case 1:
-        return const MyCommissioningScreen();
+        child = const MyCommissioningScreen();
+        break;
       case 2:
-        return const ServiceCallsScreen();
+        child = const ServiceCallsScreen();
+        break;
       case 3:
-        return const ReportHistoryScreen();
+        child = const ReportHistoryScreen();
+        break;
       default:
-        return _buildPlaceholder();
+        child = _buildPlaceholder();
     }
+
+    if (_selectedIndex == 2 || _selectedIndex == 3) {
+      return NotificationListener<ScrollUpdateNotification>(
+        onNotification: (notification) {
+          if (notification.metrics.axis == Axis.vertical) {
+            if (notification.metrics.pixels <= 0) {
+              if (!_showSystemBars) setState(() => _showSystemBars = true);
+            } else if (notification.scrollDelta != null) {
+              if (notification.scrollDelta! > 2) {
+                // User scrolls down the list (content goes up) -> hide bars
+                if (_showSystemBars) setState(() => _showSystemBars = false);
+              } else if (notification.scrollDelta! < -2) {
+                // User scrolls up the list (content goes down) -> show bars
+                if (!_showSystemBars) setState(() => _showSystemBars = true);
+              }
+            }
+          }
+          return false;
+        },
+        child: child,
+      );
+    }
+    return child;
   }
 
   Widget _buildHomeTab() {

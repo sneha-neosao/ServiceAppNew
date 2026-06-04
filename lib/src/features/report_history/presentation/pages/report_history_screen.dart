@@ -937,7 +937,7 @@ class _ReportCard extends StatelessWidget {
               // Eye / View icon button
               Expanded(
                 child: _buildIconActionButton(
-                  icon: Icons.remove_red_eye_outlined,
+                  icon: Icons.download,
                   iconColor: const Color(0xFF6B7280),
                   onTap: () {
                     if (reportId != null) {

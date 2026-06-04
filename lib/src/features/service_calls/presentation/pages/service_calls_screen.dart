@@ -28,9 +28,8 @@ class ServiceCallsScreen extends StatefulWidget {
   State<ServiceCallsScreen> createState() => _ServiceCallsScreenState();
 }
 
-class _ServiceCallsScreenState extends State<ServiceCallsScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
+  int _selectedTab = 0; // 0 = Assigned, 1 = Pending
 
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
@@ -50,8 +49,6 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
     _sitesBloc = getIt<SitesBloc>();
 
@@ -64,7 +61,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        if (_tabController.index == 0) {
+        if (_selectedTab == 0) {
           _fetchServiceCalls(isRefresh: false, isAssignedOnly: true);
         } else {
           _fetchServiceCalls(isRefresh: false, isPendingOnly: true);
@@ -105,7 +102,6 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
 
   @override
   void dispose() {
-    _tabController.dispose();
     _scrollController.dispose();
     _complaintController.dispose();
     _customerBloc.close();
@@ -137,61 +133,57 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
           ),
         ),
 
-        // ── Custom Tab Bar ──────────────────────────────────────────────────
+        // ── Segmented Tab Control ────────────────────────────────────────────
         BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
           bloc: _assignedServiceCallsBloc,
           builder: (context, assignedState) {
-            return BlocBuilder<
-              PendingServiceCallsBloc,
-              PendingServiceCallsState
-            >(
+            return BlocBuilder<PendingServiceCallsBloc, PendingServiceCallsState>(
               bloc: _pendingServiceCallsBloc,
               builder: (context, pendingState) {
                 int assignedCount = 0;
-                bool isAssignedLoading =
-                    assignedState is AssignedServiceCallsLoadingState ||
-                    assignedState is AssignedServiceCallsInitialState;
                 if (assignedState is AssignedServiceCallsSuccessState) {
                   assignedCount = assignedState.data.data.pagination.totalItems;
-                } else if (assignedState
-                    is AssignedServiceCallsPaginationLoadingState) {
-                  assignedCount =
-                      assignedState.currentData.data.pagination.totalItems;
+                } else if (assignedState is AssignedServiceCallsPaginationLoadingState) {
+                  assignedCount = assignedState.currentData.data.pagination.totalItems;
                 }
-
                 int pendingCount = 0;
-                bool isPendingLoading =
-                    pendingState is PendingServiceCallsLoadingState ||
-                    pendingState is PendingServiceCallsInitialState;
                 if (pendingState is PendingServiceCallsSuccessState) {
                   pendingCount = pendingState.data.data.pagination.totalItems;
-                } else if (pendingState
-                    is PendingServiceCallsPaginationLoadingState) {
-                  pendingCount =
-                      pendingState.currentData.data.pagination.totalItems;
+                } else if (pendingState is PendingServiceCallsPaginationLoadingState) {
+                  pendingCount = pendingState.currentData.data.pagination.totalItems;
                 }
 
-                return TabBar(
-                  controller: _tabController,
-                  labelColor: const Color(0xFF1565C0),
-                  unselectedLabelColor: const Color(0xFFA5ABB7),
-                  indicatorColor: const Color(0xFF1565C0),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicatorWeight: 3,
-                  labelPadding: const EdgeInsets.symmetric(vertical: 8),
-                  dividerColor: const Color(0xFFF1F2F6),
-                  tabs: [
-                    _buildTab(
-                      'ASSIGNED SERVICE CALLS',
-                      assignedCount,
-                      isLoading: isAssignedLoading,
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F2F6),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    _buildTab(
-                      'PENDING SERVICE CALLS',
-                      pendingCount,
-                      isLoading: isPendingLoading,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _buildSegmentTab(
+                            0,
+                            'ASSIGNED',
+                            count: assignedCount,
+                            isLoading: assignedState is AssignedServiceCallsLoadingState ||
+                                assignedState is AssignedServiceCallsInitialState,
+                          ),
+                        ),
+                        Expanded(
+                          child: _buildSegmentTab(
+                            1,
+                            'PENDING',
+                            count: pendingCount,
+                            isLoading: pendingState is PendingServiceCallsLoadingState ||
+                                pendingState is PendingServiceCallsInitialState,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 );
               },
             );
@@ -342,46 +334,84 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
           ),
         ),
 
+        const SizedBox(height: 8),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
-        // ── Tab Bar View / List ─────────────────────────────────────────────
+        // ── Tab Body ────────────────────────────────────────────────────────
         Expanded(
-          child: TabBarView(
-            controller: _tabController,
-            children: [_buildOngoingList(), _buildActiveList()],
-          ),
+          child: _selectedTab == 0
+              ? _buildOngoingList()
+              : _buildActiveList(),
         ),
       ],
     );
   }
 
-  Widget _buildTab(String label, int count, {bool isLoading = false}) {
-    return Tab(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            label,
-            style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(width: 4),
-          isLoading
-              ? const SizedBox(
-                  width: 12,
-                  height: 12,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Color(0xFF1565C0),
+  Widget _buildSegmentTab(int index, String label,
+      {int count = 0, bool isLoading = false}) {
+    final bool isSelected = _selectedTab == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() => _selectedTab = index);
+        if (index == 0) {
+          _fetchServiceCalls(isRefresh: true, isAssignedOnly: true);
+        } else {
+          _fetchServiceCalls(isRefresh: true, isPendingOnly: true);
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
                   ),
-                )
-              : Text(
-                  '($count)',
-                  style: AppFont.style(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                  ),
+                ]
+              : null,
+        ),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: AppFont.style(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                  color: isSelected
+                      ? const Color(0xFF1565C0)
+                      : const Color(0xFFA5ABB7),
                 ),
-        ],
+              ),
+              const SizedBox(width: 4),
+              isLoading
+                  ? const SizedBox(
+                      width: 10,
+                      height: 10,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1.5,
+                        color: Color(0xFF1565C0),
+                      ),
+                    )
+                  : Text(
+                      '($count)',
+                      style: AppFont.style(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: isSelected
+                            ? const Color(0xFF1565C0)
+                            : const Color(0xFFA5ABB7),
+                      ),
+                    ),
+            ],
+          ),
+        ),
       ),
     );
   }
