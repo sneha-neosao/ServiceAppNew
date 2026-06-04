@@ -66,6 +66,10 @@ import '../models/commissioning_work_model/commissioning_work_details_response.d
 import '../../features/my_commissioning/domain/usecase/commissioning_work_create_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_update_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_report_history_usecase.dart';
+import '../models/create_new_customer_model/create_new_customer_response.dart';
+import '../../features/common/domain/usecase/create_new_customer_usecase.dart';
+import '../models/create_new_site_model/create_new_site_response.dart';
+import '../../features/common/domain/usecase/create_new_site_usecase.dart';
 
 sealed class RemoteDataSource {
   Future<LoginResponse> login(LoginParams params);
@@ -243,6 +247,12 @@ sealed class RemoteDataSource {
 
   Future<ServiceCallReportStep6AutoFillResponse> serviceCallReportStep6AutoFill(
       String reportId, String token);
+
+  Future<AddCustomerResponse> createNewCustomer(
+      CreateNewCustomerParams params, String token);
+
+  Future<AddSiteResponse> createNewSite(
+      CreateNewSiteParams params, String token);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -1641,6 +1651,81 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       return ServiceCallReportStep6AutoFillResponse.fromJson(response);
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+  @override
+  Future<AddCustomerResponse> createNewCustomer(
+    CreateNewCustomerParams params, String token) async {
+    try {
+      final payload = {
+        "name": params.name,
+        "merge_existing": params.mergeExisting,
+        "sites": params.sites,
+      };
+
+      final response = await _helper.execute(
+        url: ApiUrl.technicianCreateCustomer,
+        method: Method.post,
+        data: payload,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = AddCustomerResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+  @override
+  Future<AddSiteResponse> createNewSite(
+    CreateNewSiteParams params, String token) async {
+    try {
+      final payload = {
+        "customer_id": params.customerId,
+        "name": params.customerName,
+        "sites": [
+          {
+            "name": params.siteName,
+            "contacts": [
+              {
+                "mobile_num": "",
+                "email": "",
+                "receiveAlerts": true
+              }
+            ]
+          }
+        ]
+      };
+
+      final response = await _helper.execute(
+        url: "${ApiUrl.technicianCreateCustomer}/${params.customerId}",
+        method: Method.put,
+        data: payload,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = AddSiteResponse.fromJson(response);
+      return respData;
     } on EmptyException {
       throw AuthException();
     } catch (e) {

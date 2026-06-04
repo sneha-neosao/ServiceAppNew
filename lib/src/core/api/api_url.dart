@@ -54,6 +54,8 @@ class ApiUrl {
 
   static const createNewCustomer = "dealer/customers/";
 
+  static const technicianCreateCustomer = "technician/customers";
+
   static const commissioningWorkReportStep1AutoFill = "technician/commissioning-report/step1";
 
   static const commissioningWorkReportStep2AutoFill = "technician/commissioning-report/step2";

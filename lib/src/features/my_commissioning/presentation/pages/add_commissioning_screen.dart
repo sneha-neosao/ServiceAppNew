@@ -13,6 +13,14 @@ import 'package:service_app/src/features/my_commissioning/bloc/commissioning_wor
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_update_bloc/commissioning_work_update_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_update_bloc/commissioning_work_update_event.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_update_bloc/commissioning_work_update_state.dart';
+import 'package:service_app/src/features/common/bloc/create_new_customer_bloc/create_new_customer_bloc.dart';
+import 'package:service_app/src/features/common/bloc/create_new_customer_bloc/create_new_customer_event.dart';
+import 'package:service_app/src/features/common/bloc/create_new_customer_bloc/create_new_customer_state.dart';
+import 'package:service_app/src/features/common/domain/usecase/create_new_customer_usecase.dart';
+import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_bloc.dart';
+import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_event.dart';
+import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_state.dart';
+import 'package:service_app/src/features/common/domain/usecase/create_new_site_usecase.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 
 class AddCommissioningScreen extends StatefulWidget {
@@ -33,10 +41,12 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   // ── Customer ──────────────────────────────────────────────────────────────
   List<String> _customers = [];
   String? _selectedCustomer;
+  final Map<String, String> _createdCustomerIds = {};
 
   // ── Site / Location ───────────────────────────────────────────────────────
   List<String> _sites = [];
   String? _selectedSite;
+  final Map<String, String> _createdSiteIds = {};
 
   // ── Equipment ─────────────────────────────────────────────────────────────
   late TextEditingController _equipmentController;
@@ -51,6 +61,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   late CommissioningWorkCreateBloc _createBloc;
   late CommissioningWorkDetailsBloc _detailsBloc;
   late CommissioningWorkUpdateBloc _updateBloc;
+  late CreateNewCustomerBloc _createNewCustomerBloc;
+  late CreateNewSiteBloc _createNewSiteBloc;
 
   @override
   void initState() {
@@ -62,6 +74,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     _createBloc = getIt<CommissioningWorkCreateBloc>();
     _detailsBloc = getIt<CommissioningWorkDetailsBloc>();
     _updateBloc = getIt<CommissioningWorkUpdateBloc>();
+    _createNewCustomerBloc = getIt<CreateNewCustomerBloc>();
+    _createNewSiteBloc = getIt<CreateNewSiteBloc>();
     _equipmentController = TextEditingController();
 
     if (widget.editWorkId != null) {
@@ -77,16 +91,13 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     _createBloc.close();
     _detailsBloc.close();
     _updateBloc.close();
+    _createNewCustomerBloc.close();
+    _createNewSiteBloc.close();
     _equipmentController.dispose();
     super.dispose();
   }
 
-  // ── Bottom sheet: Add new entry ────────────────────────────────────────────
-  Future<void> _showAddBottomSheet({
-    required String fieldLabel,
-    required List<String> list,
-    required void Function(String) onSaved,
-  }) async {
+  Future<void> _showAddCustomerBottomSheet() async {
     final controller = TextEditingController();
     await showModalBottomSheet(
       context: context,
@@ -98,141 +109,405 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        return SafeArea(
-          bottom: true,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.only(
-              left: 24,
-              right: 24,
-              top: 24,
-              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return BlocConsumer<CreateNewCustomerBloc, CreateNewCustomerState>(
+          bloc: _createNewCustomerBloc,
+          listener: (ctx, state) {
+            if (state is CreateNewCustomerSuccessState) {
+              appSnackBar(ctx, const Color(0xFF4CAF50), state.data.message);
+              final newName = state.data.data?.name ?? controller.text.trim();
+              Navigator.pop(ctx);
+              setState(() {
+                if (!_customers.contains(newName)) {
+                  _customers.insert(0, newName);
+                }
+                if (state.data.data?.id != null) {
+                  _createdCustomerIds[newName] = state.data.data!.id;
+                }
+                _selectedCustomer = newName;
+                _selectedSite = null;
+                _sites.clear();
+              });
+            } else if (state is CreateNewCustomerFailureState) {
+              appSnackBar(ctx, const Color(0xFFF44336), state.message);
+            }
+          },
+          builder: (ctx, state) {
+            final isLoading = state is CreateNewCustomerLoadingState;
+            return SafeArea(
+              bottom: true,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  top: 24,
+                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'New Customer',
+                          style: AppFont.style(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF0D121F),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: isLoading ? null : () => Navigator.pop(ctx),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8F9FB),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: const Color(0xFFF1F2F6)),
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Color(0xFFA5ABB7),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
                     Text(
-                      'New $fieldLabel',
+                      'NAME',
                       style: AppFont.style(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF0D121F),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFA5ABB7),
+                        letterSpacing: 1.0,
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(ctx),
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF8F9FB),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: const Color(0xFFF1F2F6)),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: controller,
+                      autofocus: true,
+                      enabled: !isLoading,
+                      style: AppFont.style(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF0D121F),
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Type here...',
+                        hintStyle: AppFont.style(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFFA5ABB7),
                         ),
-                        child: const Icon(
-                          Icons.close,
-                          size: 16,
-                          color: Color(0xFFA5ABB7),
+                        filled: true,
+                        fillColor: const Color(0xFFF8F9FB),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF1565C0),
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Save button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton.icon(
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                final text = controller.text.trim();
+                                if (text.isNotEmpty) {
+                                  _createNewCustomerBloc.add(
+                                    CreateNewCustomerSubmitEvent(
+                                      CreateNewCustomerParams(name: text),
+                                    ),
+                                  );
+                                }
+                              },
+                        icon: isLoading
+                            ? const SizedBox.shrink()
+                            : const Icon(Icons.save_outlined, size: 18),
+                        label: isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : Text(
+                                'SAVE ENTRY',
+                                style: AppFont.style(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1565C0),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
-                Text(
-                  'NAME',
-                  style: AppFont.style(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: controller,
-                  autofocus: true,
-                  style: AppFont.style(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF0D121F),
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Type here...',
-                    hintStyle: AppFont.style(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFFA5ABB7),
-                    ),
-                    filled: true,
-                    fillColor: const Color(0xFFF8F9FB),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF1565C0),
-                        width: 1.5,
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Save button
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      final text = controller.text.trim();
-                      if (text.isNotEmpty) {
-                        Navigator.pop(ctx);
-                        onSaved(text);
-                      }
-                    },
-                    icon: const Icon(Icons.save_outlined, size: 18),
-                    label: Text(
-                      'SAVE ENTRY',
-                      style: AppFont.style(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(
-                        0xFF1565C0,
-                      ), // matching the blue
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
-    // Delay disposal to allow bottom sheet closing animation to finish and prevent TextField from using disposed controller
+    Future.delayed(const Duration(milliseconds: 300), () {
+      controller.dispose();
+    });
+  }
+
+  Future<void> _showAddSiteBottomSheet() async {
+    if (_selectedCustomer == null) {
+      appSnackBar(context, const Color(0xFFF44336), 'Please select a customer first');
+      return;
+    }
+
+    String customerId = "";
+    if (_createdCustomerIds.containsKey(_selectedCustomer)) {
+      customerId = _createdCustomerIds[_selectedCustomer]!;
+    } else {
+      final customerState = _customerBloc.state;
+      if (customerState is CustomerSuccessState) {
+        for (var c in customerState.data.data) {
+          if (c.name == _selectedCustomer) {
+            customerId = c.id;
+            break;
+          }
+        }
+      }
+    }
+
+    if (customerId.isEmpty) {
+      appSnackBar(context, const Color(0xFFF44336), 'Invalid customer selected');
+      return;
+    }
+
+    final controller = TextEditingController();
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return BlocConsumer<CreateNewSiteBloc, CreateNewSiteState>(
+          bloc: _createNewSiteBloc,
+          listener: (ctx, state) {
+            if (state is CreateNewSiteSuccessState) {
+              appSnackBar(ctx, const Color(0xFF4CAF50), state.data.message);
+              final newName = controller.text.trim();
+              Navigator.pop(ctx);
+              setState(() {
+                if (!_sites.contains(newName)) {
+                  _sites.insert(0, newName);
+                }
+                if (state.data.data != null) {
+                  for (var s in state.data.data!.sites) {
+                    if (s.name == newName) {
+                      _createdSiteIds[newName] = s.id;
+                      break;
+                    }
+                  }
+                }
+                _selectedSite = newName;
+              });
+            } else if (state is CreateNewSiteFailureState) {
+              appSnackBar(ctx, const Color(0xFFF44336), state.message);
+            }
+          },
+          builder: (ctx, state) {
+            final isLoading = state is CreateNewSiteLoadingState;
+            return SafeArea(
+              bottom: true,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  top: 24,
+                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'New Site',
+                          style: AppFont.style(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF0D121F),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: isLoading ? null : () => Navigator.pop(ctx),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8F9FB),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: const Color(0xFFF1F2F6)),
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Color(0xFFA5ABB7),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'NAME',
+                      style: AppFont.style(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFA5ABB7),
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: controller,
+                      autofocus: true,
+                      enabled: !isLoading,
+                      style: AppFont.style(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF0D121F),
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Type here...',
+                        hintStyle: AppFont.style(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFFA5ABB7),
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFFF8F9FB),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF1565C0),
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Save button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton.icon(
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                final text = controller.text.trim();
+                                if (text.isNotEmpty) {
+                                  _createNewSiteBloc.add(
+                                    CreateNewSiteSubmitEvent(
+                                      CreateNewSiteParams(
+                                        customerId: customerId,
+                                        customerName: _selectedCustomer!,
+                                        siteName: text,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                        icon: isLoading
+                            ? const SizedBox.shrink()
+                            : const Icon(Icons.save_outlined, size: 18),
+                        label: isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : Text(
+                                'SAVE ENTRY',
+                                style: AppFont.style(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1565C0),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
     Future.delayed(const Duration(milliseconds: 300), () {
       controller.dispose();
     });
@@ -241,23 +516,31 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   // ── Assign button handler ──────────────────────────────────────────────────
   void _onAssign() {
     String customerId = "";
-    final customerState = _customerBloc.state;
-    if (customerState is CustomerSuccessState) {
-      for (var c in customerState.data.data) {
-        if (c.name == _selectedCustomer) {
-          customerId = c.id;
-          break;
+    if (_selectedCustomer != null && _createdCustomerIds.containsKey(_selectedCustomer)) {
+      customerId = _createdCustomerIds[_selectedCustomer]!;
+    } else {
+      final customerState = _customerBloc.state;
+      if (customerState is CustomerSuccessState) {
+        for (var c in customerState.data.data) {
+          if (c.name == _selectedCustomer) {
+            customerId = c.id;
+            break;
+          }
         }
       }
     }
 
     String siteId = "";
-    final siteState = _sitesBloc.state;
-    if (siteState is SitesSuccessState) {
-      for (var s in siteState.data.data) {
-        if (s.name == _selectedSite) {
-          siteId = s.id;
-          break;
+    if (_selectedSite != null && _createdSiteIds.containsKey(_selectedSite)) {
+      siteId = _createdSiteIds[_selectedSite]!;
+    } else {
+      final siteState = _sitesBloc.state;
+      if (siteState is SitesSuccessState) {
+        for (var s in siteState.data.data) {
+          if (s.name == _selectedSite) {
+            siteId = s.id;
+            break;
+          }
         }
       }
     }
@@ -447,16 +730,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                         // ── STEP 1: SELECT CUSTOMER ──────────────────────────
                         _buildSectionHeader(
                           label: 'STEP 1: SELECT CUSTOMER',
-                          onAddTap: () => _showAddBottomSheet(
-                            fieldLabel: 'Customer',
-                            list: _customers,
-                            onSaved: (val) => setState(() {
-                              _customers.insert(0, val);
-                              _selectedCustomer = val;
-                              _selectedSite = null;
-                              _sites.clear();
-                            }),
-                          ),
+                          onAddTap: _showAddCustomerBottomSheet,
                         ),
                         BlocBuilder<CustomerBloc, CustomerState>(
                           bloc: _customerBloc,
@@ -483,15 +757,18 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                   _selectedSite = null;
                                   _sites.clear();
                                 });
-                                if (v != null &&
-                                    state is CustomerSuccessState) {
-                                  final cList = state.data.data.where(
-                                    (x) => x.name == v,
-                                  );
-                                  if (cList.isNotEmpty) {
-                                    _sitesBloc.add(
-                                      SitesGetEvent(cList.first.id),
-                                    );
+                                if (v != null) {
+                                  String? customerId;
+                                  if (_createdCustomerIds.containsKey(v)) {
+                                    customerId = _createdCustomerIds[v];
+                                  } else if (state is CustomerSuccessState) {
+                                    final cList = state.data.data.where((x) => x.name == v);
+                                    if (cList.isNotEmpty) {
+                                      customerId = cList.first.id;
+                                    }
+                                  }
+                                  if (customerId != null) {
+                                    _sitesBloc.add(SitesGetEvent(customerId));
                                   }
                                 }
                               },
@@ -505,14 +782,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                         _buildSectionHeader(
                           label: 'STEP 2: SELECT SITE',
                           onAddTap: _selectedCustomer != null
-                              ? () => _showAddBottomSheet(
-                                  fieldLabel: 'Site',
-                                  list: _sites,
-                                  onSaved: (val) => setState(() {
-                                    _sites.insert(0, val);
-                                    _selectedSite = val;
-                                  }),
-                                )
+                              ? _showAddSiteBottomSheet
                               : null,
                         ),
                         BlocBuilder<SitesBloc, SitesState>(

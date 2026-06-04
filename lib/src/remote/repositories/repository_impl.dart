@@ -74,6 +74,10 @@ import '../models/commissioning_work_model/commissioning_work_details_response.d
 import '../../features/service_calls/domain/usecase/assign_technician_service_calls_usecase.dart';
 import '../../features/service_calls/domain/usecase/close_over_call_usecase.dart';
 import '../../features/service_calls/domain/usecase/service_call_report_step1_usecase.dart';
+import '../../features/common/domain/usecase/create_new_customer_usecase.dart';
+import '../models/create_new_customer_model/create_new_customer_response.dart';
+import '../../features/common/domain/usecase/create_new_site_usecase.dart';
+import '../models/create_new_site_model/create_new_site_response.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -212,6 +216,12 @@ abstract class Repository {
 
   Future<Either<Failure, ServiceCallReportStep6AutoFillResponse>> serviceCallReportStep6AutoFill(
       String reportId);
+
+  Future<Either<Failure, AddCustomerResponse>> createNewCustomer(
+      CreateNewCustomerParams params);
+
+  Future<Either<Failure, AddSiteResponse>> createNewSite(
+      CreateNewSiteParams params);
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -1660,6 +1670,64 @@ class AuthRepositoryImpl implements Repository {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           final response = await _remoteDataSource.serviceCallReportStep6AutoFill(reportId, token);
+          
+          if (response.status != 200) {
+            return Left(CredentialFailure(response.message));
+          }
+          
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+  @override
+  Future<Either<Failure, AddCustomerResponse>> createNewCustomer(CreateNewCustomerParams params) {
+    return _networkInfo.check<AddCustomerResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.createNewCustomer(params, token);
+          
+          if (response.status != 200) {
+            return Left(CredentialFailure(response.message));
+          }
+          
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+  @override
+  Future<Either<Failure, AddSiteResponse>> createNewSite(CreateNewSiteParams params) {
+    return _networkInfo.check<AddSiteResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.createNewSite(params, token);
           
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
