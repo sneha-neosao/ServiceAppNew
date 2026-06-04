@@ -39,8 +39,10 @@ import '../../bloc/commissioning_step5_bloc/commissioning_step5_event.dart';
 import '../../bloc/commissioning_step5_bloc/commissioning_step5_state.dart';
 import '../../bloc/commissioning_work_list_bloc/commissioning_work_list_bloc.dart';
 import '../../domain/usecase/commissioning_step5_usecase.dart';
-import '../../../../remote/models/commissioning_report_step4_autofill_model/commissioning_report_step4_autofill_response.dart' hide CommissioningData, Technician;
-import '../../../../remote/models/commissioning_report_step5_autofill_model/commissioning_report_step5_autofill_response.dart' hide SavedDescription;
+import '../../../../remote/models/commissioning_report_step4_autofill_model/commissioning_report_step4_autofill_response.dart'
+    hide CommissioningData, Technician;
+import '../../../../remote/models/commissioning_report_step5_autofill_model/commissioning_report_step5_autofill_response.dart'
+    hide SavedDescription;
 import '../../bloc/commissioning_step6_autofill_bloc/commissioning_step6_autofill_bloc.dart';
 import '../../bloc/commissioning_step6_autofill_bloc/commissioning_step6_autofill_event.dart';
 import '../../bloc/commissioning_step6_autofill_bloc/commissioning_step6_autofill_state.dart';
@@ -91,7 +93,8 @@ import '../../bloc/assigned_technician_representative_bloc/assigned_technician_r
 import '../../bloc/assigned_technician_representative_bloc/assigned_technician_representative_state.dart';
 import '../../../../remote/models/commissioning_report_step6_autofill_model/commissioning_report_step6_autofill_response.dart';
 import '../../../../remote/models/assigned_technician_representative_model/assigned_technician_representative_response.dart';
-import 'package:service_app/src/remote/models/assigned_servicecall_technician_model/assigned_servicecall_technician_response.dart' as service_tech_model;
+import 'package:service_app/src/remote/models/assigned_servicecall_technician_model/assigned_servicecall_technician_response.dart'
+    as service_tech_model;
 import '../../bloc/commissioning_work_create_bloc/commissioning_work_create_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_bloc/service_call_report_step6_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_bloc/service_call_report_step6_event.dart';
@@ -165,7 +168,7 @@ class _CreateCommissioningReportScreenState
 
   late CommissioningStep3AutoFillBloc _step3Bloc;
   late CommissioningStep3Bloc _submitStep3Bloc;
-  
+
   late CommissioningStep4AutoFillBloc _step4Bloc;
   late CommissioningStep4Bloc _submitStep4Bloc;
 
@@ -198,7 +201,8 @@ class _CreateCommissioningReportScreenState
   String? _selectedTechnicianRepId;
   String? _autofilledTechRepName;
   List<AssignedTechnician> _assignedTechniciansList = [];
-  List<service_tech_model.AssignedTechnician> _assignedServiceCallTechniciansList = [];
+  List<service_tech_model.AssignedTechnician>
+  _assignedServiceCallTechniciansList = [];
 
   File? _technicianSignatureFile;
   File? _customerSignatureFile;
@@ -208,7 +212,6 @@ class _CreateCommissioningReportScreenState
 
   final List<File> _workPhotos = [];
   List<String> _existingWorkPhotosUrls = [];
-
 
   // Step 3 Controllers
   final _pumpMakeController = TextEditingController();
@@ -261,16 +264,20 @@ class _CreateCommissioningReportScreenState
     super.initState();
     _submitStep1Bloc = getIt<CommissioningStep1Bloc>();
     _submitStep2Bloc = getIt<CommissioningStep2Bloc>();
-    
+
     _step1Bloc = getIt<CommissioningStep1AutoFillBloc>();
     _serviceCallStep1AutoFillBloc = getIt<ServiceCallReportStep1AutoFillBloc>();
-    
+
     if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
-      _serviceCallStep1AutoFillBloc.add(ServiceCallReportStep1AutoFillGetEvent(widget.commissioningWorkId));
+      _serviceCallStep1AutoFillBloc.add(
+        ServiceCallReportStep1AutoFillGetEvent(widget.commissioningWorkId),
+      );
     } else {
-      _step1Bloc.add(CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId));
+      _step1Bloc.add(
+        CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId),
+      );
     }
-    
+
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
     _step2Bloc = getIt<CommissioningStep2AutoFillBloc>();
     _serviceCallStep2AutoFillBloc = getIt<ServiceCallReportStep2AutoFillBloc>();
@@ -292,7 +299,8 @@ class _CreateCommissioningReportScreenState
     _step6Bloc = getIt<CommissioningStep6AutoFillBloc>();
     _submitStep6Bloc = getIt<CommissioningStep6Bloc>();
     _assignedTechniciansBloc = getIt<AssignedTechnicianRepresentativeBloc>();
-    _assignedServiceCallTechnicianBloc = getIt<AssignedServicecallTechnicianBloc>();
+    _assignedServiceCallTechnicianBloc =
+        getIt<AssignedServicecallTechnicianBloc>();
     _createBloc = getIt<CommissioningWorkCreateBloc>();
     _submitServiceCallStep1Bloc = getIt<ServiceCallReportStep1Bloc>();
     _agendaController = TextEditingController();
@@ -374,96 +382,125 @@ class _CreateCommissioningReportScreenState
       }
 
       if (widget.isServiceReport) {
-        if (_submitServiceCallStep1Bloc.state is ServiceCallReportStep1LoadingState) return;
-        _submitServiceCallStep1Bloc.add(ServiceCallReportStep1PostEvent(
-          ServiceCallReportStep1Params(
-            complaintId: widget.commissioningWorkId,
-            technicianIds: technicianIds,
+        if (_submitServiceCallStep1Bloc.state
+            is ServiceCallReportStep1LoadingState)
+          return;
+        _submitServiceCallStep1Bloc.add(
+          ServiceCallReportStep1PostEvent(
+            ServiceCallReportStep1Params(
+              complaintId: widget.commissioningWorkId,
+              technicianIds: technicianIds,
+            ),
           ),
-        ));
+        );
       } else {
         if (_submitStep1Bloc.state is CommissioningStep1LoadingState) return;
-        _submitStep1Bloc.add(CommissioningStep1GetEvent(widget.commissioningWorkId, technicianIds));
+        _submitStep1Bloc.add(
+          CommissioningStep1GetEvent(widget.commissioningWorkId, technicianIds),
+        );
       }
     } else if (_currentStep == 2) {
       if (_submitStep2Bloc.state is CommissioningStep2LoadingState) return;
-      
+
       List<String> repNames = [];
       for (var c in _representatives) {
         if (c.text.trim().isNotEmpty) {
           repNames.add(c.text.trim());
         }
       }
-      
+
       if (repNames.isEmpty) {
-        appSnackBar(context, const Color(0xFFF44336), "Please add at least one representative");
+        appSnackBar(
+          context,
+          const Color(0xFFF44336),
+          "Please add at least one representative",
+        );
         return;
       }
-      
+
       if (_agendaController.text.trim().isEmpty) {
-        appSnackBar(context, const Color(0xFFF44336), "Please enter the agenda/purpose of visit");
+        appSnackBar(
+          context,
+          const Color(0xFFF44336),
+          "Please enter the agenda/purpose of visit",
+        );
         return;
       }
-      
+
       if (widget.isServiceReport) {
-        if (_submitServiceCallStep2Bloc.state is ServiceCallReportStep2LoadingState) return;
-        
-        _submitServiceCallStep2Bloc.add(ServiceCallReportStep2PostEvent(
-          ServiceCallReportStep2Params(
-            id: _commissioningReportId ?? widget.commissioningWorkId,
-            memberPresentsCustomerSide: repNames.join(', '),
-            agenda: _agendaController.text.trim(),
+        if (_submitServiceCallStep2Bloc.state
+            is ServiceCallReportStep2LoadingState)
+          return;
+
+        _submitServiceCallStep2Bloc.add(
+          ServiceCallReportStep2PostEvent(
+            ServiceCallReportStep2Params(
+              id: _commissioningReportId ?? widget.commissioningWorkId,
+              memberPresentsCustomerSide: repNames.join(', '),
+              agenda: _agendaController.text.trim(),
+            ),
           ),
-        ));
+        );
       } else {
         if (_submitStep2Bloc.state is CommissioningStep2LoadingState) return;
-        
-        int warrantyYears = int.tryParse(_selectedWarranty.split(' ').first) ?? 1;
 
-        _submitStep2Bloc.add(CommissioningStep2GetEvent(
-          _commissioningReportId ?? widget.commissioningWorkId,
-          warrantyYears,
-          repNames,
-          _agendaController.text.trim(),
-        ));
+        int warrantyYears =
+            int.tryParse(_selectedWarranty.split(' ').first) ?? 1;
+
+        _submitStep2Bloc.add(
+          CommissioningStep2GetEvent(
+            _commissioningReportId ?? widget.commissioningWorkId,
+            warrantyYears,
+            repNames,
+            _agendaController.text.trim(),
+          ),
+        );
       }
     } else if (_currentStep == 3) {
-      final techDetails = _isTechnicalDetailsNA ? null : TechnicalDetails(
-        pumpMake: _pumpMakeController.text,
-        pumpModel: _pumpModelController.text,
-        pumpSerialNumber: _pumpSerialNumberController.text,
-        pumpFlowLpm: _pumpFlowLPMController.text,
-        pumpFlowM3hr: _pumpFlowM3HRController.text,
-        pumpFlowLps: _pumpFlowLPSController.text,
-        pumpFlowUsgpm: _pumpFlowUSGPMController.text,
-        pumpHeadMtr: _pumpHeadMTRController.text,
-        driverMake: _driverMakeController.text,
-        driverSerialNumber: _driverSerialNumberController.text,
-        ratingKw: _ratingKWController.text,
-        ratingHp: _ratingHPController.text,
-        rpm: _rpmController.text,
-        controlPanelMake: _controlPanelMakeController.text,
-        panelSerialModel: _panelSerialModelController.text,
-      );
+      final techDetails = _isTechnicalDetailsNA
+          ? null
+          : TechnicalDetails(
+              pumpMake: _pumpMakeController.text,
+              pumpModel: _pumpModelController.text,
+              pumpSerialNumber: _pumpSerialNumberController.text,
+              pumpFlowLpm: _pumpFlowLPMController.text,
+              pumpFlowM3hr: _pumpFlowM3HRController.text,
+              pumpFlowLps: _pumpFlowLPSController.text,
+              pumpFlowUsgpm: _pumpFlowUSGPMController.text,
+              pumpHeadMtr: _pumpHeadMTRController.text,
+              driverMake: _driverMakeController.text,
+              driverSerialNumber: _driverSerialNumberController.text,
+              ratingKw: _ratingKWController.text,
+              ratingHp: _ratingHPController.text,
+              rpm: _rpmController.text,
+              controlPanelMake: _controlPanelMakeController.text,
+              panelSerialModel: _panelSerialModelController.text,
+            );
 
       if (widget.isServiceReport) {
-        if (_submitServiceCallStep3Bloc.state is ServiceCallReportStep3LoadingState) return;
+        if (_submitServiceCallStep3Bloc.state
+            is ServiceCallReportStep3LoadingState)
+          return;
 
-        _submitServiceCallStep3Bloc.add(ServiceCallReportStep3PostEvent(
-          ServiceCallReportStep3Params(
-            id: _commissioningReportId ?? widget.commissioningWorkId,
-            isTechnicalNa: _isTechnicalDetailsNA,
-            technicalDetails: techDetails,
+        _submitServiceCallStep3Bloc.add(
+          ServiceCallReportStep3PostEvent(
+            ServiceCallReportStep3Params(
+              id: _commissioningReportId ?? widget.commissioningWorkId,
+              isTechnicalNa: _isTechnicalDetailsNA,
+              technicalDetails: techDetails,
+            ),
           ),
-        ));
+        );
       } else {
         if (_submitStep3Bloc.state is CommissioningStep3LoadingState) return;
 
-        _submitStep3Bloc.add(CommissioningStep3GetEvent(
-          _commissioningReportId ?? widget.commissioningWorkId,
-          _isTechnicalDetailsNA,
-          techDetails,
-        ));
+        _submitStep3Bloc.add(
+          CommissioningStep3GetEvent(
+            _commissioningReportId ?? widget.commissioningWorkId,
+            _isTechnicalDetailsNA,
+            techDetails,
+          ),
+        );
       }
     } else if (_currentStep == 4) {
       if (_submitStep4Bloc.state is CommissioningStep4LoadingState) return;
@@ -477,20 +514,30 @@ class _CreateCommissioningReportScreenState
       }
 
       if (descriptions.isEmpty) {
-        appSnackBar(context, const Color(0xFFF44336), "Please enter at least one work description");
+        appSnackBar(
+          context,
+          const Color(0xFFF44336),
+          "Please enter at least one work description",
+        );
         return;
       }
 
       if (widget.isServiceReport) {
-        _submitServiceCallStep4Bloc.add(ServiceCallReportStep4PostEvent(
-          reportId: _commissioningReportId ?? widget.commissioningWorkId,
-          descriptions: descriptions.map((e) => {"sr_no": e.srNo, "description": e.description}).toList(),
-        ));
+        _submitServiceCallStep4Bloc.add(
+          ServiceCallReportStep4PostEvent(
+            reportId: _commissioningReportId ?? widget.commissioningWorkId,
+            descriptions: descriptions
+                .map((e) => {"sr_no": e.srNo, "description": e.description})
+                .toList(),
+          ),
+        );
       } else {
-        _submitStep4Bloc.add(CommissioningStep4GetEvent(
-          _commissioningReportId ?? widget.commissioningWorkId,
-          descriptions,
-        ));
+        _submitStep4Bloc.add(
+          CommissioningStep4GetEvent(
+            _commissioningReportId ?? widget.commissioningWorkId,
+            descriptions,
+          ),
+        );
       }
     } else if (_currentStep == 5) {
       if (_submitStep5Bloc.state is CommissioningStep5LoadingState) return;
@@ -499,68 +546,290 @@ class _CreateCommissioningReportScreenState
 
       // Add mechanical checklists if not NA
       if (!_mechNA) {
-        if (_bearingNoise != null) savedChecklists.add(SavedChecklist(id: "", checkType: "mechanical", keyChecklist: "Bearing noise", valueChecklist: _bearingNoise!, photo: _step5Media['Bearing Noise / Abnormal Sound Checked:']?.path, video: _step5Media['Bearing Noise / Abnormal Sound Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Bearing noise'], existingVideoUrl: _step5ExistingVideos['Bearing noise']));
-        if (_vibration != null) savedChecklists.add(SavedChecklist(id: "", checkType: "mechanical", keyChecklist: "Vibration", valueChecklist: _vibration!, photo: _step5Media['Vibration Checked:']?.path, video: _step5Media['Vibration Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Vibration'], existingVideoUrl: _step5ExistingVideos['Vibration']));
-        if (_mechSeal != null) savedChecklists.add(SavedChecklist(id: "", checkType: "mechanical", keyChecklist: "Mechanical seal", valueChecklist: _mechSeal!, photo: _step5Media['Mechanical Seal / Gland Leakage Checked:']?.path, video: _step5Media['Mechanical Seal / Gland Leakage Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Mechanical seal'], existingVideoUrl: _step5ExistingVideos['Mechanical seal']));
-        if (_pumpDry != null) savedChecklists.add(SavedChecklist(id: "", checkType: "mechanical", keyChecklist: "Pump not running dry", valueChecklist: _pumpDry!, photo: _step5Media['Pump Not Running Dry:']?.path, video: _step5Media['Pump Not Running Dry:']?.path, existingPhotoUrl: _step5ExistingPhotos['Pump not running dry'], existingVideoUrl: _step5ExistingVideos['Pump not running dry']));
+        if (_bearingNoise != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "mechanical",
+              keyChecklist: "Bearing noise",
+              valueChecklist: _bearingNoise!,
+              photo:
+                  _step5Media['Bearing Noise / Abnormal Sound Checked:']?.path,
+              video:
+                  _step5Media['Bearing Noise / Abnormal Sound Checked:']?.path,
+              existingPhotoUrl: _step5ExistingPhotos['Bearing noise'],
+              existingVideoUrl: _step5ExistingVideos['Bearing noise'],
+            ),
+          );
+        if (_vibration != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "mechanical",
+              keyChecklist: "Vibration",
+              valueChecklist: _vibration!,
+              photo: _step5Media['Vibration Checked:']?.path,
+              video: _step5Media['Vibration Checked:']?.path,
+              existingPhotoUrl: _step5ExistingPhotos['Vibration'],
+              existingVideoUrl: _step5ExistingVideos['Vibration'],
+            ),
+          );
+        if (_mechSeal != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "mechanical",
+              keyChecklist: "Mechanical seal",
+              valueChecklist: _mechSeal!,
+              photo:
+                  _step5Media['Mechanical Seal / Gland Leakage Checked:']?.path,
+              video:
+                  _step5Media['Mechanical Seal / Gland Leakage Checked:']?.path,
+              existingPhotoUrl: _step5ExistingPhotos['Mechanical seal'],
+              existingVideoUrl: _step5ExistingVideos['Mechanical seal'],
+            ),
+          );
+        if (_pumpDry != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "mechanical",
+              keyChecklist: "Pump not running dry",
+              valueChecklist: _pumpDry!,
+              photo: _step5Media['Pump Not Running Dry:']?.path,
+              video: _step5Media['Pump Not Running Dry:']?.path,
+              existingPhotoUrl: _step5ExistingPhotos['Pump not running dry'],
+              existingVideoUrl: _step5ExistingVideos['Pump not running dry'],
+            ),
+          );
       }
 
       // Add pipeline checklists if not NA
       if (!_pipeNA) {
-        if (_nrvValve != null) savedChecklists.add(SavedChecklist(id: "", checkType: "pipeline_hydraulic", keyChecklist: "NRV", valueChecklist: _nrvValve!, photo: _step5Media['NRV / Butterfly Valve / Gate Valve Condition Checked:']?.path, video: _step5Media['NRV / Butterfly Valve / Gate Valve Condition Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['NRV'], existingVideoUrl: _step5ExistingVideos['NRV']));
-        if (_strainerValve != null) savedChecklists.add(SavedChecklist(id: "", checkType: "pipeline_hydraulic", keyChecklist: "Strainer", valueChecklist: _strainerValve!, photo: _step5Media['Strainer / Foot Valve Condition Checked:']?.path, video: _step5Media['Strainer / Foot Valve Condition Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Strainer'], existingVideoUrl: _step5ExistingVideos['Strainer']));
-        if (_suctionLine != null) savedChecklists.add(SavedChecklist(id: "", checkType: "pipeline_hydraulic", keyChecklist: "Suction line", valueChecklist: _suctionLine!, photo: _step5Media['Suction Line (Air Leakage & Water Leakage Checked):']?.path, video: _step5Media['Suction Line (Air Leakage & Water Leakage Checked):']?.path, existingPhotoUrl: _step5ExistingPhotos['Suction line'], existingVideoUrl: _step5ExistingVideos['Suction line']));
-        if (_deliveryLine != null) savedChecklists.add(SavedChecklist(id: "", checkType: "pipeline_hydraulic", keyChecklist: "Delivery line", valueChecklist: _deliveryLine!, photo: _step5Media['Delivery Line (Air Leakage & Water Leakage Checked):']?.path, video: _step5Media['Delivery Line (Air Leakage & Water Leakage Checked):']?.path, existingPhotoUrl: _step5ExistingPhotos['Delivery line'], existingVideoUrl: _step5ExistingVideos['Delivery line']));
-        if (_suctionDelivery != null) savedChecklists.add(SavedChecklist(id: "", checkType: "pipeline_hydraulic", keyChecklist: "Suction / Delivery Valve", valueChecklist: _suctionDelivery!, photo: _step5Media['Suction / Delivery Valve Condition Checked:']?.path, video: _step5Media['Suction / Delivery Valve Condition Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Suction / Delivery Valve'], existingVideoUrl: _step5ExistingVideos['Suction / Delivery Valve']));
-        if (_pressureSwitch != null) savedChecklists.add(SavedChecklist(id: "", checkType: "pipeline_hydraulic", keyChecklist: "Pressure switch", valueChecklist: _pressureSwitch!, photo: _step5Media['Pressure Switch / Pressure Transmitter Checked:']?.path, video: _step5Media['Pressure Switch / Pressure Transmitter Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Pressure switch'], existingVideoUrl: _step5ExistingVideos['Pressure switch']));
+        if (_nrvValve != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "pipeline_hydraulic",
+              keyChecklist: "NRV",
+              valueChecklist: _nrvValve!,
+              photo:
+                  _step5Media['NRV / Butterfly Valve / Gate Valve Condition Checked:']
+                      ?.path,
+              video:
+                  _step5Media['NRV / Butterfly Valve / Gate Valve Condition Checked:']
+                      ?.path,
+              existingPhotoUrl: _step5ExistingPhotos['NRV'],
+              existingVideoUrl: _step5ExistingVideos['NRV'],
+            ),
+          );
+        if (_strainerValve != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "pipeline_hydraulic",
+              keyChecklist: "Strainer",
+              valueChecklist: _strainerValve!,
+              photo:
+                  _step5Media['Strainer / Foot Valve Condition Checked:']?.path,
+              video:
+                  _step5Media['Strainer / Foot Valve Condition Checked:']?.path,
+              existingPhotoUrl: _step5ExistingPhotos['Strainer'],
+              existingVideoUrl: _step5ExistingVideos['Strainer'],
+            ),
+          );
+        if (_suctionLine != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "pipeline_hydraulic",
+              keyChecklist: "Suction line",
+              valueChecklist: _suctionLine!,
+              photo:
+                  _step5Media['Suction Line (Air Leakage & Water Leakage Checked):']
+                      ?.path,
+              video:
+                  _step5Media['Suction Line (Air Leakage & Water Leakage Checked):']
+                      ?.path,
+              existingPhotoUrl: _step5ExistingPhotos['Suction line'],
+              existingVideoUrl: _step5ExistingVideos['Suction line'],
+            ),
+          );
+        if (_deliveryLine != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "pipeline_hydraulic",
+              keyChecklist: "Delivery line",
+              valueChecklist: _deliveryLine!,
+              photo:
+                  _step5Media['Delivery Line (Air Leakage & Water Leakage Checked):']
+                      ?.path,
+              video:
+                  _step5Media['Delivery Line (Air Leakage & Water Leakage Checked):']
+                      ?.path,
+              existingPhotoUrl: _step5ExistingPhotos['Delivery line'],
+              existingVideoUrl: _step5ExistingVideos['Delivery line'],
+            ),
+          );
+        if (_suctionDelivery != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "pipeline_hydraulic",
+              keyChecklist: "Suction / Delivery Valve",
+              valueChecklist: _suctionDelivery!,
+              photo: _step5Media['Suction / Delivery Valve Condition Checked:']
+                  ?.path,
+              video: _step5Media['Suction / Delivery Valve Condition Checked:']
+                  ?.path,
+              existingPhotoUrl:
+                  _step5ExistingPhotos['Suction / Delivery Valve'],
+              existingVideoUrl:
+                  _step5ExistingVideos['Suction / Delivery Valve'],
+            ),
+          );
+        if (_pressureSwitch != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "pipeline_hydraulic",
+              keyChecklist: "Pressure switch",
+              valueChecklist: _pressureSwitch!,
+              photo:
+                  _step5Media['Pressure Switch / Pressure Transmitter Checked:']
+                      ?.path,
+              video:
+                  _step5Media['Pressure Switch / Pressure Transmitter Checked:']
+                      ?.path,
+              existingPhotoUrl: _step5ExistingPhotos['Pressure switch'],
+              existingVideoUrl: _step5ExistingVideos['Pressure switch'],
+            ),
+          );
       }
 
       // Add electrical checklists if not NA
       if (!_elecNA) {
-        if (_elecFaults != null) savedChecklists.add(SavedChecklist(id: "", checkType: "electrical", keyChecklist: "Electrical Faults", valueChecklist: _elecFaults!, photo: _step5Media['Electrical Faults Checked:']?.path, video: _step5Media['Electrical Faults Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Electrical Faults'], existingVideoUrl: _step5ExistingVideos['Electrical Faults']));
-        if (_voltage != null) savedChecklists.add(SavedChecklist(id: "", checkType: "electrical", keyChecklist: "Voltage Check", valueChecklist: _voltage!, photo: _step5Media['Voltage Checked:']?.path, video: _step5Media['Voltage Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Voltage Check'], existingVideoUrl: _step5ExistingVideos['Voltage Check']));
-        if (_phase != null) savedChecklists.add(SavedChecklist(id: "", checkType: "electrical", keyChecklist: "Phase Check", valueChecklist: _phase!, photo: _step5Media['Phase Checked:']?.path, video: _step5Media['Phase Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Phase Check'], existingVideoUrl: _step5ExistingVideos['Phase Check']));
-        if (_current != null) savedChecklists.add(SavedChecklist(id: "", checkType: "electrical", keyChecklist: "Current Check", valueChecklist: _current!, photo: _step5Media['Current Checked:']?.path, video: _step5Media['Current Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Current Check'], existingVideoUrl: _step5ExistingVideos['Current Check']));
-        if (_panelWiring != null) savedChecklists.add(SavedChecklist(id: "", checkType: "electrical", keyChecklist: "Control Panel Wiring", valueChecklist: _panelWiring!, photo: _step5Media['Panel Wiring Checked:']?.path, video: _step5Media['Panel Wiring Checked:']?.path, existingPhotoUrl: _step5ExistingPhotos['Control Panel Wiring'], existingVideoUrl: _step5ExistingVideos['Control Panel Wiring']));
+        if (_elecFaults != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "electrical",
+              keyChecklist: "Electrical Faults",
+              valueChecklist: _elecFaults!,
+              photo: _step5Media['Electrical Faults Checked:']?.path,
+              video: _step5Media['Electrical Faults Checked:']?.path,
+              existingPhotoUrl: _step5ExistingPhotos['Electrical Faults'],
+              existingVideoUrl: _step5ExistingVideos['Electrical Faults'],
+            ),
+          );
+        if (_voltage != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "electrical",
+              keyChecklist: "Voltage Check",
+              valueChecklist: _voltage!,
+              photo: _step5Media['Voltage Checked:']?.path,
+              video: _step5Media['Voltage Checked:']?.path,
+              existingPhotoUrl: _step5ExistingPhotos['Voltage Check'],
+              existingVideoUrl: _step5ExistingVideos['Voltage Check'],
+            ),
+          );
+        if (_phase != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "electrical",
+              keyChecklist: "Phase Check",
+              valueChecklist: _phase!,
+              photo: _step5Media['Phase Checked:']?.path,
+              video: _step5Media['Phase Checked:']?.path,
+              existingPhotoUrl: _step5ExistingPhotos['Phase Check'],
+              existingVideoUrl: _step5ExistingVideos['Phase Check'],
+            ),
+          );
+        if (_current != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "electrical",
+              keyChecklist: "Current Check",
+              valueChecklist: _current!,
+              photo: _step5Media['Current Checked:']?.path,
+              video: _step5Media['Current Checked:']?.path,
+              existingPhotoUrl: _step5ExistingPhotos['Current Check'],
+              existingVideoUrl: _step5ExistingVideos['Current Check'],
+            ),
+          );
+        if (_panelWiring != null)
+          savedChecklists.add(
+            SavedChecklist(
+              id: "",
+              checkType: "electrical",
+              keyChecklist: "Control Panel Wiring",
+              valueChecklist: _panelWiring!,
+              photo: _step5Media['Panel Wiring Checked:']?.path,
+              video: _step5Media['Panel Wiring Checked:']?.path,
+              existingPhotoUrl: _step5ExistingPhotos['Control Panel Wiring'],
+              existingVideoUrl: _step5ExistingVideos['Control Panel Wiring'],
+            ),
+          );
       }
 
       if (widget.isServiceReport) {
-        _submitServiceCallStep5Bloc.add(ServiceCallReportStep5PostEvent(
-          reportId: _commissioningReportId ?? widget.commissioningWorkId,
-          isMechanicalChecklistNa: _mechNA,
-          isPipelineChecklistNa: _pipeNA,
-          isElectricalChecklistNa: _elecNA,
-          checklistItems: savedChecklists.map((e) => {
-            "check_type": e.checkType,
-            "key_checklist": e.keyChecklist,
-            "value_checklist": e.valueChecklist,
-            if (e.photo != null) "photo": e.photo,
-            if (e.video != null) "video": e.video,
-          }).toList(),
-        ));
+        _submitServiceCallStep5Bloc.add(
+          ServiceCallReportStep5PostEvent(
+            reportId: _commissioningReportId ?? widget.commissioningWorkId,
+            isMechanicalChecklistNa: _mechNA,
+            isPipelineChecklistNa: _pipeNA,
+            isElectricalChecklistNa: _elecNA,
+            checklistItems: savedChecklists
+                .map(
+                  (e) => {
+                    "check_type": e.checkType,
+                    "key_checklist": e.keyChecklist,
+                    "value_checklist": e.valueChecklist,
+                    if (e.photo != null) "photo": e.photo,
+                    if (e.video != null) "video": e.video,
+                  },
+                )
+                .toList(),
+          ),
+        );
       } else {
-        _submitStep5Bloc.add(CommissioningStep5GetEvent(
-          _commissioningReportId ?? widget.commissioningWorkId,
-          _mechNA,
-          _pipeNA,
-          _elecNA,
-          savedChecklists,
-        ));
+        _submitStep5Bloc.add(
+          CommissioningStep5GetEvent(
+            _commissioningReportId ?? widget.commissioningWorkId,
+            _mechNA,
+            _pipeNA,
+            _elecNA,
+            savedChecklists,
+          ),
+        );
       }
     } else if (_currentStep == 6) {
-      if (_submitStep6Bloc.state is CommissioningStep6LoadingState || 
-          _submitServiceCallStep6Bloc.state is ServiceCallReportStep6LoadingState) return;
+      if (_submitStep6Bloc.state is CommissioningStep6LoadingState ||
+          _submitServiceCallStep6Bloc.state
+              is ServiceCallReportStep6LoadingState)
+        return;
 
-      print("🚀 Submitting Step 6: technicianRepresentative = '$_selectedTechnicianRepId'");
-      
+      print(
+        "🚀 Submitting Step 6: technicianRepresentative = '$_selectedTechnicianRepId'",
+      );
+
       if (widget.isServiceReport) {
         String? techSignaturePath = _technicianSignatureFile?.path;
-        if (techSignaturePath == null && _existingTechnicianSignatureUrl != null && _existingTechnicianSignatureUrl!.isNotEmpty) {
+        if (techSignaturePath == null &&
+            _existingTechnicianSignatureUrl != null &&
+            _existingTechnicianSignatureUrl!.isNotEmpty) {
           techSignaturePath = _existingTechnicianSignatureUrl;
         }
 
         String? custSignaturePath = _customerSignatureFile?.path;
-        if (custSignaturePath == null && _existingCustomerSignatureUrl != null && _existingCustomerSignatureUrl!.isNotEmpty) {
+        if (custSignaturePath == null &&
+            _existingCustomerSignatureUrl != null &&
+            _existingCustomerSignatureUrl!.isNotEmpty) {
           custSignaturePath = _existingCustomerSignatureUrl;
         }
 
@@ -571,28 +840,32 @@ class _CreateCommissioningReportScreenState
           workPhotosPaths.addAll(_existingWorkPhotosUrls);
         }
 
-        _submitServiceCallStep6Bloc.add(ServiceCallReportStep6SubmitEvent(
-          reportId: _commissioningReportId ?? widget.commissioningWorkId,
-          technicianRemarks: _technicianRemarksController.text.trim(),
-          customerRemarks: _customerRemarksController.text.trim(),
-          technicianRepresentative: _selectedTechnicianRepId ?? '',
-          customerRepresentativeName: _customerRepNameController.text.trim(),
-          technicianSignaturePath: techSignaturePath,
-          customerSignaturePath: custSignaturePath,
-          workPhotosPaths: workPhotosPaths,
-        ));
-
+        _submitServiceCallStep6Bloc.add(
+          ServiceCallReportStep6SubmitEvent(
+            reportId: _commissioningReportId ?? widget.commissioningWorkId,
+            technicianRemarks: _technicianRemarksController.text.trim(),
+            customerRemarks: _customerRemarksController.text.trim(),
+            technicianRepresentative: _selectedTechnicianRepId ?? '',
+            customerRepresentativeName: _customerRepNameController.text.trim(),
+            technicianSignaturePath: techSignaturePath,
+            customerSignaturePath: custSignaturePath,
+            workPhotosPaths: workPhotosPaths,
+          ),
+        );
       } else {
-        _submitStep6Bloc.add(CommissioningStep6SubmitEvent(
-          commissioning_report_id: _commissioningReportId ?? widget.commissioningWorkId,
-          technicianRemarks: _technicianRemarksController.text.trim(),
-          customerRemarks: _customerRemarksController.text.trim(),
-          technicianRepresentative: _selectedTechnicianRepId ?? '',
-          customerRepresentativeName: _customerRepNameController.text.trim(),
-          technicianSignaturePath: _technicianSignatureFile?.path,
-          customerSignaturePath: _customerSignatureFile?.path,
-          workPhotosPaths: _workPhotos.map((f) => f.path).toList(),
-        ));
+        _submitStep6Bloc.add(
+          CommissioningStep6SubmitEvent(
+            commissioning_report_id:
+                _commissioningReportId ?? widget.commissioningWorkId,
+            technicianRemarks: _technicianRemarksController.text.trim(),
+            customerRemarks: _customerRemarksController.text.trim(),
+            technicianRepresentative: _selectedTechnicianRepId ?? '',
+            customerRepresentativeName: _customerRepNameController.text.trim(),
+            technicianSignaturePath: _technicianSignatureFile?.path,
+            customerSignaturePath: _customerSignatureFile?.path,
+            workPhotosPaths: _workPhotos.map((f) => f.path).toList(),
+          ),
+        );
       }
     }
   }
@@ -603,52 +876,78 @@ class _CreateCommissioningReportScreenState
         _currentStep--;
         if (_currentStep == 1) {
           if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
-            _serviceCallStep1AutoFillBloc.add(ServiceCallReportStep1AutoFillGetEvent(widget.commissioningWorkId));
+            _serviceCallStep1AutoFillBloc.add(
+              ServiceCallReportStep1AutoFillGetEvent(
+                widget.commissioningWorkId,
+              ),
+            );
           } else {
-            _step1Bloc.add(CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId));
+            _step1Bloc.add(
+              CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId),
+            );
           }
         } else if (_currentStep == 2) {
           if (widget.isServiceReport) {
-            final idToUse = _commissioningReportId ?? widget.commissioningWorkId;
+            final idToUse =
+                _commissioningReportId ?? widget.commissioningWorkId;
             if (idToUse.isNotEmpty) {
-              _serviceCallStep2AutoFillBloc.add(ServiceCallReportStep2AutoFillGetEvent(idToUse));
+              _serviceCallStep2AutoFillBloc.add(
+                ServiceCallReportStep2AutoFillGetEvent(idToUse),
+              );
             }
           } else {
             if (_commissioningReportId != null) {
-              _step2Bloc.add(CommissioningStep2AutoFillGetEvent(_commissioningReportId!));
+              _step2Bloc.add(
+                CommissioningStep2AutoFillGetEvent(_commissioningReportId!),
+              );
             }
           }
         } else if (_currentStep == 3) {
           if (widget.isServiceReport) {
-            final idToUse = _commissioningReportId ?? widget.commissioningWorkId;
+            final idToUse =
+                _commissioningReportId ?? widget.commissioningWorkId;
             if (idToUse.isNotEmpty) {
-              _serviceCallStep3AutoFillBloc.add(ServiceCallReportStep3AutoFillGetEvent(idToUse));
+              _serviceCallStep3AutoFillBloc.add(
+                ServiceCallReportStep3AutoFillGetEvent(idToUse),
+              );
             }
           } else {
             if (_commissioningReportId != null) {
-              _step3Bloc.add(CommissioningStep3AutoFillGetEvent(_commissioningReportId!));
+              _step3Bloc.add(
+                CommissioningStep3AutoFillGetEvent(_commissioningReportId!),
+              );
             }
           }
         } else if (_currentStep == 4) {
           if (widget.isServiceReport) {
-            final idToUse = _commissioningReportId ?? widget.commissioningWorkId;
+            final idToUse =
+                _commissioningReportId ?? widget.commissioningWorkId;
             if (idToUse.isNotEmpty) {
-              _serviceCallStep4AutoFillBloc.add(ServiceCallReportStep4AutoFillGetEvent(idToUse));
+              _serviceCallStep4AutoFillBloc.add(
+                ServiceCallReportStep4AutoFillGetEvent(idToUse),
+              );
             }
           } else {
             if (_commissioningReportId != null) {
-              _step4Bloc.add(CommissioningStep4AutoFillGetEvent(_commissioningReportId!));
+              _step4Bloc.add(
+                CommissioningStep4AutoFillGetEvent(_commissioningReportId!),
+              );
             }
           }
         } else if (_currentStep == 5) {
           if (widget.isServiceReport) {
-            final idToUse = _commissioningReportId ?? widget.commissioningWorkId;
+            final idToUse =
+                _commissioningReportId ?? widget.commissioningWorkId;
             if (idToUse.isNotEmpty) {
-              _serviceCallStep5AutoFillBloc.add(ServiceCallReportStep5AutoFillGetEvent(idToUse));
+              _serviceCallStep5AutoFillBloc.add(
+                ServiceCallReportStep5AutoFillGetEvent(idToUse),
+              );
             }
           } else {
             if (_commissioningReportId != null) {
-              _step5Bloc.add(CommissioningStep5AutoFillGetEvent(_commissioningReportId!));
+              _step5Bloc.add(
+                CommissioningStep5AutoFillGetEvent(_commissioningReportId!),
+              );
             }
           }
         }
@@ -802,7 +1101,10 @@ class _CreateCommissioningReportScreenState
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ServiceCallReportStep6AutoFillBloc, ServiceCallReportStep6AutoFillState>(
+    return BlocListener<
+      ServiceCallReportStep6AutoFillBloc,
+      ServiceCallReportStep6AutoFillState
+    >(
       bloc: _serviceCallStep6AutoFillBloc,
       listener: (context, state) {
         if (state is ServiceCallReportStep6AutoFillSuccessState) {
@@ -810,9 +1112,9 @@ class _CreateCommissioningReportScreenState
           _technicianRemarksController.text = data.technicianRemarks;
           _customerRemarksController.text = data.customerRemarks;
           _customerRepNameController.text = data.customerRepresentativeName;
-          
+
           if (data.technicianRepresentativeName.isNotEmpty) {
-             _autofilledTechRepName = data.technicianRepresentativeName;
+            _autofilledTechRepName = data.technicianRepresentativeName;
           }
 
           if (data.technicianSignature.isNotEmpty) {
@@ -824,694 +1126,1276 @@ class _CreateCommissioningReportScreenState
           if (data.savedWorkPhotos.isNotEmpty) {
             _existingWorkPhotosUrls = data.savedWorkPhotos;
           }
-          
+
           setState(() {});
         }
       },
       child: BlocListener<ServiceCallReportStep3Bloc, ServiceCallReportStep3State>(
-      bloc: _submitServiceCallStep3Bloc,
-      listener: (context, state) {
-        if (state is ServiceCallReportStep3SuccessState) {
-          appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-          setState(() {
-            _currentStep++;
-            if (_currentStep == 4 && _commissioningReportId != null) {
-              _serviceCallStep4AutoFillBloc.add(ServiceCallReportStep4AutoFillGetEvent(_commissioningReportId!));
-            }
-          });
-        } else if (state is ServiceCallReportStep3FailureState) {
-          appSnackBar(context, const Color(0xFFF44336), state.message);
-        }
-      },
-      child: BlocListener<ServiceCallReportStep2Bloc, ServiceCallReportStep2State>(
-      bloc: _submitServiceCallStep2Bloc,
-      listener: (context, state) {
-        if (state is ServiceCallReportStep2SuccessState) {
-          appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-          setState(() {
-            _currentStep++;
-            if (_currentStep == 3 && _commissioningReportId != null) {
-              _serviceCallStep3AutoFillBloc.add(ServiceCallReportStep3AutoFillGetEvent(_commissioningReportId!));
-            }
-          });
-        } else if (state is ServiceCallReportStep2FailureState) {
-          appSnackBar(context, const Color(0xFFF44336), state.message);
-        }
-      },
-      child: BlocListener<CommissioningStep2Bloc, CommissioningStep2State>(
-      bloc: _submitStep2Bloc,
-      listener: (context, state) {
-        if (state is CommissioningStep2SuccessState) {
-          appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-          setState(() {
-            _currentStep++;
-            if (_currentStep == 3 && _commissioningReportId != null) {
-              _step3Bloc.add(CommissioningStep3AutoFillGetEvent(_commissioningReportId!));
-            }
-          });
-        } else if (state is CommissioningStep2FailureState) {
-          appSnackBar(context, const Color(0xFFF44336), state.message);
-        }
-      },
-      child: BlocListener<CommissioningStep1Bloc, CommissioningStep1State>(
-      bloc: _submitStep1Bloc,
-      listener: (context, state) {
-        if (state is CommissioningStep1lSuccessState) {
-          appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-          _commissioningReportId = state.data.data.id;
-          setState(() {
-            _currentStep++;
-            if (_currentStep == 2 && _commissioningReportId != null) {
-              _step2Bloc.add(CommissioningStep2AutoFillGetEvent(_commissioningReportId!));
-            }
-          });
-        } else if (state is CommissioningStep1FailureState) {
-          appSnackBar(context, const Color(0xFFF44336), state.message);
-        }
-      },
-      child: BlocListener<ServiceCallReportStep1Bloc, ServiceCallReportStep1State>(
-        bloc: _submitServiceCallStep1Bloc,
+        bloc: _submitServiceCallStep3Bloc,
         listener: (context, state) {
-          if (state is ServiceCallReportStep1SuccessState) {
-            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-            _commissioningReportId = state.data.data.id;
-            // Move to step 2 for service calls if needed
-            setState(() {
-              _currentStep++;
-              if (_currentStep == 2 && _commissioningReportId != null) {
-                _serviceCallStep2AutoFillBloc.add(ServiceCallReportStep2AutoFillGetEvent(_commissioningReportId!));
-              }
-            });
-          } else if (state is ServiceCallReportStep1FailureState) {
-            appSnackBar(context, const Color(0xFFF44336), state.message);
-          }
-        },
-      child: BlocListener<CommissioningStep3Bloc, CommissioningStep3State>(
-        bloc: _submitStep3Bloc,
-        listener: (context, state) {
-          if (state is CommissioningStep3SuccessState) {
+          if (state is ServiceCallReportStep3SuccessState) {
             appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
             setState(() {
               _currentStep++;
               if (_currentStep == 4 && _commissioningReportId != null) {
-                _step4Bloc.add(CommissioningStep4AutoFillGetEvent(_commissioningReportId!));
-              }
-            });
-          } else if (state is CommissioningStep3FailureState) {
-            appSnackBar(context, const Color(0xFFF44336), state.message);
-          }
-        },
-      child: BlocListener<ServiceCallReportStep3AutoFillBloc, ServiceCallReportStep3AutoFillState>(
-        bloc: _serviceCallStep3AutoFillBloc,
-        listener: (context, state) {
-          if (state is ServiceCallReportStep3AutoFillSuccessState) {
-            final data = state.data.data;
-            setState(() {
-              _isTechnicalDetailsNA = data.isTechnicalNa;
-              final techDetails = data.technicalDetails;
-              if (techDetails.isNotEmpty) {
-                _pumpMakeController.text = techDetails['pump_make'] ?? '';
-                _pumpModelController.text = techDetails['pump_model'] ?? '';
-                _pumpSerialNumberController.text = techDetails['pump_serial_number'] ?? '';
-                _pumpFlowLPMController.text = techDetails['pump_flow_lpm'] ?? '';
-                _pumpFlowM3HRController.text = techDetails['pump_flow_m3hr'] ?? '';
-                _pumpFlowLPSController.text = techDetails['pump_flow_lps'] ?? '';
-                _pumpFlowUSGPMController.text = techDetails['pump_flow_usgpm'] ?? '';
-                _pumpHeadMTRController.text = techDetails['pump_head_mtr'] ?? '';
-                _driverMakeController.text = techDetails['driver_make'] ?? '';
-                _driverSerialNumberController.text = techDetails['driver_serial_number'] ?? '';
-                _ratingKWController.text = techDetails['rating_kw'] ?? '';
-                _ratingHPController.text = techDetails['rating_hp'] ?? '';
-                _rpmController.text = techDetails['rpm'] ?? '';
-                _controlPanelMakeController.text = techDetails['control_panel_make'] ?? '';
-                _panelSerialModelController.text = techDetails['panel_serial_model'] ?? '';
-              } else {
-                _pumpMakeController.text = '';
-                _pumpModelController.text = '';
-                _pumpSerialNumberController.text = '';
-                _pumpFlowLPMController.text = '';
-                _pumpFlowM3HRController.text = '';
-                _pumpFlowLPSController.text = '';
-                _pumpFlowUSGPMController.text = '';
-                _pumpHeadMTRController.text = '';
-                _driverMakeController.text = '';
-                _driverSerialNumberController.text = '';
-                _ratingKWController.text = '';
-                _ratingHPController.text = '';
-                _rpmController.text = '';
-                _controlPanelMakeController.text = '';
-                _panelSerialModelController.text = '';
-              }
-            });
-          }
-        },
-      child: BlocListener<CommissioningStep3AutoFillBloc, CommissioningStep3AutoFillState>(
-        bloc: _step3Bloc,
-        listener: (context, state) {
-          if (state is CommissioningStep3AutoFillSuccessState) {
-            final data = state.data.data;
-            _isTechnicalDetailsNA = data.isTechnicalNa;
-            final techDetails = data.technicalDetails;
-            if (techDetails != null) {
-              _pumpMakeController.text = techDetails.pumpMake ?? '';
-              _pumpModelController.text = techDetails.pumpModel ?? '';
-              _pumpSerialNumberController.text = techDetails.pumpSerialNumber ?? '';
-              _pumpFlowLPMController.text = techDetails.pumpFlowLpm ?? '';
-              _pumpFlowM3HRController.text = techDetails.pumpFlowM3hr ?? '';
-              _pumpFlowLPSController.text = techDetails.pumpFlowLps ?? '';
-              _pumpFlowUSGPMController.text = techDetails.pumpFlowUsgpm ?? '';
-              _pumpHeadMTRController.text = techDetails.pumpHeadMtr ?? '';
-              _driverMakeController.text = techDetails.driverMake ?? '';
-              _driverSerialNumberController.text = techDetails.driverSerialNumber ?? '';
-              _ratingKWController.text = techDetails.ratingKw ?? '';
-              _ratingHPController.text = techDetails.ratingHp ?? '';
-              _rpmController.text = techDetails.rpm ?? '';
-              _controlPanelMakeController.text = techDetails.controlPanelMake ?? '';
-              _panelSerialModelController.text = techDetails.panelSerialModel ?? '';
-            } else {
-              _pumpMakeController.text = '';
-              _pumpModelController.text = '';
-              _pumpSerialNumberController.text = '';
-              _pumpFlowLPMController.text = '';
-              _pumpFlowM3HRController.text = '';
-              _pumpFlowLPSController.text = '';
-              _pumpFlowUSGPMController.text = '';
-              _pumpHeadMTRController.text = '';
-              _driverMakeController.text = '';
-              _driverSerialNumberController.text = '';
-              _ratingKWController.text = '';
-              _ratingHPController.text = '';
-              _rpmController.text = '';
-              _controlPanelMakeController.text = '';
-              _panelSerialModelController.text = '';
-            }
-            setState(() {});
-          }
-        },
-      child: BlocListener<ServiceCallReportStep4Bloc, ServiceCallReportStep4State>(
-        bloc: _submitServiceCallStep4Bloc,
-        listener: (context, state) {
-          if (state is ServiceCallReportStep4SuccessState) {
-            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-            setState(() {
-              _currentStep++;
-              if (_currentStep == 5 && _commissioningReportId != null) {
-                _serviceCallStep5AutoFillBloc.add(ServiceCallReportStep5AutoFillGetEvent(_commissioningReportId!));
-              }
-            });
-          } else if (state is ServiceCallReportStep4FailureState) {
-            appSnackBar(context, const Color(0xFFF44336), state.message);
-          }
-        },
-      child: BlocListener<CommissioningStep4Bloc, CommissioningStep4State>(
-        bloc: _submitStep4Bloc,
-        listener: (context, state) {
-          if (state is CommissioningStep4SuccessState) {
-            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-            setState(() {
-              _currentStep++;
-              if (_currentStep == 5 && _commissioningReportId != null) {
-                _step5Bloc.add(CommissioningStep5AutoFillGetEvent(_commissioningReportId!));
-              }
-            });
-          } else if (state is CommissioningStep4FailureState) {
-            appSnackBar(context, const Color(0xFFF44336), state.message);
-          }
-        },
-      child: BlocListener<ServiceCallReportStep4AutoFillBloc, ServiceCallReportStep4AutoFillState>(
-        bloc: _serviceCallStep4AutoFillBloc,
-        listener: (context, state) {
-          if (state is ServiceCallReportStep4AutoFillSuccessState) {
-            final data = state.data.data;
-            if (data.savedDescriptions.isNotEmpty) {
-              for (int i = 0; i < data.savedDescriptions.length; i++) {
-                if (i < _workDescriptionControllers.length) {
-                  _workDescriptionControllers[i].text = data.savedDescriptions[i].description;
-                } else {
-                  _workDescriptionControllers.add(TextEditingController(text: data.savedDescriptions[i].description));
-                }
-              }
-            } else {
-              for (var controller in _workDescriptionControllers) {
-                controller.text = '';
-              }
-            }
-            setState(() {});
-          }
-        },
-      child: BlocListener<CommissioningStep4AutoFillBloc, CommissioningStep4AutoFillState>(
-        bloc: _step4Bloc,
-        listener: (context, state) {
-          if (state is CommissioningStep4AutoFillSuccessState) {
-            final data = state.data.data;
-            if (data.savedDescriptions.isNotEmpty) {
-              for (int i = 0; i < data.savedDescriptions.length; i++) {
-                if (i < _workDescriptionControllers.length) {
-                  _workDescriptionControllers[i].text = data.savedDescriptions[i].description;
-                } else {
-                  _workDescriptionControllers.add(TextEditingController(text: data.savedDescriptions[i].description));
-                }
-              }
-            } else {
-              for (var controller in _workDescriptionControllers) {
-                controller.text = '';
-              }
-            }
-            setState(() {});
-          }
-        },
-      child: BlocListener<ServiceCallReportStep5Bloc, ServiceCallReportStep5State>(
-        bloc: _submitServiceCallStep5Bloc,
-        listener: (context, state) {
-          if (state is ServiceCallReportStep5SuccessState) {
-            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-            setState(() {
-              _currentStep++;
-              if (_currentStep == 6 && _commissioningReportId != null) {
-                _assignedServiceCallTechnicianBloc.add(AssignedServicecallTechnicianGetEvent(_commissioningReportId!));
-                _serviceCallStep6AutoFillBloc.add(ServiceCallReportStep6AutoFillGetEvent(_commissioningReportId!));
-              }
-            });
-          } else if (state is ServiceCallReportStep5FailureState) {
-            appSnackBar(context, const Color(0xFFF44336), state.message);
-          }
-        },
-      child: BlocListener<CommissioningStep5Bloc, CommissioningStep5State>(
-        bloc: _submitStep5Bloc,
-        listener: (context, state) {
-          if (state is CommissioningStep5SuccessState) {
-            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-            setState(() {
-              _currentStep++;
-              if (_currentStep == 6 && _commissioningReportId != null) {
-                _step6Bloc.add(CommissioningStep6AutoFillGetEvent(_commissioningReportId!));
-                _assignedTechniciansBloc.add(AssignedTechnicianRepresentativeGetEvent(_commissioningReportId!));
-              }
-            });
-          } else if (state is CommissioningStep5FailureState) {
-            appSnackBar(context, const Color(0xFFF44336), state.message);
-          }
-        },
-      child: BlocListener<CommissioningStep5AutoFillBloc, CommissioningStep5AutoFillState>(
-        bloc: _step5Bloc,
-        listener: (context, state) {
-          if (state is CommissioningStep5AutoFillSuccessState) {
-            final data = state.data.data;
-            _mechNA = data.isMechanicalChecklistNa;
-            _pipeNA = data.isPipelineChecklistNa;
-            _elecNA = data.isElectricalChecklistNa;
-            
-            _bearingNoise = null;
-            _vibration = null;
-            _mechSeal = null;
-            _pumpDry = null;
-            _nrvValve = null;
-            _strainerValve = null;
-            _suctionLine = null;
-            _deliveryLine = null;
-            _suctionDelivery = null;
-            _pressureSwitch = null;
-            _elecFaults = null;
-            _voltage = null;
-            _phase = null;
-            _current = null;
-            _panelWiring = null;
-
-            for (var check in data.savedChecklists) {
-              final key = check.keyChecklist;
-              final val = check.valueChecklist;
-              
-              _step5ExistingPhotos[key] = check.photo;
-              _step5ExistingVideos[key] = check.video;
-
-              if (key == "Bearing noise") _bearingNoise = val;
-              else if (key == "Vibration") _vibration = val;
-              else if (key == "Mechanical seal") _mechSeal = val;
-              else if (key == "Pump not running dry") _pumpDry = val;
-              else if (key == "NRV") _nrvValve = val;
-              else if (key == "Strainer") _strainerValve = val;
-              else if (key == "Suction line") _suctionLine = val;
-              else if (key == "Delivery line") _deliveryLine = val;
-              else if (key == "Suction / Delivery Valve") _suctionDelivery = val;
-              else if (key == "Pressure switch") _pressureSwitch = val;
-              else if (key == "Electrical Faults") _elecFaults = val;
-              else if (key == "Voltage Check") _voltage = val;
-              else if (key == "Phase Check") _phase = val;
-              else if (key == "Current Check") _current = val;
-              else if (key == "Control Panel Wiring") _panelWiring = val;
-            }
-            setState(() {});
-          }
-        },
-      child: BlocListener<ServiceCallReportStep5AutoFillBloc, ServiceCallReportStep5AutoFillState>(
-        bloc: _serviceCallStep5AutoFillBloc,
-        listener: (context, state) {
-          if (state is ServiceCallReportStep5AutoFillSuccessState) {
-            final data = state.data.data;
-            _mechNA = data.isMechanicalChecklistNa;
-            _pipeNA = data.isPipelineChecklistNa;
-            _elecNA = data.isElectricalChecklistNa;
-            
-            _bearingNoise = null;
-            _vibration = null;
-            _mechSeal = null;
-            _pumpDry = null;
-            _nrvValve = null;
-            _strainerValve = null;
-            _suctionLine = null;
-            _deliveryLine = null;
-            _suctionDelivery = null;
-            _pressureSwitch = null;
-            _elecFaults = null;
-            _voltage = null;
-            _phase = null;
-            _current = null;
-            _panelWiring = null;
-
-            for (var check in data.savedChecklists) {
-              final key = check.keyChecklist;
-              final val = check.valueChecklist;
-              
-              _step5ExistingPhotos[key] = check.photo;
-              _step5ExistingVideos[key] = check.video;
-
-              if (key == "Bearing noise") _bearingNoise = val;
-              else if (key == "Vibration") _vibration = val;
-              else if (key == "Mechanical seal") _mechSeal = val;
-              else if (key == "Pump not running dry") _pumpDry = val;
-              else if (key == "NRV") _nrvValve = val;
-              else if (key == "Strainer") _strainerValve = val;
-              else if (key == "Suction line") _suctionLine = val;
-              else if (key == "Delivery line") _deliveryLine = val;
-              else if (key == "Suction / Delivery Valve") _suctionDelivery = val;
-              else if (key == "Pressure switch") _pressureSwitch = val;
-              else if (key == "Electrical Faults") _elecFaults = val;
-              else if (key == "Voltage Check") _voltage = val;
-              else if (key == "Phase Check") _phase = val;
-              else if (key == "Current Check") _current = val;
-              else if (key == "Control Panel Wiring") _panelWiring = val;
-            }
-            setState(() {});
-          }
-        },
-      child: BlocListener<ServiceCallReportStep6Bloc, ServiceCallReportStep6State>(
-        bloc: _submitServiceCallStep6Bloc,
-        listener: (context, state) {
-          if (state is ServiceCallReportStep6SuccessState) {
-            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-            // If ServiceCallStep6Response is ever updated to include data, it would be passed here
-            _showSuccessDialog(qrCodeImage: state.data.data.qrCodeImage);
-          } else if (state is ServiceCallReportStep6FailureState) {
-            appSnackBar(context, const Color(0xFFF44336), state.message);
-          }
-        },
-      child: BlocListener<CommissioningStep6Bloc, CommissioningStep6State>(
-        bloc: _submitStep6Bloc,
-        listener: (context, state) {
-          if (state is CommissioningStep6SuccessState) {
-            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
-            _showSuccessDialog(qrCodeImage: state.data.data.qrCodeImage);
-          } else if (state is CommissioningStep6FailureState) {
-            appSnackBar(context, const Color(0xFFF44336), state.message);
-          }
-        },
-        child: Scaffold(
-        backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ── Header ──────────────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back,
-                          color: Color(0xFFA5ABB7),
-                        ),
-                        onPressed: _previousStep,
-                      ),
-                      const SizedBox(width: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.isServiceReport
-                                ? 'SERVICE REPORT'
-                                : 'COMMISSIONING REPORT',
-                            style: AppFont.style(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xFF0D121F),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                _serviceCallStep4AutoFillBloc.add(
+                  ServiceCallReportStep4AutoFillGetEvent(
+                    _commissioningReportId!,
                   ),
-                  const SizedBox(height: 20),
-                  // Progress Bar
-                  Row(
-                    children: List.generate(6, (index) {
-                      bool isActive = index < _currentStep;
-                      return Expanded(
-                        child: Container(
-                          height: 4,
-                          margin: EdgeInsets.only(right: index == 5 ? 0 : 8),
-                          decoration: BoxDecoration(
-                            color: isActive
-                                ? const Color(0xFF1565C0)
-                                : const Color(0xFFF1F2F6),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
+                );
+              }
+            });
+          } else if (state is ServiceCallReportStep3FailureState) {
+            appSnackBar(context, const Color(0xFFF44336), state.message);
+          }
+        },
+        child: BlocListener<ServiceCallReportStep2Bloc, ServiceCallReportStep2State>(
+          bloc: _submitServiceCallStep2Bloc,
+          listener: (context, state) {
+            if (state is ServiceCallReportStep2SuccessState) {
+              appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+              setState(() {
+                _currentStep++;
+                if (_currentStep == 3 && _commissioningReportId != null) {
+                  _serviceCallStep3AutoFillBloc.add(
+                    ServiceCallReportStep3AutoFillGetEvent(
+                      _commissioningReportId!,
+                    ),
+                  );
+                }
+              });
+            } else if (state is ServiceCallReportStep2FailureState) {
+              appSnackBar(context, const Color(0xFFF44336), state.message);
+            }
+          },
+          child: BlocListener<CommissioningStep2Bloc, CommissioningStep2State>(
+            bloc: _submitStep2Bloc,
+            listener: (context, state) {
+              if (state is CommissioningStep2SuccessState) {
+                appSnackBar(
+                  context,
+                  const Color(0xFF4CAF50),
+                  state.data.message,
+                );
+                setState(() {
+                  _currentStep++;
+                  if (_currentStep == 3 && _commissioningReportId != null) {
+                    _step3Bloc.add(
+                      CommissioningStep3AutoFillGetEvent(
+                        _commissioningReportId!,
+                      ),
+                    );
+                  }
+                });
+              } else if (state is CommissioningStep2FailureState) {
+                appSnackBar(context, const Color(0xFFF44336), state.message);
+              }
+            },
+            child: BlocListener<CommissioningStep1Bloc, CommissioningStep1State>(
+              bloc: _submitStep1Bloc,
+              listener: (context, state) {
+                if (state is CommissioningStep1lSuccessState) {
+                  appSnackBar(
+                    context,
+                    const Color(0xFF4CAF50),
+                    state.data.message,
+                  );
+                  _commissioningReportId = state.data.data.id;
+                  setState(() {
+                    _currentStep++;
+                    if (_currentStep == 2 && _commissioningReportId != null) {
+                      _step2Bloc.add(
+                        CommissioningStep2AutoFillGetEvent(
+                          _commissioningReportId!,
                         ),
                       );
-                    }),
-                  ),
-                ],
-              ),
-            ),
-
-            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-
-            // ── Body ────────────────────────────────────────────────────────
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                child: _buildBodyContent(),
-              ),
-            ),
-
-            // ── Footer ──────────────────────────────────────────────────────
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                border: Border(top: BorderSide(color: Color(0xFFF1F2F6))),
-              ),
-              child: Row(
-                children: [
-                  if (_currentStep > 1)
-                    GestureDetector(
-                      onTap: _previousStep,
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.arrow_back,
-                            size: 18,
-                            color: Color(0xFFA5ABB7),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'create_report_btn_back'.tr(),
-                            style: AppFont.style(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFFA5ABB7),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  else
-                    TextButton(
-                      onPressed: widget.onBack,
-                      child: Text(
-                        'create_report_btn_cancel'.tr(),
-                        style: AppFont.style(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFFA5ABB7),
-                        ),
-                      ),
-                    ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: _nextStep,
-                    child: BlocBuilder<ServiceCallReportStep1Bloc, ServiceCallReportStep1State>(
-                      bloc: _submitServiceCallStep1Bloc,
-                      builder: (context, serviceCallStep1State) {
-                        return BlocBuilder<ServiceCallReportStep2Bloc, ServiceCallReportStep2State>(
-                          bloc: _submitServiceCallStep2Bloc,
-                          builder: (context, serviceCallStep2State) {
-                            return BlocBuilder<ServiceCallReportStep3Bloc, ServiceCallReportStep3State>(
-                              bloc: _submitServiceCallStep3Bloc,
-                              builder: (context, serviceCallStep3State) {
-                                return BlocBuilder<ServiceCallReportStep4Bloc, ServiceCallReportStep4State>(
-                                  bloc: _submitServiceCallStep4Bloc,
-                                  builder: (context, serviceCallStep4State) {
-                                    return BlocBuilder<ServiceCallReportStep5Bloc, ServiceCallReportStep5State>(
-                                      bloc: _submitServiceCallStep5Bloc,
-                                      builder: (context, serviceCallStep5State) {
-                                        return BlocBuilder<CommissioningStep2Bloc, CommissioningStep2State>(
-                                          bloc: _submitStep2Bloc,
-                              builder: (context, submitStep2State) {
-                            return BlocBuilder<CommissioningStep1Bloc, CommissioningStep1State>(
-                              bloc: _submitStep1Bloc,
-                              builder: (context, submitState) {
-                                return BlocBuilder<CommissioningStep3Bloc, CommissioningStep3State>(
-                                  bloc: _submitStep3Bloc,
-                                  builder: (context, submitStep3State) {
-                                    return BlocBuilder<CommissioningStep4Bloc, CommissioningStep4State>(
-                                      bloc: _submitStep4Bloc,
-                                      builder: (context, submitStep4State) {
-                                          return BlocBuilder<CommissioningStep5Bloc, CommissioningStep5State>(
-                                            bloc: _submitStep5Bloc,
-                                            builder: (context, submitStep5State) {
-                                              return BlocBuilder<CommissioningStep6Bloc, CommissioningStep6State>(
-                                                bloc: _submitStep6Bloc,
-                                                builder: (context, submitStep6State) {
-                                                  return BlocBuilder<ServiceCallReportStep6AutoFillBloc, ServiceCallReportStep6AutoFillState>(
-                                                    bloc: _serviceCallStep6AutoFillBloc,
-                                                    builder: (context, serviceCallStep6AutoFillState) {
-                                                      bool isSubmitting = (_currentStep == 1 && submitState is CommissioningStep1LoadingState) ||
-                                                                          (_currentStep == 1 && serviceCallStep1State is ServiceCallReportStep1LoadingState) ||
-                                                                          (_currentStep == 2 && submitStep2State is CommissioningStep2LoadingState) ||
-                                                                          (_currentStep == 2 && serviceCallStep2State is ServiceCallReportStep2LoadingState) ||
-                                                                          (_currentStep == 3 && submitStep3State is CommissioningStep3LoadingState) ||
-                                                                          (_currentStep == 3 && serviceCallStep3State is ServiceCallReportStep3LoadingState) ||
-                                                                          (_currentStep == 4 && submitStep4State is CommissioningStep4LoadingState) ||
-                                                                          (_currentStep == 4 && serviceCallStep4State is ServiceCallReportStep4LoadingState) ||
-                                                                          (_currentStep == 5 && submitStep5State is CommissioningStep5LoadingState) ||
-                                                                          (_currentStep == 5 && serviceCallStep5State is ServiceCallReportStep5LoadingState) ||
-                                                                          (_currentStep == 6 && submitStep6State is CommissioningStep6LoadingState) ||
-                                                                          (_currentStep == 6 && serviceCallStep6AutoFillState is ServiceCallReportStep6AutoFillLoadingState);
-                                                      return Container(
-                                                height: 56,
-                                                padding: const EdgeInsets.symmetric(horizontal: 32),
-                                                decoration: BoxDecoration(
-                                                  color: const Color(0xFF1565C0),
-                                                  borderRadius: BorderRadius.circular(16),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: const Color(0xFF1565C0).withValues(alpha: 0.2),
-                                                      blurRadius: 15,
-                                                      offset: const Offset(0, 8),
-                                                    ),
-                                                  ],
-                                                ),
-                                                child: Row(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    if (_currentStep == 6 && !isSubmitting)
-                                                      const Icon(
-                                                        Icons.check_box_outlined,
-                                                        size: 20,
-                                                        color: Colors.white,
-                                                      )
-                                                    else
-                                                      const SizedBox.shrink(),
-                                                    if (_currentStep == 6 && !isSubmitting)
-                                                      const SizedBox(width: 12)
-                                                    else
-                                                      const SizedBox.shrink(),
-                                                    if (isSubmitting)
-                                                      const SizedBox(
-                                                        width: 20,
-                                                        height: 20,
-                                                        child: CircularProgressIndicator(
-                                                          color: Colors.white,
-                                                          strokeWidth: 2.5,
-                                                        ),
-                                                      )
-                                                    else
-                                                      Text(
-                                                        _currentStep == 6
-                                                            ? 'SUBMIT REPORT'
-                                                            : 'create_report_btn_next'.tr().toUpperCase(),
-                                                        style: AppFont.style(
-                                                          fontSize: 14,
-                                                          fontWeight: FontWeight.w800,
-                                                          color: Colors.white,
-                                                        ),
-                                                      ),
-                                                    if (_currentStep < 6 && !isSubmitting) ...[
-                                                      const SizedBox(width: 12),
-                                                      const Icon(
-                                                        Icons.arrow_forward,
-                                                        size: 18,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ],
-                                                    ],
-                                                  ),
-                                                );
-                                              },
-                                            );
-                                          },
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                            );
-                          },
-                        );
-                      },
-                    );
-                  },
-                );
+                    }
+                  });
+                } else if (state is CommissioningStep1FailureState) {
+                  appSnackBar(context, const Color(0xFFF44336), state.message);
+                }
               },
-            );
-          },
-        );
-      },
-    ); // BlocBuilder 2
-  },
-), // BlocBuilder 1
-), // GestureDetector
-], // Row children
-), // Row
-), // Container
-], // Column children
-), // Column
-), // SafeArea
-), // Scaffold
-      ), // Service Call Step 6 Submit
-      ), // Step 6 Submit
-      ), // Service Call Step 5 AutoFill
-      ), // Step 5 AutoFill
-      ), // Step 5 Submit
-      ), // Service Call Step 5 Listener
-      ), // Step 4 AutoFill
-      ), // Service Call Step 4 AutoFill
-      ), // Step 4 Submit
-      ), // Service Call Step 4 Submit
-      ), // Step 3 AutoFill
-      ), // Service Call Step 3 AutoFill
-      ), // Step 3 Submit
-      ), // Service Call Step 1 Listener
-      ), // Service Call Step 3 Listener
-      ), // Step 1 Submit
-      ), // Step 2 Submit
+              child: BlocListener<ServiceCallReportStep1Bloc, ServiceCallReportStep1State>(
+                bloc: _submitServiceCallStep1Bloc,
+                listener: (context, state) {
+                  if (state is ServiceCallReportStep1SuccessState) {
+                    appSnackBar(
+                      context,
+                      const Color(0xFF4CAF50),
+                      state.data.message,
+                    );
+                    _commissioningReportId = state.data.data.id;
+                    // Move to step 2 for service calls if needed
+                    setState(() {
+                      _currentStep++;
+                      if (_currentStep == 2 && _commissioningReportId != null) {
+                        _serviceCallStep2AutoFillBloc.add(
+                          ServiceCallReportStep2AutoFillGetEvent(
+                            _commissioningReportId!,
+                          ),
+                        );
+                      }
+                    });
+                  } else if (state is ServiceCallReportStep1FailureState) {
+                    appSnackBar(
+                      context,
+                      const Color(0xFFF44336),
+                      state.message,
+                    );
+                  }
+                },
+                child: BlocListener<CommissioningStep3Bloc, CommissioningStep3State>(
+                  bloc: _submitStep3Bloc,
+                  listener: (context, state) {
+                    if (state is CommissioningStep3SuccessState) {
+                      appSnackBar(
+                        context,
+                        const Color(0xFF4CAF50),
+                        state.data.message,
+                      );
+                      setState(() {
+                        _currentStep++;
+                        if (_currentStep == 4 &&
+                            _commissioningReportId != null) {
+                          _step4Bloc.add(
+                            CommissioningStep4AutoFillGetEvent(
+                              _commissioningReportId!,
+                            ),
+                          );
+                        }
+                      });
+                    } else if (state is CommissioningStep3FailureState) {
+                      appSnackBar(
+                        context,
+                        const Color(0xFFF44336),
+                        state.message,
+                      );
+                    }
+                  },
+                  child:
+                      BlocListener<
+                        ServiceCallReportStep3AutoFillBloc,
+                        ServiceCallReportStep3AutoFillState
+                      >(
+                        bloc: _serviceCallStep3AutoFillBloc,
+                        listener: (context, state) {
+                          if (state
+                              is ServiceCallReportStep3AutoFillSuccessState) {
+                            final data = state.data.data;
+                            setState(() {
+                              _isTechnicalDetailsNA = data.isTechnicalNa;
+                              final techDetails = data.technicalDetails;
+                              if (techDetails.isNotEmpty) {
+                                _pumpMakeController.text =
+                                    techDetails['pump_make'] ?? '';
+                                _pumpModelController.text =
+                                    techDetails['pump_model'] ?? '';
+                                _pumpSerialNumberController.text =
+                                    techDetails['pump_serial_number'] ?? '';
+                                _pumpFlowLPMController.text =
+                                    techDetails['pump_flow_lpm'] ?? '';
+                                _pumpFlowM3HRController.text =
+                                    techDetails['pump_flow_m3hr'] ?? '';
+                                _pumpFlowLPSController.text =
+                                    techDetails['pump_flow_lps'] ?? '';
+                                _pumpFlowUSGPMController.text =
+                                    techDetails['pump_flow_usgpm'] ?? '';
+                                _pumpHeadMTRController.text =
+                                    techDetails['pump_head_mtr'] ?? '';
+                                _driverMakeController.text =
+                                    techDetails['driver_make'] ?? '';
+                                _driverSerialNumberController.text =
+                                    techDetails['driver_serial_number'] ?? '';
+                                _ratingKWController.text =
+                                    techDetails['rating_kw'] ?? '';
+                                _ratingHPController.text =
+                                    techDetails['rating_hp'] ?? '';
+                                _rpmController.text = techDetails['rpm'] ?? '';
+                                _controlPanelMakeController.text =
+                                    techDetails['control_panel_make'] ?? '';
+                                _panelSerialModelController.text =
+                                    techDetails['panel_serial_model'] ?? '';
+                              } else {
+                                _pumpMakeController.text = '';
+                                _pumpModelController.text = '';
+                                _pumpSerialNumberController.text = '';
+                                _pumpFlowLPMController.text = '';
+                                _pumpFlowM3HRController.text = '';
+                                _pumpFlowLPSController.text = '';
+                                _pumpFlowUSGPMController.text = '';
+                                _pumpHeadMTRController.text = '';
+                                _driverMakeController.text = '';
+                                _driverSerialNumberController.text = '';
+                                _ratingKWController.text = '';
+                                _ratingHPController.text = '';
+                                _rpmController.text = '';
+                                _controlPanelMakeController.text = '';
+                                _panelSerialModelController.text = '';
+                              }
+                            });
+                          }
+                        },
+                        child:
+                            BlocListener<
+                              CommissioningStep3AutoFillBloc,
+                              CommissioningStep3AutoFillState
+                            >(
+                              bloc: _step3Bloc,
+                              listener: (context, state) {
+                                if (state
+                                    is CommissioningStep3AutoFillSuccessState) {
+                                  final data = state.data.data;
+                                  _isTechnicalDetailsNA = data.isTechnicalNa;
+                                  final techDetails = data.technicalDetails;
+                                  if (techDetails != null) {
+                                    _pumpMakeController.text =
+                                        techDetails.pumpMake ?? '';
+                                    _pumpModelController.text =
+                                        techDetails.pumpModel ?? '';
+                                    _pumpSerialNumberController.text =
+                                        techDetails.pumpSerialNumber ?? '';
+                                    _pumpFlowLPMController.text =
+                                        techDetails.pumpFlowLpm ?? '';
+                                    _pumpFlowM3HRController.text =
+                                        techDetails.pumpFlowM3hr ?? '';
+                                    _pumpFlowLPSController.text =
+                                        techDetails.pumpFlowLps ?? '';
+                                    _pumpFlowUSGPMController.text =
+                                        techDetails.pumpFlowUsgpm ?? '';
+                                    _pumpHeadMTRController.text =
+                                        techDetails.pumpHeadMtr ?? '';
+                                    _driverMakeController.text =
+                                        techDetails.driverMake ?? '';
+                                    _driverSerialNumberController.text =
+                                        techDetails.driverSerialNumber ?? '';
+                                    _ratingKWController.text =
+                                        techDetails.ratingKw ?? '';
+                                    _ratingHPController.text =
+                                        techDetails.ratingHp ?? '';
+                                    _rpmController.text = techDetails.rpm ?? '';
+                                    _controlPanelMakeController.text =
+                                        techDetails.controlPanelMake ?? '';
+                                    _panelSerialModelController.text =
+                                        techDetails.panelSerialModel ?? '';
+                                  } else {
+                                    _pumpMakeController.text = '';
+                                    _pumpModelController.text = '';
+                                    _pumpSerialNumberController.text = '';
+                                    _pumpFlowLPMController.text = '';
+                                    _pumpFlowM3HRController.text = '';
+                                    _pumpFlowLPSController.text = '';
+                                    _pumpFlowUSGPMController.text = '';
+                                    _pumpHeadMTRController.text = '';
+                                    _driverMakeController.text = '';
+                                    _driverSerialNumberController.text = '';
+                                    _ratingKWController.text = '';
+                                    _ratingHPController.text = '';
+                                    _rpmController.text = '';
+                                    _controlPanelMakeController.text = '';
+                                    _panelSerialModelController.text = '';
+                                  }
+                                  setState(() {});
+                                }
+                              },
+                              child:
+                                  BlocListener<
+                                    ServiceCallReportStep4Bloc,
+                                    ServiceCallReportStep4State
+                                  >(
+                                    bloc: _submitServiceCallStep4Bloc,
+                                    listener: (context, state) {
+                                      if (state
+                                          is ServiceCallReportStep4SuccessState) {
+                                        appSnackBar(
+                                          context,
+                                          const Color(0xFF4CAF50),
+                                          state.data.message,
+                                        );
+                                        setState(() {
+                                          _currentStep++;
+                                          if (_currentStep == 5 &&
+                                              _commissioningReportId != null) {
+                                            _serviceCallStep5AutoFillBloc.add(
+                                              ServiceCallReportStep5AutoFillGetEvent(
+                                                _commissioningReportId!,
+                                              ),
+                                            );
+                                          }
+                                        });
+                                      } else if (state
+                                          is ServiceCallReportStep4FailureState) {
+                                        appSnackBar(
+                                          context,
+                                          const Color(0xFFF44336),
+                                          state.message,
+                                        );
+                                      }
+                                    },
+                                    child:
+                                        BlocListener<
+                                          CommissioningStep4Bloc,
+                                          CommissioningStep4State
+                                        >(
+                                          bloc: _submitStep4Bloc,
+                                          listener: (context, state) {
+                                            if (state
+                                                is CommissioningStep4SuccessState) {
+                                              appSnackBar(
+                                                context,
+                                                const Color(0xFF4CAF50),
+                                                state.data.message,
+                                              );
+                                              setState(() {
+                                                _currentStep++;
+                                                if (_currentStep == 5 &&
+                                                    _commissioningReportId !=
+                                                        null) {
+                                                  _step5Bloc.add(
+                                                    CommissioningStep5AutoFillGetEvent(
+                                                      _commissioningReportId!,
+                                                    ),
+                                                  );
+                                                }
+                                              });
+                                            } else if (state
+                                                is CommissioningStep4FailureState) {
+                                              appSnackBar(
+                                                context,
+                                                const Color(0xFFF44336),
+                                                state.message,
+                                              );
+                                            }
+                                          },
+                                          child:
+                                              BlocListener<
+                                                ServiceCallReportStep4AutoFillBloc,
+                                                ServiceCallReportStep4AutoFillState
+                                              >(
+                                                bloc:
+                                                    _serviceCallStep4AutoFillBloc,
+                                                listener: (context, state) {
+                                                  if (state
+                                                      is ServiceCallReportStep4AutoFillSuccessState) {
+                                                    final data =
+                                                        state.data.data;
+                                                    if (data
+                                                        .savedDescriptions
+                                                        .isNotEmpty) {
+                                                      for (
+                                                        int i = 0;
+                                                        i <
+                                                            data
+                                                                .savedDescriptions
+                                                                .length;
+                                                        i++
+                                                      ) {
+                                                        if (i <
+                                                            _workDescriptionControllers
+                                                                .length) {
+                                                          _workDescriptionControllers[i]
+                                                              .text = data
+                                                              .savedDescriptions[i]
+                                                              .description;
+                                                        } else {
+                                                          _workDescriptionControllers.add(
+                                                            TextEditingController(
+                                                              text: data
+                                                                  .savedDescriptions[i]
+                                                                  .description,
+                                                            ),
+                                                          );
+                                                        }
+                                                      }
+                                                    } else {
+                                                      for (var controller
+                                                          in _workDescriptionControllers) {
+                                                        controller.text = '';
+                                                      }
+                                                    }
+                                                    setState(() {});
+                                                  }
+                                                },
+                                                child:
+                                                    BlocListener<
+                                                      CommissioningStep4AutoFillBloc,
+                                                      CommissioningStep4AutoFillState
+                                                    >(
+                                                      bloc: _step4Bloc,
+                                                      listener: (context, state) {
+                                                        if (state
+                                                            is CommissioningStep4AutoFillSuccessState) {
+                                                          final data =
+                                                              state.data.data;
+                                                          if (data
+                                                              .savedDescriptions
+                                                              .isNotEmpty) {
+                                                            for (
+                                                              int i = 0;
+                                                              i <
+                                                                  data
+                                                                      .savedDescriptions
+                                                                      .length;
+                                                              i++
+                                                            ) {
+                                                              if (i <
+                                                                  _workDescriptionControllers
+                                                                      .length) {
+                                                                _workDescriptionControllers[i]
+                                                                    .text = data
+                                                                    .savedDescriptions[i]
+                                                                    .description;
+                                                              } else {
+                                                                _workDescriptionControllers.add(
+                                                                  TextEditingController(
+                                                                    text: data
+                                                                        .savedDescriptions[i]
+                                                                        .description,
+                                                                  ),
+                                                                );
+                                                              }
+                                                            }
+                                                          } else {
+                                                            for (var controller
+                                                                in _workDescriptionControllers) {
+                                                              controller.text =
+                                                                  '';
+                                                            }
+                                                          }
+                                                          setState(() {});
+                                                        }
+                                                      },
+                                                      child:
+                                                          BlocListener<
+                                                            ServiceCallReportStep5Bloc,
+                                                            ServiceCallReportStep5State
+                                                          >(
+                                                            bloc:
+                                                                _submitServiceCallStep5Bloc,
+                                                            listener: (context, state) {
+                                                              if (state
+                                                                  is ServiceCallReportStep5SuccessState) {
+                                                                appSnackBar(
+                                                                  context,
+                                                                  const Color(
+                                                                    0xFF4CAF50,
+                                                                  ),
+                                                                  state
+                                                                      .data
+                                                                      .message,
+                                                                );
+                                                                setState(() {
+                                                                  _currentStep++;
+                                                                  if (_currentStep ==
+                                                                          6 &&
+                                                                      _commissioningReportId !=
+                                                                          null) {
+                                                                    _assignedServiceCallTechnicianBloc.add(
+                                                                      AssignedServicecallTechnicianGetEvent(
+                                                                        _commissioningReportId!,
+                                                                      ),
+                                                                    );
+                                                                    _serviceCallStep6AutoFillBloc.add(
+                                                                      ServiceCallReportStep6AutoFillGetEvent(
+                                                                        _commissioningReportId!,
+                                                                      ),
+                                                                    );
+                                                                  }
+                                                                });
+                                                              } else if (state
+                                                                  is ServiceCallReportStep5FailureState) {
+                                                                appSnackBar(
+                                                                  context,
+                                                                  const Color(
+                                                                    0xFFF44336,
+                                                                  ),
+                                                                  state.message,
+                                                                );
+                                                              }
+                                                            },
+                                                            child:
+                                                                BlocListener<
+                                                                  CommissioningStep5Bloc,
+                                                                  CommissioningStep5State
+                                                                >(
+                                                                  bloc:
+                                                                      _submitStep5Bloc,
+                                                                  listener:
+                                                                      (
+                                                                        context,
+                                                                        state,
+                                                                      ) {
+                                                                        if (state
+                                                                            is CommissioningStep5SuccessState) {
+                                                                          appSnackBar(
+                                                                            context,
+                                                                            const Color(
+                                                                              0xFF4CAF50,
+                                                                            ),
+                                                                            state.data.message,
+                                                                          );
+                                                                          setState(() {
+                                                                            _currentStep++;
+                                                                            if (_currentStep ==
+                                                                                    6 &&
+                                                                                _commissioningReportId !=
+                                                                                    null) {
+                                                                              _step6Bloc.add(
+                                                                                CommissioningStep6AutoFillGetEvent(
+                                                                                  _commissioningReportId!,
+                                                                                ),
+                                                                              );
+                                                                              _assignedTechniciansBloc.add(
+                                                                                AssignedTechnicianRepresentativeGetEvent(
+                                                                                  _commissioningReportId!,
+                                                                                ),
+                                                                              );
+                                                                            }
+                                                                          });
+                                                                        } else if (state
+                                                                            is CommissioningStep5FailureState) {
+                                                                          appSnackBar(
+                                                                            context,
+                                                                            const Color(
+                                                                              0xFFF44336,
+                                                                            ),
+                                                                            state.message,
+                                                                          );
+                                                                        }
+                                                                      },
+                                                                  child:
+                                                                      BlocListener<
+                                                                        CommissioningStep5AutoFillBloc,
+                                                                        CommissioningStep5AutoFillState
+                                                                      >(
+                                                                        bloc:
+                                                                            _step5Bloc,
+                                                                        listener:
+                                                                            (
+                                                                              context,
+                                                                              state,
+                                                                            ) {
+                                                                              if (state
+                                                                                  is CommissioningStep5AutoFillSuccessState) {
+                                                                                final data = state.data.data;
+                                                                                _mechNA = data.isMechanicalChecklistNa;
+                                                                                _pipeNA = data.isPipelineChecklistNa;
+                                                                                _elecNA = data.isElectricalChecklistNa;
+
+                                                                                _bearingNoise = null;
+                                                                                _vibration = null;
+                                                                                _mechSeal = null;
+                                                                                _pumpDry = null;
+                                                                                _nrvValve = null;
+                                                                                _strainerValve = null;
+                                                                                _suctionLine = null;
+                                                                                _deliveryLine = null;
+                                                                                _suctionDelivery = null;
+                                                                                _pressureSwitch = null;
+                                                                                _elecFaults = null;
+                                                                                _voltage = null;
+                                                                                _phase = null;
+                                                                                _current = null;
+                                                                                _panelWiring = null;
+
+                                                                                for (var check in data.savedChecklists) {
+                                                                                  final key = check.keyChecklist;
+                                                                                  final val = check.valueChecklist;
+
+                                                                                  _step5ExistingPhotos[key] = check.photo;
+                                                                                  _step5ExistingVideos[key] = check.video;
+
+                                                                                  if (key ==
+                                                                                      "Bearing noise")
+                                                                                    _bearingNoise = val;
+                                                                                  else if (key ==
+                                                                                      "Vibration")
+                                                                                    _vibration = val;
+                                                                                  else if (key ==
+                                                                                      "Mechanical seal")
+                                                                                    _mechSeal = val;
+                                                                                  else if (key ==
+                                                                                      "Pump not running dry")
+                                                                                    _pumpDry = val;
+                                                                                  else if (key ==
+                                                                                      "NRV")
+                                                                                    _nrvValve = val;
+                                                                                  else if (key ==
+                                                                                      "Strainer")
+                                                                                    _strainerValve = val;
+                                                                                  else if (key ==
+                                                                                      "Suction line")
+                                                                                    _suctionLine = val;
+                                                                                  else if (key ==
+                                                                                      "Delivery line")
+                                                                                    _deliveryLine = val;
+                                                                                  else if (key ==
+                                                                                      "Suction / Delivery Valve")
+                                                                                    _suctionDelivery = val;
+                                                                                  else if (key ==
+                                                                                      "Pressure switch")
+                                                                                    _pressureSwitch = val;
+                                                                                  else if (key ==
+                                                                                      "Electrical Faults")
+                                                                                    _elecFaults = val;
+                                                                                  else if (key ==
+                                                                                      "Voltage Check")
+                                                                                    _voltage = val;
+                                                                                  else if (key ==
+                                                                                      "Phase Check")
+                                                                                    _phase = val;
+                                                                                  else if (key ==
+                                                                                      "Current Check")
+                                                                                    _current = val;
+                                                                                  else if (key ==
+                                                                                      "Control Panel Wiring")
+                                                                                    _panelWiring = val;
+                                                                                }
+                                                                                setState(
+                                                                                  () {},
+                                                                                );
+                                                                              }
+                                                                            },
+                                                                        child:
+                                                                            BlocListener<
+                                                                              ServiceCallReportStep5AutoFillBloc,
+                                                                              ServiceCallReportStep5AutoFillState
+                                                                            >(
+                                                                              bloc: _serviceCallStep5AutoFillBloc,
+                                                                              listener:
+                                                                                  (
+                                                                                    context,
+                                                                                    state,
+                                                                                  ) {
+                                                                                    if (state
+                                                                                        is ServiceCallReportStep5AutoFillSuccessState) {
+                                                                                      final data = state.data.data;
+                                                                                      _mechNA = data.isMechanicalChecklistNa;
+                                                                                      _pipeNA = data.isPipelineChecklistNa;
+                                                                                      _elecNA = data.isElectricalChecklistNa;
+
+                                                                                      _bearingNoise = null;
+                                                                                      _vibration = null;
+                                                                                      _mechSeal = null;
+                                                                                      _pumpDry = null;
+                                                                                      _nrvValve = null;
+                                                                                      _strainerValve = null;
+                                                                                      _suctionLine = null;
+                                                                                      _deliveryLine = null;
+                                                                                      _suctionDelivery = null;
+                                                                                      _pressureSwitch = null;
+                                                                                      _elecFaults = null;
+                                                                                      _voltage = null;
+                                                                                      _phase = null;
+                                                                                      _current = null;
+                                                                                      _panelWiring = null;
+
+                                                                                      for (var check in data.savedChecklists) {
+                                                                                        final key = check.keyChecklist;
+                                                                                        final val = check.valueChecklist;
+
+                                                                                        _step5ExistingPhotos[key] = check.photo;
+                                                                                        _step5ExistingVideos[key] = check.video;
+
+                                                                                        if (key ==
+                                                                                            "Bearing noise")
+                                                                                          _bearingNoise = val;
+                                                                                        else if (key ==
+                                                                                            "Vibration")
+                                                                                          _vibration = val;
+                                                                                        else if (key ==
+                                                                                            "Mechanical seal")
+                                                                                          _mechSeal = val;
+                                                                                        else if (key ==
+                                                                                            "Pump not running dry")
+                                                                                          _pumpDry = val;
+                                                                                        else if (key ==
+                                                                                            "NRV")
+                                                                                          _nrvValve = val;
+                                                                                        else if (key ==
+                                                                                            "Strainer")
+                                                                                          _strainerValve = val;
+                                                                                        else if (key ==
+                                                                                            "Suction line")
+                                                                                          _suctionLine = val;
+                                                                                        else if (key ==
+                                                                                            "Delivery line")
+                                                                                          _deliveryLine = val;
+                                                                                        else if (key ==
+                                                                                            "Suction / Delivery Valve")
+                                                                                          _suctionDelivery = val;
+                                                                                        else if (key ==
+                                                                                            "Pressure switch")
+                                                                                          _pressureSwitch = val;
+                                                                                        else if (key ==
+                                                                                            "Electrical Faults")
+                                                                                          _elecFaults = val;
+                                                                                        else if (key ==
+                                                                                            "Voltage Check")
+                                                                                          _voltage = val;
+                                                                                        else if (key ==
+                                                                                            "Phase Check")
+                                                                                          _phase = val;
+                                                                                        else if (key ==
+                                                                                            "Current Check")
+                                                                                          _current = val;
+                                                                                        else if (key ==
+                                                                                            "Control Panel Wiring")
+                                                                                          _panelWiring = val;
+                                                                                      }
+                                                                                      setState(
+                                                                                        () {},
+                                                                                      );
+                                                                                    }
+                                                                                  },
+                                                                              child:
+                                                                                  BlocListener<
+                                                                                    ServiceCallReportStep6Bloc,
+                                                                                    ServiceCallReportStep6State
+                                                                                  >(
+                                                                                    bloc: _submitServiceCallStep6Bloc,
+                                                                                    listener:
+                                                                                        (
+                                                                                          context,
+                                                                                          state,
+                                                                                        ) {
+                                                                                          if (state
+                                                                                              is ServiceCallReportStep6SuccessState) {
+                                                                                            appSnackBar(
+                                                                                              context,
+                                                                                              const Color(
+                                                                                                0xFF4CAF50,
+                                                                                              ),
+                                                                                              state.data.message,
+                                                                                            );
+                                                                                            // If ServiceCallStep6Response is ever updated to include data, it would be passed here
+                                                                                            _showSuccessDialog(
+                                                                                              qrCodeImage: state.data.data.qrCodeImage,
+                                                                                            );
+                                                                                          } else if (state
+                                                                                              is ServiceCallReportStep6FailureState) {
+                                                                                            appSnackBar(
+                                                                                              context,
+                                                                                              const Color(
+                                                                                                0xFFF44336,
+                                                                                              ),
+                                                                                              state.message,
+                                                                                            );
+                                                                                          }
+                                                                                        },
+                                                                                    child:
+                                                                                        BlocListener<
+                                                                                          CommissioningStep6Bloc,
+                                                                                          CommissioningStep6State
+                                                                                        >(
+                                                                                          bloc: _submitStep6Bloc,
+                                                                                          listener:
+                                                                                              (
+                                                                                                context,
+                                                                                                state,
+                                                                                              ) {
+                                                                                                if (state
+                                                                                                    is CommissioningStep6SuccessState) {
+                                                                                                  appSnackBar(
+                                                                                                    context,
+                                                                                                    const Color(
+                                                                                                      0xFF4CAF50,
+                                                                                                    ),
+                                                                                                    state.data.message,
+                                                                                                  );
+                                                                                                  _showSuccessDialog(
+                                                                                                    qrCodeImage: state.data.data.qrCodeImage,
+                                                                                                  );
+                                                                                                } else if (state
+                                                                                                    is CommissioningStep6FailureState) {
+                                                                                                  appSnackBar(
+                                                                                                    context,
+                                                                                                    const Color(
+                                                                                                      0xFFF44336,
+                                                                                                    ),
+                                                                                                    state.message,
+                                                                                                  );
+                                                                                                }
+                                                                                              },
+                                                                                          child: Scaffold(
+                                                                                            backgroundColor: Colors.white,
+                                                                                            body: SafeArea(
+                                                                                              child: Column(
+                                                                                                children: [
+                                                                                                  // ── Header ──────────────────────────────────────────────────────
+                                                                                                  Padding(
+                                                                                                    padding: const EdgeInsets.fromLTRB(
+                                                                                                      20,
+                                                                                                      20,
+                                                                                                      20,
+                                                                                                      10,
+                                                                                                    ),
+                                                                                                    child: Column(
+                                                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                                      children: [
+                                                                                                        Row(
+                                                                                                          children: [
+                                                                                                            IconButton(
+                                                                                                              icon: const Icon(
+                                                                                                                Icons.arrow_back,
+                                                                                                                color: Color(
+                                                                                                                  0xFFA5ABB7,
+                                                                                                                ),
+                                                                                                              ),
+                                                                                                              onPressed: _previousStep,
+                                                                                                            ),
+                                                                                                            const SizedBox(
+                                                                                                              width: 8,
+                                                                                                            ),
+                                                                                                            Column(
+                                                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                                              children: [
+                                                                                                                Text(
+                                                                                                                  widget.isServiceReport
+                                                                                                                      ? 'SERVICE REPORT'
+                                                                                                                      : 'COMMISSIONING REPORT',
+                                                                                                                  style: AppFont.style(
+                                                                                                                    fontSize: 22,
+                                                                                                                    fontWeight: FontWeight.w900,
+                                                                                                                    color: const Color(
+                                                                                                                      0xFF0D121F,
+                                                                                                                    ),
+                                                                                                                  ),
+                                                                                                                ),
+                                                                                                              ],
+                                                                                                            ),
+                                                                                                          ],
+                                                                                                        ),
+                                                                                                        const SizedBox(
+                                                                                                          height: 20,
+                                                                                                        ),
+                                                                                                        // Progress Bar
+                                                                                                        Row(
+                                                                                                          children: List.generate(
+                                                                                                            6,
+                                                                                                            (
+                                                                                                              index,
+                                                                                                            ) {
+                                                                                                              bool isActive =
+                                                                                                                  index <
+                                                                                                                  _currentStep;
+                                                                                                              return Expanded(
+                                                                                                                child: Container(
+                                                                                                                  height: 4,
+                                                                                                                  margin: EdgeInsets.only(
+                                                                                                                    right:
+                                                                                                                        index ==
+                                                                                                                            5
+                                                                                                                        ? 0
+                                                                                                                        : 8,
+                                                                                                                  ),
+                                                                                                                  decoration: BoxDecoration(
+                                                                                                                    color: isActive
+                                                                                                                        ? const Color(
+                                                                                                                            0xFF1565C0,
+                                                                                                                          )
+                                                                                                                        : const Color(
+                                                                                                                            0xFFF1F2F6,
+                                                                                                                          ),
+                                                                                                                    borderRadius: BorderRadius.circular(
+                                                                                                                      2,
+                                                                                                                    ),
+                                                                                                                  ),
+                                                                                                                ),
+                                                                                                              );
+                                                                                                            },
+                                                                                                          ),
+                                                                                                        ),
+                                                                                                      ],
+                                                                                                    ),
+                                                                                                  ),
+
+                                                                                                  const Divider(
+                                                                                                    height: 1,
+                                                                                                    thickness: 1,
+                                                                                                    color: Color(
+                                                                                                      0xFFF1F2F6,
+                                                                                                    ),
+                                                                                                  ),
+
+                                                                                                  // ── Body ────────────────────────────────────────────────────────
+                                                                                                  Expanded(
+                                                                                                    child: SingleChildScrollView(
+                                                                                                      padding: const EdgeInsets.symmetric(
+                                                                                                        horizontal: 20,
+                                                                                                        vertical: 10,
+                                                                                                      ),
+                                                                                                      child: _buildBodyContent(),
+                                                                                                    ),
+                                                                                                  ),
+
+                                                                                                  // ── Footer ──────────────────────────────────────────────────────
+                                                                                                  Container(
+                                                                                                    padding: const EdgeInsets.symmetric(
+                                                                                                      horizontal: 20,
+                                                                                                      vertical: 24,
+                                                                                                    ),
+                                                                                                    decoration: const BoxDecoration(
+                                                                                                      color: Colors.white,
+                                                                                                      border: Border(
+                                                                                                        top: BorderSide(
+                                                                                                          color: Color(
+                                                                                                            0xFFF1F2F6,
+                                                                                                          ),
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                    ),
+                                                                                                    child: Row(
+                                                                                                      children: [
+                                                                                                        if (_currentStep >
+                                                                                                            1)
+                                                                                                          GestureDetector(
+                                                                                                            onTap: _previousStep,
+                                                                                                            child: Row(
+                                                                                                              children: [
+                                                                                                                const Icon(
+                                                                                                                  Icons.arrow_back,
+                                                                                                                  size: 18,
+                                                                                                                  color: Color(
+                                                                                                                    0xFFA5ABB7,
+                                                                                                                  ),
+                                                                                                                ),
+                                                                                                                const SizedBox(
+                                                                                                                  width: 8,
+                                                                                                                ),
+                                                                                                                Text(
+                                                                                                                  'create_report_btn_back'.tr(),
+                                                                                                                  style: AppFont.style(
+                                                                                                                    fontSize: 14,
+                                                                                                                    fontWeight: FontWeight.w800,
+                                                                                                                    color: const Color(
+                                                                                                                      0xFFA5ABB7,
+                                                                                                                    ),
+                                                                                                                  ),
+                                                                                                                ),
+                                                                                                              ],
+                                                                                                            ),
+                                                                                                          )
+                                                                                                        else
+                                                                                                          TextButton(
+                                                                                                            onPressed: widget.onBack,
+                                                                                                            child: Text(
+                                                                                                              'create_report_btn_cancel'.tr(),
+                                                                                                              style: AppFont.style(
+                                                                                                                fontSize: 14,
+                                                                                                                fontWeight: FontWeight.w800,
+                                                                                                                color: const Color(
+                                                                                                                  0xFFA5ABB7,
+                                                                                                                ),
+                                                                                                              ),
+                                                                                                            ),
+                                                                                                          ),
+                                                                                                        const Spacer(),
+                                                                                                        GestureDetector(
+                                                                                                          onTap: _nextStep,
+                                                                                                          child:
+                                                                                                              BlocBuilder<
+                                                                                                                ServiceCallReportStep1Bloc,
+                                                                                                                ServiceCallReportStep1State
+                                                                                                              >(
+                                                                                                                bloc: _submitServiceCallStep1Bloc,
+                                                                                                                builder:
+                                                                                                                    (
+                                                                                                                      context,
+                                                                                                                      serviceCallStep1State,
+                                                                                                                    ) {
+                                                                                                                      return BlocBuilder<
+                                                                                                                        ServiceCallReportStep2Bloc,
+                                                                                                                        ServiceCallReportStep2State
+                                                                                                                      >(
+                                                                                                                        bloc: _submitServiceCallStep2Bloc,
+                                                                                                                        builder:
+                                                                                                                            (
+                                                                                                                              context,
+                                                                                                                              serviceCallStep2State,
+                                                                                                                            ) {
+                                                                                                                              return BlocBuilder<
+                                                                                                                                ServiceCallReportStep3Bloc,
+                                                                                                                                ServiceCallReportStep3State
+                                                                                                                              >(
+                                                                                                                                bloc: _submitServiceCallStep3Bloc,
+                                                                                                                                builder:
+                                                                                                                                    (
+                                                                                                                                      context,
+                                                                                                                                      serviceCallStep3State,
+                                                                                                                                    ) {
+                                                                                                                                      return BlocBuilder<
+                                                                                                                                        ServiceCallReportStep4Bloc,
+                                                                                                                                        ServiceCallReportStep4State
+                                                                                                                                      >(
+                                                                                                                                        bloc: _submitServiceCallStep4Bloc,
+                                                                                                                                        builder:
+                                                                                                                                            (
+                                                                                                                                              context,
+                                                                                                                                              serviceCallStep4State,
+                                                                                                                                            ) {
+                                                                                                                                              return BlocBuilder<
+                                                                                                                                                ServiceCallReportStep5Bloc,
+                                                                                                                                                ServiceCallReportStep5State
+                                                                                                                                              >(
+                                                                                                                                                bloc: _submitServiceCallStep5Bloc,
+                                                                                                                                                builder:
+                                                                                                                                                    (
+                                                                                                                                                      context,
+                                                                                                                                                      serviceCallStep5State,
+                                                                                                                                                    ) {
+                                                                                                                                                      return BlocBuilder<
+                                                                                                                                                        CommissioningStep2Bloc,
+                                                                                                                                                        CommissioningStep2State
+                                                                                                                                                      >(
+                                                                                                                                                        bloc: _submitStep2Bloc,
+                                                                                                                                                        builder:
+                                                                                                                                                            (
+                                                                                                                                                              context,
+                                                                                                                                                              submitStep2State,
+                                                                                                                                                            ) {
+                                                                                                                                                              return BlocBuilder<
+                                                                                                                                                                CommissioningStep1Bloc,
+                                                                                                                                                                CommissioningStep1State
+                                                                                                                                                              >(
+                                                                                                                                                                bloc: _submitStep1Bloc,
+                                                                                                                                                                builder:
+                                                                                                                                                                    (
+                                                                                                                                                                      context,
+                                                                                                                                                                      submitState,
+                                                                                                                                                                    ) {
+                                                                                                                                                                      return BlocBuilder<
+                                                                                                                                                                        CommissioningStep3Bloc,
+                                                                                                                                                                        CommissioningStep3State
+                                                                                                                                                                      >(
+                                                                                                                                                                        bloc: _submitStep3Bloc,
+                                                                                                                                                                        builder:
+                                                                                                                                                                            (
+                                                                                                                                                                              context,
+                                                                                                                                                                              submitStep3State,
+                                                                                                                                                                            ) {
+                                                                                                                                                                              return BlocBuilder<
+                                                                                                                                                                                CommissioningStep4Bloc,
+                                                                                                                                                                                CommissioningStep4State
+                                                                                                                                                                              >(
+                                                                                                                                                                                bloc: _submitStep4Bloc,
+                                                                                                                                                                                builder:
+                                                                                                                                                                                    (
+                                                                                                                                                                                      context,
+                                                                                                                                                                                      submitStep4State,
+                                                                                                                                                                                    ) {
+                                                                                                                                                                                      return BlocBuilder<
+                                                                                                                                                                                        CommissioningStep5Bloc,
+                                                                                                                                                                                        CommissioningStep5State
+                                                                                                                                                                                      >(
+                                                                                                                                                                                        bloc: _submitStep5Bloc,
+                                                                                                                                                                                        builder:
+                                                                                                                                                                                            (
+                                                                                                                                                                                              context,
+                                                                                                                                                                                              submitStep5State,
+                                                                                                                                                                                            ) {
+                                                                                                                                                                                              return BlocBuilder<
+                                                                                                                                                                                                CommissioningStep6Bloc,
+                                                                                                                                                                                                CommissioningStep6State
+                                                                                                                                                                                              >(
+                                                                                                                                                                                                bloc: _submitStep6Bloc,
+                                                                                                                                                                                                builder:
+                                                                                                                                                                                                    (
+                                                                                                                                                                                                      context,
+                                                                                                                                                                                                      submitStep6State,
+                                                                                                                                                                                                    ) {
+                                                                                                                                                                                                      return BlocBuilder<
+                                                                                                                                                                                                        ServiceCallReportStep6AutoFillBloc,
+                                                                                                                                                                                                        ServiceCallReportStep6AutoFillState
+                                                                                                                                                                                                      >(
+                                                                                                                                                                                                        bloc: _serviceCallStep6AutoFillBloc,
+                                                                                                                                                                                                        builder:
+                                                                                                                                                                                                            (
+                                                                                                                                                                                                              context,
+                                                                                                                                                                                                              serviceCallStep6AutoFillState,
+                                                                                                                                                                                                            ) {
+                                                                                                                                                                                                              bool isSubmitting =
+                                                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                                                          1 &&
+                                                                                                                                                                                                                      submitState
+                                                                                                                                                                                                                          is CommissioningStep1LoadingState) ||
+                                                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                                                          1 &&
+                                                                                                                                                                                                                      serviceCallStep1State
+                                                                                                                                                                                                                          is ServiceCallReportStep1LoadingState) ||
+                                                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                                                          2 &&
+                                                                                                                                                                                                                      submitStep2State
+                                                                                                                                                                                                                          is CommissioningStep2LoadingState) ||
+                                                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                                                          2 &&
+                                                                                                                                                                                                                      serviceCallStep2State
+                                                                                                                                                                                                                          is ServiceCallReportStep2LoadingState) ||
+                                                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                                                          3 &&
+                                                                                                                                                                                                                      submitStep3State
+                                                                                                                                                                                                                          is CommissioningStep3LoadingState) ||
+                                                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                                                          3 &&
+                                                                                                                                                                                                                      serviceCallStep3State
+                                                                                                                                                                                                                          is ServiceCallReportStep3LoadingState) ||
+                                                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                                                          4 &&
+                                                                                                                                                                                                                      submitStep4State
+                                                                                                                                                                                                                          is CommissioningStep4LoadingState) ||
+                                                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                                                          4 &&
+                                                                                                                                                                                                                      serviceCallStep4State
+                                                                                                                                                                                                                          is ServiceCallReportStep4LoadingState) ||
+                                                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                                                          5 &&
+                                                                                                                                                                                                                      submitStep5State
+                                                                                                                                                                                                                          is CommissioningStep5LoadingState) ||
+                                                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                                                          5 &&
+                                                                                                                                                                                                                      serviceCallStep5State
+                                                                                                                                                                                                                          is ServiceCallReportStep5LoadingState) ||
+                                                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                                                          6 &&
+                                                                                                                                                                                                                      submitStep6State
+                                                                                                                                                                                                                          is CommissioningStep6LoadingState) ||
+                                                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                                                          6 &&
+                                                                                                                                                                                                                      serviceCallStep6AutoFillState
+                                                                                                                                                                                                                          is ServiceCallReportStep6AutoFillLoadingState);
+                                                                                                                                                                                                              return Container(
+                                                                                                                                                                                                                height: 56,
+                                                                                                                                                                                                                padding: const EdgeInsets.symmetric(
+                                                                                                                                                                                                                  horizontal: 32,
+                                                                                                                                                                                                                ),
+                                                                                                                                                                                                                decoration: BoxDecoration(
+                                                                                                                                                                                                                  color: const Color(
+                                                                                                                                                                                                                    0xFF1565C0,
+                                                                                                                                                                                                                  ),
+                                                                                                                                                                                                                  borderRadius: BorderRadius.circular(
+                                                                                                                                                                                                                    16,
+                                                                                                                                                                                                                  ),
+                                                                                                                                                                                                                  boxShadow: [
+                                                                                                                                                                                                                    BoxShadow(
+                                                                                                                                                                                                                      color:
+                                                                                                                                                                                                                          const Color(
+                                                                                                                                                                                                                            0xFF1565C0,
+                                                                                                                                                                                                                          ).withValues(
+                                                                                                                                                                                                                            alpha: 0.2,
+                                                                                                                                                                                                                          ),
+                                                                                                                                                                                                                      blurRadius: 15,
+                                                                                                                                                                                                                      offset: const Offset(
+                                                                                                                                                                                                                        0,
+                                                                                                                                                                                                                        8,
+                                                                                                                                                                                                                      ),
+                                                                                                                                                                                                                    ),
+                                                                                                                                                                                                                  ],
+                                                                                                                                                                                                                ),
+                                                                                                                                                                                                                child: Row(
+                                                                                                                                                                                                                  mainAxisSize: MainAxisSize.min,
+                                                                                                                                                                                                                  children: [
+                                                                                                                                                                                                                    if (_currentStep ==
+                                                                                                                                                                                                                            6 &&
+                                                                                                                                                                                                                        !isSubmitting)
+                                                                                                                                                                                                                      const Icon(
+                                                                                                                                                                                                                        Icons.check_box_outlined,
+                                                                                                                                                                                                                        size: 20,
+                                                                                                                                                                                                                        color: Colors.white,
+                                                                                                                                                                                                                      )
+                                                                                                                                                                                                                    else
+                                                                                                                                                                                                                      const SizedBox.shrink(),
+                                                                                                                                                                                                                    if (_currentStep ==
+                                                                                                                                                                                                                            6 &&
+                                                                                                                                                                                                                        !isSubmitting)
+                                                                                                                                                                                                                      const SizedBox(
+                                                                                                                                                                                                                        width: 12,
+                                                                                                                                                                                                                      )
+                                                                                                                                                                                                                    else
+                                                                                                                                                                                                                      const SizedBox.shrink(),
+                                                                                                                                                                                                                    if (isSubmitting)
+                                                                                                                                                                                                                      const SizedBox(
+                                                                                                                                                                                                                        width: 20,
+                                                                                                                                                                                                                        height: 20,
+                                                                                                                                                                                                                        child: CircularProgressIndicator(
+                                                                                                                                                                                                                          color: Colors.white,
+                                                                                                                                                                                                                          strokeWidth: 2.5,
+                                                                                                                                                                                                                        ),
+                                                                                                                                                                                                                      )
+                                                                                                                                                                                                                    else
+                                                                                                                                                                                                                      Text(
+                                                                                                                                                                                                                        _currentStep ==
+                                                                                                                                                                                                                                6
+                                                                                                                                                                                                                            ? 'SUBMIT REPORT'
+                                                                                                                                                                                                                            : 'create_report_btn_next'.tr().toUpperCase(),
+                                                                                                                                                                                                                        style: AppFont.style(
+                                                                                                                                                                                                                          fontSize: 14,
+                                                                                                                                                                                                                          fontWeight: FontWeight.w800,
+                                                                                                                                                                                                                          color: Colors.white,
+                                                                                                                                                                                                                        ),
+                                                                                                                                                                                                                      ),
+                                                                                                                                                                                                                    if (_currentStep <
+                                                                                                                                                                                                                            6 &&
+                                                                                                                                                                                                                        !isSubmitting) ...[
+                                                                                                                                                                                                                      const SizedBox(
+                                                                                                                                                                                                                        width: 12,
+                                                                                                                                                                                                                      ),
+                                                                                                                                                                                                                      const Icon(
+                                                                                                                                                                                                                        Icons.arrow_forward,
+                                                                                                                                                                                                                        size: 18,
+                                                                                                                                                                                                                        color: Colors.white,
+                                                                                                                                                                                                                      ),
+                                                                                                                                                                                                                    ],
+                                                                                                                                                                                                                  ],
+                                                                                                                                                                                                                ),
+                                                                                                                                                                                                              );
+                                                                                                                                                                                                            },
+                                                                                                                                                                                                      );
+                                                                                                                                                                                                    },
+                                                                                                                                                                                              );
+                                                                                                                                                                                            },
+                                                                                                                                                                                      );
+                                                                                                                                                                                    },
+                                                                                                                                                                              );
+                                                                                                                                                                            },
+                                                                                                                                                                      );
+                                                                                                                                                                    },
+                                                                                                                                                              );
+                                                                                                                                                            },
+                                                                                                                                                      );
+                                                                                                                                                    },
+                                                                                                                                              );
+                                                                                                                                            },
+                                                                                                                                      );
+                                                                                                                                    },
+                                                                                                                              );
+                                                                                                                            },
+                                                                                                                      ); // BlocBuilder 2
+                                                                                                                    },
+                                                                                                              ), // BlocBuilder 1
+                                                                                                        ), // GestureDetector
+                                                                                                      ], // Row children
+                                                                                                    ), // Row
+                                                                                                  ), // Container
+                                                                                                ], // Column children
+                                                                                              ), // Column
+                                                                                            ), // SafeArea
+                                                                                          ), // Scaffold
+                                                                                        ), // Service Call Step 6 Submit
+                                                                                  ), // Step 6 Submit
+                                                                            ), // Service Call Step 5 AutoFill
+                                                                      ), // Step 5 AutoFill
+                                                                ), // Step 5 Submit
+                                                          ), // Service Call Step 5 Listener
+                                                    ), // Step 4 AutoFill
+                                              ), // Service Call Step 4 AutoFill
+                                        ), // Step 4 Submit
+                                  ), // Service Call Step 4 Submit
+                            ), // Step 3 AutoFill
+                      ), // Service Call Step 3 AutoFill
+                ), // Step 3 Submit
+              ), // Service Call Step 1 Listener
+            ), // Service Call Step 3 Listener
+          ), // Step 1 Submit
+        ), // Step 2 Submit
       ), // Step 2 Service Call Submit
     ); // Service Call Step 6 AutoFill Submit
   }
@@ -1520,7 +2404,10 @@ class _CreateCommissioningReportScreenState
     switch (_currentStep) {
       case 1:
         if (widget.isServiceReport) {
-          return BlocConsumer<ServiceCallReportStep1AutoFillBloc, ServiceCallReportStep1AutoFillState>(
+          return BlocConsumer<
+            ServiceCallReportStep1AutoFillBloc,
+            ServiceCallReportStep1AutoFillState
+          >(
             bloc: _serviceCallStep1AutoFillBloc,
             listener: (context, state) {
               if (state is ServiceCallReportStep1AutoFillSuccessState) {
@@ -1528,14 +2415,18 @@ class _CreateCommissioningReportScreenState
                 setState(() {
                   if (state.data.data.assignedTechnicians.isNotEmpty) {
                     _technicians.clear();
-                    _technicians.addAll(state.data.data.assignedTechnicians
-                        .map((t) => TextEditingController(text: t.id)));
+                    _technicians.addAll(
+                      state.data.data.assignedTechnicians.map(
+                        (t) => TextEditingController(text: t.id),
+                      ),
+                    );
                   }
                 });
               }
             },
             builder: (context, state) {
-              if (state is ServiceCallReportStep1AutoFillLoadingState || state is ServiceCallReportStep1AutoFillInitialState) {
+              if (state is ServiceCallReportStep1AutoFillLoadingState ||
+                  state is ServiceCallReportStep1AutoFillInitialState) {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32.0),
@@ -1546,12 +2437,17 @@ class _CreateCommissioningReportScreenState
               // Since _buildStep1 expects CommissioningWorkData, and ServiceCallData has different fields,
               // we might need to handle this. But wait, _buildStep1 takes 'data' as dynamic or specific type?
               // Let's pass the data as it is.
-              final data = state is ServiceCallReportStep1AutoFillSuccessState ? state.data.data : null;
+              final data = state is ServiceCallReportStep1AutoFillSuccessState
+                  ? state.data.data
+                  : null;
               return _buildStep1(data);
             },
           );
         } else {
-          return BlocConsumer<CommissioningStep1AutoFillBloc, CommissioningStep1AutoFillState>(
+          return BlocConsumer<
+            CommissioningStep1AutoFillBloc,
+            CommissioningStep1AutoFillState
+          >(
             bloc: _step1Bloc,
             listener: (context, state) {
               if (state is CommissioningStep1AutoFillSuccessState) {
@@ -1559,14 +2455,18 @@ class _CreateCommissioningReportScreenState
                 setState(() {
                   if (state.data.data.assignedTechnicians.isNotEmpty) {
                     _technicians.clear();
-                    _technicians.addAll(state.data.data.assignedTechnicians
-                        .map((t) => TextEditingController(text: t.id)));
+                    _technicians.addAll(
+                      state.data.data.assignedTechnicians.map(
+                        (t) => TextEditingController(text: t.id),
+                      ),
+                    );
                   }
                 });
               }
             },
             builder: (context, state) {
-              if (state is CommissioningStep1AutoFillLoadingState || state is CommissioningStep1AutoFillInitialState) {
+              if (state is CommissioningStep1AutoFillLoadingState ||
+                  state is CommissioningStep1AutoFillInitialState) {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32.0),
@@ -1574,14 +2474,19 @@ class _CreateCommissioningReportScreenState
                   ),
                 );
               }
-              final data = state is CommissioningStep1AutoFillSuccessState ? state.data.data : null;
+              final data = state is CommissioningStep1AutoFillSuccessState
+                  ? state.data.data
+                  : null;
               return _buildStep1(data);
             },
           );
         }
       case 2:
         if (widget.isServiceReport) {
-          return BlocConsumer<ServiceCallReportStep2AutoFillBloc, ServiceCallReportStep2AutoFillState>(
+          return BlocConsumer<
+            ServiceCallReportStep2AutoFillBloc,
+            ServiceCallReportStep2AutoFillState
+          >(
             bloc: _serviceCallStep2AutoFillBloc,
             listener: (context, state) {
               if (state is ServiceCallReportStep2AutoFillSuccessState) {
@@ -1589,7 +2494,11 @@ class _CreateCommissioningReportScreenState
                   if (state.data.data.memberPresentsCustomerSide.isNotEmpty) {
                     _representatives.clear();
                     // Let's assume it's a comma separated string or single string
-                    _representatives.add(TextEditingController(text: state.data.data.memberPresentsCustomerSide));
+                    _representatives.add(
+                      TextEditingController(
+                        text: state.data.data.memberPresentsCustomerSide,
+                      ),
+                    );
                   }
                   if (state.data.data.agenda.isNotEmpty) {
                     _agendaController.text = state.data.data.agenda;
@@ -1598,7 +2507,8 @@ class _CreateCommissioningReportScreenState
               }
             },
             builder: (context, state) {
-              if (state is ServiceCallReportStep2AutoFillLoadingState || state is ServiceCallReportStep2AutoFillInitialState) {
+              if (state is ServiceCallReportStep2AutoFillLoadingState ||
+                  state is ServiceCallReportStep2AutoFillInitialState) {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32.0),
@@ -1610,18 +2520,25 @@ class _CreateCommissioningReportScreenState
             },
           );
         } else {
-          return BlocConsumer<CommissioningStep2AutoFillBloc, CommissioningStep2AutoFillState>(
+          return BlocConsumer<
+            CommissioningStep2AutoFillBloc,
+            CommissioningStep2AutoFillState
+          >(
             bloc: _step2Bloc,
             listener: (context, state) {
               if (state is CommissioningStep2AutoFillSuccessState) {
                 setState(() {
                   if (state.data.data.memberPresentsCustomerSide.isNotEmpty) {
                     _representatives.clear();
-                    _representatives.addAll(state.data.data.memberPresentsCustomerSide
-                        .map((t) => TextEditingController(text: t)));
+                    _representatives.addAll(
+                      state.data.data.memberPresentsCustomerSide.map(
+                        (t) => TextEditingController(text: t),
+                      ),
+                    );
                   }
                   if (state.data.data.warrantyPeriodYears > 0) {
-                    _selectedWarranty = '${state.data.data.warrantyPeriodYears} YEAR';
+                    _selectedWarranty =
+                        '${state.data.data.warrantyPeriodYears} YEAR';
                   }
                   if (state.data.data.agenda.isNotEmpty) {
                     _agendaController.text = state.data.data.agenda;
@@ -1630,7 +2547,8 @@ class _CreateCommissioningReportScreenState
               }
             },
             builder: (context, state) {
-              if (state is CommissioningStep2AutoFillLoadingState || state is CommissioningStep2AutoFillInitialState) {
+              if (state is CommissioningStep2AutoFillLoadingState ||
+                  state is CommissioningStep2AutoFillInitialState) {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32.0),
@@ -1644,10 +2562,14 @@ class _CreateCommissioningReportScreenState
         }
       case 3:
         if (widget.isServiceReport) {
-          return BlocBuilder<ServiceCallReportStep3AutoFillBloc, ServiceCallReportStep3AutoFillState>(
+          return BlocBuilder<
+            ServiceCallReportStep3AutoFillBloc,
+            ServiceCallReportStep3AutoFillState
+          >(
             bloc: _serviceCallStep3AutoFillBloc,
             builder: (context, state) {
-              if (state is ServiceCallReportStep3AutoFillLoadingState || state is ServiceCallReportStep3AutoFillInitialState) {
+              if (state is ServiceCallReportStep3AutoFillLoadingState ||
+                  state is ServiceCallReportStep3AutoFillInitialState) {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32.0),
@@ -1659,10 +2581,14 @@ class _CreateCommissioningReportScreenState
             },
           );
         } else {
-          return BlocBuilder<CommissioningStep3AutoFillBloc, CommissioningStep3AutoFillState>(
+          return BlocBuilder<
+            CommissioningStep3AutoFillBloc,
+            CommissioningStep3AutoFillState
+          >(
             bloc: _step3Bloc,
             builder: (context, state) {
-              if (state is CommissioningStep3AutoFillLoadingState || state is CommissioningStep3AutoFillInitialState) {
+              if (state is CommissioningStep3AutoFillLoadingState ||
+                  state is CommissioningStep3AutoFillInitialState) {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32.0),
@@ -1676,10 +2602,14 @@ class _CreateCommissioningReportScreenState
         }
       case 4:
         if (widget.isServiceReport) {
-          return BlocBuilder<ServiceCallReportStep4AutoFillBloc, ServiceCallReportStep4AutoFillState>(
+          return BlocBuilder<
+            ServiceCallReportStep4AutoFillBloc,
+            ServiceCallReportStep4AutoFillState
+          >(
             bloc: _serviceCallStep4AutoFillBloc,
             builder: (context, state) {
-              if (state is ServiceCallReportStep4AutoFillLoadingState || state is ServiceCallReportStep4AutoFillInitialState) {
+              if (state is ServiceCallReportStep4AutoFillLoadingState ||
+                  state is ServiceCallReportStep4AutoFillInitialState) {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32.0),
@@ -1691,10 +2621,14 @@ class _CreateCommissioningReportScreenState
             },
           );
         } else {
-          return BlocBuilder<CommissioningStep4AutoFillBloc, CommissioningStep4AutoFillState>(
+          return BlocBuilder<
+            CommissioningStep4AutoFillBloc,
+            CommissioningStep4AutoFillState
+          >(
             bloc: _step4Bloc,
             builder: (context, state) {
-              if (state is CommissioningStep4AutoFillLoadingState || state is CommissioningStep4AutoFillInitialState) {
+              if (state is CommissioningStep4AutoFillLoadingState ||
+                  state is CommissioningStep4AutoFillInitialState) {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32.0),
@@ -1708,10 +2642,14 @@ class _CreateCommissioningReportScreenState
         }
       case 5:
         if (widget.isServiceReport) {
-          return BlocBuilder<ServiceCallReportStep5AutoFillBloc, ServiceCallReportStep5AutoFillState>(
+          return BlocBuilder<
+            ServiceCallReportStep5AutoFillBloc,
+            ServiceCallReportStep5AutoFillState
+          >(
             bloc: _serviceCallStep5AutoFillBloc,
             builder: (context, state) {
-              if (state is ServiceCallReportStep5AutoFillLoadingState || state is ServiceCallReportStep5AutoFillInitialState) {
+              if (state is ServiceCallReportStep5AutoFillLoadingState ||
+                  state is ServiceCallReportStep5AutoFillInitialState) {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32.0),
@@ -1723,10 +2661,14 @@ class _CreateCommissioningReportScreenState
             },
           );
         } else {
-          return BlocBuilder<CommissioningStep5AutoFillBloc, CommissioningStep5AutoFillState>(
+          return BlocBuilder<
+            CommissioningStep5AutoFillBloc,
+            CommissioningStep5AutoFillState
+          >(
             bloc: _step5Bloc,
             builder: (context, state) {
-              if (state is CommissioningStep5AutoFillLoadingState || state is CommissioningStep5AutoFillInitialState) {
+              if (state is CommissioningStep5AutoFillLoadingState ||
+                  state is CommissioningStep5AutoFillInitialState) {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32.0),
@@ -1740,20 +2682,32 @@ class _CreateCommissioningReportScreenState
         }
       case 6:
         if (widget.isServiceReport) {
-          return BlocConsumer<AssignedServicecallTechnicianBloc, AssignedServicecallTechnicianState>(
+          return BlocConsumer<
+            AssignedServicecallTechnicianBloc,
+            AssignedServicecallTechnicianState
+          >(
             bloc: _assignedServiceCallTechnicianBloc,
             listener: (context, techState) {
               if (techState is AssignedServicecallTechnicianSuccessState) {
                 setState(() {
                   _assignedServiceCallTechniciansList = techState.data.data;
-                  print("👤 Service Call Assigned technicians loaded: ${_assignedServiceCallTechniciansList.map((t) => '${t.name} (assignId: ${t.assignId}, technicianId: ${t.technicianId})').toList()}");
-                  if (_autofilledTechRepName != null && _assignedServiceCallTechniciansList.isNotEmpty) {
-                    final matched = _assignedServiceCallTechniciansList.firstWhere(
-                      (t) => t.name.toLowerCase() == _autofilledTechRepName!.toLowerCase(),
-                      orElse: () => _assignedServiceCallTechniciansList.first,
-                    );
+                  print(
+                    "👤 Service Call Assigned technicians loaded: ${_assignedServiceCallTechniciansList.map((t) => '${t.name} (assignId: ${t.assignId}, technicianId: ${t.technicianId})').toList()}",
+                  );
+                  if (_autofilledTechRepName != null &&
+                      _assignedServiceCallTechniciansList.isNotEmpty) {
+                    final matched = _assignedServiceCallTechniciansList
+                        .firstWhere(
+                          (t) =>
+                              t.name.toLowerCase() ==
+                              _autofilledTechRepName!.toLowerCase(),
+                          orElse: () =>
+                              _assignedServiceCallTechniciansList.first,
+                        );
                     _selectedTechnicianRepId = matched.assignId;
-                    print("🎯 _selectedTechnicianRepId set via _autofilledTechRepName to: $_selectedTechnicianRepId");
+                    print(
+                      "🎯 _selectedTechnicianRepId set via _autofilledTechRepName to: $_selectedTechnicianRepId",
+                    );
                   }
                 });
               }
@@ -1772,73 +2726,99 @@ class _CreateCommissioningReportScreenState
             },
           );
         } else {
-          return BlocConsumer<AssignedTechnicianRepresentativeBloc, AssignedTechnicianRepresentativeState>(
-          bloc: _assignedTechniciansBloc,
-          listener: (context, techState) {
-            if (techState is AssignedTechnicianRepresentativeSuccessState) {
-              setState(() {
-                _assignedTechniciansList = techState.data.data;
-                print("👤 Assigned technicians loaded: ${_assignedTechniciansList.map((t) => '${t.name} (assignId: ${t.assignId}, technicianId: ${t.technicianId})').toList()}");
-                if (_autofilledTechRepName != null && _assignedTechniciansList.isNotEmpty) {
-                  final matched = _assignedTechniciansList.firstWhere(
-                    (t) => t.name.toLowerCase() == _autofilledTechRepName!.toLowerCase(),
-                    orElse: () => _assignedTechniciansList.first,
+          return BlocConsumer<
+            AssignedTechnicianRepresentativeBloc,
+            AssignedTechnicianRepresentativeState
+          >(
+            bloc: _assignedTechniciansBloc,
+            listener: (context, techState) {
+              if (techState is AssignedTechnicianRepresentativeSuccessState) {
+                setState(() {
+                  _assignedTechniciansList = techState.data.data;
+                  print(
+                    "👤 Assigned technicians loaded: ${_assignedTechniciansList.map((t) => '${t.name} (assignId: ${t.assignId}, technicianId: ${t.technicianId})').toList()}",
                   );
-                  _selectedTechnicianRepId = matched.assignId;
-                  print("🎯 _selectedTechnicianRepId set via _autofilledTechRepName to: $_selectedTechnicianRepId");
-                }
-              });
-            }
-          },
-          builder: (context, techState) {
-            return BlocConsumer<CommissioningStep6AutoFillBloc, CommissioningStep6AutoFillState>(
-              bloc: _step6Bloc,
-              listener: (context, step6State) {
-                if (step6State is CommissioningStep6AutoFillSuccessState) {
-                  final data = step6State.data.data;
-                  setState(() {
-                    if (data.technicianRemarks.isNotEmpty) {
-                      _technicianRemarksController.text = data.technicianRemarks;
-                    }
-                    if (data.customerRemarks.isNotEmpty) {
-                      _customerRemarksController.text = data.customerRemarks;
-                    }
-                    if (data.customerRepresentativeName.isNotEmpty) {
-                      _customerRepNameController.text = data.customerRepresentativeName;
-                    }
-                    if (data.technicianRepresentativeName.isNotEmpty) {
-                      _autofilledTechRepName = data.technicianRepresentativeName;
-                      print("📋 Autofilled tech rep name: $_autofilledTechRepName");
-                      if (_assignedTechniciansList.isNotEmpty) {
-                        final matched = _assignedTechniciansList.firstWhere(
-                          (t) => t.name.toLowerCase() == data.technicianRepresentativeName.toLowerCase(),
-                          orElse: () => _assignedTechniciansList.first,
-                        );
-                        _selectedTechnicianRepId = matched.assignId;
-                        print("🎯 _selectedTechnicianRepId set via autofill match to: $_selectedTechnicianRepId");
+                  if (_autofilledTechRepName != null &&
+                      _assignedTechniciansList.isNotEmpty) {
+                    final matched = _assignedTechniciansList.firstWhere(
+                      (t) =>
+                          t.name.toLowerCase() ==
+                          _autofilledTechRepName!.toLowerCase(),
+                      orElse: () => _assignedTechniciansList.first,
+                    );
+                    _selectedTechnicianRepId = matched.assignId;
+                    print(
+                      "🎯 _selectedTechnicianRepId set via _autofilledTechRepName to: $_selectedTechnicianRepId",
+                    );
+                  }
+                });
+              }
+            },
+            builder: (context, techState) {
+              return BlocConsumer<
+                CommissioningStep6AutoFillBloc,
+                CommissioningStep6AutoFillState
+              >(
+                bloc: _step6Bloc,
+                listener: (context, step6State) {
+                  if (step6State is CommissioningStep6AutoFillSuccessState) {
+                    final data = step6State.data.data;
+                    setState(() {
+                      if (data.technicianRemarks.isNotEmpty) {
+                        _technicianRemarksController.text =
+                            data.technicianRemarks;
                       }
-                    }
-                    _existingTechnicianSignatureUrl = data.technicianSignature;
-                    _existingCustomerSignatureUrl = data.customerSignature;
-                    _existingWorkPhotosUrls = data.savedWorkPhotos;
-                  });
-                }
-              },
-              builder: (context, step6State) {
-                if (techState is AssignedTechnicianRepresentativeLoadingState ||
-                    step6State is CommissioningStep6AutoFillLoadingState) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                    ),
-                  );
-                }
-                return _buildStep6();
-              },
-            );
-          },
-        );
+                      if (data.customerRemarks.isNotEmpty) {
+                        _customerRemarksController.text = data.customerRemarks;
+                      }
+                      if (data.customerRepresentativeName.isNotEmpty) {
+                        _customerRepNameController.text =
+                            data.customerRepresentativeName;
+                      }
+                      if (data.technicianRepresentativeName.isNotEmpty) {
+                        _autofilledTechRepName =
+                            data.technicianRepresentativeName;
+                        print(
+                          "📋 Autofilled tech rep name: $_autofilledTechRepName",
+                        );
+                        if (_assignedTechniciansList.isNotEmpty) {
+                          final matched = _assignedTechniciansList.firstWhere(
+                            (t) =>
+                                t.name.toLowerCase() ==
+                                data.technicianRepresentativeName.toLowerCase(),
+                            orElse: () => _assignedTechniciansList.first,
+                          );
+                          _selectedTechnicianRepId = matched.assignId;
+                          print(
+                            "🎯 _selectedTechnicianRepId set via autofill match to: $_selectedTechnicianRepId",
+                          );
+                        }
+                      }
+                      _existingTechnicianSignatureUrl =
+                          data.technicianSignature;
+                      _existingCustomerSignatureUrl = data.customerSignature;
+                      _existingWorkPhotosUrls = data.savedWorkPhotos;
+                    });
+                  }
+                },
+                builder: (context, step6State) {
+                  if (techState
+                          is AssignedTechnicianRepresentativeLoadingState ||
+                      step6State is CommissioningStep6AutoFillLoadingState) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32.0),
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF1565C0),
+                        ),
+                      ),
+                    );
+                  }
+                  return _buildStep6();
+                },
+              );
+            },
+          );
         }
       default:
         return const Center(child: Text("Coming Soon"));
@@ -2014,18 +2994,23 @@ class _CreateCommissioningReportScreenState
                       if (state is TechnicianSuccessState) {
                         validItems = List.from(state.data.data);
                       }
-                      
+
                       final otherSelected = _technicians
                           .where((c) => c != controller && c.text.isNotEmpty)
                           .map((c) => c.text)
                           .toSet();
-                      
-                      validItems.removeWhere((item) => otherSelected.contains(item.id));
 
-                      if (controller.text.isNotEmpty && !validItems.any((e) => e.id == controller.text)) {
+                      validItems.removeWhere(
+                        (item) => otherSelected.contains(item.id),
+                      );
+
+                      if (controller.text.isNotEmpty &&
+                          !validItems.any((e) => e.id == controller.text)) {
                         if (state is TechnicianSuccessState) {
                           try {
-                            final match = state.data.data.firstWhere((e) => e.id == controller.text);
+                            final match = state.data.data.firstWhere(
+                              (e) => e.id == controller.text,
+                            );
                             validItems.add(match);
                           } catch (_) {}
                         }
@@ -2037,7 +3022,10 @@ class _CreateCommissioningReportScreenState
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: const Color(0xFFE5E7EB)),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 4,
+                        ),
                         child: isLoading
                             ? const Padding(
                                 padding: EdgeInsets.symmetric(vertical: 12),
@@ -2055,7 +3043,9 @@ class _CreateCommissioningReportScreenState
                             : DropdownButtonHideUnderline(
                                 child: DropdownButton<String>(
                                   isExpanded: true,
-                                  value: controller.text.isNotEmpty ? controller.text : null,
+                                  value: controller.text.isNotEmpty
+                                      ? controller.text
+                                      : null,
                                   hint: Text(
                                     'Select Technician',
                                     style: AppFont.style(
@@ -2064,9 +3054,12 @@ class _CreateCommissioningReportScreenState
                                       color: const Color(0xFFA5ABB7),
                                     ),
                                   ),
-                                  icon: widget.isServiceReport 
-                                      ? const SizedBox.shrink() 
-                                      : const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
+                                  icon: widget.isServiceReport
+                                      ? const SizedBox.shrink()
+                                      : const Icon(
+                                          Icons.keyboard_arrow_down,
+                                          color: Color(0xFFA5ABB7),
+                                        ),
                                   style: AppFont.style(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w900,
@@ -2078,7 +3071,12 @@ class _CreateCommissioningReportScreenState
                                     }
                                   },
                                   items: validItems
-                                      .map<DropdownMenuItem<String>>((e) => DropdownMenuItem(value: e.id, child: Text(e.name)))
+                                      .map<DropdownMenuItem<String>>(
+                                        (e) => DropdownMenuItem(
+                                          value: e.id,
+                                          child: Text(e.name),
+                                        ),
+                                      )
                                       .toList(),
                                 ),
                               ),
@@ -2120,12 +3118,18 @@ class _CreateCommissioningReportScreenState
         // ── Customer & Project Details ───────────────────────────────────
         _buildInfoRow('Customer Name', data?.customerName ?? 'Global Infotech'),
         const SizedBox(height: 24),
-        _buildInfoRow('Project / Site Name', data?.siteName ?? 'Main Server Room'),
+        _buildInfoRow(
+          'Project / Site Name',
+          data?.siteName ?? 'Main Server Room',
+        ),
         const SizedBox(height: 24),
         if (widget.isServiceReport)
           _buildInfoRow('Complaint Number', widget.complaintNo ?? 'ABC-26-0492')
         else
-          _buildInfoRow('Application Of Equipment', data?.applicationOfEquipment ?? 'Pump Application'),
+          _buildInfoRow(
+            'Application Of Equipment',
+            data?.applicationOfEquipment ?? 'Pump Application',
+          ),
 
         const SizedBox(height: 40),
       ],
@@ -2411,7 +3415,7 @@ class _CreateCommissioningReportScreenState
               Positioned(
                 top: 16,
                 right: 16,
-                  child: SpeechToTextMicButton(controller: _agendaController),
+                child: SpeechToTextMicButton(controller: _agendaController),
               ),
               const Positioned(
                 bottom: 8,
@@ -2498,25 +3502,44 @@ class _CreateCommissioningReportScreenState
               children: [
                 _buildTechField('Pump Make', _pumpMakeController),
                 _buildTechField('Pump Model', _pumpModelController),
-                _buildTechField('Pump Serial Number', _pumpSerialNumberController),
-                _buildTechMultiField('Pump Flow', [
-                  'LPM',
-                  'M3/HR',
-                  'LPS',
-                  'USGPM',
-                ], [
-                  _pumpFlowLPMController,
-                  _pumpFlowM3HRController,
-                  _pumpFlowLPSController,
-                  _pumpFlowUSGPMController,
-                ]),
-                _buildTechMultiField('Pump Head', ['MTR'], [_pumpHeadMTRController]),
+                _buildTechField(
+                  'Pump Serial Number',
+                  _pumpSerialNumberController,
+                ),
+                _buildTechMultiField(
+                  'Pump Flow',
+                  ['LPM', 'M3/HR', 'LPS', 'USGPM'],
+                  [
+                    _pumpFlowLPMController,
+                    _pumpFlowM3HRController,
+                    _pumpFlowLPSController,
+                    _pumpFlowUSGPMController,
+                  ],
+                ),
+                _buildTechMultiField(
+                  'Pump Head',
+                  ['MTR'],
+                  [_pumpHeadMTRController],
+                ),
                 _buildTechField('Driver Make', _driverMakeController),
-                _buildTechField('Driver Serial Number', _driverSerialNumberController),
-                _buildTechMultiField('Rating (KW/HP)', ['KW', 'HP'], [_ratingKWController, _ratingHPController]),
+                _buildTechField(
+                  'Driver Serial Number',
+                  _driverSerialNumberController,
+                ),
+                _buildTechMultiField(
+                  'Rating (KW/HP)',
+                  ['KW', 'HP'],
+                  [_ratingKWController, _ratingHPController],
+                ),
                 _buildTechField('RPM', _rpmController),
-                _buildTechField('Control Panel Make', _controlPanelMakeController),
-                _buildTechField('Panel Serial / Model', _panelSerialModelController),
+                _buildTechField(
+                  'Control Panel Make',
+                  _controlPanelMakeController,
+                ),
+                _buildTechField(
+                  'Panel Serial / Model',
+                  _panelSerialModelController,
+                ),
               ],
             ),
           ),
@@ -2565,7 +3588,11 @@ class _CreateCommissioningReportScreenState
     );
   }
 
-  Widget _buildTechMultiField(String label, List<String> units, List<TextEditingController> controllers) {
+  Widget _buildTechMultiField(
+    String label,
+    List<String> units,
+    List<TextEditingController> controllers,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(
@@ -2651,14 +3678,23 @@ class _CreateCommissioningReportScreenState
         const SizedBox(height: 24),
 
         // ── Work Description Fields ──────────────────────────────────────
-        ...List.generate(_workDescriptionControllers.length, (index) => _buildWorkDescriptionField(index + 1, _workDescriptionControllers[index])),
+        ...List.generate(
+          _workDescriptionControllers.length,
+          (index) => _buildWorkDescriptionField(
+            index + 1,
+            _workDescriptionControllers[index],
+          ),
+        ),
 
         const SizedBox(height: 40),
       ],
     );
   }
 
-  Widget _buildWorkDescriptionField(int number, TextEditingController controller) {
+  Widget _buildWorkDescriptionField(
+    int number,
+    TextEditingController controller,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Row(
@@ -3052,7 +4088,10 @@ class _CreateCommissioningReportScreenState
             const SizedBox(height: 12),
             _step5Media.containsKey(label)
                 ? Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(8),
@@ -3062,7 +4101,9 @@ class _CreateCommissioningReportScreenState
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          _step5Media[label]!.path.endsWith('.mp4') ? Icons.videocam : Icons.image,
+                          _step5Media[label]!.path.endsWith('.mp4')
+                              ? Icons.videocam
+                              : Icons.image,
                           size: 16,
                           color: const Color(0xFF64748B),
                         ),
@@ -3102,17 +4143,20 @@ class _CreateCommissioningReportScreenState
                       _buildMediaActionBtn(
                         icon: Icons.photo_camera_outlined,
                         text: 'Upload',
-                        onTap: () => _pickMedia(label, ImageSource.gallery, false),
+                        onTap: () =>
+                            _pickMedia(label, ImageSource.gallery, false),
                       ),
                       _buildMediaActionBtn(
                         icon: Icons.camera_alt_outlined,
                         text: 'Capture Photo',
-                        onTap: () => _pickMedia(label, ImageSource.camera, false),
+                        onTap: () =>
+                            _pickMedia(label, ImageSource.camera, false),
                       ),
                       _buildMediaActionBtn(
                         icon: Icons.videocam_outlined,
                         text: 'Capture Video',
-                        onTap: () => _pickMedia(label, ImageSource.camera, true),
+                        onTap: () =>
+                            _pickMedia(label, ImageSource.camera, true),
                       ),
                     ],
                   ),
@@ -3122,7 +4166,11 @@ class _CreateCommissioningReportScreenState
     );
   }
 
-  Widget _buildMediaActionBtn({required IconData icon, required String text, required VoidCallback onTap}) {
+  Widget _buildMediaActionBtn({
+    required IconData icon,
+    required String text,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -3165,7 +4213,10 @@ class _CreateCommissioningReportScreenState
           ),
         ),
         const SizedBox(height: 10),
-        _buildRemarksBox('Technician side remarks...', _technicianRemarksController),
+        _buildRemarksBox(
+          'Technician side remarks...',
+          _technicianRemarksController,
+        ),
 
         const SizedBox(height: 28),
 
@@ -3179,7 +4230,10 @@ class _CreateCommissioningReportScreenState
           ),
         ),
         const SizedBox(height: 10),
-        _buildRemarksBox('Customer side remarks...', _customerRemarksController),
+        _buildRemarksBox(
+          'Customer side remarks...',
+          _customerRemarksController,
+        ),
 
         const SizedBox(height: 36),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
@@ -3233,12 +4287,18 @@ class _CreateCommissioningReportScreenState
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: const Color(0xFFE5E7EB)),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 4,
+                ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: _selectedTechnicianRepId,
                     isExpanded: true,
-                    icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      color: Color(0xFFA5ABB7),
+                    ),
                     style: AppFont.style(
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
@@ -3252,19 +4312,27 @@ class _CreateCommissioningReportScreenState
                         color: const Color(0xFFA5ABB7),
                       ),
                     ),
-                    items: widget.isServiceReport 
-                        ? _assignedServiceCallTechniciansList.map<DropdownMenuItem<String>>((service_tech_model.AssignedTechnician tech) {
-                            return DropdownMenuItem<String>(
-                              value: tech.assignId,
-                              child: Text(tech.name),
-                            );
-                          }).toList()
-                        : _assignedTechniciansList.map<DropdownMenuItem<String>>((AssignedTechnician tech) {
-                            return DropdownMenuItem<String>(
-                              value: tech.assignId,
-                              child: Text(tech.name),
-                            );
-                          }).toList(),
+                    items: widget.isServiceReport
+                        ? _assignedServiceCallTechniciansList
+                              .map<DropdownMenuItem<String>>((
+                                service_tech_model.AssignedTechnician tech,
+                              ) {
+                                return DropdownMenuItem<String>(
+                                  value: tech.assignId,
+                                  child: Text(tech.name),
+                                );
+                              })
+                              .toList()
+                        : _assignedTechniciansList
+                              .map<DropdownMenuItem<String>>((
+                                AssignedTechnician tech,
+                              ) {
+                                return DropdownMenuItem<String>(
+                                  value: tech.assignId,
+                                  child: Text(tech.name),
+                                );
+                              })
+                              .toList(),
                     onChanged: (val) {
                       setState(() {
                         _selectedTechnicianRepId = val;
@@ -3418,7 +4486,9 @@ class _CreateCommissioningReportScreenState
                         url,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
-                          return const Center(child: Icon(Icons.broken_image, color: Colors.grey));
+                          return const Center(
+                            child: Icon(Icons.broken_image, color: Colors.grey),
+                          );
                         },
                       ),
                     ),
@@ -3463,10 +4533,7 @@ class _CreateCommissioningReportScreenState
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.file(
-                        file,
-                        fit: BoxFit.cover,
-                      ),
+                      child: Image.file(file, fit: BoxFit.cover),
                     ),
                   ),
                   Positioned(
@@ -3545,7 +4612,10 @@ class _CreateCommissioningReportScreenState
     );
   }
 
-  Future<void> _showImagePickerOption(BuildContext context, Function(File) onImageSelected) async {
+  Future<void> _showImagePickerOption(
+    BuildContext context,
+    Function(File) onImageSelected,
+  ) async {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -3561,7 +4631,9 @@ class _CreateCommissioningReportScreenState
                 onTap: () async {
                   Navigator.pop(context);
                   final ImagePicker picker = ImagePicker();
-                  final XFile? file = await picker.pickImage(source: ImageSource.gallery);
+                  final XFile? file = await picker.pickImage(
+                    source: ImageSource.gallery,
+                  );
                   if (file != null) {
                     onImageSelected(File(file.path));
                   }
@@ -3573,7 +4645,9 @@ class _CreateCommissioningReportScreenState
                 onTap: () async {
                   Navigator.pop(context);
                   final ImagePicker picker = ImagePicker();
-                  final XFile? file = await picker.pickImage(source: ImageSource.camera);
+                  final XFile? file = await picker.pickImage(
+                    source: ImageSource.camera,
+                  );
                   if (file != null) {
                     onImageSelected(File(file.path));
                   }
@@ -3586,7 +4660,10 @@ class _CreateCommissioningReportScreenState
     );
   }
 
-  Future<void> _showSignatureDrawingPad(BuildContext context, Function(File) onSignatureDrawn) async {
+  Future<void> _showSignatureDrawingPad(
+    BuildContext context,
+    Function(File) onSignatureDrawn,
+  ) async {
     final SignatureController signatureController = SignatureController(
       penStrokeWidth: 4,
       penColor: const Color(0xFF0D121F),
@@ -3678,7 +4755,8 @@ class _CreateCommissioningReportScreenState
                             if (signatureController.isEmpty) {
                               return;
                             }
-                            final bytes = await signatureController.toPngBytes();
+                            final bytes = await signatureController
+                                .toPngBytes();
                             if (bytes != null) {
                               final tempDir = await getTemporaryDirectory();
                               final file = File(
@@ -3717,7 +4795,10 @@ class _CreateCommissioningReportScreenState
     ).then((_) => signatureController.dispose());
   }
 
-  Widget _buildRemarksBox(String placeholder, TextEditingController controller) {
+  Widget _buildRemarksBox(
+    String placeholder,
+    TextEditingController controller,
+  ) {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFF9FAFB),
@@ -3791,7 +4872,11 @@ class _CreateCommissioningReportScreenState
         const SizedBox(width: 8),
         Expanded(
           child: GestureDetector(
-            onTap: (signatureFile == null && (existingUrl == null || existingUrl.isEmpty)) ? onTap : null,
+            onTap:
+                (signatureFile == null &&
+                    (existingUrl == null || existingUrl.isEmpty))
+                ? onTap
+                : null,
             child: Container(
               height: 120,
               decoration: BoxDecoration(
@@ -3805,10 +4890,7 @@ class _CreateCommissioningReportScreenState
                     Center(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Image.file(
-                          signatureFile,
-                          fit: BoxFit.contain,
-                        ),
+                        child: Image.file(signatureFile, fit: BoxFit.contain),
                       ),
                     )
                   else if (existingUrl != null && existingUrl.isNotEmpty)
@@ -3819,7 +4901,12 @@ class _CreateCommissioningReportScreenState
                           existingUrl,
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) {
-                            return const Center(child: Icon(Icons.broken_image, color: Colors.grey));
+                            return const Center(
+                              child: Icon(
+                                Icons.broken_image,
+                                color: Colors.grey,
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -3829,7 +4916,10 @@ class _CreateCommissioningReportScreenState
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.edit_outlined, color: Color(0xFFA5ABB7)),
+                          const Icon(
+                            Icons.edit_outlined,
+                            color: Color(0xFFA5ABB7),
+                          ),
                           const SizedBox(height: 8),
                           Text(
                             placeholder,
@@ -3842,7 +4932,8 @@ class _CreateCommissioningReportScreenState
                         ],
                       ),
                     ),
-                  if (signatureFile != null || (existingUrl != null && existingUrl.isNotEmpty))
+                  if (signatureFile != null ||
+                      (existingUrl != null && existingUrl.isNotEmpty))
                     Positioned(
                       top: 4,
                       right: 4,

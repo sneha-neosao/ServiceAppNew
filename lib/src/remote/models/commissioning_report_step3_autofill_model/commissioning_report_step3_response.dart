@@ -52,8 +52,9 @@ class CommissioningStep3Data extends Equatable {
     return CommissioningStep3Data(
       id: json['id'],
       isTechnicalNa: json['is_technical_na'],
-      technicalDetails: (json['technical_details'] != null &&
-          (json['technical_details'] as Map).isNotEmpty)
+      technicalDetails:
+          (json['technical_details'] != null &&
+              (json['technical_details'] as Map).isNotEmpty)
           ? TechnicalDetails.fromJson(json['technical_details'])
           : null,
       lastCompletedStep: json['last_completed_step'],
@@ -70,7 +71,12 @@ class CommissioningStep3Data extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, isTechnicalNa, technicalDetails, lastCompletedStep];
+  List<Object?> get props => [
+    id,
+    isTechnicalNa,
+    technicalDetails,
+    lastCompletedStep,
+  ];
 }
 
 class TechnicalDetails extends Equatable {

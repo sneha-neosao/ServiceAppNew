@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -12,8 +12,7 @@ class NextScreen extends StatefulWidget {
   State<NextScreen> createState() => _NextScreenState();
 }
 
-class _NextScreenState extends State<NextScreen>
-    with TickerProviderStateMixin {
+class _NextScreenState extends State<NextScreen> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   Timer? _autoPlayTimer;
@@ -38,18 +37,9 @@ class _NextScreenState extends State<NextScreen>
   ];
 
   final List<Map<String, String>> _slideContent = [
-    {
-      'title': 'slide1_title',
-      'subtitle': 'slide1_subtitle',
-    },
-    {
-      'title': 'slide2_title',
-      'subtitle': 'slide2_subtitle',
-    },
-    {
-      'title': 'slide3_title',
-      'subtitle': 'slide3_subtitle',
-    },
+    {'title': 'slide1_title', 'subtitle': 'slide1_subtitle'},
+    {'title': 'slide2_title', 'subtitle': 'slide2_subtitle'},
+    {'title': 'slide3_title', 'subtitle': 'slide3_subtitle'},
   ];
 
   @override
@@ -59,15 +49,14 @@ class _NextScreenState extends State<NextScreen>
     // Create one AnimationController per dot
     _dotControllers = List.generate(
       _totalPages,
-      (i) => AnimationController(
-        vsync: this,
-        duration: _animDuration,
-      ),
+      (i) => AnimationController(vsync: this, duration: _animDuration),
     );
 
     _dotWidthAnimations = _dotControllers.map((ctrl) {
-      return Tween<double>(begin: _dotSize, end: _activePillWidth)
-          .animate(CurvedAnimation(parent: ctrl, curve: Curves.easeInOut));
+      return Tween<double>(
+        begin: _dotSize,
+        end: _activePillWidth,
+      ).animate(CurvedAnimation(parent: ctrl, curve: Curves.easeInOut));
     }).toList();
 
     // Activate first dot immediately
@@ -147,7 +136,9 @@ class _NextScreenState extends State<NextScreen>
                     onTap: () => context.goNamed(AppRoute.loginScreen.name),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.18),
                         borderRadius: BorderRadius.circular(20),

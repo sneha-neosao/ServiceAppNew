@@ -8,7 +8,7 @@ class CommissioningWorkUpdateBloc
   final CommissioningWorkUpdateUseCase _useCase;
 
   CommissioningWorkUpdateBloc(this._useCase)
-      : super(const CommissioningWorkUpdateInitialState()) {
+    : super(const CommissioningWorkUpdateInitialState()) {
     on<CommissioningWorkUpdateSubmitEvent>(_onUpdate);
   }
 

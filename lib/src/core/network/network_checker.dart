@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
 
 import '../errors/failures.dart';
+
 typedef EitherNetwork<T> = Future<Either<Failure, T>> Function();
 
 /// utility class to check and monitor the network connectivity.

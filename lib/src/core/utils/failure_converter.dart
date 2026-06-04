@@ -4,7 +4,6 @@ import '../errors/failures.dart';
 /// This function is useful in the UI layer to show readable error messages
 /// instead of exposing raw error objects or codes.
 String mapFailureToMessage(Failure failure) {
-
   /// Using runtimeType to identify the type of Failure.
   /// This works well for simple type-based mapping but can be fragile
   /// if subclasses or runtime type changes occur.

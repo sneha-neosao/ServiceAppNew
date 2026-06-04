@@ -51,18 +51,19 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    
+
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
     _sitesBloc = getIt<SitesBloc>();
-    
+
     _assignedServiceCallsBloc = getIt<AssignedServiceCallsBloc>()
       ..add(const AssignedServiceCallsGetEvent());
-      
+
     _pendingServiceCallsBloc = getIt<PendingServiceCallsBloc>()
       ..add(const PendingServiceCallsGetEvent());
 
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
         if (_tabController.index == 0) {
           _fetchServiceCalls(isRefresh: false, isAssignedOnly: true);
         } else {
@@ -72,25 +73,33 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     });
   }
 
-  void _fetchServiceCalls({bool isRefresh = false, bool isAssignedOnly = false, bool isPendingOnly = false}) {
+  void _fetchServiceCalls({
+    bool isRefresh = false,
+    bool isAssignedOnly = false,
+    bool isPendingOnly = false,
+  }) {
     final complaintText = _complaintController.text.trim();
     if (!isPendingOnly) {
-      _assignedServiceCallsBloc.add(AssignedServiceCallsGetEvent(
-        customerId: _selectedCustomerId,
-        siteId: _selectedSiteId,
-        complaintNumber: complaintText.isEmpty ? null : complaintText,
-        date: _selectedDate,
-        isRefresh: isRefresh,
-      ));
+      _assignedServiceCallsBloc.add(
+        AssignedServiceCallsGetEvent(
+          customerId: _selectedCustomerId,
+          siteId: _selectedSiteId,
+          complaintNumber: complaintText.isEmpty ? null : complaintText,
+          date: _selectedDate,
+          isRefresh: isRefresh,
+        ),
+      );
     }
     if (!isAssignedOnly) {
-      _pendingServiceCallsBloc.add(PendingServiceCallsGetEvent(
-        customerId: _selectedCustomerId,
-        siteId: _selectedSiteId,
-        complaintNumber: complaintText.isEmpty ? null : complaintText,
-        date: _selectedDate,
-        isRefresh: isRefresh,
-      ));
+      _pendingServiceCallsBloc.add(
+        PendingServiceCallsGetEvent(
+          customerId: _selectedCustomerId,
+          siteId: _selectedSiteId,
+          complaintNumber: complaintText.isEmpty ? null : complaintText,
+          date: _selectedDate,
+          isRefresh: isRefresh,
+        ),
+      );
     }
   }
 
@@ -132,23 +141,34 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
         BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
           bloc: _assignedServiceCallsBloc,
           builder: (context, assignedState) {
-            return BlocBuilder<PendingServiceCallsBloc, PendingServiceCallsState>(
+            return BlocBuilder<
+              PendingServiceCallsBloc,
+              PendingServiceCallsState
+            >(
               bloc: _pendingServiceCallsBloc,
               builder: (context, pendingState) {
                 int assignedCount = 0;
-                bool isAssignedLoading = assignedState is AssignedServiceCallsLoadingState || assignedState is AssignedServiceCallsInitialState;
+                bool isAssignedLoading =
+                    assignedState is AssignedServiceCallsLoadingState ||
+                    assignedState is AssignedServiceCallsInitialState;
                 if (assignedState is AssignedServiceCallsSuccessState) {
                   assignedCount = assignedState.data.data.pagination.totalItems;
-                } else if (assignedState is AssignedServiceCallsPaginationLoadingState) {
-                  assignedCount = assignedState.currentData.data.pagination.totalItems;
+                } else if (assignedState
+                    is AssignedServiceCallsPaginationLoadingState) {
+                  assignedCount =
+                      assignedState.currentData.data.pagination.totalItems;
                 }
 
                 int pendingCount = 0;
-                bool isPendingLoading = pendingState is PendingServiceCallsLoadingState || pendingState is PendingServiceCallsInitialState;
+                bool isPendingLoading =
+                    pendingState is PendingServiceCallsLoadingState ||
+                    pendingState is PendingServiceCallsInitialState;
                 if (pendingState is PendingServiceCallsSuccessState) {
                   pendingCount = pendingState.data.data.pagination.totalItems;
-                } else if (pendingState is PendingServiceCallsPaginationLoadingState) {
-                  pendingCount = pendingState.currentData.data.pagination.totalItems;
+                } else if (pendingState
+                    is PendingServiceCallsPaginationLoadingState) {
+                  pendingCount =
+                      pendingState.currentData.data.pagination.totalItems;
                 }
 
                 return TabBar(
@@ -161,8 +181,16 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                   labelPadding: const EdgeInsets.symmetric(vertical: 8),
                   dividerColor: const Color(0xFFF1F2F6),
                   tabs: [
-                    _buildTab('ASSIGNED SERVICE CALLS', assignedCount, isLoading: isAssignedLoading),
-                    _buildTab('PENDING SERVICE CALLS', pendingCount, isLoading: isPendingLoading),
+                    _buildTab(
+                      'ASSIGNED SERVICE CALLS',
+                      assignedCount,
+                      isLoading: isAssignedLoading,
+                    ),
+                    _buildTab(
+                      'PENDING SERVICE CALLS',
+                      pendingCount,
+                      isLoading: isPendingLoading,
+                    ),
                   ],
                 );
               },
@@ -266,13 +294,9 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
               // Filter Row 2
               Row(
                 children: [
-                  Expanded(
-                    child: _buildComplaintInput(),
-                  ),
+                  Expanded(child: _buildComplaintInput()),
                   const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildDateInput(),
-                  ),
+                  Expanded(child: _buildDateInput()),
                 ],
               ),
               const SizedBox(height: 16),
@@ -290,26 +314,29 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                   _fetchServiceCalls(isRefresh: true);
                 },
                 child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  // Using dashed-like border by using a light solid border if no package is available
-                  border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
-                ),
-                child: Center(
-                  child: Text(
-                    'CLEAR FILTERS',
-                    style: AppFont.style(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w900,
-                      color: const Color(0xFFA5ABB7),
-                      letterSpacing: 0.5,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    // Using dashed-like border by using a light solid border if no package is available
+                    border: Border.all(
+                      color: const Color(0xFFE5E7EB),
+                      width: 1,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'CLEAR FILTERS',
+                      style: AppFont.style(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFFA5ABB7),
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
                 ),
-              ),
               ),
             ],
           ),
@@ -342,18 +369,28 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
               ? const SizedBox(
                   width: 12,
                   height: 12,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1565C0)),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Color(0xFF1565C0),
+                  ),
                 )
               : Text(
                   '($count)',
-                  style: AppFont.style(fontSize: 13, fontWeight: FontWeight.w400),
+                  style: AppFont.style(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
         ],
       ),
     );
   }
 
-  Widget _buildFilterDropdown(String label, IconData icon, {bool isLoading = false}) {
+  Widget _buildFilterDropdown(
+    String label,
+    IconData icon, {
+    bool isLoading = false,
+  }) {
     return Container(
       height: 44,
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -411,7 +448,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
       ),
       child: Row(
         children: [
-          const Icon(Icons.assignment_outlined, color: Color(0xFFA5ABB7), size: 18),
+          const Icon(
+            Icons.assignment_outlined,
+            color: Color(0xFFA5ABB7),
+            size: 18,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
@@ -466,14 +507,24 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
         ),
         child: Row(
           children: [
-            const Icon(Icons.calendar_today_outlined, color: Color(0xFFA5ABB7), size: 18),
+            const Icon(
+              Icons.calendar_today_outlined,
+              color: Color(0xFFA5ABB7),
+              size: 18,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                _selectedDate != null ? DateFormat('dd MMM yyyy').format(DateTime.parse(_selectedDate!)) : 'dd-mm-yyyy',
+                _selectedDate != null
+                    ? DateFormat(
+                        'dd MMM yyyy',
+                      ).format(DateTime.parse(_selectedDate!))
+                    : 'dd-mm-yyyy',
                 style: AppFont.style(
                   fontSize: 14,
-                  color: _selectedDate != null ? const Color(0xFF0D121F) : const Color(0xFFA5ABB7),
+                  color: _selectedDate != null
+                      ? const Color(0xFF0D121F)
+                      : const Color(0xFFA5ABB7),
                   fontWeight: FontWeight.w500,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -489,8 +540,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     return BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
       bloc: _assignedServiceCallsBloc,
       builder: (context, state) {
-        if (state is AssignedServiceCallsLoadingState || state is AssignedServiceCallsInitialState) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xFF1565C0)));
+        if (state is AssignedServiceCallsLoadingState ||
+            state is AssignedServiceCallsInitialState) {
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+          );
         }
 
         AssignedServiceCallsResponse? data;
@@ -508,7 +562,10 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
             return Center(
               child: Text(
                 'No Assigned Service Calls',
-                style: AppFont.style(fontSize: 14, color: const Color(0xFFA5ABB7)),
+                style: AppFont.style(
+                  fontSize: 14,
+                  color: const Color(0xFFA5ABB7),
+                ),
               ),
             );
           }
@@ -529,7 +586,9 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
               }
 
               final item = data.data.results[index];
-              final techs = item.assignedTechnicians.map((e) => e.name).join(', ');
+              final techs = item.assignedTechnicians
+                  .map((e) => e.name)
+                  .join(', ');
 
               return ServiceCallCard(
                 type: ServiceCallType.ongoing,
@@ -538,7 +597,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                 location: item.siteName,
                 assignedTo: techs.isNotEmpty ? techs : 'UNASSIGNED',
                 onView: () => _showReportDialog(context),
-                onEdit: () => _showAssignTechDialog(context, item.id, item.complaintNumber),
+                onEdit: () => _showAssignTechDialog(
+                  context,
+                  item.id,
+                  item.complaintNumber,
+                ),
                 onSubmit: () {
                   Navigator.push(
                     context,
@@ -559,10 +622,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
 
         if (state is AssignedServiceCallsFailureState) {
           return Center(
-            child: Text(
-              state.message,
-              style: AppFont.style(color: Colors.red),
-            ),
+            child: Text(state.message, style: AppFont.style(color: Colors.red)),
           );
         }
 
@@ -575,8 +635,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     return BlocBuilder<PendingServiceCallsBloc, PendingServiceCallsState>(
       bloc: _pendingServiceCallsBloc,
       builder: (context, state) {
-        if (state is PendingServiceCallsLoadingState || state is PendingServiceCallsInitialState) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xFF1565C0)));
+        if (state is PendingServiceCallsLoadingState ||
+            state is PendingServiceCallsInitialState) {
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+          );
         }
 
         PendingServiceCallsResponse? data;
@@ -594,7 +657,10 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
             return Center(
               child: Text(
                 'No Pending Service Calls',
-                style: AppFont.style(fontSize: 14, color: const Color(0xFFA5ABB7)),
+                style: AppFont.style(
+                  fontSize: 14,
+                  color: const Color(0xFFA5ABB7),
+                ),
               ),
             );
           }
@@ -622,7 +688,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                 companyName: item.customerName,
                 location: item.siteName,
                 onView: () => _showReportDialog(context),
-                onEdit: () => _showAssignTechDialog(context, item.id, item.complaintNumber),
+                onEdit: () => _showAssignTechDialog(
+                  context,
+                  item.id,
+                  item.complaintNumber,
+                ),
                 onCloseOverCall: () => _showCloseOverCallDialog(
                   context,
                   item.id,
@@ -630,7 +700,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
                   item.customerName,
                   item.siteName,
                 ),
-                onSubmit: () => _showAssignTechDialog(context, item.id, item.complaintNumber),
+                onSubmit: () => _showAssignTechDialog(
+                  context,
+                  item.id,
+                  item.complaintNumber,
+                ),
               );
             },
           );
@@ -638,10 +712,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
 
         if (state is PendingServiceCallsFailureState) {
           return Center(
-            child: Text(
-              state.message,
-              style: AppFont.style(color: Colors.red),
-            ),
+            child: Text(state.message, style: AppFont.style(color: Colors.red)),
           );
         }
 
@@ -684,13 +755,17 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     );
   }
 
-  void _showAssignTechDialog(BuildContext context, String complaintId, String complaintNo) {
+  void _showAssignTechDialog(
+    BuildContext context,
+    String complaintId,
+    String complaintNo,
+  ) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
         return AssignTechnicianDialog(
-          complaintId: complaintId, 
+          complaintId: complaintId,
           complaintNo: complaintNo,
           onSuccess: () => _fetchServiceCalls(isRefresh: true),
         );
@@ -698,7 +773,13 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen>
     );
   }
 
-  void _showCloseOverCallDialog(BuildContext context, String complaintId, String complaintNo, String customerName, String siteName) {
+  void _showCloseOverCallDialog(
+    BuildContext context,
+    String complaintId,
+    String complaintNo,
+    String customerName,
+    String siteName,
+  ) {
     showDialog(
       context: context,
       barrierDismissible: false,

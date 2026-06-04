@@ -678,7 +678,11 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     );
   }
 
-  Widget _buildInputField(String hint, {bool showMic = false, TextEditingController? controller}) {
+  Widget _buildInputField(
+    String hint, {
+    bool showMic = false,
+    TextEditingController? controller,
+  }) {
     return Container(
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 16),

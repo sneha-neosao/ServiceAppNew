@@ -164,7 +164,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                             decoration: BoxDecoration(
                               color: const Color(0xFFF8F9FB),
                               shape: BoxShape.circle,
-                              border: Border.all(color: const Color(0xFFF1F2F6)),
+                              border: Border.all(
+                                color: const Color(0xFFF1F2F6),
+                              ),
                             ),
                             child: const Icon(
                               Icons.close,
@@ -210,11 +212,15 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -291,7 +297,11 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
   Future<void> _showAddSiteBottomSheet() async {
     if (_selectedCustomer == null) {
-      appSnackBar(context, const Color(0xFFF44336), 'Please select a customer first');
+      appSnackBar(
+        context,
+        const Color(0xFFF44336),
+        'Please select a customer first',
+      );
       return;
     }
 
@@ -311,7 +321,11 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     }
 
     if (customerId.isEmpty) {
-      appSnackBar(context, const Color(0xFFF44336), 'Invalid customer selected');
+      appSnackBar(
+        context,
+        const Color(0xFFF44336),
+        'Invalid customer selected',
+      );
       return;
     }
 
@@ -384,7 +398,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                             decoration: BoxDecoration(
                               color: const Color(0xFFF8F9FB),
                               shape: BoxShape.circle,
-                              border: Border.all(color: const Color(0xFFF1F2F6)),
+                              border: Border.all(
+                                color: const Color(0xFFF1F2F6),
+                              ),
                             ),
                             child: const Icon(
                               Icons.close,
@@ -430,11 +446,15 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -516,7 +536,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   // ── Assign button handler ──────────────────────────────────────────────────
   void _onAssign() {
     String customerId = "";
-    if (_selectedCustomer != null && _createdCustomerIds.containsKey(_selectedCustomer)) {
+    if (_selectedCustomer != null &&
+        _createdCustomerIds.containsKey(_selectedCustomer)) {
       customerId = _createdCustomerIds[_selectedCustomer]!;
     } else {
       final customerState = _customerBloc.state;
@@ -694,30 +715,43 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           if (!_customers.contains(data.customer.name)) {
                             _customers.insert(0, data.customer.name);
                           }
-                          
+
                           _selectedSite = data.site.name;
                           if (!_sites.contains(data.site.name)) {
                             _sites.insert(0, data.site.name);
                           }
-                          
-                          _equipmentController.text = data.applicationOfEquipment;
-                          
+
+                          _equipmentController.text =
+                              data.applicationOfEquipment;
+
                           if (data.assignedTechnicians.isNotEmpty) {
-                            final techNames = data.assignedTechnicians.map((t) => t.name).join(', ');
+                            final techNames = data.assignedTechnicians
+                                .map((t) => t.name)
+                                .join(', ');
                             _selectedTechnician = techNames;
                             if (!_technicians.contains(techNames)) {
                               _technicians.insert(0, techNames);
                             }
                           }
                         });
-                      } else if (state is CommissioningWorkDetailsFailureState) {
-                        appSnackBar(context, const Color(0xFFF44336), state.message);
+                      } else if (state
+                          is CommissioningWorkDetailsFailureState) {
+                        appSnackBar(
+                          context,
+                          const Color(0xFFF44336),
+                          state.message,
+                        );
                       }
                     },
                     builder: (context, state) {
-                      if (widget.editWorkId != null && 
-                         (state is CommissioningWorkDetailsInitialState || state is CommissioningWorkDetailsLoadingState)) {
-                        return const Center(child: CircularProgressIndicator(color: Color(0xFF1565C0)));
+                      if (widget.editWorkId != null &&
+                          (state is CommissioningWorkDetailsInitialState ||
+                              state is CommissioningWorkDetailsLoadingState)) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFF1565C0),
+                          ),
+                        );
                       }
 
                       return SingleChildScrollView(
@@ -727,209 +761,232 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           children: [
                             const SizedBox(height: 8),
 
-                        // ── STEP 1: SELECT CUSTOMER ──────────────────────────
-                        _buildSectionHeader(
-                          label: 'STEP 1: SELECT CUSTOMER',
-                          onAddTap: _showAddCustomerBottomSheet,
-                        ),
-                        BlocBuilder<CustomerBloc, CustomerState>(
-                          bloc: _customerBloc,
-                          builder: (context, state) {
-                            bool isLoading = state is CustomerLoadingState;
-                            if (state is CustomerSuccessState) {
-                              final apiNames = state.data.data
-                                  .map((e) => e.name)
-                                  .toList();
-                              for (var name in apiNames) {
-                                if (!_customers.contains(name)) {
-                                  _customers.add(name);
-                                }
-                              }
-                            }
-                            return _buildDropdown(
-                              hint: 'Select Customer',
-                              value: _selectedCustomer,
-                              items: _customers,
-                              isLoading: isLoading,
-                              onChanged: (v) {
-                                setState(() {
-                                  _selectedCustomer = v;
-                                  _selectedSite = null;
-                                  _sites.clear();
-                                });
-                                if (v != null) {
-                                  String? customerId;
-                                  if (_createdCustomerIds.containsKey(v)) {
-                                    customerId = _createdCustomerIds[v];
-                                  } else if (state is CustomerSuccessState) {
-                                    final cList = state.data.data.where((x) => x.name == v);
-                                    if (cList.isNotEmpty) {
-                                      customerId = cList.first.id;
+                            // ── STEP 1: SELECT CUSTOMER ──────────────────────────
+                            _buildSectionHeader(
+                              label: 'STEP 1: SELECT CUSTOMER',
+                              onAddTap: _showAddCustomerBottomSheet,
+                            ),
+                            BlocBuilder<CustomerBloc, CustomerState>(
+                              bloc: _customerBloc,
+                              builder: (context, state) {
+                                bool isLoading = state is CustomerLoadingState;
+                                if (state is CustomerSuccessState) {
+                                  final apiNames = state.data.data
+                                      .map((e) => e.name)
+                                      .toList();
+                                  for (var name in apiNames) {
+                                    if (!_customers.contains(name)) {
+                                      _customers.add(name);
                                     }
                                   }
-                                  if (customerId != null) {
-                                    _sitesBloc.add(SitesGetEvent(customerId));
+                                }
+                                return _buildDropdown(
+                                  hint: 'Select Customer',
+                                  value: _selectedCustomer,
+                                  items: _customers,
+                                  isLoading: isLoading,
+                                  onChanged: (v) {
+                                    setState(() {
+                                      _selectedCustomer = v;
+                                      _selectedSite = null;
+                                      _sites.clear();
+                                    });
+                                    if (v != null) {
+                                      String? customerId;
+                                      if (_createdCustomerIds.containsKey(v)) {
+                                        customerId = _createdCustomerIds[v];
+                                      } else if (state
+                                          is CustomerSuccessState) {
+                                        final cList = state.data.data.where(
+                                          (x) => x.name == v,
+                                        );
+                                        if (cList.isNotEmpty) {
+                                          customerId = cList.first.id;
+                                        }
+                                      }
+                                      if (customerId != null) {
+                                        _sitesBloc.add(
+                                          SitesGetEvent(customerId),
+                                        );
+                                      }
+                                    }
+                                  },
+                                );
+                              },
+                            ),
+
+                            const SizedBox(height: 32),
+
+                            // ── STEP 2: SELECT SITE ──────────────────────────────
+                            _buildSectionHeader(
+                              label: 'STEP 2: SELECT SITE',
+                              onAddTap: _selectedCustomer != null
+                                  ? _showAddSiteBottomSheet
+                                  : null,
+                            ),
+                            BlocBuilder<SitesBloc, SitesState>(
+                              bloc: _sitesBloc,
+                              builder: (context, state) {
+                                bool isLoading = state is SitesLoadingState;
+                                if (state is SitesSuccessState) {
+                                  final apiNames = state.data.data
+                                      .map((e) => e.name)
+                                      .toList();
+                                  for (var name in apiNames) {
+                                    if (!_sites.contains(name))
+                                      _sites.add(name);
                                   }
                                 }
+                                return _buildDropdown(
+                                  hint: 'Choose Site...',
+                                  value: _selectedSite,
+                                  items: _sites,
+                                  isLoading: isLoading,
+                                  onChanged: _selectedCustomer != null
+                                      ? (v) => setState(() => _selectedSite = v)
+                                      : null,
+                                );
                               },
-                            );
-                          },
-                        ),
+                            ),
 
-                        const SizedBox(height: 32),
+                            const SizedBox(height: 32),
 
-                        // ── STEP 2: SELECT SITE ──────────────────────────────
-                        _buildSectionHeader(
-                          label: 'STEP 2: SELECT SITE',
-                          onAddTap: _selectedCustomer != null
-                              ? _showAddSiteBottomSheet
-                              : null,
-                        ),
-                        BlocBuilder<SitesBloc, SitesState>(
-                          bloc: _sitesBloc,
-                          builder: (context, state) {
-                            bool isLoading = state is SitesLoadingState;
-                            if (state is SitesSuccessState) {
-                              final apiNames = state.data.data
-                                  .map((e) => e.name)
-                                  .toList();
-                              for (var name in apiNames) {
-                                if (!_sites.contains(name)) _sites.add(name);
-                              }
-                            }
-                            return _buildDropdown(
-                              hint: 'Choose Site...',
-                              value: _selectedSite,
-                              items: _sites,
-                              isLoading: isLoading,
-                              onChanged: _selectedCustomer != null
-                                  ? (v) => setState(() => _selectedSite = v)
-                                  : null,
-                            );
-                          },
-                        ),
+                            // ── STEP 3: APPLICATION OF EQUIPMENT ─────────────────
+                            _buildSectionHeader(
+                              label: 'STEP 3: APPLICATION OF EQUIPMENT',
+                              showAdd: false,
+                            ),
+                            _buildTextField(
+                              hint: 'Enter Application of Equipment',
+                              controller: _equipmentController,
+                            ),
 
-                        const SizedBox(height: 32),
+                            const SizedBox(height: 32),
 
-                        // ── STEP 3: APPLICATION OF EQUIPMENT ─────────────────
-                        _buildSectionHeader(
-                          label: 'STEP 3: APPLICATION OF EQUIPMENT',
-                          showAdd: false,
-                        ),
-                        _buildTextField(
-                          hint: 'Enter Application of Equipment',
-                          controller: _equipmentController,
-                        ),
+                            // ── STEP 4: ASSIGN TECHNICIANS ───────────────────────
+                            _buildSectionHeader(
+                              label: 'STEP 4: ASSIGN TECHNICIANS',
+                              showAdd: false,
+                            ),
+                            BlocBuilder<TechnicianBloc, TechnicianState>(
+                              bloc: _technicianBloc,
+                              builder: (context, state) {
+                                bool isLoading =
+                                    state is TechnicianLoadingState;
+                                if (state is TechnicianSuccessState) {
+                                  final apiNames = state.data.data
+                                      .map((e) => e.name)
+                                      .toList();
+                                  for (var name in apiNames) {
+                                    if (!_technicians.contains(name))
+                                      _technicians.add(name);
+                                  }
+                                }
+                                return _buildDropdown(
+                                  hint: 'Choose Technicians...',
+                                  value: _selectedTechnician,
+                                  items: _technicians,
+                                  isLoading: isLoading,
+                                  onChanged: (v) =>
+                                      setState(() => _selectedTechnician = v),
+                                );
+                              },
+                            ),
 
-                        const SizedBox(height: 32),
+                            const SizedBox(height: 48),
 
-                        // ── STEP 4: ASSIGN TECHNICIANS ───────────────────────
-                        _buildSectionHeader(
-                          label: 'STEP 4: ASSIGN TECHNICIANS',
-                          showAdd: false,
-                        ),
-                        BlocBuilder<TechnicianBloc, TechnicianState>(
-                          bloc: _technicianBloc,
-                          builder: (context, state) {
-                            bool isLoading = state is TechnicianLoadingState;
-                            if (state is TechnicianSuccessState) {
-                              final apiNames = state.data.data
-                                  .map((e) => e.name)
-                                  .toList();
-                              for (var name in apiNames) {
-                                if (!_technicians.contains(name))
-                                  _technicians.add(name);
-                              }
-                            }
-                            return _buildDropdown(
-                              hint: 'Choose Technicians...',
-                              value: _selectedTechnician,
-                              items: _technicians,
-                              isLoading: isLoading,
-                              onChanged: (v) =>
-                                  setState(() => _selectedTechnician = v),
-                            );
-                          },
-                        ),
-
-                        const SizedBox(height: 48),
-
-                        // ── Assign Button ──────────────────────────────────
-                        Container(
-                          width: double.infinity,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(
-                                  0xFF1565C0,
-                                ).withOpacity(0.18),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
+                            // ── Assign Button ──────────────────────────────────
+                            Container(
+                              width: double.infinity,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(
+                                      0xFF1565C0,
+                                    ).withOpacity(0.18),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child:
-                              BlocBuilder<
-                                CommissioningWorkCreateBloc,
-                                CommissioningWorkCreateState
-                              >(
-                                bloc: _createBloc,
-                                builder: (context, state) {
-                                  return BlocBuilder<CommissioningWorkUpdateBloc, CommissioningWorkUpdateState>(
-                                    bloc: _updateBloc,
-                                    builder: (context, updateState) {
-                                      final isLoading =
-                                          state is CommissioningWorkCreateLoadingState ||
-                                          updateState is CommissioningWorkUpdateLoadingState;
-                                      return ElevatedButton(
-                                        onPressed: isLoading ? null : _onAssign,
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color(0xFF1565C0),
-                                          foregroundColor: Colors.white,
-                                          elevation: 0,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(14),
-                                          ),
-                                        ),
-                                        child: isLoading
-                                            ? const SizedBox(
-                                                width: 24,
-                                                height: 24,
-                                                child: CircularProgressIndicator(
-                                                  color: Colors.white,
-                                                  strokeWidth: 2.5,
-                                                ),
-                                              )
-                                            : Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    widget.editWorkId != null ? 'UPDATE' : 'ASSIGN',
-                                                    style: AppFont.style(
-                                                      fontSize: 14,
-                                                      fontWeight: FontWeight.w900,
-                                                      color: Colors.white,
-                                                      letterSpacing: 1.2,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                              const Icon(
-                                                Icons.arrow_forward,
-                                                size: 18,
+                              child:
+                                  BlocBuilder<
+                                    CommissioningWorkCreateBloc,
+                                    CommissioningWorkCreateState
+                                  >(
+                                    bloc: _createBloc,
+                                    builder: (context, state) {
+                                      return BlocBuilder<
+                                        CommissioningWorkUpdateBloc,
+                                        CommissioningWorkUpdateState
+                                      >(
+                                        bloc: _updateBloc,
+                                        builder: (context, updateState) {
+                                          final isLoading =
+                                              state
+                                                  is CommissioningWorkCreateLoadingState ||
+                                              updateState
+                                                  is CommissioningWorkUpdateLoadingState;
+                                          return ElevatedButton(
+                                            onPressed: isLoading
+                                                ? null
+                                                : _onAssign,
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: const Color(
+                                                0xFF1565C0,
                                               ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
-                        ),
+                                              foregroundColor: Colors.white,
+                                              elevation: 0,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(14),
+                                              ),
+                                            ),
+                                            child: isLoading
+                                                ? const SizedBox(
+                                                    width: 24,
+                                                    height: 24,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                          color: Colors.white,
+                                                          strokeWidth: 2.5,
+                                                        ),
+                                                  )
+                                                : Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        widget.editWorkId !=
+                                                                null
+                                                            ? 'UPDATE'
+                                                            : 'ASSIGN',
+                                                        style: AppFont.style(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          color: Colors.white,
+                                                          letterSpacing: 1.2,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 8),
+                                                      const Icon(
+                                                        Icons.arrow_forward,
+                                                        size: 18,
+                                                      ),
+                                                    ],
+                                                  ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                            ),
 
-                        const SizedBox(height: 30),
+                            const SizedBox(height: 30),
                           ],
                         ),
                       );

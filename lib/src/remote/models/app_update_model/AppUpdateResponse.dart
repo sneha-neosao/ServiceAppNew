@@ -63,12 +63,13 @@ class PlatformVersion {
     required this.storeLink,
   });
 
-  factory PlatformVersion.fromJson(Map<String, dynamic> json) => PlatformVersion(
-    version: json["version"] ?? "",
-    forceUpdate: json["force_update"] ?? false,
-    updateMessage: json["update_message"] ?? "",
-    storeLink: json["store_link"] ?? "",
-  );
+  factory PlatformVersion.fromJson(Map<String, dynamic> json) =>
+      PlatformVersion(
+        version: json["version"] ?? "",
+        forceUpdate: json["force_update"] ?? false,
+        updateMessage: json["update_message"] ?? "",
+        storeLink: json["store_link"] ?? "",
+      );
 
   Map<String, dynamic> toJson() => {
     "version": version,

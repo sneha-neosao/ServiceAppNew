@@ -56,6 +56,6 @@ class InternetFailure extends Failure {
   InternetFailure(super.message);
 }
 
-
-class ApiFailure extends Failure {ApiFailure(super.message);}
-
+class ApiFailure extends Failure {
+  ApiFailure(super.message);
+}

@@ -13,26 +13,25 @@ class AppTheme {
     return ThemeData(
       brightness: isDark ? Brightness.dark : Brightness.light,
 
-      scaffoldBackgroundColor: isDark == true ? AppColor.black : AppColor.whiteShade,
+      scaffoldBackgroundColor: isDark == true
+          ? AppColor.black
+          : AppColor.whiteShade,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-          minimumSize: MaterialStateProperty.all(
-            Size(double.infinity, 61.h),
-          ),
+          minimumSize: MaterialStateProperty.all(Size(double.infinity, 61.h)),
           padding: MaterialStateProperty.all(
             EdgeInsets.symmetric(horizontal: 26.w),
           ),
           shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.r),
-            ),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
           ),
 
           /// 🔹 Background color
           backgroundColor: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.disabled)) {
               return isDark
-                  ? AppColor.gray   // dark disabled bg
+                  ? AppColor
+                        .gray // dark disabled bg
                   : AppColor.gray; // light disabled bg
             }
             return AppColor.green; // enabled bg
@@ -41,16 +40,12 @@ class AppTheme {
           /// 🔹 Text & icon color
           foregroundColor: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.disabled)) {
-              return isDark
-                  ? AppColor.gray
-                  : AppColor.gray;
+              return isDark ? AppColor.gray : AppColor.gray;
             }
             return AppColor.white; // enabled text/icon
           }),
 
-          textStyle: MaterialStateProperty.all(
-            AppFont.bold.s17,
-          ),
+          textStyle: MaterialStateProperty.all(AppFont.bold.s17),
         ),
       ),
 
@@ -72,18 +67,21 @@ class AppTheme {
         headlineMedium: AppFont.bold.s16.copyWith(
           color: isDark ? Colors.white : Colors.black,
         ),
-       headlineLarge: AppFont.bold.s18.copyWith(
-         color: isDark ? Colors.white : Colors.black,
-       ),
-       displaySmall: AppFont.bold.s22.copyWith(
-         color: isDark ? Colors.white : Colors.black,height: 22/22
-       ),
-      displayMedium: AppFont.bold.s25.copyWith(
-         color: isDark ? Colors.white : Colors.black,height: 22/31
-      ),
-      displayLarge: AppFont.bold.s30.copyWith(
-         color: isDark ? Colors.white : Colors.black,height: 22/30
-      ),
+        headlineLarge: AppFont.bold.s18.copyWith(
+          color: isDark ? Colors.white : Colors.black,
+        ),
+        displaySmall: AppFont.bold.s22.copyWith(
+          color: isDark ? Colors.white : Colors.black,
+          height: 22 / 22,
+        ),
+        displayMedium: AppFont.bold.s25.copyWith(
+          color: isDark ? Colors.white : Colors.black,
+          height: 22 / 31,
+        ),
+        displayLarge: AppFont.bold.s30.copyWith(
+          color: isDark ? Colors.white : Colors.black,
+          height: 22 / 30,
+        ),
       ),
     );
   }

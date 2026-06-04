@@ -16,9 +16,10 @@ class CustomerResponse {
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      data: (json['data'] as List<dynamic>?)
-          ?.map((e) => Customer.fromJson(e))
-          .toList() ??
+      data:
+          (json['data'] as List<dynamic>?)
+              ?.map((e) => Customer.fromJson(e))
+              .toList() ??
           [],
     );
   }
@@ -37,22 +38,13 @@ class Customer {
   final String id;
   final String name;
 
-  Customer({
-    required this.id,
-    required this.name,
-  });
+  Customer({required this.id, required this.name});
 
   factory Customer.fromJson(Map<String, dynamic> json) {
-    return Customer(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-    );
+    return Customer(id: json['id'] ?? '', name: json['name'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 }

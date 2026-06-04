@@ -24,10 +24,10 @@ class CommissioningWorkUpdateSubmitEvent extends CommissioningWorkUpdateEvent {
 
   @override
   List<Object?> get props => [
-        workId,
-        customerId,
-        siteId,
-        applicationOfEquipment,
-        technicians,
-      ];
+    workId,
+    customerId,
+    siteId,
+    applicationOfEquipment,
+    technicians,
+  ];
 }

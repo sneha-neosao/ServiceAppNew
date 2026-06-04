@@ -37,7 +37,7 @@ class AuthCheckSignInStatusLoadingState extends AuthLoginState {}
 class AuthCheckSignInStatusSuccessState extends AuthLoginState {
   final LoginResponse userData;
 
-  const AuthCheckSignInStatusSuccessState(this.userData,);
+  const AuthCheckSignInStatusSuccessState(this.userData);
 
   @override
   List<Object?> get props => [userData];
@@ -73,6 +73,7 @@ class AuthLogoutFailureState extends AuthLoginState {
   @override
   List<Object?> get props => [message];
 }
+
 //
 // /// States like loading, success and failure representing forgot password.
 //

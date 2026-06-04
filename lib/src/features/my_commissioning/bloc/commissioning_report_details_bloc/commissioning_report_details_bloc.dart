@@ -3,12 +3,13 @@ import 'package:service_app/src/features/my_commissioning/domain/usecase/commiss
 import 'commissioning_report_details_event.dart';
 import 'commissioning_report_details_state.dart';
 
-class CommissioningReportDetailsBloc extends Bloc<
-    CommissioningReportDetailsEvent, CommissioningReportDetailsState> {
+class CommissioningReportDetailsBloc
+    extends
+        Bloc<CommissioningReportDetailsEvent, CommissioningReportDetailsState> {
   final CommissioningReportDetailsUseCase _useCase;
 
   CommissioningReportDetailsBloc(this._useCase)
-      : super(const CommissioningReportDetailsInitialState()) {
+    : super(const CommissioningReportDetailsInitialState()) {
     on<CommissioningReportDetailsGetEvent>(_onGetDetails);
   }
 

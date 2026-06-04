@@ -10,8 +10,7 @@ class ServiceCallReportStep3AutoFillUsecase
   ServiceCallReportStep3AutoFillUsecase(this.repository);
 
   @override
-  Future<Either<Failure, ServiceCallStep3Response>> call(
-      String params) async {
+  Future<Either<Failure, ServiceCallStep3Response>> call(String params) async {
     return await repository.serviceCallReportStep3AutoFill(params);
   }
 }

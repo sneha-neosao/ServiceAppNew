@@ -12,11 +12,7 @@ class TranslateState extends Equatable {
   );
 
   @override
-  List<Object> get props => [
-        languageCode,
-        countryCode,
-        previousCountryCode,
-      ];
+  List<Object> get props => [languageCode, countryCode, previousCountryCode];
 
   factory TranslateState.fromMap(Map<String, dynamic> map) {
     return TranslateState(

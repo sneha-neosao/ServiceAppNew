@@ -12,22 +12,23 @@ sealed class CommissioningStep2Event extends Equatable {
 /// Event for CommissioningStep2 submit.
 
 class CommissioningStep2GetEvent extends CommissioningStep2Event {
-
   final String id;
   final int warrantyPeriodYears;
   final List<String> memberPresentsCustomerSide;
   final String agenda;
 
   const CommissioningStep2GetEvent(
-       this.id,
-       this.warrantyPeriodYears,
-       this.memberPresentsCustomerSide,
-       this.agenda,);
+    this.id,
+    this.warrantyPeriodYears,
+    this.memberPresentsCustomerSide,
+    this.agenda,
+  );
 
   @override
   List<Object?> get props => [
     id,
     warrantyPeriodYears,
     memberPresentsCustomerSide,
-    agenda,];
+    agenda,
+  ];
 }

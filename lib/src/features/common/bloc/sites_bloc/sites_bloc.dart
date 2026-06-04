@@ -14,9 +14,7 @@ part 'sites_state.dart';
 
 class SitesBloc extends Bloc<SitesEvent, SitesState> {
   final SitesUseCase _sitesUseCase;
-  SitesBloc(
-    this._sitesUseCase,
-  ) : super(SitesinitialState()) {
+  SitesBloc(this._sitesUseCase) : super(SitesinitialState()) {
     on<SitesGetEvent>(_sites);
   }
 
@@ -25,9 +23,7 @@ class SitesBloc extends Bloc<SitesEvent, SitesState> {
     emit(SitesLoadingState());
 
     final result = await _sitesUseCase.call(
-      SitesParams(
-          customer_id: event.customer_id
-      )
+      SitesParams(customer_id: event.customer_id),
     );
 
     // fold() is synchronous — never put async work inside its callbacks.

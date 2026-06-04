@@ -5,13 +5,20 @@ import 'package:service_app/src/core/errors/failures.dart';
 import 'package:service_app/src/core/usecases/usecase.dart';
 import 'package:service_app/src/remote/models/commissioning_report_step4_autofill_model/commissioning_report_step4_autofill_response.dart';
 
-class CommissioningStep4Usecase implements UseCase<CommissioningReportStep4AutoFillResponse, CommissioningStep4Params> {
+class CommissioningStep4Usecase
+    implements
+        UseCase<
+          CommissioningReportStep4AutoFillResponse,
+          CommissioningStep4Params
+        > {
   final Repository _authRepository;
 
   const CommissioningStep4Usecase(this._authRepository);
 
   @override
-  Future<Either<Failure, CommissioningReportStep4AutoFillResponse>> call(CommissioningStep4Params params) async {
+  Future<Either<Failure, CommissioningReportStep4AutoFillResponse>> call(
+    CommissioningStep4Params params,
+  ) async {
     return await _authRepository.commissioning_report_step4(params);
   }
 }
@@ -26,8 +33,5 @@ class CommissioningStep4Params extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-        id,
-        descriptions,
-      ];
+  List<Object?> get props => [id, descriptions];
 }

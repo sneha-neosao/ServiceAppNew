@@ -24,10 +24,10 @@ class ServiceCallReportStep5PostEvent extends ServiceCallReportStep5Event {
 
   @override
   List<Object?> get props => [
-        reportId,
-        isMechanicalChecklistNa,
-        isPipelineChecklistNa,
-        isElectricalChecklistNa,
-        checklistItems,
-      ];
+    reportId,
+    isMechanicalChecklistNa,
+    isPipelineChecklistNa,
+    isElectricalChecklistNa,
+    checklistItems,
+  ];
 }

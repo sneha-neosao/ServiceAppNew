@@ -7,7 +7,8 @@ sealed class CommissioningStep5AutoFillEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class CommissioningStep5AutoFillGetEvent extends CommissioningStep5AutoFillEvent {
+class CommissioningStep5AutoFillGetEvent
+    extends CommissioningStep5AutoFillEvent {
   final String commissioning_report_id;
 
   const CommissioningStep5AutoFillGetEvent(this.commissioning_report_id);

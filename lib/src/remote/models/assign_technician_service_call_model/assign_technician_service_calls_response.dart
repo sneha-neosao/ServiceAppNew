@@ -11,7 +11,9 @@ class AssignTechnicianServiceCallsResponse {
     required this.message,
   });
 
-  factory AssignTechnicianServiceCallsResponse.fromJson(Map<String, dynamic> json) {
+  factory AssignTechnicianServiceCallsResponse.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return AssignTechnicianServiceCallsResponse(
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
@@ -48,9 +50,10 @@ class ComplaintData {
       complaintId: json['complaint_id'] ?? '',
       complaintNumber: json['complaint_number'] ?? '',
       status: json['status'] ?? '',
-      assignedTechnicians: (json['assigned_technicians'] as List<dynamic>?)
-          ?.map((e) => AssignedTechnician.fromJson(e))
-          .toList() ??
+      assignedTechnicians:
+          (json['assigned_technicians'] as List<dynamic>?)
+              ?.map((e) => AssignedTechnician.fromJson(e))
+              .toList() ??
           [],
     );
   }
@@ -60,8 +63,9 @@ class ComplaintData {
       'complaint_id': complaintId,
       'complaint_number': complaintNumber,
       'status': status,
-      'assigned_technicians':
-      assignedTechnicians.map((e) => e.toJson()).toList(),
+      'assigned_technicians': assignedTechnicians
+          .map((e) => e.toJson())
+          .toList(),
     };
   }
 }
@@ -89,11 +93,6 @@ class AssignedTechnician {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'code': code,
-      'assigned_at': assignedAt,
-    };
+    return {'id': id, 'name': name, 'code': code, 'assigned_at': assignedAt};
   }
 }

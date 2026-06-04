@@ -13,7 +13,9 @@ class CommissioningReportStep2AutoFillResponse extends Equatable {
     required this.message,
   });
 
-  factory CommissioningReportStep2AutoFillResponse.fromJson(Map<String, dynamic> json) {
+  factory CommissioningReportStep2AutoFillResponse.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return CommissioningReportStep2AutoFillResponse(
       status: json['status'],
       success: json['success'],

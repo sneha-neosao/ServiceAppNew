@@ -8,11 +8,14 @@ abstract class AssignedServicecallTechnicianState extends Equatable {
   List<Object?> get props => [];
 }
 
-class AssignedServicecallTechnicianInitialState extends AssignedServicecallTechnicianState {}
+class AssignedServicecallTechnicianInitialState
+    extends AssignedServicecallTechnicianState {}
 
-class AssignedServicecallTechnicianLoadingState extends AssignedServicecallTechnicianState {}
+class AssignedServicecallTechnicianLoadingState
+    extends AssignedServicecallTechnicianState {}
 
-class AssignedServicecallTechnicianSuccessState extends AssignedServicecallTechnicianState {
+class AssignedServicecallTechnicianSuccessState
+    extends AssignedServicecallTechnicianState {
   final AssignedServiceCallTechnicianResponse data;
 
   const AssignedServicecallTechnicianSuccessState(this.data);
@@ -21,7 +24,8 @@ class AssignedServicecallTechnicianSuccessState extends AssignedServicecallTechn
   List<Object?> get props => [data];
 }
 
-class AssignedServicecallTechnicianFailureState extends AssignedServicecallTechnicianState {
+class AssignedServicecallTechnicianFailureState
+    extends AssignedServicecallTechnicianState {
   final String message;
 
   const AssignedServicecallTechnicianFailureState(this.message);

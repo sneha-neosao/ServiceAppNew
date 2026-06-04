@@ -57,11 +57,7 @@ class AssignedTechnician extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'assign_id': assignId,
-      'technician_id': technicianId,
-      'name': name,
-    };
+    return {'assign_id': assignId, 'technician_id': technicianId, 'name': name};
   }
 
   @override

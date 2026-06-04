@@ -11,13 +11,11 @@ import 'package:service_app/src/remote/models/customer_model/customer_response.d
 /// Domain layer use case for fetching customers
 
 class CustomerUseCase implements UseCase<CustomerResponse, NoParams> {
-
   final Repository _authRepository;
   const CustomerUseCase(this._authRepository);
 
   @override
   Future<Either<Failure, CustomerResponse>> call(NoParams params) async {
-
     final result = await _authRepository.customers(params);
 
     return result;

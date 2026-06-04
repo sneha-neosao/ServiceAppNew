@@ -3,8 +3,7 @@ part of 'login_form_bloc.dart';
 /// Base state for SocialMediaValidationBloc.
 ///
 /// Holds the current form data in [inputs] and a validation flag [isValid].
-sealed class LoginFormState extends Equatable
-{
+sealed class LoginFormState extends Equatable {
   final String email;
   final String password;
   final bool isValid;
@@ -16,22 +15,14 @@ sealed class LoginFormState extends Equatable
   });
 
   @override
-  List<Object?> get props => [
-        email,
-        password,
-        isValid,
-      ];
+  List<Object?> get props => [email, password, isValid];
 }
 
 /// Provides a default empty [inputs] with [isValid] set to false.
 
 class LoginFormInitialState extends LoginFormState {
   const LoginFormInitialState()
-      : super(
-          email: "",
-          password: "",
-          isValid: false,
-        );
+    : super(email: "", password: "", isValid: false);
 }
 
 /// State representing the current validated data after an input change.
@@ -47,16 +38,8 @@ class LoginFormDataState extends LoginFormState {
     required this.inputEmail,
     required this.inputPassword,
     required this.inputIsValid,
-  }) : super(
-          email: inputEmail,
-          password: inputPassword,
-          isValid: inputIsValid,
-        );
+  }) : super(email: inputEmail, password: inputPassword, isValid: inputIsValid);
 
   @override
-  List<Object?> get props => [
-        inputEmail,
-        inputPassword,
-        inputIsValid,
-      ];
+  List<Object?> get props => [inputEmail, inputPassword, inputIsValid];
 }

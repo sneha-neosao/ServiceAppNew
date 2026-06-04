@@ -75,24 +75,19 @@ class _AuthTextFieldState<T> extends State<AuthTextField<T>> {
             decoration: BoxDecoration(
               color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(
-                color: const Color(0xFFE0E0E0),
-                width: 1,
-              ),
+              border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
             ),
             child: TextFormField(
               initialValue: widget.initialValue,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              obscureText:
-              widget.isSecure ?? false ? _isVisible : false,
+              obscureText: widget.isSecure ?? false ? _isVisible : false,
               cursorColor: const Color(0xFF1A1A1A),
               onChanged: widget.onChanged,
               keyboardType: widget.keyboardType,
               readOnly: widget.readOnly ?? false,
               inputFormatters: widget.inputFormat,
               textCapitalization:
-              widget.textCapitalization ??
-                  TextCapitalization.none,
+                  widget.textCapitalization ?? TextCapitalization.none,
 
               style: AppFont.style(
                 fontSize: 15.sp,
@@ -112,25 +107,25 @@ class _AuthTextFieldState<T> extends State<AuthTextField<T>> {
                 /// PREFIX ICON
                 prefixIcon: widget.prefixIcon != null
                     ? Icon(
-                  widget.prefixIcon,
-                  size: 20.sp,
-                  color: const Color(0xFFBDBDBD),
-                )
+                        widget.prefixIcon,
+                        size: 20.sp,
+                        color: const Color(0xFFBDBDBD),
+                      )
                     : null,
 
                 /// PASSWORD ICON
                 suffixIcon: widget.isSecure ?? false
                     ? IconButton(
-                  onPressed: _toggleVisibility,
-                  splashRadius: 20.r,
-                  icon: Icon(
-                    _isVisible
-                        ? Icons.remove_red_eye_outlined
-                        : Icons.visibility_off_outlined,
-                    size: 20.sp,
-                    color: const Color(0xFF9E9E9E),
-                  ),
-                )
+                        onPressed: _toggleVisibility,
+                        splashRadius: 20.r,
+                        icon: Icon(
+                          _isVisible
+                              ? Icons.remove_red_eye_outlined
+                              : Icons.visibility_off_outlined,
+                          size: 20.sp,
+                          color: const Color(0xFF9E9E9E),
+                        ),
+                      )
                     : null,
 
                 /// PADDING
@@ -141,10 +136,7 @@ class _AuthTextFieldState<T> extends State<AuthTextField<T>> {
 
                 /// ERROR STYLE
                 errorMaxLines: 3,
-                errorStyle: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(
+                errorStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontSize: 10.sp,
                   fontStyle: FontStyle.italic,
                   fontWeight: FontWeight.w300,

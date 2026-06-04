@@ -55,9 +55,10 @@ class CustomerData {
     return CustomerData(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      sites: (json['sites'] as List<dynamic>?)
-          ?.map((e) => Site.fromJson(e))
-          .toList() ??
+      sites:
+          (json['sites'] as List<dynamic>?)
+              ?.map((e) => Site.fromJson(e))
+              .toList() ??
           [],
       createdByDealerUser: json['created_by_dealer_user'],
       createdByTechnician: json['created_by_technician'] ?? '',
@@ -86,19 +87,16 @@ class Site {
   final String name;
   final List<Contact> contacts;
 
-  Site({
-    required this.id,
-    required this.name,
-    required this.contacts,
-  });
+  Site({required this.id, required this.name, required this.contacts});
 
   factory Site.fromJson(Map<String, dynamic> json) {
     return Site(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      contacts: (json['contacts'] as List<dynamic>?)
-          ?.map((e) => Contact.fromJson(e))
-          .toList() ??
+      contacts:
+          (json['contacts'] as List<dynamic>?)
+              ?.map((e) => Contact.fromJson(e))
+              .toList() ??
           [],
     );
   }

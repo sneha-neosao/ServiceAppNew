@@ -222,10 +222,14 @@ class AmcVisitDetailsScreen extends StatelessWidget {
 
                 if (reportsCreated > 0) ...[
                   const SizedBox(height: 16),
-                  
+
                   ...List.generate(reportsCreated, (index) {
                     return Container(
-                      margin: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
+                      margin: const EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        bottom: 16,
+                      ),
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -266,7 +270,7 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                       ),
                     );
                   }),
-                  
+
                   // + Create Another Report (dashed)
                   GestureDetector(
                     onTap: onSubmit,

@@ -50,7 +50,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
       });
       return;
     }
-    
+
     final params = CloseOverCallParams(
       complaintId: widget.complaintId,
       serviceCallDetails: _resolutionController.text.trim(),
@@ -143,7 +143,10 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     child: _buildInfoColumn('COMPLAINT NO', widget.complaintNo),
                   ),
                   Expanded(
-                    child: _buildInfoColumn('CUSTOMER NAME', widget.customerName),
+                    child: _buildInfoColumn(
+                      'CUSTOMER NAME',
+                      widget.customerName,
+                    ),
                   ),
                   Expanded(
                     child: _buildInfoColumn('SITE NAME', widget.siteName),
@@ -180,7 +183,8 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                 }
               },
               decoration: InputDecoration(
-                hintText: 'Mandatory: Summarize the resolution steps discussed over the call...',
+                hintText:
+                    'Mandatory: Summarize the resolution steps discussed over the call...',
                 hintStyle: AppFont.style(
                   fontSize: 14,
                   color: const Color(0xFFD1D5DB),
@@ -246,7 +250,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                   listener: (context, state) {
                     if (state is CloseOverCallSuccessState) {
                       widget.onSuccess();
-                      
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Service call closed successfully'),
@@ -274,7 +278,9 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                         height: 44,
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1565C0), // Make it primary blue when active
+                          color: const Color(
+                            0xFF1565C0,
+                          ), // Make it primary blue when active
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -307,7 +313,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                         ),
                       ),
                     );
-                  }
+                  },
                 ),
               ],
             ),

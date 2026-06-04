@@ -7,7 +7,8 @@ abstract class ServiceCallReportStep6AutoFillEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class ServiceCallReportStep6AutoFillGetEvent extends ServiceCallReportStep6AutoFillEvent {
+class ServiceCallReportStep6AutoFillGetEvent
+    extends ServiceCallReportStep6AutoFillEvent {
   final String reportId;
 
   const ServiceCallReportStep6AutoFillGetEvent(this.reportId);

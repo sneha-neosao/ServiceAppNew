@@ -15,10 +15,7 @@ class AssignTechnicianServiceCallsParams extends Equatable {
   });
 
   Map<String, dynamic> toMap() {
-    return {
-      'complaint_id': complaintId,
-      'technician_ids': technicianIds,
-    };
+    return {'complaint_id': complaintId, 'technician_ids': technicianIds};
   }
 
   @override
@@ -26,14 +23,19 @@ class AssignTechnicianServiceCallsParams extends Equatable {
 }
 
 class AssignTechnicianServiceCallsUsecase
-    implements UseCase<AssignTechnicianServiceCallsResponse, AssignTechnicianServiceCallsParams> {
+    implements
+        UseCase<
+          AssignTechnicianServiceCallsResponse,
+          AssignTechnicianServiceCallsParams
+        > {
   final Repository repository;
 
   AssignTechnicianServiceCallsUsecase(this.repository);
 
   @override
   Future<Either<Failure, AssignTechnicianServiceCallsResponse>> call(
-      AssignTechnicianServiceCallsParams params) async {
+    AssignTechnicianServiceCallsParams params,
+  ) async {
     return await repository.assignTechnicianServiceCalls(params);
   }
 }

@@ -11,14 +11,15 @@ import 'package:service_app/src/remote/models/upcoming_amc_model/upcoming_amc_re
 
 /// Domain layer use case for fetching upcoming amcs
 
-class UpcomingAmcUseCase implements UseCase<UpcomingAmcVisitsResponse, UpcomingAmcParams> {
-
+class UpcomingAmcUseCase
+    implements UseCase<UpcomingAmcVisitsResponse, UpcomingAmcParams> {
   final Repository _authRepository;
   const UpcomingAmcUseCase(this._authRepository);
 
   @override
-  Future<Either<Failure, UpcomingAmcVisitsResponse>> call(UpcomingAmcParams params) async {
-
+  Future<Either<Failure, UpcomingAmcVisitsResponse>> call(
+    UpcomingAmcParams params,
+  ) async {
     final result = await _authRepository.upcoming_amc(params);
 
     return result;
@@ -28,12 +29,8 @@ class UpcomingAmcUseCase implements UseCase<UpcomingAmcVisitsResponse, UpcomingA
 class UpcomingAmcParams extends Equatable {
   final String filter;
 
-  const UpcomingAmcParams({
-    required this.filter,
-  });
+  const UpcomingAmcParams({required this.filter});
 
   @override
-  List<Object?> get props => [
-    filter,
-  ];
+  List<Object?> get props => [filter];
 }

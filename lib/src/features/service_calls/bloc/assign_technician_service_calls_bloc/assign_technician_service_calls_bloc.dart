@@ -3,8 +3,12 @@ import 'package:service_app/src/features/service_calls/bloc/assign_technician_se
 import 'package:service_app/src/features/service_calls/bloc/assign_technician_service_calls_bloc/assign_technician_service_calls_state.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/assign_technician_service_calls_usecase.dart';
 
-class AssignTechnicianServiceCallsBloc extends Bloc<
-    AssignTechnicianServiceCallsEvent, AssignTechnicianServiceCallsState> {
+class AssignTechnicianServiceCallsBloc
+    extends
+        Bloc<
+          AssignTechnicianServiceCallsEvent,
+          AssignTechnicianServiceCallsState
+        > {
   final AssignTechnicianServiceCallsUsecase assignTechnicianServiceCallsUsecase;
 
   AssignTechnicianServiceCallsBloc({

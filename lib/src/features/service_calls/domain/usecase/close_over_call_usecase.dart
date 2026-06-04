@@ -33,7 +33,8 @@ class CloseOverCallUsecase
 
   @override
   Future<Either<Failure, CloseOverCallResponse>> call(
-      CloseOverCallParams params) async {
+    CloseOverCallParams params,
+  ) async {
     return await repository.closeOverCall(params);
   }
 }

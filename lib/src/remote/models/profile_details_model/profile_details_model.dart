@@ -79,11 +79,7 @@ class Dealer {
   final String name;
   final String code;
 
-  Dealer({
-    required this.id,
-    required this.name,
-    required this.code,
-  });
+  Dealer({required this.id, required this.name, required this.code});
 
   factory Dealer.fromJson(Map<String, dynamic> json) {
     return Dealer(
@@ -94,10 +90,6 @@ class Dealer {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'code': code,
-    };
+    return {'id': id, 'name': name, 'code': code};
   }
 }

@@ -5,13 +5,16 @@ import 'package:service_app/src/core/errors/failures.dart';
 import 'package:service_app/src/core/usecases/usecase.dart';
 import 'package:service_app/src/remote/models/create_new_site_model/create_new_site_response.dart';
 
-class CreateNewSiteUsecase implements UseCase<AddSiteResponse, CreateNewSiteParams> {
+class CreateNewSiteUsecase
+    implements UseCase<AddSiteResponse, CreateNewSiteParams> {
   final Repository _repository;
 
   const CreateNewSiteUsecase(this._repository);
 
   @override
-  Future<Either<Failure, AddSiteResponse>> call(CreateNewSiteParams params) async {
+  Future<Either<Failure, AddSiteResponse>> call(
+    CreateNewSiteParams params,
+  ) async {
     return await _repository.createNewSite(params);
   }
 }

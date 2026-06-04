@@ -27,5 +27,13 @@ class PendingServiceCallsGetEvent extends PendingServiceCallsEvent {
   });
 
   @override
-  List<Object?> get props => [page, pageSize, customerId, siteId, complaintNumber, date, isRefresh];
+  List<Object?> get props => [
+    page,
+    pageSize,
+    customerId,
+    siteId,
+    complaintNumber,
+    date,
+    isRefresh,
+  ];
 }

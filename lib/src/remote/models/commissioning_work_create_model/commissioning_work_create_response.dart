@@ -74,8 +74,9 @@ class CommissioningWorkData extends Equatable {
       'application_of_equipment': applicationOfEquipment,
       'customer': customer.toJson(),
       'site': site.toJson(),
-      'assigned_technicians':
-      assignedTechnicians.map((e) => e.toJson()).toList(),
+      'assigned_technicians': assignedTechnicians
+          .map((e) => e.toJson())
+          .toList(),
       'created_by_dealer_user': createdByDealerUser,
       'created_by_technician': createdByTechnician,
     };
@@ -97,23 +98,14 @@ class Customer extends Equatable {
   final String id;
   final String name;
 
-  const Customer({
-    required this.id,
-    required this.name,
-  });
+  const Customer({required this.id, required this.name});
 
   factory Customer.fromJson(Map<String, dynamic> json) {
-    return Customer(
-      id: json['id'],
-      name: json['name'],
-    );
+    return Customer(id: json['id'], name: json['name']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 
   @override
@@ -124,23 +116,14 @@ class Site extends Equatable {
   final String id;
   final String name;
 
-  const Site({
-    required this.id,
-    required this.name,
-  });
+  const Site({required this.id, required this.name});
 
   factory Site.fromJson(Map<String, dynamic> json) {
-    return Site(
-      id: json['id'],
-      name: json['name'],
-    );
+    return Site(id: json['id'], name: json['name']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 
   @override
@@ -167,11 +150,7 @@ class AssignedTechnician extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'code': code,
-    };
+    return {'id': id, 'name': name, 'code': code};
   }
 
   @override

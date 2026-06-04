@@ -7,7 +7,8 @@ sealed class AssignedTechnicianRepresentativeEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class AssignedTechnicianRepresentativeGetEvent extends AssignedTechnicianRepresentativeEvent {
+class AssignedTechnicianRepresentativeGetEvent
+    extends AssignedTechnicianRepresentativeEvent {
   final String commissioning_report_id;
 
   const AssignedTechnicianRepresentativeGetEvent(this.commissioning_report_id);

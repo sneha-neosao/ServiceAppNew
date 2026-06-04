@@ -25,11 +25,7 @@ class ServiceCallReportStep2Params extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
-        id,
-        memberPresentsCustomerSide,
-        agenda,
-      ];
+  List<Object?> get props => [id, memberPresentsCustomerSide, agenda];
 }
 
 class ServiceCallReportStep2Usecase
@@ -39,7 +35,8 @@ class ServiceCallReportStep2Usecase
 
   @override
   Future<Either<Failure, ServiceCallStep2Response>> call(
-      ServiceCallReportStep2Params params) async {
+    ServiceCallReportStep2Params params,
+  ) async {
     return await repository.serviceCallReportStep2(params);
   }
 }

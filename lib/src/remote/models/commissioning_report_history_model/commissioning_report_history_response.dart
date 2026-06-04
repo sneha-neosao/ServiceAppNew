@@ -13,7 +13,9 @@ class CommissioningReportHistoryResponse extends Equatable {
     required this.message,
   });
 
-  factory CommissioningReportHistoryResponse.fromJson(Map<String, dynamic> json) {
+  factory CommissioningReportHistoryResponse.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return CommissioningReportHistoryResponse(
       status: json['status'],
       success: json['success'],

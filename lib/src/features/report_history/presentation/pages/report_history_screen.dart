@@ -869,10 +869,7 @@ class _ReportCard extends StatelessWidget {
                           border: Border.all(color: const Color(0xFFE5E7EB)),
                         ),
                         child: const Center(
-                          child: Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                          ),
+                          child: Icon(Icons.check_circle, color: Colors.green),
                         ),
                       )
                     : _buildIconActionButton(
@@ -902,9 +899,7 @@ class _ReportCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: const Color(0xFFE5E7EB), width: 1.2),
         ),
-        child: Center(
-          child: Icon(icon, size: 22, color: iconColor),
-        ),
+        child: Center(child: Icon(icon, size: 22, color: iconColor)),
       ),
     );
   }

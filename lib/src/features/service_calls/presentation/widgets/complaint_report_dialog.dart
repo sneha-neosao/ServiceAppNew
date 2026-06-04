@@ -37,7 +37,11 @@ class ComplaintReportDialog extends StatelessWidget {
                     color: const Color(0xFFF1F8FF),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.shield_outlined, color: Color(0xFF1565C0), size: 20),
+                  child: const Icon(
+                    Icons.shield_outlined,
+                    color: Color(0xFF1565C0),
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -59,8 +63,18 @@ class ComplaintReportDialog extends StatelessWidget {
             // Info Grid
             Row(
               children: [
-                Expanded(child: _buildInfoItem('complaint_report_no_label'.tr(), complaintNo)),
-                Expanded(child: _buildInfoItem('complaint_report_received_label'.tr(), date)),
+                Expanded(
+                  child: _buildInfoItem(
+                    'complaint_report_no_label'.tr(),
+                    complaintNo,
+                  ),
+                ),
+                Expanded(
+                  child: _buildInfoItem(
+                    'complaint_report_received_label'.tr(),
+                    date,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 24),

@@ -15,15 +15,11 @@ class CommissioningStep3GetEvent extends CommissioningStep3Event {
   final TechnicalDetails? technicalDetails;
 
   const CommissioningStep3GetEvent(
-      this.id,
-      this.isTechnicalNa,
-      this.technicalDetails,
-      );
+    this.id,
+    this.isTechnicalNa,
+    this.technicalDetails,
+  );
 
   @override
-  List<Object?> get props => [
-    id,
-    isTechnicalNa,
-    technicalDetails,
-  ];
+  List<Object?> get props => [id, isTechnicalNa, technicalDetails];
 }

@@ -7,14 +7,15 @@ import 'package:service_app/src/remote/models/commissioning_report_step2_autofil
 
 /// Domain layer use case for verifying user and CommissioningStep2
 
-class CommissioningStep2Usecase implements UseCase<CommissioningStep2Response, CommissioningStep2Params> {
-
+class CommissioningStep2Usecase
+    implements UseCase<CommissioningStep2Response, CommissioningStep2Params> {
   final Repository _authRepository;
   const CommissioningStep2Usecase(this._authRepository);
 
   @override
-  Future<Either<Failure, CommissioningStep2Response>> call(CommissioningStep2Params params) async {
-
+  Future<Either<Failure, CommissioningStep2Response>> call(
+    CommissioningStep2Params params,
+  ) async {
     final result = await _authRepository.commissioning_report_step2(params);
 
     return result;
@@ -46,8 +47,9 @@ class CommissioningStep2Params extends Equatable {
     return CommissioningStep2Params(
       id: json['id'],
       warrantyPeriodYears: json['warranty_period_years'],
-      memberPresentsCustomerSide:
-      List<String>.from(json['member_presents_customer_side']),
+      memberPresentsCustomerSide: List<String>.from(
+        json['member_presents_customer_side'],
+      ),
       agenda: json['agenda'],
     );
   }

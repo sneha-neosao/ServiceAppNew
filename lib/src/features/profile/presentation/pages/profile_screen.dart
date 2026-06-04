@@ -53,26 +53,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: isSelected ? const Color(0xFF0B68B9) : const Color(0xFFF1F2F6),
+                      color: isSelected
+                          ? const Color(0xFF0B68B9)
+                          : const Color(0xFFF1F2F6),
                       width: isSelected ? 2 : 1,
                     ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(lang,
-                          style: AppFont.style(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: isSelected ? const Color(0xFF0B68B9) : const Color(0xFF8E9BAE),
-                          )),
+                      Text(
+                        lang,
+                        style: AppFont.style(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: isSelected
+                              ? const Color(0xFF0B68B9)
+                              : const Color(0xFF8E9BAE),
+                        ),
+                      ),
                       if (isSelected)
                         Container(
                           width: 26,
                           height: 26,
                           decoration: const BoxDecoration(
-                              color: Color(0xFF0B68B9), shape: BoxShape.circle),
-                          child: const Icon(Icons.check, size: 16, color: Colors.white),
+                            color: Color(0xFF0B68B9),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.check,
+                            size: 16,
+                            color: Colors.white,
+                          ),
                         ),
                     ],
                   ),
@@ -82,7 +94,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             return Padding(
               padding: EdgeInsets.fromLTRB(
-                  24, 24, 24, MediaQuery.of(ctx).viewInsets.bottom + 32),
+                24,
+                24,
+                24,
+                MediaQuery.of(ctx).viewInsets.bottom + 32,
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,22 +106,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('profile_language_title'.tr(),
-                          style: AppFont.style(
-                              fontSize: 22, fontWeight: FontWeight.w800, color: const Color(0xFF0D121F))),
+                      Text(
+                        'profile_language_title'.tr(),
+                        style: AppFont.style(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
                       GestureDetector(
                         onTap: () => Navigator.pop(ctx),
                         child: Container(
                           padding: const EdgeInsets.all(6),
                           decoration: const BoxDecoration(
-                              color: Color(0xFFF8F9FB), shape: BoxShape.circle),
-                          child: const Icon(Icons.close, size: 18, color: Color(0xFFA5ABB7)),
+                            color: Color(0xFFF8F9FB),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            size: 18,
+                            color: Color(0xFFA5ABB7),
+                          ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
-                  for (final l in ['ENGLISH', 'MARATHI', 'HINDI', 'GUJARATI', 'KANNADA'])
+                  for (final l in [
+                    'ENGLISH',
+                    'MARATHI',
+                    'HINDI',
+                    'GUJARATI',
+                    'KANNADA',
+                  ])
                     option(l),
                 ],
               ),
@@ -136,12 +169,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<ProfileDetailsBloc>()..add(const ProfileDetailsGetEvent()),
+      create: (_) =>
+          getIt<ProfileDetailsBloc>()..add(const ProfileDetailsGetEvent()),
       child: Scaffold(
         backgroundColor: const Color(0xFFF2F6FA),
         body: BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
           builder: (context, state) {
-            final data = state is ProfileDetailsSuccessState ? state.data.data : null;
+            final data = state is ProfileDetailsSuccessState
+                ? state.data.data
+                : null;
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,9 +190,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // ── API error banner ───────────────────────────────────────
                   if (state is ProfileDetailsFailureState)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
+                      ),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.red.shade50,
                           borderRadius: BorderRadius.circular(10),
@@ -164,12 +206,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.error_outline, color: Colors.red.shade400, size: 18),
+                            Icon(
+                              Icons.error_outline,
+                              color: Colors.red.shade400,
+                              size: 18,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 state.message,
-                                style: AppFont.style(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.red.shade600),
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.red.shade600,
+                                ),
                               ),
                             ),
                           ],
@@ -179,11 +229,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   // ── Contact ──────────────────────────────────────────────────
                   _sectionLabel('Contact'),
-                  _infoCard(children: [
-                    _contactRow("assets/icons/call_icon.png", 'Mobile', data?.phone ?? '—'),
-                    _divider(),
-                    _contactRow("assets/icons/mail_icon.png", 'Email', data?.email ?? '—'),
-                  ]),
+                  _infoCard(
+                    children: [
+                      _contactRow(
+                        "assets/icons/call_icon.png",
+                        'Mobile',
+                        data?.phone ?? '—',
+                      ),
+                      // _divider(),
+                      // _contactRow("assets/icons/mail_icon.png", 'Email', data?.email ?? '—'),
+                    ],
+                  ),
 
                   const SizedBox(height: 20),
 
@@ -194,41 +250,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 20),
 
                   _sectionLabel('Choose Language'),
-                  _infoCard(children: [
-                    _prefRow(
-                      "assets/icons/language.png",
-                      'Language',
-                      _selectedLanguage,
-                      onTap: _showLanguageBottomSheet,
-                    ),
-                    // _divider(),
-                    // _prefToggleRow(
-                    //   Icons.dark_mode_outlined,
-                    //   'Dark mode',
-                    //   'Easier on the eyes at night',
-                    //   _darkMode,
-                    //   (v) => setState(() => _darkMode = v),
-                    // ),
-                    // _divider(),
-                    // _prefToggleRow(
-                    //   Icons.notifications_outlined,
-                    //   'Push notifications',
-                    //   'Job assignments & alerts',
-                    //   _pushNotifications,
-                    //   (v) => setState(() => _pushNotifications = v),
-                    // ),
-                  ]),
+                  _infoCard(
+                    children: [
+                      _prefRow(
+                        "assets/icons/language.png",
+                        'Language',
+                        _selectedLanguage,
+                        onTap: _showLanguageBottomSheet,
+                      ),
+                      // _divider(),
+                      // _prefToggleRow(
+                      //   Icons.dark_mode_outlined,
+                      //   'Dark mode',
+                      //   'Easier on the eyes at night',
+                      //   _darkMode,
+                      //   (v) => setState(() => _darkMode = v),
+                      // ),
+                      // _divider(),
+                      // _prefToggleRow(
+                      //   Icons.notifications_outlined,
+                      //   'Push notifications',
+                      //   'Job assignments & alerts',
+                      //   _pushNotifications,
+                      //   (v) => setState(() => _pushNotifications = v),
+                      // ),
+                    ],
+                  ),
 
                   const SizedBox(height: 20),
 
                   // ── Security & session ────────────────────────────────────────
                   _sectionLabel('Security & session'),
-                  _infoCard(children: [
-                    _actionRow("assets/icons/logout_icon.png", 'Logout', onTap: _showLogoutDialog),
-                    _divider(),
-                    _actionRow("assets/icons/accountdelete_icon.png", 'Delete Account',
-                        textColor: Colors.red, onTap: _showDeleteDialog),
-                  ]),
+                  _infoCard(
+                    children: [
+                      _actionRow(
+                        "assets/icons/logout_icon.png",
+                        'Logout',
+                        onTap: _showLogoutDialog,
+                      ),
+                      _divider(),
+                      _actionRow(
+                        "assets/icons/accountdelete_icon.png",
+                        'Delete Account',
+                        textColor: Colors.red,
+                        onTap: _showDeleteDialog,
+                      ),
+                    ],
+                  ),
 
                   const SizedBox(height: 100),
                 ],
@@ -247,7 +315,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         // Blue gradient bg
         Container(
-          height: 120,
+          height: 140,
           decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage('assets/images/profile_bg_image.png'),
@@ -256,34 +324,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           child: SafeArea(
             bottom: false,
+            top: false,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
                   // Back arrow
-                  // GestureDetector(
-                  //   onTap: widget.onBack,
-                  //   child: Container(
-                  //     width: 36,
-                  //     height: 36,
-                  //     decoration: BoxDecoration(
-                  //       color: Colors.white.withOpacity(0.2),
-                  //       shape: BoxShape.circle,
-                  //     ),
-                  //     child: const Icon(Icons.arrow_back, color: Colors.white, size: 18),
-                  //   ),
-                  // ),
-                  const SizedBox(height: 18),
-                  // Title centred
-                  Center(
-                    child: Text(
-                      'My Profile',
-                      style: AppFont.style(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: widget.onBack,
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                       ),
+                    ),
+                  ),
+                  // Title centred
+                  Text(
+                    'My Profile',
+                    style: AppFont.style(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
                     ),
                   ),
                 ],
@@ -296,7 +369,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Positioned(
           left: 16,
           right: 16,
-          top: 80,
+          top: 105,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
@@ -331,17 +404,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       data?.name ?? '—',
                       style: AppFont.style(
-                          fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF0D121F)),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF0D121F),
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.badge_outlined, size: 13, color: Color(0xFFA5ABB7)),
+                        const Icon(
+                          Icons.badge_outlined,
+                          size: 13,
+                          color: Color(0xFFA5ABB7),
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           data != null ? 'ID: ${data.code}' : '—',
                           style: AppFont.style(
-                              fontSize: 12, fontWeight: FontWeight.w500, color: const Color(0xFFA5ABB7)),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFFA5ABB7),
+                          ),
                         ),
                       ],
                     ),
@@ -362,9 +445,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _sectionLabel(String title) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-      child: Text(title,
-          style: AppFont.style(
-              fontSize: 14, fontWeight: FontWeight.w700, color: const Color(0xFF0D121F))),
+      child: Text(
+        title,
+        style: AppFont.style(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: const Color(0xFF0D121F),
+        ),
+      ),
     );
   }
 
@@ -390,7 +478,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _divider() => const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16, color: Color(0xFFF1F2F6));
+  Widget _divider() => const Divider(
+    height: 1,
+    thickness: 1,
+    indent: 16,
+    endIndent: 16,
+    color: Color(0xFFF1F2F6),
+  );
 
   // ── Contact row ────────────────────────────────────────────────────────────
   Widget _contactRow(String icon, String label, String value) {
@@ -454,9 +548,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-                color: const Color(0xFF0B68B9).withOpacity(0.25),
-                blurRadius: 12,
-                offset: const Offset(0, 4)),
+              color: const Color(0xFF0B68B9).withOpacity(0.25),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
           ],
         ),
         child: Column(
@@ -481,9 +576,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(width: 14),
                   Expanded(
                     child: Text(
-                      data?.dealer.name.isNotEmpty == true ? data!.dealer.name : '—',
+                      data?.dealer.name.isNotEmpty == true
+                          ? data!.dealer.name
+                          : '—',
                       style: AppFont.style(
-                          fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
@@ -505,7 +605,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Column(
                 children: [
-                  _contactRow("assets/icons/dealercode_icon.png", 'Dealer code', data?.dealer.code.isNotEmpty == true ? data!.dealer.code : '—'),
+                  _contactRow(
+                    "assets/icons/dealercode_icon.png",
+                    'Dealer code',
+                    data?.dealer.code.isNotEmpty == true
+                        ? data!.dealer.code
+                        : '—',
+                  ),
                   // _divider(),
                   // _contactRow("assets/icons/mail_icon.png", 'Support line', '+91 20 2233 4455'),
                 ],
@@ -518,7 +624,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ── Preference tap row ─────────────────────────────────────────────────────
-  Widget _prefRow(String icon, String label, String subtitle, {VoidCallback? onTap}) {
+  Widget _prefRow(
+    String icon,
+    String label,
+    String subtitle, {
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -543,12 +654,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label,
-                      style: AppFont.style(
-                          fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF0B68B9))),
-                  Text(subtitle,
-                      style: AppFont.style(
-                          fontSize: 12, fontWeight: FontWeight.w400, color: const Color(0xFF0D121F))),
+                  Text(
+                    label,
+                    style: AppFont.style(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF0B68B9),
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: AppFont.style(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xFF0D121F),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -559,7 +680,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ── Preference toggle row ──────────────────────────────────────────────────
-  Widget _prefToggleRow(IconData icon, String label, String subtitle, bool value, ValueChanged<bool> onChanged) {
+  Widget _prefToggleRow(
+    IconData icon,
+    String label,
+    String subtitle,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
@@ -578,12 +705,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: AppFont.style(
-                        fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF0B68B9))),
-                Text(subtitle,
-                    style: AppFont.style(
-                        fontSize: 12, fontWeight: FontWeight.w400, color: const Color(0xFFA5ABB7))),
+                Text(
+                  label,
+                  style: AppFont.style(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF0B68B9),
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: AppFont.style(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFFA5ABB7),
+                  ),
+                ),
               ],
             ),
           ),
@@ -598,7 +735,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ── Action row (logout / delete) ───────────────────────────────────────────
-  Widget _actionRow(String icon, String label, {Color? textColor, VoidCallback? onTap}) {
+  Widget _actionRow(
+    String icon,
+    String label, {
+    Color? textColor,
+    VoidCallback? onTap,
+  }) {
     final color = textColor ?? const Color(0xFF0B68B9);
     return GestureDetector(
       onTap: onTap,
@@ -620,9 +762,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(width: 14),
-            Text(label,
-                style: AppFont.style(
-                    fontSize: 14, fontWeight: FontWeight.w600, color: color)),
+            Text(
+              label,
+              style: AppFont.style(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
           ],
         ),
       ),

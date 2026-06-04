@@ -12,7 +12,10 @@ class CommissioningStep4GetEvent extends CommissioningStep4Event {
   final String commissioning_report_id;
   final List<SavedDescription> descriptions;
 
-  const CommissioningStep4GetEvent(this.commissioning_report_id, this.descriptions);
+  const CommissioningStep4GetEvent(
+    this.commissioning_report_id,
+    this.descriptions,
+  );
 
   @override
   List<Object> get props => [commissioning_report_id, descriptions];

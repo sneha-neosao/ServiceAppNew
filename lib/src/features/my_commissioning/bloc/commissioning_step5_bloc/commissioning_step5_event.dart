@@ -26,10 +26,10 @@ class CommissioningStep5GetEvent extends CommissioningStep5Event {
 
   @override
   List<Object> get props => [
-        commissioning_report_id,
-        isMechanicalChecklistNa,
-        isPipelineChecklistNa,
-        isElectricalChecklistNa,
-        checklistItems,
-      ];
+    commissioning_report_id,
+    isMechanicalChecklistNa,
+    isPipelineChecklistNa,
+    isElectricalChecklistNa,
+    checklistItems,
+  ];
 }

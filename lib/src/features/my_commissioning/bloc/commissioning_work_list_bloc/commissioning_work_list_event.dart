@@ -12,7 +12,6 @@ sealed class CommissioningWorkListEvent extends Equatable {
 /// Event for Customer.
 
 class CommissioningWorkListGetEvent extends CommissioningWorkListEvent {
-
   const CommissioningWorkListGetEvent();
 
   @override

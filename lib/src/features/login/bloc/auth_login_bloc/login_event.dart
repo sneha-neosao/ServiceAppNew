@@ -35,10 +35,10 @@ class AuthForgotPasswordEvent extends AuthEvent {
   final String company_code;
   final String email;
 
-  const AuthForgotPasswordEvent(this.company_code,this.email);
+  const AuthForgotPasswordEvent(this.company_code, this.email);
 
   @override
-  List<Object?> get props => [company_code,email];
+  List<Object?> get props => [company_code, email];
 }
 
 /// Event to delete user account .

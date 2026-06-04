@@ -12,7 +12,6 @@ sealed class TechnicianEvent extends Equatable {
 /// Event for Technician.
 
 class TechnicianGetEvent extends TechnicianEvent {
-
   const TechnicianGetEvent();
 
   @override

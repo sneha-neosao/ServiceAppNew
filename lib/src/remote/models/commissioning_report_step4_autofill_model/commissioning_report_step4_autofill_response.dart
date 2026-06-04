@@ -11,7 +11,9 @@ class CommissioningReportStep4AutoFillResponse {
     required this.message,
   });
 
-  factory CommissioningReportStep4AutoFillResponse.fromJson(Map<String, dynamic> json) {
+  factory CommissioningReportStep4AutoFillResponse.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return CommissioningReportStep4AutoFillResponse(
       status: json['status'],
       success: json['success'],
@@ -61,11 +63,13 @@ class CommissioningData {
       customerName: json['customer_name'] ?? '',
       siteName: json['site_name'] ?? '',
       applicationOfEquipment: json['application_of_equipment'] ?? '',
-      assignedTechnicians: (json['assigned_technicians'] as List?)
+      assignedTechnicians:
+          (json['assigned_technicians'] as List?)
               ?.map((e) => Technician.fromJson(e))
               .toList() ??
           [],
-      savedDescriptions: (json['saved_descriptions'] as List?)
+      savedDescriptions:
+          (json['saved_descriptions'] as List?)
               ?.map((e) => SavedDescription.fromJson(e))
               .toList() ??
           [],
@@ -81,10 +85,10 @@ class CommissioningData {
       'customer_name': customerName,
       'site_name': siteName,
       'application_of_equipment': applicationOfEquipment,
-      'assigned_technicians':
-      assignedTechnicians.map((e) => e.toJson()).toList(),
-      'saved_descriptions':
-      savedDescriptions.map((e) => e.toJson()).toList(),
+      'assigned_technicians': assignedTechnicians
+          .map((e) => e.toJson())
+          .toList(),
+      'saved_descriptions': savedDescriptions.map((e) => e.toJson()).toList(),
       'last_completed_step': lastCompletedStep,
     };
   }
@@ -94,10 +98,7 @@ class SavedDescription {
   final int srNo;
   final String description;
 
-  SavedDescription({
-    required this.srNo,
-    required this.description,
-  });
+  SavedDescription({required this.srNo, required this.description});
 
   factory SavedDescription.fromJson(Map<String, dynamic> json) {
     return SavedDescription(
@@ -107,10 +108,7 @@ class SavedDescription {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'sr_no': srNo,
-      'description': description,
-    };
+    return {'sr_no': srNo, 'description': description};
   }
 }
 
@@ -118,22 +116,13 @@ class Technician {
   final String id;
   final String name;
 
-  Technician({
-    required this.id,
-    required this.name,
-  });
+  Technician({required this.id, required this.name});
 
   factory Technician.fromJson(Map<String, dynamic> json) {
-    return Technician(
-      id: json['id'],
-      name: json['name'],
-    );
+    return Technician(id: json['id'], name: json['name']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 }

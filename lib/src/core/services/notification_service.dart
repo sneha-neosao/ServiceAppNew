@@ -5,16 +5,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
 class NoficationService {
-
   /// ✅ Declare the local notification plugin here
-  static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin
+  _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   static Future<void> requestNotificationPermission() async {
     /// Request permission for notifications
     FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-
 
     await messaging.setForegroundNotificationPresentationOptions(
       alert: true,
@@ -22,19 +19,21 @@ class NoficationService {
       sound: true,
     );
 
-    NotificationSettings settings=await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
+    NotificationSettings settings = await FirebaseMessaging.instance
+        .requestPermission(
+          alert: true,
+          announcement: false,
+          badge: true,
+          carPlay: false,
+          criticalAlert: false,
+          provisional: false,
+          sound: true,
+        );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User granted permission');
-    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
       print('User granted provisional permission');
     } else {
       print('User declined or has not accepted permission');
@@ -55,8 +54,10 @@ class NoficationService {
 
   /// ✅ Initialize local notifications (for foreground messages)
   static void initLocalNotifications() {
-    const AndroidInitializationSettings androidInitializationSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const InitializationSettings initializationSettings = InitializationSettings(android: androidInitializationSettings);
+    const AndroidInitializationSettings androidInitializationSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: androidInitializationSettings);
     _flutterLocalNotificationsPlugin.initialize(initializationSettings);
     print("Local notifications initialized (if applicable).");
   }
@@ -65,12 +66,17 @@ class NoficationService {
     // Skip manual local notification on iOS
     if (Platform.isIOS) return;
 
-    final String? imageUrl = message.notification?.android?.imageUrl ?? message.notification?.apple?.imageUrl;
+    final String? imageUrl =
+        message.notification?.android?.imageUrl ??
+        message.notification?.apple?.imageUrl;
 
     BigPictureStyleInformation? bigPictureStyleInformation;
 
-    if(imageUrl != null && imageUrl.isNotEmpty){
-      final String filePath = await _downloadAndSaveImage(imageUrl, 'notif_img.jpg');
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      final String filePath = await _downloadAndSaveImage(
+        imageUrl,
+        'notif_img.jpg',
+      );
       bigPictureStyleInformation = BigPictureStyleInformation(
         FilePathAndroidBitmap(filePath),
         contentTitle: message.notification?.title,
@@ -78,22 +84,27 @@ class NoficationService {
       );
     }
 
-    final  AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'your_channel_id',
-      'your_channel_name',
-      channelDescription: 'your_channel_description',
-      importance: Importance.max,
-      priority: Priority.high,
-      styleInformation: bigPictureStyleInformation ?? const DefaultStyleInformation(true, true),
-    );
+    final AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'your_channel_id',
+          'your_channel_name',
+          channelDescription: 'your_channel_description',
+          importance: Importance.max,
+          priority: Priority.high,
+          styleInformation:
+              bigPictureStyleInformation ??
+              const DefaultStyleInformation(true, true),
+        );
 
-    final NotificationDetails platformDetails  = NotificationDetails(android: androidDetails );
+    final NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+    );
 
     _flutterLocalNotificationsPlugin.show(
       0,
       message.notification?.title,
       message.notification?.body,
-      platformDetails ,
+      platformDetails,
       payload: message.data['payload'], // Optional payload
     );
   }
@@ -116,7 +127,9 @@ class NoficationService {
       print("📦 Data: ${message.data}");
 
       // Print the image URL if present (Android or Apple)
-      final String? imageUrl = message.notification?.android?.imageUrl ?? message.notification?.apple?.imageUrl;
+      final String? imageUrl =
+          message.notification?.android?.imageUrl ??
+          message.notification?.apple?.imageUrl;
       if (imageUrl != null && imageUrl.isNotEmpty) {
         print("🖼️ Image URL: $imageUrl");
       } else {
@@ -125,17 +138,20 @@ class NoficationService {
 
       // ✅ Show local notification for foreground messages
       showLocalNotification(message);
-
     });
 
     /// Listen for background messages
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
+
       /// Handle the message when the app is opened from a notification
     });
   }
 
-  static Future<String> _downloadAndSaveImage(String url, String fileName) async {
+  static Future<String> _downloadAndSaveImage(
+    String url,
+    String fileName,
+  ) async {
     final Directory directory = await getApplicationDocumentsDirectory();
     final String filePath = '${directory.path}/$fileName';
     final http.Response response = await http.get(Uri.parse(url));

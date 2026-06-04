@@ -37,7 +37,11 @@ class Step6Declaration extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.camera_alt_outlined, color: Color(0xFFA5ABB7), size: 32),
+              const Icon(
+                Icons.camera_alt_outlined,
+                color: Color(0xFFA5ABB7),
+                size: 32,
+              ),
               const SizedBox(height: 8),
               Text(
                 'ADD',
@@ -73,7 +77,10 @@ class Step6Declaration extends StatelessWidget {
         const SizedBox(height: 24),
         const ReportInfoRow(label: 'Date', value: '12/05/2026'),
         const SizedBox(height: 24),
-        const ReportSignatureRow(label: 'Sign', placeholder: 'Digitally Signed'),
+        const ReportSignatureRow(
+          label: 'Sign',
+          placeholder: 'Digitally Signed',
+        ),
 
         const SizedBox(height: 40),
 
@@ -99,7 +106,11 @@ class ReportSignatureRow extends StatelessWidget {
   final String label;
   final String placeholder;
 
-  const ReportSignatureRow({super.key, required this.label, required this.placeholder});
+  const ReportSignatureRow({
+    super.key,
+    required this.label,
+    required this.placeholder,
+  });
 
   @override
   Widget build(BuildContext context) {

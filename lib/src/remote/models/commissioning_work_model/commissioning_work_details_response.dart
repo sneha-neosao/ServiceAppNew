@@ -71,8 +71,7 @@ class CommissioningWorkDetailsData extends Equatable {
     'application_of_equipment': applicationOfEquipment,
     'customer': customer.toJson(),
     'site': site.toJson(),
-    'assigned_technicians':
-    assignedTechnicians.map((e) => e.toJson()).toList(),
+    'assigned_technicians': assignedTechnicians.map((e) => e.toJson()).toList(),
     'created_by_dealer_user': createdByDealerUser,
     'created_by_technician': createdByTechnician,
   };
@@ -96,16 +95,10 @@ class Customer extends Equatable {
   const Customer({required this.id, required this.name});
 
   factory Customer.fromJson(Map<String, dynamic> json) {
-    return Customer(
-      id: json['id'],
-      name: json['name'],
-    );
+    return Customer(id: json['id'], name: json['name']);
   }
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-  };
+  Map<String, dynamic> toJson() => {'id': id, 'name': name};
 
   @override
   List<Object?> get props => [id, name];
@@ -118,16 +111,10 @@ class Site extends Equatable {
   const Site({required this.id, required this.name});
 
   factory Site.fromJson(Map<String, dynamic> json) {
-    return Site(
-      id: json['id'],
-      name: json['name'],
-    );
+    return Site(id: json['id'], name: json['name']);
   }
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-  };
+  Map<String, dynamic> toJson() => {'id': id, 'name': name};
 
   @override
   List<Object?> get props => [id, name];
@@ -152,11 +139,7 @@ class AssignedTechnician extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'code': code,
-  };
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'code': code};
 
   @override
   List<Object?> get props => [id, name, code];

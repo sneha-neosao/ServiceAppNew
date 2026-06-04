@@ -8,11 +8,14 @@ abstract class ServiceCallReportStep5AutoFillState extends Equatable {
   List<Object?> get props => [];
 }
 
-class ServiceCallReportStep5AutoFillInitialState extends ServiceCallReportStep5AutoFillState {}
+class ServiceCallReportStep5AutoFillInitialState
+    extends ServiceCallReportStep5AutoFillState {}
 
-class ServiceCallReportStep5AutoFillLoadingState extends ServiceCallReportStep5AutoFillState {}
+class ServiceCallReportStep5AutoFillLoadingState
+    extends ServiceCallReportStep5AutoFillState {}
 
-class ServiceCallReportStep5AutoFillSuccessState extends ServiceCallReportStep5AutoFillState {
+class ServiceCallReportStep5AutoFillSuccessState
+    extends ServiceCallReportStep5AutoFillState {
   final ServiceCallStep5Response data;
 
   const ServiceCallReportStep5AutoFillSuccessState(this.data);
@@ -21,7 +24,8 @@ class ServiceCallReportStep5AutoFillSuccessState extends ServiceCallReportStep5A
   List<Object?> get props => [data];
 }
 
-class ServiceCallReportStep5AutoFillFailureState extends ServiceCallReportStep5AutoFillState {
+class ServiceCallReportStep5AutoFillFailureState
+    extends ServiceCallReportStep5AutoFillState {
   final String message;
 
   const ServiceCallReportStep5AutoFillFailureState(this.message);

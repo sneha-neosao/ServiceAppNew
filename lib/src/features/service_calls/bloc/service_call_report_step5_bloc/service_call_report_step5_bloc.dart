@@ -9,7 +9,7 @@ class ServiceCallReportStep5Bloc
   final ServiceCallReportStep5Usecase usecase;
 
   ServiceCallReportStep5Bloc({required this.usecase})
-      : super(ServiceCallReportStep5InitialState()) {
+    : super(ServiceCallReportStep5InitialState()) {
     on<ServiceCallReportStep5PostEvent>(_onPostEvent);
   }
 
@@ -18,13 +18,15 @@ class ServiceCallReportStep5Bloc
     Emitter<ServiceCallReportStep5State> emit,
   ) async {
     emit(ServiceCallReportStep5LoadingState());
-    final result = await usecase(ServiceCallReportStep5Params(
-      reportId: event.reportId,
-      isMechanicalChecklistNa: event.isMechanicalChecklistNa,
-      isPipelineChecklistNa: event.isPipelineChecklistNa,
-      isElectricalChecklistNa: event.isElectricalChecklistNa,
-      checklistItems: event.checklistItems,
-    ));
+    final result = await usecase(
+      ServiceCallReportStep5Params(
+        reportId: event.reportId,
+        isMechanicalChecklistNa: event.isMechanicalChecklistNa,
+        isPipelineChecklistNa: event.isPipelineChecklistNa,
+        isElectricalChecklistNa: event.isElectricalChecklistNa,
+        checklistItems: event.checklistItems,
+      ),
+    );
     result.fold(
       (Failure failure) =>
           emit(ServiceCallReportStep5FailureState(failure.message)),

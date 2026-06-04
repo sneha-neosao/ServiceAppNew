@@ -21,11 +21,8 @@ class LoginScreen extends StatelessWidget {
     final authForm = context.read<AuthLoginFormBloc>().state;
 
     context.read<AuthLoginBloc>().add(
-          AuthLoginEvent(
-            authForm.email.trim(),
-            authForm.password.trim(),
-          ),
-        );
+      AuthLoginEvent(authForm.email.trim(), authForm.password.trim()),
+    );
   }
 
   @override
@@ -48,25 +45,24 @@ class LoginScreen extends StatelessWidget {
               child: Center(
                 child: SingleChildScrollView(
                   physics: const ClampingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 32.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 28.0,
+                    vertical: 32.0,
+                  ),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
                       // ── Decorative wing shapes ───────────────────────────────
-                      Positioned(
-                        left: -30,
-                        child: _WingShape(isLeft: true),
-                      ),
-                      Positioned(
-                        right: -30,
-                        child: _WingShape(isLeft: false),
-                      ),
+                      Positioned(left: -30, child: _WingShape(isLeft: true)),
+                      Positioned(right: -30, child: _WingShape(isLeft: false)),
 
                       // ── Blue login card ──────────────────────────────────────
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24.0, vertical: 36.0),
+                          horizontal: 24.0,
+                          vertical: 36.0,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF3B82C4),
                           borderRadius: BorderRadius.circular(24),
@@ -102,28 +98,44 @@ class LoginScreen extends StatelessWidget {
                             BlocConsumer<AuthLoginBloc, AuthLoginState>(
                               listener: (context, state) {
                                 if (state is AuthLoginFailureState) {
-                                  appSnackBar(context, AppColor.bright_red, state.message);
+                                  appSnackBar(
+                                    context,
+                                    AppColor.bright_red,
+                                    state.message,
+                                  );
                                 } else if (state is AuthLoginSuccessState) {
                                   // Show success snackbar
-                                  appSnackBar(context, AppColor.green, state.data.message);
+                                  appSnackBar(
+                                    context,
+                                    AppColor.green,
+                                    state.data.message,
+                                  );
 
                                   // Delay navigation slightly so user can see the message
-                                  Future.delayed(const Duration(milliseconds: 200), () {
-                                    if (context.mounted) {
-                                      context.goNamed(AppRoute.homeScreen.name);
-                                    }
-                                  });
+                                  Future.delayed(
+                                    const Duration(milliseconds: 200),
+                                    () {
+                                      if (context.mounted) {
+                                        context.goNamed(
+                                          AppRoute.homeScreen.name,
+                                        );
+                                      }
+                                    },
+                                  );
                                 }
                               },
                               builder: (context, state) {
-                                final isLoading = state is AuthLoginLoadingState;
+                                final isLoading =
+                                    state is AuthLoginLoadingState;
                                 return SizedBox(
                                   width: double.infinity,
                                   height: 50,
                                   child: ElevatedButton(
                                     onPressed: /*(){
                                       context.pushNamed(AppRoute.homeScreen.name);
-                                    }*/isLoading ? null : () => _login(context),
+                                    }*/ isLoading
+                                        ? null
+                                        : () => _login(context),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.white,
                                       foregroundColor: const Color(0xFF3B82C4),
@@ -134,21 +146,21 @@ class LoginScreen extends StatelessWidget {
                                     ),
                                     child: isLoading
                                         ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        color: Color(0xFF3B82C4),
-                                        strokeWidth: 2,
-                                      ),
-                                    )
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              color: Color(0xFF3B82C4),
+                                              strokeWidth: 2,
+                                            ),
+                                          )
                                         : Text(
-                                      'Login',
-                                      style: AppFont.style(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                        color: const Color(0xFF3B82C4),
-                                      ),
-                                    ),
+                                            'Login',
+                                            style: AppFont.style(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                              color: const Color(0xFF3B82C4),
+                                            ),
+                                          ),
                                   ),
                                 );
                               },
@@ -162,7 +174,7 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
           ],
-        )
+        ),
       ),
     );
   }
@@ -177,10 +189,7 @@ class _WingShape extends StatelessWidget {
   Widget build(BuildContext context) {
     return Transform.scale(
       scaleX: isLeft ? -1 : 1,
-      child: CustomPaint(
-        size: const Size(90, 200),
-        painter: _WingPainter(),
-      ),
+      child: CustomPaint(size: const Size(90, 200), painter: _WingPainter()),
     );
   }
 }
@@ -196,7 +205,12 @@ class _WingPainter extends CustomPainter {
     final outerPath = Path()
       ..moveTo(size.width, size.height * 0.2)
       ..quadraticBezierTo(0, size.height * 0.5, size.width, size.height * 0.8)
-      ..quadraticBezierTo(size.width * 0.6, size.height * 0.5, size.width, size.height * 0.2)
+      ..quadraticBezierTo(
+        size.width * 0.6,
+        size.height * 0.5,
+        size.width,
+        size.height * 0.2,
+      )
       ..close();
 
     canvas.drawPath(outerPath, paint);
@@ -208,8 +222,18 @@ class _WingPainter extends CustomPainter {
 
     final innerPath = Path()
       ..moveTo(size.width, size.height * 0.3)
-      ..quadraticBezierTo(size.width * 0.3, size.height * 0.5, size.width, size.height * 0.7)
-      ..quadraticBezierTo(size.width * 0.7, size.height * 0.5, size.width, size.height * 0.3)
+      ..quadraticBezierTo(
+        size.width * 0.3,
+        size.height * 0.5,
+        size.width,
+        size.height * 0.7,
+      )
+      ..quadraticBezierTo(
+        size.width * 0.7,
+        size.height * 0.5,
+        size.width,
+        size.height * 0.3,
+      )
       ..close();
 
     canvas.drawPath(innerPath, innerPaint);

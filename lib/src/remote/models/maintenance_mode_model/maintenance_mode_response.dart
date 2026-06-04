@@ -35,11 +35,8 @@ class MaintenanceData {
 
   MaintenanceData({required this.maintenanceMode});
 
-  factory MaintenanceData.fromJson(Map<String, dynamic> json) => MaintenanceData(
-    maintenanceMode: json["maintenance_mode"] ?? 0,
-  );
+  factory MaintenanceData.fromJson(Map<String, dynamic> json) =>
+      MaintenanceData(maintenanceMode: json["maintenance_mode"] ?? 0);
 
-  Map<String, dynamic> toJson() => {
-    "maintenance_mode": maintenanceMode,
-  };
+  Map<String, dynamic> toJson() => {"maintenance_mode": maintenanceMode};
 }

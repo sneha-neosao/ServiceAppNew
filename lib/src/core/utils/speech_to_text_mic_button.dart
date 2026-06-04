@@ -21,7 +21,9 @@ class SpeechToTextMicButton extends StatelessWidget {
           },
           child: Icon(
             isListening ? Icons.mic : Icons.mic_off_outlined,
-            color: isListening ? const Color(0xFF1565C0) : const Color(0xFFA5ABB7),
+            color: isListening
+                ? const Color(0xFF1565C0)
+                : const Color(0xFFA5ABB7),
             size: 20,
           ),
         );

@@ -16,9 +16,10 @@ class CommissioningWorkListResponse {
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      data: (json['data'] as List<dynamic>?)
-          ?.map((e) => CommissioningWork.fromJson(e))
-          .toList() ??
+      data:
+          (json['data'] as List<dynamic>?)
+              ?.map((e) => CommissioningWork.fromJson(e))
+              .toList() ??
           [],
     );
   }
@@ -55,35 +56,30 @@ class CommissioningWork {
   factory CommissioningWork.fromJson(Map<String, dynamic> json) {
     return CommissioningWork(
       id: json['id'] ?? '',
-      applicationOfEquipment:
-      json['application_of_equipment'] ?? '',
+      applicationOfEquipment: json['application_of_equipment'] ?? '',
       customer: Customer.fromJson(json['customer'] ?? {}),
       site: Site.fromJson(json['site'] ?? {}),
       assignedTechnicians:
-      (json['assigned_technicians'] as List<dynamic>?)
-          ?.map((e) => Technician.fromJson(e))
-          .toList() ??
+          (json['assigned_technicians'] as List<dynamic>?)
+              ?.map((e) => Technician.fromJson(e))
+              .toList() ??
           [],
-      createdByDealerUser:
-      json['created_by_dealer_user'],
-      createdByTechnician:
-      json['created_by_technician'],
+      createdByDealerUser: json['created_by_dealer_user'],
+      createdByTechnician: json['created_by_technician'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'application_of_equipment':
-      applicationOfEquipment,
+      'application_of_equipment': applicationOfEquipment,
       'customer': customer.toJson(),
       'site': site.toJson(),
-      'assigned_technicians':
-      assignedTechnicians.map((e) => e.toJson()).toList(),
-      'created_by_dealer_user':
-      createdByDealerUser,
-      'created_by_technician':
-      createdByTechnician,
+      'assigned_technicians': assignedTechnicians
+          .map((e) => e.toJson())
+          .toList(),
+      'created_by_dealer_user': createdByDealerUser,
+      'created_by_technician': createdByTechnician,
     };
   }
 }
@@ -92,23 +88,14 @@ class Customer {
   final String id;
   final String name;
 
-  Customer({
-    required this.id,
-    required this.name,
-  });
+  Customer({required this.id, required this.name});
 
   factory Customer.fromJson(Map<String, dynamic> json) {
-    return Customer(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-    );
+    return Customer(id: json['id'] ?? '', name: json['name'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 }
 
@@ -116,23 +103,14 @@ class Site {
   final String id;
   final String name;
 
-  Site({
-    required this.id,
-    required this.name,
-  });
+  Site({required this.id, required this.name});
 
   factory Site.fromJson(Map<String, dynamic> json) {
-    return Site(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-    );
+    return Site(id: json['id'] ?? '', name: json['name'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 }
 
@@ -141,11 +119,7 @@ class Technician {
   final String name;
   final String code;
 
-  Technician({
-    required this.id,
-    required this.name,
-    required this.code,
-  });
+  Technician({required this.id, required this.name, required this.code});
 
   factory Technician.fromJson(Map<String, dynamic> json) {
     return Technician(
@@ -156,10 +130,6 @@ class Technician {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'code': code,
-    };
+    return {'id': id, 'name': name, 'code': code};
   }
 }

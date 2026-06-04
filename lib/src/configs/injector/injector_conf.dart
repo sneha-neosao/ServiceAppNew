@@ -312,9 +312,8 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => CommissioningWorkDetailsBloc(
-      getIt<CommissioningWorkDetailsUseCase>(),
-    ),
+    () =>
+        CommissioningWorkDetailsBloc(getIt<CommissioningWorkDetailsUseCase>()),
   );
 
   getIt.registerLazySingleton(
@@ -322,9 +321,7 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => CommissioningWorkUpdateBloc(
-      getIt<CommissioningWorkUpdateUseCase>(),
-    ),
+    () => CommissioningWorkUpdateBloc(getIt<CommissioningWorkUpdateUseCase>()),
   );
 
   getIt.registerLazySingleton(
@@ -332,9 +329,7 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => CommissioningWorkDeleteBloc(
-      getIt<CommissioningWorkDeleteUseCase>(),
-    ),
+    () => CommissioningWorkDeleteBloc(getIt<CommissioningWorkDeleteUseCase>()),
   );
 
   getIt.registerLazySingleton(
@@ -342,9 +337,7 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => AssignedServiceCallsBloc(
-      getIt<AssignedServiceCallsUseCase>(),
-    ),
+    () => AssignedServiceCallsBloc(getIt<AssignedServiceCallsUseCase>()),
   );
 
   getIt.registerLazySingleton(
@@ -352,9 +345,7 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => PendingServiceCallsBloc(
-      getIt<PendingServiceCallsUseCase>(),
-    ),
+    () => PendingServiceCallsBloc(getIt<PendingServiceCallsUseCase>()),
   );
 
   getIt.registerLazySingleton(
@@ -363,7 +354,8 @@ void configureDepedencies() {
 
   getIt.registerFactory(
     () => ActiveTechniciansServiceCallsBloc(
-      activeTechniciansServiceCallsUsecase: getIt<ActiveTechniciansServiceCallsUsecase>(),
+      activeTechniciansServiceCallsUsecase:
+          getIt<ActiveTechniciansServiceCallsUsecase>(),
     ),
   );
 
@@ -373,7 +365,8 @@ void configureDepedencies() {
 
   getIt.registerFactory(
     () => AssignTechnicianServiceCallsBloc(
-      assignTechnicianServiceCallsUsecase: getIt<AssignTechnicianServiceCallsUsecase>(),
+      assignTechnicianServiceCallsUsecase:
+          getIt<AssignTechnicianServiceCallsUsecase>(),
     ),
   );
 
@@ -382,9 +375,8 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => CloseOverCallBloc(
-      closeOverCallUsecase: getIt<CloseOverCallUsecase>(),
-    ),
+    () =>
+        CloseOverCallBloc(closeOverCallUsecase: getIt<CloseOverCallUsecase>()),
   );
 
   getIt.registerLazySingleton(
@@ -522,20 +514,14 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => CreateNewCustomerBloc(
-      getIt<CreateNewCustomerUsecase>(),
-    ),
+    () => CreateNewCustomerBloc(getIt<CreateNewCustomerUsecase>()),
   );
 
   getIt.registerLazySingleton(
     () => CreateNewCustomerUsecase(getIt<AuthRepositoryImpl>()),
   );
 
-  getIt.registerFactory(
-    () => CreateNewSiteBloc(
-      getIt<CreateNewSiteUsecase>(),
-    ),
-  );
+  getIt.registerFactory(() => CreateNewSiteBloc(getIt<CreateNewSiteUsecase>()));
 
   getIt.registerLazySingleton(
     () => CreateNewSiteUsecase(getIt<AuthRepositoryImpl>()),

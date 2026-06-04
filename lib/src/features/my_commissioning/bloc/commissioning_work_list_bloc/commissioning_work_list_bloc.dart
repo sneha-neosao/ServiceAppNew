@@ -11,11 +11,11 @@ part 'commissioning_work_list_state.dart';
 
 /// Handles state management for **CommissioningWorkList** and its related entities.
 
-class CommissioningWorkListBloc extends Bloc<CommissioningWorkListEvent, CommissioningWorkListState> {
+class CommissioningWorkListBloc
+    extends Bloc<CommissioningWorkListEvent, CommissioningWorkListState> {
   final CommissioningWorkListUseCase _commissioningWorkListUseCase;
-  CommissioningWorkListBloc(
-    this._commissioningWorkListUseCase,
-  ) : super(CommissioningWorkListInitialState()) {
+  CommissioningWorkListBloc(this._commissioningWorkListUseCase)
+    : super(CommissioningWorkListInitialState()) {
     on<CommissioningWorkListGetEvent>(_customers);
   }
 
@@ -23,9 +23,7 @@ class CommissioningWorkListBloc extends Bloc<CommissioningWorkListEvent, Commiss
   Future _customers(CommissioningWorkListGetEvent event, Emitter emit) async {
     emit(CommissioningWorkListLoadingState());
 
-    final result = await _commissioningWorkListUseCase.call(
-      NoParams()
-    );
+    final result = await _commissioningWorkListUseCase.call(NoParams());
 
     // fold() is synchronous — never put async work inside its callbacks.
     // Instead check the result and await outside fold.

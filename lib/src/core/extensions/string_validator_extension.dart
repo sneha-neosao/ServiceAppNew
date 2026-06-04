@@ -1,4 +1,3 @@
-
 import 'package:service_app/src/core/utils/regex_validator.dart';
 
 /// Extension on [String] that provides quick validation checks using predefined regex patterns.

@@ -13,7 +13,9 @@ class CommissioningReportStep5AutoFillResponse extends Equatable {
     required this.message,
   });
 
-  factory CommissioningReportStep5AutoFillResponse.fromJson(Map<String, dynamic> json) {
+  factory CommissioningReportStep5AutoFillResponse.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return CommissioningReportStep5AutoFillResponse(
       status: json['status'],
       success: json['success'],
@@ -71,8 +73,8 @@ class CommissioningStep5Data extends Equatable {
           .toList(),
       savedDescriptions: json['saved_descriptions'] != null
           ? (json['saved_descriptions'] as List)
-          .map((e) => SavedDescription.fromJson(e))
-          .toList()
+                .map((e) => SavedDescription.fromJson(e))
+                .toList()
           : null,
       lastCompletedStep: json['last_completed_step'],
     );
@@ -88,7 +90,7 @@ class CommissioningStep5Data extends Equatable {
       'is_electrical_checklist_na': isElectricalChecklistNa,
       'saved_checklists': savedChecklists.map((e) => e.toJson()).toList(),
       'saved_descriptions':
-      savedDescriptions?.map((e) => e.toJson()).toList() ?? [],
+          savedDescriptions?.map((e) => e.toJson()).toList() ?? [],
       'last_completed_step': lastCompletedStep,
     };
   }
@@ -154,18 +156,23 @@ class SavedChecklist extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [id, checkType, keyChecklist, valueChecklist, photo, video, existingPhotoUrl, existingVideoUrl];
+  List<Object?> get props => [
+    id,
+    checkType,
+    keyChecklist,
+    valueChecklist,
+    photo,
+    video,
+    existingPhotoUrl,
+    existingVideoUrl,
+  ];
 }
 
 class SavedDescription extends Equatable {
   final int srNo;
   final String description;
 
-  const SavedDescription({
-    required this.srNo,
-    required this.description,
-  });
+  const SavedDescription({required this.srNo, required this.description});
 
   factory SavedDescription.fromJson(Map<String, dynamic> json) {
     return SavedDescription(
@@ -175,10 +182,7 @@ class SavedDescription extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'sr_no': srNo,
-      'description': description,
-    };
+    return {'sr_no': srNo, 'description': description};
   }
 
   @override

@@ -6,7 +6,11 @@ class DeleteJobDialog extends StatelessWidget {
   final VoidCallback onConfirm;
   final bool isLoading;
 
-  const DeleteJobDialog({super.key, required this.onConfirm, this.isLoading = false});
+  const DeleteJobDialog({
+    super.key,
+    required this.onConfirm,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +73,7 @@ class DeleteJobDialog extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onConfirm,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const  Color(0xFF1565C0),
+                  backgroundColor: const Color(0xFF1565C0),
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
@@ -128,4 +132,3 @@ class DeleteJobDialog extends StatelessWidget {
     );
   }
 }
-

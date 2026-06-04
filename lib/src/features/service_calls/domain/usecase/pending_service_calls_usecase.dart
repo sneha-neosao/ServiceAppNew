@@ -23,10 +23,7 @@ class PendingServiceCallsParams extends Equatable {
   });
 
   Map<String, dynamic> toMap() {
-    final map = <String, dynamic>{
-      'page': page,
-      'page_size': pageSize,
-    };
+    final map = <String, dynamic>{'page': page, 'page_size': pageSize};
     if (customerId != null && customerId!.isNotEmpty) {
       map['customer_id'] = customerId;
     }
@@ -43,16 +40,26 @@ class PendingServiceCallsParams extends Equatable {
   }
 
   @override
-  List<Object?> get props => [page, pageSize, customerId, siteId, complaintNumber, date];
+  List<Object?> get props => [
+    page,
+    pageSize,
+    customerId,
+    siteId,
+    complaintNumber,
+    date,
+  ];
 }
 
-class PendingServiceCallsUseCase implements UseCase<PendingServiceCallsResponse, PendingServiceCallsParams> {
+class PendingServiceCallsUseCase
+    implements UseCase<PendingServiceCallsResponse, PendingServiceCallsParams> {
   final Repository _repository;
 
   const PendingServiceCallsUseCase(this._repository);
 
   @override
-  Future<Either<Failure, PendingServiceCallsResponse>> call(PendingServiceCallsParams params) async {
+  Future<Either<Failure, PendingServiceCallsResponse>> call(
+    PendingServiceCallsParams params,
+  ) async {
     return await _repository.pendingServiceCalls(params);
   }
 }

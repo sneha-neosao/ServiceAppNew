@@ -6,16 +6,19 @@ import 'package:service_app/src/remote/models/assigned_servicecall_technician_mo
 import 'package:service_app/src/remote/repositories/repository_impl.dart';
 
 class AssignedServicecallTechnicianUsecase
-    implements UseCase<AssignedServiceCallTechnicianResponse, AssignedServicecallTechnicianParams> {
+    implements
+        UseCase<
+          AssignedServiceCallTechnicianResponse,
+          AssignedServicecallTechnicianParams
+        > {
   final AuthRepositoryImpl repository;
   AssignedServicecallTechnicianUsecase(this.repository);
 
   @override
   Future<Either<Failure, AssignedServiceCallTechnicianResponse>> call(
-      AssignedServicecallTechnicianParams params) async {
-    return await repository.assignedServiceCallTechnicians(
-      params.reportId,
-    );
+    AssignedServicecallTechnicianParams params,
+  ) async {
+    return await repository.assignedServiceCallTechnicians(params.reportId);
   }
 }
 

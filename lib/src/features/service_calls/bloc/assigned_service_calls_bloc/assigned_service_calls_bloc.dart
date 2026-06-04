@@ -5,15 +5,17 @@ import 'package:service_app/src/remote/models/service_calls_model/assigned_servi
 import 'assigned_service_calls_event.dart';
 import 'assigned_service_calls_state.dart';
 
-class AssignedServiceCallsBloc extends Bloc<AssignedServiceCallsEvent, AssignedServiceCallsState> {
+class AssignedServiceCallsBloc
+    extends Bloc<AssignedServiceCallsEvent, AssignedServiceCallsState> {
   final AssignedServiceCallsUseCase _useCase;
-  
+
   AssignedServiceCallsResponse? _currentData;
   int _currentPage = 1;
   bool _isFetching = false;
   bool _hasMore = true;
 
-  AssignedServiceCallsBloc(this._useCase) : super(AssignedServiceCallsInitialState()) {
+  AssignedServiceCallsBloc(this._useCase)
+    : super(AssignedServiceCallsInitialState()) {
     on<AssignedServiceCallsGetEvent>(_onGetAssignedServiceCalls);
   }
 
@@ -64,7 +66,9 @@ class AssignedServiceCallsBloc extends Bloc<AssignedServiceCallsEvent, AssignedS
         if (_currentData == null) {
           _currentData = response;
         } else {
-          final updatedResults = List<ServiceCallResult>.from(_currentData!.data.results)..addAll(response.data.results);
+          final updatedResults = List<ServiceCallResult>.from(
+            _currentData!.data.results,
+          )..addAll(response.data.results);
           final updatedData = AssignedServiceCallsData(
             results: updatedResults,
             pagination: response.data.pagination,
@@ -77,7 +81,8 @@ class AssignedServiceCallsBloc extends Bloc<AssignedServiceCallsEvent, AssignedS
           );
         }
 
-        _hasMore = response.data.pagination.page < response.data.pagination.totalPages;
+        _hasMore =
+            response.data.pagination.page < response.data.pagination.totalPages;
 
         emit(AssignedServiceCallsSuccessState(_currentData!));
       },

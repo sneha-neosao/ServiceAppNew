@@ -8,11 +8,14 @@ sealed class CommissioningStep4AutoFillState extends Equatable {
   List<Object> get props => [];
 }
 
-final class CommissioningStep4AutoFillInitialState extends CommissioningStep4AutoFillState {}
+final class CommissioningStep4AutoFillInitialState
+    extends CommissioningStep4AutoFillState {}
 
-class CommissioningStep4AutoFillLoadingState extends CommissioningStep4AutoFillState {}
+class CommissioningStep4AutoFillLoadingState
+    extends CommissioningStep4AutoFillState {}
 
-class CommissioningStep4AutoFillSuccessState extends CommissioningStep4AutoFillState {
+class CommissioningStep4AutoFillSuccessState
+    extends CommissioningStep4AutoFillState {
   final CommissioningReportStep4AutoFillResponse data;
 
   const CommissioningStep4AutoFillSuccessState(this.data);
@@ -21,7 +24,8 @@ class CommissioningStep4AutoFillSuccessState extends CommissioningStep4AutoFillS
   List<Object> get props => [data];
 }
 
-class CommissioningStep4AutoFillFailureState extends CommissioningStep4AutoFillState {
+class CommissioningStep4AutoFillFailureState
+    extends CommissioningStep4AutoFillState {
   final String message;
 
   const CommissioningStep4AutoFillFailureState(this.message);

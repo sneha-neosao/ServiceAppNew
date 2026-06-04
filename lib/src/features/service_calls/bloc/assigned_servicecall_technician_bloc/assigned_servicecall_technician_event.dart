@@ -7,7 +7,8 @@ abstract class AssignedServicecallTechnicianEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class AssignedServicecallTechnicianGetEvent extends AssignedServicecallTechnicianEvent {
+class AssignedServicecallTechnicianGetEvent
+    extends AssignedServicecallTechnicianEvent {
   final String reportId;
 
   const AssignedServicecallTechnicianGetEvent(this.reportId);

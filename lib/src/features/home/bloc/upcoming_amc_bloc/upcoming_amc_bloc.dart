@@ -11,9 +11,7 @@ part 'upcoming_amc_state.dart';
 
 class UpcomingAmcBloc extends Bloc<UpcomingAmcEvent, UpcomingAmcState> {
   final UpcomingAmcUseCase _upcomingAmcUseCase;
-  UpcomingAmcBloc(
-    this._upcomingAmcUseCase,
-  ) : super(UpcomingAmcinitialState()) {
+  UpcomingAmcBloc(this._upcomingAmcUseCase) : super(UpcomingAmcinitialState()) {
     on<UpcomingAmcGetEvent>(_sites);
   }
 
@@ -22,9 +20,7 @@ class UpcomingAmcBloc extends Bloc<UpcomingAmcEvent, UpcomingAmcState> {
     emit(UpcomingAmcLoadingState());
 
     final result = await _upcomingAmcUseCase.call(
-      UpcomingAmcParams(
-          filter: event.filter
-      )
+      UpcomingAmcParams(filter: event.filter),
     );
 
     // fold() is synchronous — never put async work inside its callbacks.

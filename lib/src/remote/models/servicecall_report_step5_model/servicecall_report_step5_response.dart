@@ -53,7 +53,8 @@ class ServiceCallStep5Data {
       isMechanicalChecklistNa: json['is_mechanical_checklist_na'] ?? false,
       isPipelineChecklistNa: json['is_pipeline_checklist_na'] ?? false,
       isElectricalChecklistNa: json['is_electrical_checklist_na'] ?? false,
-      savedChecklists: (json['checklist_items'] as List<dynamic>?)
+      savedChecklists:
+          (json['checklist_items'] as List<dynamic>?)
               ?.map((e) => SavedChecklist.fromJson(e))
               .toList() ??
           [],

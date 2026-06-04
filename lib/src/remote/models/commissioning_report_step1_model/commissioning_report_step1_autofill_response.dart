@@ -11,7 +11,9 @@ class CommissioningReportStep1AutoFillResponse {
     required this.message,
   });
 
-  factory CommissioningReportStep1AutoFillResponse.fromJson(Map<String, dynamic> json) {
+  factory CommissioningReportStep1AutoFillResponse.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return CommissioningReportStep1AutoFillResponse(
       status: json['status'],
       success: json['success'],
@@ -61,8 +63,8 @@ class CommissioningData {
       applicationOfEquipment: json['application_of_equipment'] ?? '',
       assignedTechnicians: json['assigned_technicians'] != null
           ? (json['assigned_technicians'] as List)
-              .map((e) => Technician.fromJson(e))
-              .toList()
+                .map((e) => Technician.fromJson(e))
+                .toList()
           : [],
       lastCompletedStep: json['last_completed_step'] ?? 0,
     );
@@ -76,8 +78,9 @@ class CommissioningData {
       'customer_name': customerName,
       'site_name': siteName,
       'application_of_equipment': applicationOfEquipment,
-      'assigned_technicians':
-      assignedTechnicians.map((e) => e.toJson()).toList(),
+      'assigned_technicians': assignedTechnicians
+          .map((e) => e.toJson())
+          .toList(),
       'last_completed_step': lastCompletedStep,
     };
   }
@@ -87,22 +90,13 @@ class Technician {
   final String id;
   final String name;
 
-  Technician({
-    required this.id,
-    required this.name,
-  });
+  Technician({required this.id, required this.name});
 
   factory Technician.fromJson(Map<String, dynamic> json) {
-    return Technician(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-    );
+    return Technician(id: json['id'] ?? '', name: json['name'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 }

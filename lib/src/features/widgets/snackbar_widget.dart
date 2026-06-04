@@ -5,7 +5,7 @@ import 'package:service_app/src/core/theme/app_color.dart';
 appSnackBar(BuildContext context, Color color, String label) =>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(label,style: TextStyle(color: AppColor.white),),
+        content: Text(label, style: TextStyle(color: AppColor.white)),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),

@@ -80,25 +80,27 @@ class AppElevatedButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           foregroundColor: foregroundColor ?? Colors.white,
-          disabledBackgroundColor: disabledBackgroundColor ?? Colors.grey.shade300,
-          disabledForegroundColor: disabledForegroundColor ?? Colors.grey.shade500,
+          disabledBackgroundColor:
+              disabledBackgroundColor ?? Colors.grey.shade300,
+          disabledForegroundColor:
+              disabledForegroundColor ?? Colors.grey.shade500,
           shadowColor: shadowColor,
           surfaceTintColor: surfaceTintColor,
           elevation: elevation ?? 2.0,
-          padding: padding ?? const EdgeInsets.symmetric(
-            horizontal: 24.0,
-            vertical: 16.0,
-          ),
+          padding:
+              padding ??
+              const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           minimumSize: minimumSize ?? const Size(88, 48),
           fixedSize: fixedSize,
           maximumSize: maximumSize ?? Size.infinite,
           side: side,
-          shape: shape ?? RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
+          shape:
+              shape ??
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
           visualDensity: visualDensity,
           tapTargetSize: tapTargetSize,
-          animationDuration: animationDuration ?? const Duration(milliseconds: 200),
+          animationDuration:
+              animationDuration ?? const Duration(milliseconds: 200),
           enableFeedback: true,
           alignment: Alignment.center,
           splashFactory: InkRipple.splashFactory,

@@ -12,7 +12,7 @@ class CommissioningWorkCreateBloc
   final CommissioningWorkCreateUseCase _commissioningWorkCreateUseCase;
 
   CommissioningWorkCreateBloc(this._commissioningWorkCreateUseCase)
-      : super(CommissioningWorkCreateInitialState()) {
+    : super(CommissioningWorkCreateInitialState()) {
     on<CommissioningWorkCreateSubmitEvent>(_onCreateSubmit);
   }
 

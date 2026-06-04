@@ -12,7 +12,9 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
   }
 
   Future<void> _onSplashTimer(
-      SplashTimerCompletedEvent event, Emitter<SplashState> emit) async {
+    SplashTimerCompletedEvent event,
+    Emitter<SplashState> emit,
+  ) async {
     await Future.delayed(Duration(milliseconds: event.time));
     emit(const SplashDataState());
   }

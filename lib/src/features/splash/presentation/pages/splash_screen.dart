@@ -31,9 +31,10 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 1200),
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
 
     _fadeController.forward();
   }
@@ -64,11 +65,9 @@ class _SplashScreenState extends State<SplashScreen>
       providers: [
         BlocProvider(
           create: (_) =>
-          getIt<AuthLoginBloc>()..add(AuthCheckSignInStatusEvent()),
+              getIt<AuthLoginBloc>()..add(AuthCheckSignInStatusEvent()),
         ),
-        BlocProvider(
-          create: (_) => SplashBloc(),
-        ),
+        BlocProvider(create: (_) => SplashBloc()),
       ],
       child: BlocListener<SplashBloc, SplashState>(
         listenWhen: (_, state) => state is SplashDataState,
@@ -121,4 +120,3 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
-

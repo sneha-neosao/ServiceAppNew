@@ -8,18 +8,22 @@ import 'create_new_site_state.dart';
 class CreateNewSiteBloc extends Bloc<CreateNewSiteEvent, CreateNewSiteState> {
   final CreateNewSiteUsecase _createNewSiteUsecase;
 
-  CreateNewSiteBloc(this._createNewSiteUsecase) : super(CreateNewSiteInitialState()) {
+  CreateNewSiteBloc(this._createNewSiteUsecase)
+    : super(CreateNewSiteInitialState()) {
     on<CreateNewSiteSubmitEvent>(_onCreateNewSiteSubmitEvent);
   }
 
   void _onCreateNewSiteSubmitEvent(
-      CreateNewSiteSubmitEvent event, Emitter<CreateNewSiteState> emit) async {
+    CreateNewSiteSubmitEvent event,
+    Emitter<CreateNewSiteState> emit,
+  ) async {
     emit(CreateNewSiteLoadingState());
 
     final result = await _createNewSiteUsecase(event.params);
 
     result.fold(
-      (failure) => emit(CreateNewSiteFailureState(mapFailureToMessage(failure))),
+      (failure) =>
+          emit(CreateNewSiteFailureState(mapFailureToMessage(failure))),
       (data) => emit(CreateNewSiteSuccessState(data)),
     );
   }

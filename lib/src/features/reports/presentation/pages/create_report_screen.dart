@@ -806,7 +806,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           _isCustomerDropdownOpen = false;
                         });
                         if (state is CustomerSuccessState) {
-                          final cList = state.data.data.where((x) => x.name == val);
+                          final cList = state.data.data.where(
+                            (x) => x.name == val,
+                          );
                           if (cList.isNotEmpty) {
                             _sitesBloc.add(SitesGetEvent(cList.first.id));
                           }
@@ -2368,7 +2370,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     );
   }
 
-  Widget _buildDropdownField(String value, bool isOpen, {bool isLoading = false}) {
+  Widget _buildDropdownField(
+    String value,
+    bool isOpen, {
+    bool isLoading = false,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(

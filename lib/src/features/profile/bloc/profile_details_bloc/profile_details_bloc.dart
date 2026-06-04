@@ -10,11 +10,11 @@ part 'profile_details_state.dart';
 
 /// Handles state management for **Profile Details** and its related entities.
 
-class ProfileDetailsBloc extends Bloc<ProfileDetailsEvent, ProfileDetailsState> {
+class ProfileDetailsBloc
+    extends Bloc<ProfileDetailsEvent, ProfileDetailsState> {
   final ProfileDetailsUseCase _profileDetailsUseCase;
-  ProfileDetailsBloc(
-    this._profileDetailsUseCase,
-  ) : super(ProfileDetailsInitialState()) {
+  ProfileDetailsBloc(this._profileDetailsUseCase)
+    : super(ProfileDetailsInitialState()) {
     on<ProfileDetailsGetEvent>(profileDetails);
   }
 
@@ -22,9 +22,7 @@ class ProfileDetailsBloc extends Bloc<ProfileDetailsEvent, ProfileDetailsState> 
   Future profileDetails(ProfileDetailsGetEvent event, Emitter emit) async {
     emit(ProfileDetailsLoadingState());
 
-    final result = await _profileDetailsUseCase.call(
-     NoParams()
-    );
+    final result = await _profileDetailsUseCase.call(NoParams());
 
     // fold() is synchronous — never put async work inside its callbacks.
     // Instead check the result and await outside fold.

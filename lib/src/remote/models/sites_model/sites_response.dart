@@ -16,9 +16,10 @@ class SiteResponse {
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      data: (json['data'] as List<dynamic>?)
-          ?.map((e) => Site.fromJson(e))
-          .toList() ??
+      data:
+          (json['data'] as List<dynamic>?)
+              ?.map((e) => Site.fromJson(e))
+              .toList() ??
           [],
     );
   }
@@ -37,22 +38,13 @@ class Site {
   final String id;
   final String name;
 
-  Site({
-    required this.id,
-    required this.name,
-  });
+  Site({required this.id, required this.name});
 
   factory Site.fromJson(Map<String, dynamic> json) {
-    return Site(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-    );
+    return Site(id: json['id'] ?? '', name: json['name'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 }

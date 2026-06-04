@@ -8,15 +8,18 @@ sealed class CommissioningWorkDetailsState extends Equatable {
   List<Object?> get props => [];
 }
 
-class CommissioningWorkDetailsInitialState extends CommissioningWorkDetailsState {
+class CommissioningWorkDetailsInitialState
+    extends CommissioningWorkDetailsState {
   const CommissioningWorkDetailsInitialState();
 }
 
-class CommissioningWorkDetailsLoadingState extends CommissioningWorkDetailsState {
+class CommissioningWorkDetailsLoadingState
+    extends CommissioningWorkDetailsState {
   const CommissioningWorkDetailsLoadingState();
 }
 
-class CommissioningWorkDetailsSuccessState extends CommissioningWorkDetailsState {
+class CommissioningWorkDetailsSuccessState
+    extends CommissioningWorkDetailsState {
   final CommissioningWorkDetailsResponse data;
   const CommissioningWorkDetailsSuccessState(this.data);
 
@@ -24,7 +27,8 @@ class CommissioningWorkDetailsSuccessState extends CommissioningWorkDetailsState
   List<Object?> get props => [data];
 }
 
-class CommissioningWorkDetailsFailureState extends CommissioningWorkDetailsState {
+class CommissioningWorkDetailsFailureState
+    extends CommissioningWorkDetailsState {
   final String message;
   const CommissioningWorkDetailsFailureState(this.message);
 

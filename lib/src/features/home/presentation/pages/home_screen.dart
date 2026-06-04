@@ -32,8 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _upcomingAmcBloc = getIt<UpcomingAmcBloc>()..add(const UpcomingAmcGetEvent('Today'));
-    _profileDetailsBloc = getIt<ProfileDetailsBloc>()..add(const ProfileDetailsGetEvent());
+    _upcomingAmcBloc = getIt<UpcomingAmcBloc>()
+      ..add(const UpcomingAmcGetEvent('Today'));
+    _profileDetailsBloc = getIt<ProfileDetailsBloc>()
+      ..add(const ProfileDetailsGetEvent());
   }
 
   @override
@@ -46,7 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   bool _showNotifications = false;
   bool _showCreateReport = false;
-  bool _showProfile = false;
   _AmcViewState _amcViewState = _AmcViewState.dashboard;
   int _amcReportsCreated = 0;
 
@@ -87,7 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
       _amcReportsCreated = 0;
       _showNotifications = false;
       _showCreateReport = false;
-      _showProfile = false;
     });
   }
 
@@ -130,7 +130,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               _amcViewState = _AmcViewState.dashboard;
                               _amcReportsCreated = 0;
                               _showNotifications = false;
-                              _showProfile = false;
                               _showCreateReport = false;
                             });
                             Navigator.push(
@@ -161,7 +160,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () => setState(() {
                             _showNotifications = true;
                             _showCreateReport = false;
-                            _showProfile = false;
                           }),
                           child: Container(
                             width: 40,
@@ -181,11 +179,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(width: 8),
                         // ── Profile avatar ─────────────────────────────────
                         GestureDetector(
-                          onTap: () => setState(() {
-                            _showProfile = true;
-                            _showNotifications = false;
-                            _showCreateReport = false;
-                          }),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ProfileScreen(
+                                  onBack: () => Navigator.pop(context),
+                                ),
+                              ),
+                            );
+                          },
                           child: Container(
                             width: 40,
                             height: 40,
@@ -248,9 +251,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return NotificationScreen(
         onBack: () => setState(() => _showNotifications = false),
       );
-    }
-    if (_showProfile) {
-      return ProfileScreen(onBack: () => setState(() => _showProfile = false));
     }
 
     switch (_selectedIndex) {
@@ -323,7 +323,8 @@ class _HomeScreenState extends State<HomeScreen> {
           BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
             bloc: _profileDetailsBloc,
             builder: (context, state) {
-              if (state is ProfileDetailsLoadingState || state is ProfileDetailsInitialState) {
+              if (state is ProfileDetailsLoadingState ||
+                  state is ProfileDetailsInitialState) {
                 return Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,
                   highlightColor: Colors.grey[100]!,
@@ -581,7 +582,12 @@ class _DropdownPillState extends State<_DropdownPill> {
       },
       offset: const Offset(0, 45),
       itemBuilder: (ctx) => _options
-          .map((opt) => PopupMenuItem(value: opt, child: Text(opt, style: AppFont.style(color: Colors.black))))
+          .map(
+            (opt) => PopupMenuItem(
+              value: opt,
+              child: Text(opt, style: AppFont.style(color: Colors.black)),
+            ),
+          )
           .toList(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),

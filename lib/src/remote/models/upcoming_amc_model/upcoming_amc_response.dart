@@ -53,9 +53,10 @@ class UpcomingAmcVisitsData {
       rangeStart: json['range_start'],
       rangeEnd: json['range_end'],
       total: json['total'],
-      visits: (json['visits'] as List<dynamic>?)
-          ?.map((e) => AmcVisit.fromJson(e))
-          .toList() ??
+      visits:
+          (json['visits'] as List<dynamic>?)
+              ?.map((e) => AmcVisit.fromJson(e))
+              .toList() ??
           [],
     );
   }

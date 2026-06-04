@@ -12,7 +12,8 @@ class AssignedServiceCallsInitialState extends AssignedServiceCallsState {}
 
 class AssignedServiceCallsLoadingState extends AssignedServiceCallsState {}
 
-class AssignedServiceCallsPaginationLoadingState extends AssignedServiceCallsState {
+class AssignedServiceCallsPaginationLoadingState
+    extends AssignedServiceCallsState {
   final AssignedServiceCallsResponse currentData;
   const AssignedServiceCallsPaginationLoadingState(this.currentData);
 

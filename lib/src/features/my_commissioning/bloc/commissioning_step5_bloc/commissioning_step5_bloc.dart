@@ -4,21 +4,25 @@ import '../../domain/usecase/commissioning_step5_usecase.dart';
 import 'commissioning_step5_event.dart';
 import 'commissioning_step5_state.dart';
 
-class CommissioningStep5Bloc extends Bloc<CommissioningStep5Event, CommissioningStep5State> {
+class CommissioningStep5Bloc
+    extends Bloc<CommissioningStep5Event, CommissioningStep5State> {
   final CommissioningStep5Usecase usecase;
 
-  CommissioningStep5Bloc(this.usecase) : super(CommissioningStep5InitialState()) {
+  CommissioningStep5Bloc(this.usecase)
+    : super(CommissioningStep5InitialState()) {
     on<CommissioningStep5GetEvent>((event, emit) async {
       emit(CommissioningStep5LoadingState());
 
-      final result = await usecase(CommissioningStep5Params(
-        id: event.commissioning_report_id,
-        isMechanicalChecklistNa: event.isMechanicalChecklistNa,
-        isPipelineChecklistNa: event.isPipelineChecklistNa,
-        isElectricalChecklistNa: event.isElectricalChecklistNa,
-        checklistItems: event.checklistItems,
-      ));
-      
+      final result = await usecase(
+        CommissioningStep5Params(
+          id: event.commissioning_report_id,
+          isMechanicalChecklistNa: event.isMechanicalChecklistNa,
+          isPipelineChecklistNa: event.isPipelineChecklistNa,
+          isElectricalChecklistNa: event.isElectricalChecklistNa,
+          checklistItems: event.checklistItems,
+        ),
+      );
+
       result.fold(
         (failure) {
           if (failure is CredentialFailure) {

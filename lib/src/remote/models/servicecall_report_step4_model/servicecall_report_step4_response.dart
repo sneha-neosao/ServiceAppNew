@@ -44,9 +44,10 @@ class ServiceCallStep4Data {
   factory ServiceCallStep4Data.fromJson(Map<String, dynamic> json) {
     return ServiceCallStep4Data(
       id: json['id'] ?? '',
-      savedDescriptions: (json['saved_descriptions'] as List<dynamic>?)
-          ?.map((e) => SavedDescription.fromJson(e))
-          .toList() ??
+      savedDescriptions:
+          (json['saved_descriptions'] as List<dynamic>?)
+              ?.map((e) => SavedDescription.fromJson(e))
+              .toList() ??
           [],
       lastCompletedStep: json['last_completed_step'] ?? 0,
     );
@@ -55,8 +56,7 @@ class ServiceCallStep4Data {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'saved_descriptions':
-      savedDescriptions.map((e) => e.toJson()).toList(),
+      'saved_descriptions': savedDescriptions.map((e) => e.toJson()).toList(),
       'last_completed_step': lastCompletedStep,
     };
   }
@@ -66,10 +66,7 @@ class SavedDescription {
   final int srNo;
   final String description;
 
-  SavedDescription({
-    required this.srNo,
-    required this.description,
-  });
+  SavedDescription({required this.srNo, required this.description});
 
   factory SavedDescription.fromJson(Map<String, dynamic> json) {
     return SavedDescription(
@@ -79,9 +76,6 @@ class SavedDescription {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'sr_no': srNo,
-      'description': description,
-    };
+    return {'sr_no': srNo, 'description': description};
   }
 }

@@ -132,8 +132,9 @@ class ServiceCallResult extends Equatable {
       'customer_name': customerName,
       'site_name': siteName,
       'dealer_name': dealerName,
-      'assigned_technicians':
-      assignedTechnicians.map((e) => e.toJson()).toList(),
+      'assigned_technicians': assignedTechnicians
+          .map((e) => e.toJson())
+          .toList(),
       'created_at': createdAt,
     };
   }
@@ -180,12 +181,7 @@ class AssignedTechnician extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'code': code,
-      'assigned_at': assignedAt,
-    };
+    return {'id': id, 'name': name, 'code': code, 'assigned_at': assignedAt};
   }
 
   @override

@@ -7,9 +7,11 @@ sealed class CommissioningWorkCreateState extends Equatable {
   List<Object?> get props => [];
 }
 
-class CommissioningWorkCreateInitialState extends CommissioningWorkCreateState {}
+class CommissioningWorkCreateInitialState
+    extends CommissioningWorkCreateState {}
 
-class CommissioningWorkCreateLoadingState extends CommissioningWorkCreateState {}
+class CommissioningWorkCreateLoadingState
+    extends CommissioningWorkCreateState {}
 
 class CommissioningWorkCreateSuccessState extends CommissioningWorkCreateState {
   final CommissioningWorkCreateResponse data;

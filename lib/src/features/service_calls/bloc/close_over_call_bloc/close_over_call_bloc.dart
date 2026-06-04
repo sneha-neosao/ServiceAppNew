@@ -3,13 +3,11 @@ import 'package:service_app/src/features/service_calls/bloc/close_over_call_bloc
 import 'package:service_app/src/features/service_calls/bloc/close_over_call_bloc/close_over_call_state.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/close_over_call_usecase.dart';
 
-class CloseOverCallBloc
-    extends Bloc<CloseOverCallEvent, CloseOverCallState> {
+class CloseOverCallBloc extends Bloc<CloseOverCallEvent, CloseOverCallState> {
   final CloseOverCallUsecase closeOverCallUsecase;
 
-  CloseOverCallBloc({
-    required this.closeOverCallUsecase,
-  }) : super(CloseOverCallInitialState()) {
+  CloseOverCallBloc({required this.closeOverCallUsecase})
+    : super(CloseOverCallInitialState()) {
     on<CloseOverCallPostEvent>(_onPostCloseOverCall);
   }
 

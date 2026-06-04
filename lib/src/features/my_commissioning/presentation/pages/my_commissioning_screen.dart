@@ -188,31 +188,44 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
       builder: (BuildContext dialogContext) {
         return BlocProvider(
           create: (_) => getIt<CommissioningWorkDeleteBloc>(),
-          child: BlocConsumer<CommissioningWorkDeleteBloc, CommissioningWorkDeleteState>(
-            listener: (context, state) {
-              if (state is CommissioningWorkDeleteSuccessState) {
-                Navigator.pop(dialogContext);
-                appSnackBar(context, const Color(0xFF4CAF50), state.message);
-                _bloc.add(CommissioningWorkListGetEvent());
-              } else if (state is CommissioningWorkDeleteFailureState) {
-                appSnackBar(context, const Color(0xFFF44336), state.message);
-                Navigator.pop(dialogContext);
-              }
-            },
-            builder: (context, state) {
-              final isLoading = state is CommissioningWorkDeleteLoadingState;
-              return DeleteJobDialog(
-                isLoading: isLoading,
-                onConfirm: isLoading
-                    ? () {}
-                    : () {
-                        context
-                            .read<CommissioningWorkDeleteBloc>()
-                            .add(CommissioningWorkDeleteSubmitEvent(workId));
-                      },
-              );
-            },
-          ),
+          child:
+              BlocConsumer<
+                CommissioningWorkDeleteBloc,
+                CommissioningWorkDeleteState
+              >(
+                listener: (context, state) {
+                  if (state is CommissioningWorkDeleteSuccessState) {
+                    Navigator.pop(dialogContext);
+                    appSnackBar(
+                      context,
+                      const Color(0xFF4CAF50),
+                      state.message,
+                    );
+                    _bloc.add(CommissioningWorkListGetEvent());
+                  } else if (state is CommissioningWorkDeleteFailureState) {
+                    appSnackBar(
+                      context,
+                      const Color(0xFFF44336),
+                      state.message,
+                    );
+                    Navigator.pop(dialogContext);
+                  }
+                },
+                builder: (context, state) {
+                  final isLoading =
+                      state is CommissioningWorkDeleteLoadingState;
+                  return DeleteJobDialog(
+                    isLoading: isLoading,
+                    onConfirm: isLoading
+                        ? () {}
+                        : () {
+                            context.read<CommissioningWorkDeleteBloc>().add(
+                              CommissioningWorkDeleteSubmitEvent(workId),
+                            );
+                          },
+                  );
+                },
+              ),
         );
       },
     );

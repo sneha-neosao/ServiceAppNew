@@ -4,10 +4,14 @@ import 'package:service_app/src/features/service_calls/bloc/active_technicians_s
 import 'package:service_app/src/features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_state.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/active_technicians_service_calls_usecase.dart';
 
-class ActiveTechniciansServiceCallsBloc extends Bloc<
-    ActiveTechniciansServiceCallsEvent, ActiveTechniciansServiceCallsState> {
+class ActiveTechniciansServiceCallsBloc
+    extends
+        Bloc<
+          ActiveTechniciansServiceCallsEvent,
+          ActiveTechniciansServiceCallsState
+        > {
   final ActiveTechniciansServiceCallsUsecase
-      activeTechniciansServiceCallsUsecase;
+  activeTechniciansServiceCallsUsecase;
 
   ActiveTechniciansServiceCallsBloc({
     required this.activeTechniciansServiceCallsUsecase,

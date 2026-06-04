@@ -7,8 +7,10 @@ import 'package:service_app/src/remote/models/commissioning_report_history_model
 /// Use case for fetching the Commissioning Report History via API.
 class CommissioningReportHistoryUseCase
     implements
-        UseCase<CommissioningReportHistoryResponse,
-            CommissioningReportHistoryParams> {
+        UseCase<
+          CommissioningReportHistoryResponse,
+          CommissioningReportHistoryParams
+        > {
   final Repository _repository;
   const CommissioningReportHistoryUseCase(this._repository);
 

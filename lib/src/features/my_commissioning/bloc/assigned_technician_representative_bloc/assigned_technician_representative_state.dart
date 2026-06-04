@@ -8,11 +8,14 @@ sealed class AssignedTechnicianRepresentativeState extends Equatable {
   List<Object?> get props => [];
 }
 
-final class AssignedTechnicianRepresentativeInitialState extends AssignedTechnicianRepresentativeState {}
+final class AssignedTechnicianRepresentativeInitialState
+    extends AssignedTechnicianRepresentativeState {}
 
-class AssignedTechnicianRepresentativeLoadingState extends AssignedTechnicianRepresentativeState {}
+class AssignedTechnicianRepresentativeLoadingState
+    extends AssignedTechnicianRepresentativeState {}
 
-class AssignedTechnicianRepresentativeSuccessState extends AssignedTechnicianRepresentativeState {
+class AssignedTechnicianRepresentativeSuccessState
+    extends AssignedTechnicianRepresentativeState {
   final AssignedTechnicianResponse data;
 
   const AssignedTechnicianRepresentativeSuccessState(this.data);
@@ -21,7 +24,8 @@ class AssignedTechnicianRepresentativeSuccessState extends AssignedTechnicianRep
   List<Object?> get props => [data];
 }
 
-class AssignedTechnicianRepresentativeFailureState extends AssignedTechnicianRepresentativeState {
+class AssignedTechnicianRepresentativeFailureState
+    extends AssignedTechnicianRepresentativeState {
   final String message;
 
   const AssignedTechnicianRepresentativeFailureState(this.message);

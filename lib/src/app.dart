@@ -39,21 +39,17 @@ class _MyAppState extends State<MyApp> {
       debugPrint("🔑 company_code: ${uri.queryParameters['company_code']}");
 
       /// Handle company deep link.
-      if(uri.host == "invitation"){
+      if (uri.host == "invitation") {
         final companyCode = uri.queryParameters['company_code'];
         print("$companyCode invite code");
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _router.goNamed(
             AppRoute.nextScreen.name,
-            queryParameters: {
-              'code': companyCode ?? '',
-            },
+            queryParameters: {'code': companyCode ?? ''},
           );
         });
       }
-
     });
-
   }
 
   /// Builds the main app widget tree with theming, localization, and routing.
@@ -73,7 +69,9 @@ class _MyAppState extends State<MyApp> {
           ],
           child: BlocBuilder<ThemeBloc, ThemeState>(
             builder: (_, state) {
-              final platformBrightness = MediaQuery.platformBrightnessOf(context);
+              final platformBrightness = MediaQuery.platformBrightnessOf(
+                context,
+              );
               final isDark =
                   state.isDarkMode ?? (platformBrightness == Brightness.dark);
 
@@ -94,4 +92,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-

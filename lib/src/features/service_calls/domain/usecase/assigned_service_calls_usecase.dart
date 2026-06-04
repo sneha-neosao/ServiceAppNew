@@ -23,10 +23,7 @@ class AssignedServiceCallsParams extends Equatable {
   });
 
   Map<String, dynamic> toMap() {
-    final map = <String, dynamic>{
-      'page': page,
-      'page_size': pageSize,
-    };
+    final map = <String, dynamic>{'page': page, 'page_size': pageSize};
     if (customerId != null && customerId!.isNotEmpty) {
       map['customer_id'] = customerId;
     }
@@ -43,16 +40,27 @@ class AssignedServiceCallsParams extends Equatable {
   }
 
   @override
-  List<Object?> get props => [page, pageSize, customerId, siteId, complaintNumber, date];
+  List<Object?> get props => [
+    page,
+    pageSize,
+    customerId,
+    siteId,
+    complaintNumber,
+    date,
+  ];
 }
 
-class AssignedServiceCallsUseCase implements UseCase<AssignedServiceCallsResponse, AssignedServiceCallsParams> {
+class AssignedServiceCallsUseCase
+    implements
+        UseCase<AssignedServiceCallsResponse, AssignedServiceCallsParams> {
   final Repository _repository;
 
   const AssignedServiceCallsUseCase(this._repository);
 
   @override
-  Future<Either<Failure, AssignedServiceCallsResponse>> call(AssignedServiceCallsParams params) async {
+  Future<Either<Failure, AssignedServiceCallsResponse>> call(
+    AssignedServiceCallsParams params,
+  ) async {
     return await _repository.assignedServiceCalls(params);
   }
 }

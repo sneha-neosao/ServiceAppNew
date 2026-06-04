@@ -9,25 +9,28 @@ part 'commissioning_step2_state.dart';
 
 /// Handles state management for **CommissioningStep2** and its related entities.
 
-class CommissioningStep2Bloc extends Bloc<CommissioningStep2Event, CommissioningStep2State> {
+class CommissioningStep2Bloc
+    extends Bloc<CommissioningStep2Event, CommissioningStep2State> {
   final CommissioningStep2Usecase _commissioningStep2Usecase;
-  CommissioningStep2Bloc(
-    this._commissioningStep2Usecase,
-  ) : super(CommissioningStep2InitialState()) {
+  CommissioningStep2Bloc(this._commissioningStep2Usecase)
+    : super(CommissioningStep2InitialState()) {
     on<CommissioningStep2GetEvent>(_commissioningStep1);
   }
 
   /// - **CommissioningStep1:** Handles [CommissioningStep2GetEvent] → calls [CommissioningStep2Usecase]
-  Future _commissioningStep1(CommissioningStep2GetEvent event, Emitter emit) async {
+  Future _commissioningStep1(
+    CommissioningStep2GetEvent event,
+    Emitter emit,
+  ) async {
     emit(CommissioningStep2LoadingState());
 
     final result = await _commissioningStep2Usecase.call(
       CommissioningStep2Params(
-          id: event.id,
-          warrantyPeriodYears: event.warrantyPeriodYears,
-          memberPresentsCustomerSide: event.memberPresentsCustomerSide,
-          agenda: event.agenda,
-      )
+        id: event.id,
+        warrantyPeriodYears: event.warrantyPeriodYears,
+        memberPresentsCustomerSide: event.memberPresentsCustomerSide,
+        agenda: event.agenda,
+      ),
     );
 
     // fold() is synchronous — never put async work inside its callbacks.

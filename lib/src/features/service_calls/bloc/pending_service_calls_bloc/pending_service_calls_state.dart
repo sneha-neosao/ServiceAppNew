@@ -12,7 +12,8 @@ class PendingServiceCallsInitialState extends PendingServiceCallsState {}
 
 class PendingServiceCallsLoadingState extends PendingServiceCallsState {}
 
-class PendingServiceCallsPaginationLoadingState extends PendingServiceCallsState {
+class PendingServiceCallsPaginationLoadingState
+    extends PendingServiceCallsState {
   final PendingServiceCallsResponse currentData;
   const PendingServiceCallsPaginationLoadingState(this.currentData);
 

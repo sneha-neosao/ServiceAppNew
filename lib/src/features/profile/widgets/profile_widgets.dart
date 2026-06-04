@@ -14,10 +14,16 @@ class ProfileSectionHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: const Color(0xFF0D121F)),
+            style: AppFont.style(
+              fontSize: 14,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFF0D121F),
+            ),
           ),
           const SizedBox(width: 12),
-          const Expanded(child: Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6))),
+          const Expanded(
+            child: Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+          ),
         ],
       ),
     );
@@ -58,12 +64,20 @@ class ProfileInfoItem extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: AppFont.style(fontSize: 10, fontWeight: FontWeight.w800, color: const Color(0xFFA5ABB7)),
+                style: AppFont.style(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFFA5ABB7),
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 value,
-                style: AppFont.style(fontSize: 15, fontWeight: FontWeight.w900, color: const Color(0xFF455A64)),
+                style: AppFont.style(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFF455A64),
+                ),
               ),
             ],
           ),
@@ -107,7 +121,11 @@ class ProfileActionButton extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               label,
-              style: AppFont.style(fontSize: 14, fontWeight: FontWeight.w900, color: textColor),
+              style: AppFont.style(
+                fontSize: 14,
+                fontWeight: FontWeight.w900,
+                color: textColor,
+              ),
             ),
           ],
         ),

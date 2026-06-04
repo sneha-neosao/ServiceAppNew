@@ -32,7 +32,8 @@ class AppRouteConf {
       GoRoute(
         path: AppRoute.forgotPasswordScreen.path,
         name: AppRoute.forgotPasswordScreen.name,
-        pageBuilder: (context, state) => _fadePage(const ForgotPasswordScreen()),
+        pageBuilder: (context, state) =>
+            _fadePage(const ForgotPasswordScreen()),
       ),
       GoRoute(
         path: AppRoute.homeScreen.path,
@@ -59,4 +60,3 @@ CustomTransitionPage _fadePage(Widget child) => CustomTransitionPage(
     return FadeTransition(opacity: curvedAnimation, child: child);
   },
 );
-

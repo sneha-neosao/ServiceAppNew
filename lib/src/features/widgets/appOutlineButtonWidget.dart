@@ -29,8 +29,12 @@ class AppOutlineButtonWidget extends StatelessWidget {
             backgroundColor: AppColor.white,
             foregroundColor: AppColor.green,
             side: BorderSide(color: AppColor.green, width: 1),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r),),
-            textStyle: Theme.of(context).textTheme.headlineMedium!.copyWith(fontSize: fontSize.sp,),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            textStyle: Theme.of(
+              context,
+            ).textTheme.headlineMedium!.copyWith(fontSize: fontSize.sp),
           ),
           child: Text(label),
         ),

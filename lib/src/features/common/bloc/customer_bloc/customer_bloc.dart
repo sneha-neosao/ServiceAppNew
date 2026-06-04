@@ -13,9 +13,7 @@ part 'customer_state.dart';
 
 class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
   final CustomerUseCase _customerUseCase;
-  CustomerBloc(
-    this._customerUseCase,
-  ) : super(CustomerInitialState()) {
+  CustomerBloc(this._customerUseCase) : super(CustomerInitialState()) {
     on<CustomerGetEvent>(_customers);
   }
 
@@ -23,9 +21,7 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
   Future _customers(CustomerGetEvent event, Emitter emit) async {
     emit(CustomerLoadingState());
 
-    final result = await _customerUseCase.call(
-      NoParams()
-    );
+    final result = await _customerUseCase.call(NoParams());
 
     // fold() is synchronous — never put async work inside its callbacks.
     // Instead check the result and await outside fold.

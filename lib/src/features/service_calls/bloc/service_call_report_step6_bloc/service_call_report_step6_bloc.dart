@@ -9,7 +9,7 @@ class ServiceCallReportStep6Bloc
   final ServiceCallReportStep6Usecase usecase;
 
   ServiceCallReportStep6Bloc({required this.usecase})
-      : super(ServiceCallReportStep6InitialState()) {
+    : super(ServiceCallReportStep6InitialState()) {
     on<ServiceCallReportStep6SubmitEvent>(_onSubmitEvent);
   }
 
@@ -18,16 +18,18 @@ class ServiceCallReportStep6Bloc
     Emitter<ServiceCallReportStep6State> emit,
   ) async {
     emit(ServiceCallReportStep6LoadingState());
-    final result = await usecase(ServiceCallReportStep6Params(
-      id: event.reportId,
-      technicianRemarks: event.technicianRemarks,
-      customerRemarks: event.customerRemarks,
-      technicianRepresentative: event.technicianRepresentative,
-      customerRepresentativeName: event.customerRepresentativeName,
-      technicianSignaturePath: event.technicianSignaturePath,
-      customerSignaturePath: event.customerSignaturePath,
-      workPhotosPaths: event.workPhotosPaths,
-    ));
+    final result = await usecase(
+      ServiceCallReportStep6Params(
+        id: event.reportId,
+        technicianRemarks: event.technicianRemarks,
+        customerRemarks: event.customerRemarks,
+        technicianRepresentative: event.technicianRepresentative,
+        customerRepresentativeName: event.customerRepresentativeName,
+        technicianSignaturePath: event.technicianSignaturePath,
+        customerSignaturePath: event.customerSignaturePath,
+        workPhotosPaths: event.workPhotosPaths,
+      ),
+    );
     result.fold(
       (Failure failure) =>
           emit(ServiceCallReportStep6FailureState(failure.message)),

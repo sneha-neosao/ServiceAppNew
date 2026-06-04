@@ -12,13 +12,11 @@ import 'package:service_app/src/remote/models/technician_model/technician_respon
 /// Domain layer use case for fetching technician
 
 class TechnicianUseCase implements UseCase<TechnicianResponse, NoParams> {
-
   final Repository _authRepository;
   const TechnicianUseCase(this._authRepository);
 
   @override
   Future<Either<Failure, TechnicianResponse>> call(NoParams params) async {
-
     final result = await _authRepository.technician(params);
 
     return result;

@@ -1,4 +1,3 @@
-
 /// Utility class containing commonly used regular expressions for validation.
 /// Designed as a static-only class with a private constructor to prevent instantiation.
 class RegexValidator {

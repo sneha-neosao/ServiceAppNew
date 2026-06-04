@@ -8,9 +8,8 @@ class ServiceCallReportStep1Bloc
     extends Bloc<ServiceCallReportStep1Event, ServiceCallReportStep1State> {
   final ServiceCallReportStep1Usecase usecase;
 
-  ServiceCallReportStep1Bloc({
-    required this.usecase,
-  }) : super(ServiceCallReportStep1InitialState()) {
+  ServiceCallReportStep1Bloc({required this.usecase})
+    : super(ServiceCallReportStep1InitialState()) {
     on<ServiceCallReportStep1PostEvent>(_onPostStep1);
   }
 

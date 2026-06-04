@@ -42,9 +42,9 @@ class CommissioningWorkUpdateParams extends Equatable {
 
   @override
   List<Object?> get props => [
-        customerId,
-        siteId,
-        applicationOfEquipment,
-        technicians,
-      ];
+    customerId,
+    siteId,
+    applicationOfEquipment,
+    technicians,
+  ];
 }

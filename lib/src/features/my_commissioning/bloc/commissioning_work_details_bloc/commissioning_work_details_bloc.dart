@@ -8,7 +8,7 @@ class CommissioningWorkDetailsBloc
   final CommissioningWorkDetailsUseCase _useCase;
 
   CommissioningWorkDetailsBloc(this._useCase)
-      : super(const CommissioningWorkDetailsInitialState()) {
+    : super(const CommissioningWorkDetailsInitialState()) {
     on<CommissioningWorkDetailsGetEvent>(_onGetDetails);
   }
 

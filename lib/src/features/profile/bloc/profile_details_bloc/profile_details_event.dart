@@ -10,7 +10,6 @@ sealed class ProfileDetailsEvent extends Equatable {
 }
 
 class ProfileDetailsGetEvent extends ProfileDetailsEvent {
-
   const ProfileDetailsGetEvent();
 
   @override

@@ -12,7 +12,6 @@ sealed class CustomerEvent extends Equatable {
 /// Event for Customer.
 
 class CustomerGetEvent extends CustomerEvent {
-
   const CustomerGetEvent();
 
   @override

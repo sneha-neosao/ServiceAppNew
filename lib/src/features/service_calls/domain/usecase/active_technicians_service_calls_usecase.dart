@@ -12,7 +12,8 @@ class ActiveTechniciansServiceCallsUsecase
 
   @override
   Future<Either<Failure, ActiveTechniciansServiceCallsResponse>> call(
-      NoParams params) async {
+    NoParams params,
+  ) async {
     return await repository.activeTechniciansServiceCalls(params);
   }
 }

@@ -13,13 +13,16 @@ class AssignedServiceCallTechnicianResponse extends Equatable {
     required this.message,
   });
 
-  factory AssignedServiceCallTechnicianResponse.fromJson(Map<String, dynamic> json) {
+  factory AssignedServiceCallTechnicianResponse.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return AssignedServiceCallTechnicianResponse(
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
-      data: (json['data'] as List<dynamic>?)
-          ?.map((e) => AssignedTechnician.fromJson(e))
-          .toList() ??
+      data:
+          (json['data'] as List<dynamic>?)
+              ?.map((e) => AssignedTechnician.fromJson(e))
+              .toList() ??
           [],
       message: json['message'] ?? '',
     );
@@ -58,11 +61,7 @@ class AssignedTechnician extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'assign_id': assignId,
-      'technician_id': technicianId,
-      'name': name,
-    };
+    return {'assign_id': assignId, 'technician_id': technicianId, 'name': name};
   }
 
   @override

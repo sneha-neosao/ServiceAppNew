@@ -72,7 +72,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
                 // ── Username field ────────────────────────────────────────
                 // ForgotPasswordInputWidget(usernameController: _usernameController),
-
                 const SizedBox(height: 28),
 
                 // ── Send Reset Link button ────────────────────────────────
@@ -114,9 +113,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 // ── Back to Login ─────────────────────────────────────────
                 Center(
                   child: GestureDetector(
-                    onTap: () => context.pushNamed(
-                      AppRoute.loginScreen.name,
-                    ),
+                    onTap: () => context.pushNamed(AppRoute.loginScreen.name),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

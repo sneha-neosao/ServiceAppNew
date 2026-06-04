@@ -14,22 +14,26 @@ part 'commissioning_step1_autofill_state.dart';
 
 /// Handles state management for **CommissioningStep1AutoFill** and its related entities.
 
-class CommissioningStep1AutoFillBloc extends Bloc<CommissioningStep1AutoFillEvent, CommissioningStep1AutoFillState> {
+class CommissioningStep1AutoFillBloc
+    extends
+        Bloc<CommissioningStep1AutoFillEvent, CommissioningStep1AutoFillState> {
   final CommissioningStep1AutofillUsecase _commissioningStep1AutofillUsecase;
-  CommissioningStep1AutoFillBloc(
-    this._commissioningStep1AutofillUsecase,
-  ) : super(CommissioningStep1AutoFillInitialState()) {
+  CommissioningStep1AutoFillBloc(this._commissioningStep1AutofillUsecase)
+    : super(CommissioningStep1AutoFillInitialState()) {
     on<CommissioningStep1AutoFillGetEvent>(_commissioningStep1Autofill);
   }
 
   /// - **CommissioningStep1AutoFill:** Handles [CommissioningStep1AutoFillGetEvent] → calls [CustomerUseCase]
-  Future _commissioningStep1Autofill(CommissioningStep1AutoFillGetEvent event, Emitter emit) async {
+  Future _commissioningStep1Autofill(
+    CommissioningStep1AutoFillGetEvent event,
+    Emitter emit,
+  ) async {
     emit(CommissioningStep1AutoFillLoadingState());
 
     final result = await _commissioningStep1AutofillUsecase.call(
       CommissioningStep1AutofillParams(
-          commissioning_report_id: event.commissioning_report_id
-      )
+        commissioning_report_id: event.commissioning_report_id,
+      ),
     );
 
     // fold() is synchronous — never put async work inside its callbacks.

@@ -157,13 +157,13 @@ class CommissioningDetailsData {
       customerName: json['customer_name'],
       siteName: json['site_name'],
       applicationOfEquipment: json['application_of_equipment'],
-      technicianRepresentativeName:
-      json['technician_representative_name'],
+      technicianRepresentativeName: json['technician_representative_name'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       isDeleted: json['is_deleted'],
-      memberPresentsCustomerSide:
-      List<String>.from(json['member_presents_customer_side'] ?? []),
+      memberPresentsCustomerSide: List<String>.from(
+        json['member_presents_customer_side'] ?? [],
+      ),
       agenda: json['agenda'],
       warrantyStartDate: json['warranty_start_date'],
       warrantyExpiryDate: json['warranty_expiry_date'],
@@ -181,28 +181,21 @@ class CommissioningDetailsData {
       isElectricalChecklistNa: json['is_electrical_checklist_na'],
       technicianRemarks: json['technician_remarks'],
       customerRemarks: json['customer_remarks'],
-      customerRepresentativeName:
-      json['customer_representative_name'],
-      technicianRepresentativeCode:
-      json['technician_representative_code'],
-      technicianRepresentativePhone:
-      json['technician_representative_phone'],
+      customerRepresentativeName: json['customer_representative_name'],
+      technicianRepresentativeCode: json['technician_representative_code'],
+      technicianRepresentativePhone: json['technician_representative_phone'],
       customerSignature: json['customer_signature'],
       technicianSignature: json['technician_signature'],
       status: json['status'],
       lastCompletedStep: json['last_completed_step'],
       submittedAt: json['submitted_at'],
       feedbackSubmitted: json['feedback_submitted'],
-      createdByTechnicianName:
-      json['created_by_technician_name'],
-      createdByTechnicianCode:
-      json['created_by_technician_code'],
-      createdByTechnicianPhone:
-      json['created_by_technician_phone'],
+      createdByTechnicianName: json['created_by_technician_name'],
+      createdByTechnicianCode: json['created_by_technician_code'],
+      createdByTechnicianPhone: json['created_by_technician_phone'],
       dealer: json['dealer'],
       commissioningWork: json['commissioning_work'],
-      technicianRepresentative:
-      json['technician_representative'],
+      technicianRepresentative: json['technician_representative'],
       createdByDealerUser: json['created_by_dealer_user'],
       createdByTechnician: json['created_by_technician'],
     );
@@ -217,32 +210,20 @@ class AssignedTechnician {
   final String? id;
   final String? name;
 
-  AssignedTechnician({
-    this.id,
-    this.name,
-  });
+  AssignedTechnician({this.id, this.name});
 
   factory AssignedTechnician.fromJson(Map<String, dynamic> json) {
-    return AssignedTechnician(
-      id: json['id'],
-      name: json['name'],
-    );
+    return AssignedTechnician(id: json['id'], name: json['name']);
   }
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-  };
+  Map<String, dynamic> toJson() => {'id': id, 'name': name};
 }
 
 class DescriptionModel {
   final int? srNo;
   final String? description;
 
-  DescriptionModel({
-    this.srNo,
-    this.description,
-  });
+  DescriptionModel({this.srNo, this.description});
 
   factory DescriptionModel.fromJson(Map<String, dynamic> json) {
     return DescriptionModel(
@@ -251,10 +232,7 @@ class DescriptionModel {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'sr_no': srNo,
-    'description': description,
-  };
+  Map<String, dynamic> toJson() => {'sr_no': srNo, 'description': description};
 }
 
 class TechnicalDetails {

@@ -18,7 +18,9 @@ class ServiceCallStep6Response {
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      data: json['data'] != null ? ServiceCallStep6Data.fromJson(json['data']) : const ServiceCallStep6Data.empty(),
+      data: json['data'] != null
+          ? ServiceCallStep6Data.fromJson(json['data'])
+          : const ServiceCallStep6Data.empty(),
     );
   }
 

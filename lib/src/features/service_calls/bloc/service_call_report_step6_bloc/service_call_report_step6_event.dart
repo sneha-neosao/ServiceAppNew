@@ -30,13 +30,13 @@ class ServiceCallReportStep6SubmitEvent extends ServiceCallReportStep6Event {
 
   @override
   List<Object?> get props => [
-        reportId,
-        technicianRemarks,
-        customerRemarks,
-        technicianRepresentative,
-        customerRepresentativeName,
-        technicianSignaturePath,
-        customerSignaturePath,
-        workPhotosPaths,
-      ];
+    reportId,
+    technicianRemarks,
+    customerRemarks,
+    technicianRepresentative,
+    customerRepresentativeName,
+    technicianSignaturePath,
+    customerSignaturePath,
+    workPhotosPaths,
+  ];
 }

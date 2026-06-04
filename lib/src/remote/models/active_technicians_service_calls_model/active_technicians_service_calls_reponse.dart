@@ -11,13 +11,16 @@ class ActiveTechniciansServiceCallsResponse {
     required this.message,
   });
 
-  factory ActiveTechniciansServiceCallsResponse.fromJson(Map<String, dynamic> json) {
+  factory ActiveTechniciansServiceCallsResponse.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return ActiveTechniciansServiceCallsResponse(
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
-      data: (json['data'] as List<dynamic>?)
-          ?.map((e) => Technician.fromJson(e))
-          .toList() ??
+      data:
+          (json['data'] as List<dynamic>?)
+              ?.map((e) => Technician.fromJson(e))
+              .toList() ??
           [],
       message: json['message'] ?? '',
     );
@@ -38,11 +41,7 @@ class Technician {
   final String name;
   final String code;
 
-  Technician({
-    required this.id,
-    required this.name,
-    required this.code,
-  });
+  Technician({required this.id, required this.name, required this.code});
 
   factory Technician.fromJson(Map<String, dynamic> json) {
     return Technician(
@@ -53,10 +52,6 @@ class Technician {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'code': code,
-    };
+    return {'id': id, 'name': name, 'code': code};
   }
 }

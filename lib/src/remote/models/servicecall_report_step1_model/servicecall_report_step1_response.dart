@@ -56,9 +56,10 @@ class ServiceCallData {
       customerName: json['customer_name'] ?? '',
       siteName: json['site_name'] ?? '',
       complaintNumber: json['complaint_number'] ?? '',
-      assignedTechnicians: (json['assigned_technicians'] as List<dynamic>?)
-          ?.map((e) => AssignedTechnician.fromJson(e))
-          .toList() ??
+      assignedTechnicians:
+          (json['assigned_technicians'] as List<dynamic>?)
+              ?.map((e) => AssignedTechnician.fromJson(e))
+              .toList() ??
           [],
       lastCompletedStep: json['last_completed_step'] ?? 0,
     );
@@ -71,8 +72,9 @@ class ServiceCallData {
       'customer_name': customerName,
       'site_name': siteName,
       'complaint_number': complaintNumber,
-      'assigned_technicians':
-      assignedTechnicians.map((e) => e.toJson()).toList(),
+      'assigned_technicians': assignedTechnicians
+          .map((e) => e.toJson())
+          .toList(),
       'last_completed_step': lastCompletedStep,
     };
   }
@@ -82,22 +84,13 @@ class AssignedTechnician {
   final String id;
   final String name;
 
-  AssignedTechnician({
-    required this.id,
-    required this.name,
-  });
+  AssignedTechnician({required this.id, required this.name});
 
   factory AssignedTechnician.fromJson(Map<String, dynamic> json) {
-    return AssignedTechnician(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-    );
+    return AssignedTechnician(id: json['id'] ?? '', name: json['name'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 }

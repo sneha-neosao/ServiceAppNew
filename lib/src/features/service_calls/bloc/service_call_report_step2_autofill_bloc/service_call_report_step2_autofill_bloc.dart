@@ -4,12 +4,16 @@ import 'package:service_app/src/core/errors/failures.dart';
 import 'service_call_report_step2_autofill_event.dart';
 import 'service_call_report_step2_autofill_state.dart';
 
-class ServiceCallReportStep2AutoFillBloc extends Bloc<
-    ServiceCallReportStep2AutoFillEvent, ServiceCallReportStep2AutoFillState> {
+class ServiceCallReportStep2AutoFillBloc
+    extends
+        Bloc<
+          ServiceCallReportStep2AutoFillEvent,
+          ServiceCallReportStep2AutoFillState
+        > {
   final ServiceCallReportStep2AutoFillUsecase usecase;
 
   ServiceCallReportStep2AutoFillBloc({required this.usecase})
-      : super(ServiceCallReportStep2AutoFillInitialState()) {
+    : super(ServiceCallReportStep2AutoFillInitialState()) {
     on<ServiceCallReportStep2AutoFillGetEvent>(_onGetEvent);
   }
 

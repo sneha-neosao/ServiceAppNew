@@ -19,7 +19,7 @@ class SpeechToTextHelper extends ChangeNotifier {
         onStatus: (status) {
           debugPrint('Speech status: $status');
           if (status == 'done' || status == 'notListening') {
-             _activeController = null;
+            _activeController = null;
           }
           notifyListeners();
         },
@@ -89,10 +89,7 @@ class SpeechToTextHelper extends ChangeNotifier {
     if (_speechToText.isListening) {
       await stopListening();
     } else {
-      await startListening(
-        controller: controller,
-        context: context,
-      );
+      await startListening(controller: controller, context: context);
     }
   }
 

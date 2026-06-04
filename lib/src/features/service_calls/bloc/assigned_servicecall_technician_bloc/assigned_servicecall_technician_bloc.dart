@@ -5,11 +5,15 @@ import 'assigned_servicecall_technician_event.dart';
 import 'assigned_servicecall_technician_state.dart';
 
 class AssignedServicecallTechnicianBloc
-    extends Bloc<AssignedServicecallTechnicianEvent, AssignedServicecallTechnicianState> {
+    extends
+        Bloc<
+          AssignedServicecallTechnicianEvent,
+          AssignedServicecallTechnicianState
+        > {
   final AssignedServicecallTechnicianUsecase usecase;
 
   AssignedServicecallTechnicianBloc({required this.usecase})
-      : super(AssignedServicecallTechnicianInitialState()) {
+    : super(AssignedServicecallTechnicianInitialState()) {
     on<AssignedServicecallTechnicianGetEvent>(_onGetEvent);
   }
 
@@ -18,7 +22,9 @@ class AssignedServicecallTechnicianBloc
     Emitter<AssignedServicecallTechnicianState> emit,
   ) async {
     emit(AssignedServicecallTechnicianLoadingState());
-    final result = await usecase(AssignedServicecallTechnicianParams(event.reportId));
+    final result = await usecase(
+      AssignedServicecallTechnicianParams(event.reportId),
+    );
     result.fold(
       (Failure failure) =>
           emit(AssignedServicecallTechnicianFailureState(failure.message)),

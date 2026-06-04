@@ -18,8 +18,10 @@ import 'package:service_app/src/remote/models/close_over_call_model/close_over_c
 import 'package:service_app/src/remote/models/servicecall_report_step1_model/servicecall_report_step1_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step2_model/servicecall_report_step2_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step3_model/servicecall_report_step3_response.dart';
-import 'package:service_app/src/remote/models/servicecall_report_step4_model/servicecall_report_step4_response.dart' hide SavedDescription;
-import 'package:service_app/src/remote/models/servicecall_report_step5_model/servicecall_report_step5_response.dart' hide SavedChecklist;
+import 'package:service_app/src/remote/models/servicecall_report_step4_model/servicecall_report_step4_response.dart'
+    hide SavedDescription;
+import 'package:service_app/src/remote/models/servicecall_report_step5_model/servicecall_report_step5_response.dart'
+    hide SavedChecklist;
 import 'package:service_app/src/remote/models/servicecall_report_step6_model/servicecall_report_step6_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step6_autofill_model/servicecall_report_step6_autofill_response.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step1_usecase.dart';
@@ -158,10 +160,7 @@ sealed class RemoteDataSource {
     String token,
   );
 
-  Future<String> commissioningWorkDelete(
-    String workId,
-    String token,
-  );
+  Future<String> commissioningWorkDelete(String workId, String token);
 
   Future<CommissioningReportHistoryResponse> commissioningReportHistory(
     CommissioningReportHistoryParams params,
@@ -179,7 +178,7 @@ sealed class RemoteDataSource {
   );
 
   Future<void> logout();
-  
+
   Future<AssignedServiceCallsResponse> assignedServiceCalls(
     AssignedServiceCallsParams params,
     String token,
@@ -205,54 +204,84 @@ sealed class RemoteDataSource {
   );
 
   Future<ServiceCallStep1Response> serviceCallReportStep1(
-      ServiceCallReportStep1Params params, String token);
+    ServiceCallReportStep1Params params,
+    String token,
+  );
 
   Future<ServiceCallStep1Response> serviceCallReportStep1AutoFill(
-      String complaintId, String token);
+    String complaintId,
+    String token,
+  );
 
   Future<ServiceCallStep2Response> serviceCallReportStep2(
-      ServiceCallReportStep2Params params, String token);
+    ServiceCallReportStep2Params params,
+    String token,
+  );
 
   Future<ServiceCallStep2Response> serviceCallReportStep2AutoFill(
-      String complaintId, String token);
+    String complaintId,
+    String token,
+  );
 
   Future<ServiceCallStep3Response> serviceCallReportStep3(
-      ServiceCallReportStep3Params params, String token);
+    ServiceCallReportStep3Params params,
+    String token,
+  );
 
   Future<ServiceCallStep3Response> serviceCallReportStep3AutoFill(
-      String reportId, String token);
+    String reportId,
+    String token,
+  );
 
   Future<ServiceCallStep4Response> serviceCallReportStep4AutoFill(
-      String reportId, String token);
+    String reportId,
+    String token,
+  );
 
   Future<ServiceCallStep4Response> serviceCallReportStep4(
-      String reportId, List<Map<String, dynamic>> descriptions, String token);
+    String reportId,
+    List<Map<String, dynamic>> descriptions,
+    String token,
+  );
 
   Future<ServiceCallStep5Response> serviceCallReportStep5(
-      String reportId,
-      bool isMechanicalChecklistNa,
-      bool isPipelineChecklistNa,
-      bool isElectricalChecklistNa,
-      List<Map<String, dynamic>> checklistItems,
-      String token);
+    String reportId,
+    bool isMechanicalChecklistNa,
+    bool isPipelineChecklistNa,
+    bool isElectricalChecklistNa,
+    List<Map<String, dynamic>> checklistItems,
+    String token,
+  );
 
   Future<ServiceCallStep5Response> serviceCallReportStep5AutoFill(
-      String reportId, String token);
+    String reportId,
+    String token,
+  );
 
   Future<AssignedServiceCallTechnicianResponse> assignedServiceCallTechnicians(
-      String reportId, String token);
+    String reportId,
+    String token,
+  );
 
   Future<ServiceCallStep6Response> serviceCallReportStep6(
-      ServiceCallReportStep6Params params, String token);
+    ServiceCallReportStep6Params params,
+    String token,
+  );
 
   Future<ServiceCallReportStep6AutoFillResponse> serviceCallReportStep6AutoFill(
-      String reportId, String token);
+    String reportId,
+    String token,
+  );
 
   Future<AddCustomerResponse> createNewCustomer(
-      CreateNewCustomerParams params, String token);
+    CreateNewCustomerParams params,
+    String token,
+  );
 
   Future<AddSiteResponse> createNewSite(
-      CreateNewSiteParams params, String token);
+    CreateNewSiteParams params,
+    String token,
+  );
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -969,10 +998,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<String> commissioningWorkDelete(
-    String workId,
-    String token,
-  ) async {
+  Future<String> commissioningWorkDelete(String workId, String token) async {
     try {
       final response = await _helper.execute(
         method: Method.delete,
@@ -1032,7 +1058,8 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
       String queryString = '';
       if (queryParams.isNotEmpty) {
-        queryString = '?' +
+        queryString =
+            '?' +
             queryParams.entries
                 .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
                 .join('&');
@@ -1123,7 +1150,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   ) async {
     try {
       final queryParams = params.toMap();
-      final uri = Uri(path: "technician/service-calls/assigned", queryParameters: queryParams.map((k, v) => MapEntry(k, v.toString())));
+      final uri = Uri(
+        path: "technician/service-calls/assigned",
+        queryParameters: queryParams.map((k, v) => MapEntry(k, v.toString())),
+      );
       final response = await _helper.execute(
         method: Method.get,
         url: uri.toString(),
@@ -1152,7 +1182,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   ) async {
     try {
       final queryParams = params.toMap();
-      final uri = Uri(path: "technician/service-calls/pending", queryParameters: queryParams.map((k, v) => MapEntry(k, v.toString())));
+      final uri = Uri(
+        path: "technician/service-calls/pending",
+        queryParameters: queryParams.map((k, v) => MapEntry(k, v.toString())),
+      );
       final response = await _helper.execute(
         method: Method.get,
         url: uri.toString(),
@@ -1261,7 +1294,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<ServiceCallStep1Response> serviceCallReportStep1(
-      ServiceCallReportStep1Params params, String token) async {
+    ServiceCallReportStep1Params params,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.post,
@@ -1288,7 +1323,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<ServiceCallStep1Response> serviceCallReportStep1AutoFill(
-      String complaintId, String token) async {
+    String complaintId,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
@@ -1314,7 +1351,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<ServiceCallStep2Response> serviceCallReportStep2AutoFill(
-      String complaintId, String token) async {
+    String complaintId,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
@@ -1340,7 +1379,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<ServiceCallStep2Response> serviceCallReportStep2(
-      ServiceCallReportStep2Params params, String token) async {
+    ServiceCallReportStep2Params params,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.post,
@@ -1367,7 +1408,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<ServiceCallStep3Response> serviceCallReportStep3(
-      ServiceCallReportStep3Params params, String token) async {
+    ServiceCallReportStep3Params params,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.post,
@@ -1394,7 +1437,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<ServiceCallStep3Response> serviceCallReportStep3AutoFill(
-      String reportId, String token) async {
+    String reportId,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
@@ -1420,7 +1465,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<ServiceCallStep4Response> serviceCallReportStep4AutoFill(
-      String reportId, String token) async {
+    String reportId,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
@@ -1443,18 +1490,19 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       throw ServerException();
     }
   }
+
   @override
   Future<ServiceCallStep4Response> serviceCallReportStep4(
-      String reportId, List<Map<String, dynamic>> descriptions, String token) async {
+    String reportId,
+    List<Map<String, dynamic>> descriptions,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.post,
         url: ApiUrl.serviceCallReportStep4,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
-        data: {
-          "id": reportId,
-          "descriptions": descriptions,
-        },
+        data: {"id": reportId, "descriptions": descriptions},
       );
 
       final respData = ServiceCallStep4Response.fromJson(response);
@@ -1475,12 +1523,13 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<ServiceCallStep5Response> serviceCallReportStep5(
-      String reportId,
-      bool isMechanicalChecklistNa,
-      bool isPipelineChecklistNa,
-      bool isElectricalChecklistNa,
-      List<Map<String, dynamic>> checklistItems,
-      String token) async {
+    String reportId,
+    bool isMechanicalChecklistNa,
+    bool isPipelineChecklistNa,
+    bool isElectricalChecklistNa,
+    List<Map<String, dynamic>> checklistItems,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.post,
@@ -1513,14 +1562,16 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<ServiceCallStep5Response> serviceCallReportStep5AutoFill(
-      String reportId, String token) async {
+    String reportId,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
         url: "${ApiUrl.serviceCallReportStep5AutoFill}$reportId",
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-      
+
       final respData = ServiceCallStep5Response.fromJson(response);
       return respData;
     } on EmptyException {
@@ -1539,14 +1590,16 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<AssignedServiceCallTechnicianResponse> assignedServiceCallTechnicians(
-      String reportId, String token) async {
+    String reportId,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
         url: "${ApiUrl.assignedServiceCallTechnicians}$reportId/technicians",
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-      
+
       final respData = AssignedServiceCallTechnicianResponse.fromJson(response);
       return respData;
     } on EmptyException {
@@ -1565,7 +1618,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<ServiceCallStep6Response> serviceCallReportStep6(
-      ServiceCallReportStep6Params params, String token) async {
+    ServiceCallReportStep6Params params,
+    String token,
+  ) async {
     try {
       final Map<String, dynamic> map = {
         "id": params.id,
@@ -1643,7 +1698,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<ServiceCallReportStep6AutoFillResponse> serviceCallReportStep6AutoFill(
-      String reportId, String token) async {
+    String reportId,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
@@ -1664,9 +1721,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       throw ServerException();
     }
   }
+
   @override
   Future<AddCustomerResponse> createNewCustomer(
-    CreateNewCustomerParams params, String token) async {
+    CreateNewCustomerParams params,
+    String token,
+  ) async {
     try {
       final payload = {
         "name": params.name,
@@ -1696,9 +1756,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       throw ServerException();
     }
   }
+
   @override
   Future<AddSiteResponse> createNewSite(
-    CreateNewSiteParams params, String token) async {
+    CreateNewSiteParams params,
+    String token,
+  ) async {
     try {
       final payload = {
         "customer_id": params.customerId,
@@ -1707,14 +1770,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
           {
             "name": params.siteName,
             "contacts": [
-              {
-                "mobile_num": "",
-                "email": "",
-                "receiveAlerts": true
-              }
-            ]
-          }
-        ]
+              {"mobile_num": "", "email": "", "receiveAlerts": true},
+            ],
+          },
+        ],
       };
 
       final response = await _helper.execute(

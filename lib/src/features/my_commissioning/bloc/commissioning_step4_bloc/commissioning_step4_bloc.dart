@@ -4,18 +4,22 @@ import '../../domain/usecase/commissioning_step4_usecase.dart';
 import 'commissioning_step4_event.dart';
 import 'commissioning_step4_state.dart';
 
-class CommissioningStep4Bloc extends Bloc<CommissioningStep4Event, CommissioningStep4State> {
+class CommissioningStep4Bloc
+    extends Bloc<CommissioningStep4Event, CommissioningStep4State> {
   final CommissioningStep4Usecase usecase;
 
-  CommissioningStep4Bloc(this.usecase) : super(CommissioningStep4InitialState()) {
+  CommissioningStep4Bloc(this.usecase)
+    : super(CommissioningStep4InitialState()) {
     on<CommissioningStep4GetEvent>((event, emit) async {
       emit(CommissioningStep4LoadingState());
 
-      final result = await usecase(CommissioningStep4Params(
-        id: event.commissioning_report_id,
-        descriptions: event.descriptions,
-      ));
-      
+      final result = await usecase(
+        CommissioningStep4Params(
+          id: event.commissioning_report_id,
+          descriptions: event.descriptions,
+        ),
+      );
+
       result.fold(
         (failure) {
           if (failure is CredentialFailure) {

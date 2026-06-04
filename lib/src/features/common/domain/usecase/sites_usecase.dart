@@ -12,13 +12,11 @@ import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
 /// Domain layer use case for fetching sites
 
 class SitesUseCase implements UseCase<SiteResponse, SitesParams> {
-
   final Repository _authRepository;
   const SitesUseCase(this._authRepository);
 
   @override
   Future<Either<Failure, SiteResponse>> call(SitesParams params) async {
-
     final result = await _authRepository.sites(params);
 
     return result;
@@ -28,12 +26,8 @@ class SitesUseCase implements UseCase<SiteResponse, SitesParams> {
 class SitesParams extends Equatable {
   final String customer_id;
 
-  const SitesParams({
-    required this.customer_id,
-  });
+  const SitesParams({required this.customer_id});
 
   @override
-  List<Object?> get props => [
-    customer_id,
-  ];
+  List<Object?> get props => [customer_id];
 }

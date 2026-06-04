@@ -11,14 +11,15 @@ import 'package:service_app/src/remote/models/customer_model/customer_response.d
 
 /// Domain layer use case for fetching commissioning work
 
-class CommissioningWorkListUseCase implements UseCase<CommissioningWorkListResponse, NoParams> {
-
+class CommissioningWorkListUseCase
+    implements UseCase<CommissioningWorkListResponse, NoParams> {
   final Repository _authRepository;
   const CommissioningWorkListUseCase(this._authRepository);
 
   @override
-  Future<Either<Failure, CommissioningWorkListResponse>> call(NoParams params) async {
-
+  Future<Either<Failure, CommissioningWorkListResponse>> call(
+    NoParams params,
+  ) async {
     final result = await _authRepository.commissioning_work_list(params);
 
     return result;

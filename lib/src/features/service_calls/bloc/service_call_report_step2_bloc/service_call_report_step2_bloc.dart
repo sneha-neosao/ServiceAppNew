@@ -4,12 +4,12 @@ import 'package:service_app/src/core/errors/failures.dart';
 import 'service_call_report_step2_event.dart';
 import 'service_call_report_step2_state.dart';
 
-class ServiceCallReportStep2Bloc extends Bloc<
-    ServiceCallReportStep2Event, ServiceCallReportStep2State> {
+class ServiceCallReportStep2Bloc
+    extends Bloc<ServiceCallReportStep2Event, ServiceCallReportStep2State> {
   final ServiceCallReportStep2Usecase usecase;
 
   ServiceCallReportStep2Bloc({required this.usecase})
-      : super(ServiceCallReportStep2InitialState()) {
+    : super(ServiceCallReportStep2InitialState()) {
     on<ServiceCallReportStep2PostEvent>(_onPostEvent);
   }
 

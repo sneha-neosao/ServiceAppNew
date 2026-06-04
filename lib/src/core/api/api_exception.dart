@@ -12,7 +12,7 @@ class ApiException implements Exception {
 
 class FetchDataException extends ApiException {
   FetchDataException(String message)
-      : super(message, "Error During Communication: ");
+    : super(message, "Error During Communication: ");
 }
 
 class BadRequestException extends ApiException {
@@ -37,14 +37,12 @@ class InternalServerException extends ApiException {
 
 class UnprocessableContentException extends ApiException {
   UnprocessableContentException(String message)
-      : super(message, "Unprocessable Content: ");
+    : super(message, "Unprocessable Content: ");
 }
 
 class TokenExpiredException extends ApiException {
-  TokenExpiredException(String message)
-      : super(message, "Token Expired: ");
+  TokenExpiredException(String message) : super(message, "Token Expired: ");
 }
-
 
 class InvalidInputException extends ApiException {
   InvalidInputException(String message) : super(message, "Invalid Input: ");

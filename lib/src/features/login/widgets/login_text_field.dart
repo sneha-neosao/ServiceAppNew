@@ -53,20 +53,17 @@ class _LoginTextFieldState<T> extends State<LoginTextField<T>> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       obscureText: widget.isSecure ?? false ? _isVisible : false,
       onChanged: widget.onChanged,
-      style: AppFont.style(
-        fontSize: 14,
-        color: Colors.white,
-      ),
+      style: AppFont.style(fontSize: 14, color: Colors.white),
       textCapitalization: widget.textCapitalization ?? TextCapitalization.none,
       inputFormatters: widget.inputFormat,
       keyboardType: widget.keyboardType,
       readOnly: widget.readOnly ?? false,
       validator: (val) {
         if (formBloc is AuthLoginFormBloc) {
-         /* if (widget.label == "login_username_label" && !formBloc.state.email.isEmailValid) {
+          /* if (widget.label == "login_username_label" && !formBloc.state.email.isEmailValid) {
             return "please_enter_valid_email".tr();
           }*/
-         /*else if (widget.label == "login_password_label" && (val == null || val.length < 6)) {
+          /*else if (widget.label == "login_password_label" && (val == null || val.length < 6)) {
             return "password_too_short".tr();
           }*/
         }
@@ -103,10 +100,16 @@ class _LoginTextFieldState<T> extends State<LoginTextField<T>> {
             : null,
         filled: true,
         fillColor: Colors.white.withOpacity(0.12),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 16,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.7), width: 1.2),
+          borderSide: BorderSide(
+            color: Colors.white.withOpacity(0.7),
+            width: 1.2,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -114,7 +117,10 @@ class _LoginTextFieldState<T> extends State<LoginTextField<T>> {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.yellowAccent.withOpacity(0.8), width: 1.2),
+          borderSide: BorderSide(
+            color: Colors.yellowAccent.withOpacity(0.8),
+            width: 1.2,
+          ),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),

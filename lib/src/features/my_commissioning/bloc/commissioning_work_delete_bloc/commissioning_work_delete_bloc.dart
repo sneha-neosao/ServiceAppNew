@@ -8,7 +8,7 @@ class CommissioningWorkDeleteBloc
   final CommissioningWorkDeleteUseCase _useCase;
 
   CommissioningWorkDeleteBloc(this._useCase)
-      : super(const CommissioningWorkDeleteInitialState()) {
+    : super(const CommissioningWorkDeleteInitialState()) {
     on<CommissioningWorkDeleteSubmitEvent>(_onDelete);
   }
 

@@ -11,7 +11,8 @@ class ServiceCallReportStep5Usecase
 
   @override
   Future<Either<Failure, ServiceCallStep5Response>> call(
-      ServiceCallReportStep5Params params) async {
+    ServiceCallReportStep5Params params,
+  ) async {
     return await repository.serviceCallReportStep5(
       params.reportId,
       params.isMechanicalChecklistNa,

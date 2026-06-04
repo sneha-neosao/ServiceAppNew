@@ -9,7 +9,7 @@ class ServiceCallReportStep4Bloc
   final ServiceCallReportStep4Usecase usecase;
 
   ServiceCallReportStep4Bloc({required this.usecase})
-      : super(ServiceCallReportStep4InitialState()) {
+    : super(ServiceCallReportStep4InitialState()) {
     on<ServiceCallReportStep4PostEvent>(_onPostEvent);
   }
 
@@ -18,10 +18,12 @@ class ServiceCallReportStep4Bloc
     Emitter<ServiceCallReportStep4State> emit,
   ) async {
     emit(ServiceCallReportStep4LoadingState());
-    final result = await usecase(ServiceCallReportStep4Params(
-      reportId: event.reportId,
-      descriptions: event.descriptions,
-    ));
+    final result = await usecase(
+      ServiceCallReportStep4Params(
+        reportId: event.reportId,
+        descriptions: event.descriptions,
+      ),
+    );
     result.fold(
       (Failure failure) =>
           emit(ServiceCallReportStep4FailureState(failure.message)),

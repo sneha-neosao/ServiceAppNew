@@ -19,25 +19,21 @@ class AuthLoginFormBloc extends Bloc<LoginFormEvent, LoginFormState> {
       LoginFormDataState(
         inputEmail: event.email,
         inputPassword: state.password,
-        inputIsValid: inputValidator(
-          event.email,
-          state.password,
-        ),
+        inputIsValid: inputValidator(event.email, state.password),
       ),
     );
   }
 
   /// - Listens to changes in login password input
   Future _passwordChanged(
-      LoginFormPasswordChangedEvent event, Emitter emit) async {
+    LoginFormPasswordChangedEvent event,
+    Emitter emit,
+  ) async {
     emit(
       LoginFormDataState(
         inputEmail: state.email,
         inputPassword: event.password,
-        inputIsValid: inputValidator(
-          state.email,
-          event.password
-        ),
+        inputIsValid: inputValidator(state.email, event.password),
       ),
     );
   }

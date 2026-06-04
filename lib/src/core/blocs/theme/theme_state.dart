@@ -8,14 +8,10 @@ class ThemeState extends Equatable {
   List<Object?> get props => [isDarkMode];
 
   factory ThemeState.fromMap(Map<String, dynamic> map) {
-    return ThemeState(
-      isDarkMode: map["isDarkMode"] as bool?,
-    );
+    return ThemeState(isDarkMode: map["isDarkMode"] as bool?);
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      "isDarkMode": isDarkMode,
-    };
+    return {"isDarkMode": isDarkMode};
   }
 }

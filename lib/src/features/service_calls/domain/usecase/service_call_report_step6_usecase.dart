@@ -12,7 +12,8 @@ class ServiceCallReportStep6Usecase
 
   @override
   Future<Either<Failure, ServiceCallStep6Response>> call(
-      ServiceCallReportStep6Params params) async {
+    ServiceCallReportStep6Params params,
+  ) async {
     return await repository.serviceCallReportStep6(params);
   }
 }
@@ -40,13 +41,13 @@ class ServiceCallReportStep6Params extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        technicianRemarks,
-        customerRemarks,
-        technicianRepresentative,
-        customerRepresentativeName,
-        technicianSignaturePath,
-        customerSignaturePath,
-        workPhotosPaths,
-      ];
+    id,
+    technicianRemarks,
+    customerRemarks,
+    technicianRepresentative,
+    customerRepresentativeName,
+    technicianSignaturePath,
+    customerSignaturePath,
+    workPhotosPaths,
+  ];
 }

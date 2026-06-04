@@ -130,7 +130,11 @@ class ReportRemarksBox extends StatelessWidget {
   final String placeholder;
   final TextEditingController? controller;
 
-  const ReportRemarksBox({super.key, required this.placeholder, this.controller});
+  const ReportRemarksBox({
+    super.key,
+    required this.placeholder,
+    this.controller,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -175,7 +179,11 @@ class ReportRemarksBox extends StatelessWidget {
           const SizedBox(height: 80),
           const Align(
             alignment: Alignment.bottomRight,
-            child: Icon(Icons.format_indent_increase, size: 16, color: Color(0xFF0D121F)),
+            child: Icon(
+              Icons.format_indent_increase,
+              size: 16,
+              color: Color(0xFF0D121F),
+            ),
           ),
         ],
       ),

@@ -10,13 +10,11 @@ import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
 /// Domain layer use case for verifying user and login
 
 class LoginUseCase implements UseCase<LoginResponse, LoginParams> {
-
   final Repository _authRepository;
   const LoginUseCase(this._authRepository);
 
   @override
   Future<Either<Failure, LoginResponse>> call(LoginParams params) async {
-
     if (params.phone.isEmpty) {
       return Left(EmptyFailure("please_enter_phone".tr()));
     }
@@ -39,14 +37,8 @@ class LoginParams extends Equatable {
   final String phone;
   final String password;
 
-  const LoginParams({
-    required this.phone,
-    required this.password
-  });
+  const LoginParams({required this.phone, required this.password});
 
   @override
-  List<Object?> get props => [
-    phone,
-    password
-  ];
+  List<Object?> get props => [phone, password];
 }

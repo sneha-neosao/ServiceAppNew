@@ -12,9 +12,7 @@ part 'technician_state.dart';
 
 class TechnicianBloc extends Bloc<TechnicianEvent, TechnicianState> {
   final TechnicianUseCase _technicianUseCase;
-  TechnicianBloc(
-    this._technicianUseCase,
-  ) : super(TechniciannitialState()) {
+  TechnicianBloc(this._technicianUseCase) : super(TechniciannitialState()) {
     on<TechnicianGetEvent>(_technician);
   }
 
@@ -22,9 +20,7 @@ class TechnicianBloc extends Bloc<TechnicianEvent, TechnicianState> {
   Future _technician(TechnicianGetEvent event, Emitter emit) async {
     emit(TechnicianLoadingState());
 
-    final result = await _technicianUseCase.call(
-      NoParams()
-    );
+    final result = await _technicianUseCase.call(NoParams());
 
     // fold() is synchronous — never put async work inside its callbacks.
     // Instead check the result and await outside fold.

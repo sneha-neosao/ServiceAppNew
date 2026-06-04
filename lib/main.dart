@@ -33,11 +33,9 @@ import 'package:service_app/src/core/services/notification_service.dart';
 //   await Firebase.initializeApp();
 // }
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-
 
   // // ✅ Initialize Firebase
   // await Firebase.initializeApp();
@@ -79,7 +77,6 @@ Future<void> main() async {
         : HydratedStorageDirectory((await getTemporaryDirectory()).path),
   );
 
-
   runApp(
     EasyLocalization(
       supportedLocales: const [englishLocale],
@@ -88,7 +85,4 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
-
 }
-
-

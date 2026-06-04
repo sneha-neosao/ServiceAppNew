@@ -13,7 +13,9 @@ class CommissioningReportStep6AutoFillResponse extends Equatable {
     required this.message,
   });
 
-  factory CommissioningReportStep6AutoFillResponse.fromJson(Map<String, dynamic> json) {
+  factory CommissioningReportStep6AutoFillResponse.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return CommissioningReportStep6AutoFillResponse(
       status: json['status'],
       success: json['success'],
@@ -71,7 +73,8 @@ class CommissioningStep6Data extends Equatable {
       customerRepresentativeName: json['customer_representative_name'] ?? '',
       customerSignature: json['customer_signature'] ?? '',
       savedWorkPhotos: List<String>.from(json['saved_work_photos'] ?? []),
-      technicianRepresentativeName: json['technician_representative_name'] ?? '',
+      technicianRepresentativeName:
+          json['technician_representative_name'] ?? '',
       lastCompletedStep: json['last_completed_step'] ?? 5,
       qrCodeUrl: json['qr_code_url'] ?? '',
       qrCodeImage: json['qr_code_image'] ?? '',

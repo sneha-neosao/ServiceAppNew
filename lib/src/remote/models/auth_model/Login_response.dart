@@ -38,12 +38,10 @@ class LoginResponse {
       message: msg,
       refreshToken: data?['refresh_token'],
       accessToken: data?['access_token'],
-      technician: data?['technician'] != null 
-          ? Technician.fromJson(data['technician']) 
+      technician: data?['technician'] != null
+          ? Technician.fromJson(data['technician'])
           : null,
-      dealer: data?['dealer'] != null 
-          ? Dealer.fromJson(data['dealer']) 
-          : null,
+      dealer: data?['dealer'] != null ? Dealer.fromJson(data['dealer']) : null,
     );
   }
 
@@ -53,8 +51,11 @@ class LoginResponse {
       'success': success,
       'message': message,
     };
-    
-    if (refreshToken != null || accessToken != null || technician != null || dealer != null) {
+
+    if (refreshToken != null ||
+        accessToken != null ||
+        technician != null ||
+        dealer != null) {
       json['data'] = {
         'refresh_token': refreshToken,
         'access_token': accessToken,
@@ -62,7 +63,7 @@ class LoginResponse {
         'dealer': dealer?.toJson(),
       };
     }
-    
+
     return json;
   }
 
@@ -115,11 +116,7 @@ class Dealer {
   final String name;
   final String code;
 
-  Dealer({
-    required this.id,
-    required this.name,
-    required this.code,
-  });
+  Dealer({required this.id, required this.name, required this.code});
 
   factory Dealer.fromJson(Map<String, dynamic> json) {
     return Dealer(
@@ -130,10 +127,6 @@ class Dealer {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'code': code,
-    };
+    return {'id': id, 'name': name, 'code': code};
   }
 }

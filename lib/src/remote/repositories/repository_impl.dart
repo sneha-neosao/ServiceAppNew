@@ -18,8 +18,10 @@ import 'package:service_app/src/remote/models/close_over_call_model/close_over_c
 import 'package:service_app/src/remote/models/servicecall_report_step1_model/servicecall_report_step1_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step2_model/servicecall_report_step2_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step3_model/servicecall_report_step3_response.dart';
-import 'package:service_app/src/remote/models/servicecall_report_step4_model/servicecall_report_step4_response.dart' hide SavedDescription;
-import 'package:service_app/src/remote/models/servicecall_report_step5_model/servicecall_report_step5_response.dart' hide SavedChecklist;
+import 'package:service_app/src/remote/models/servicecall_report_step4_model/servicecall_report_step4_response.dart'
+    hide SavedDescription;
+import 'package:service_app/src/remote/models/servicecall_report_step5_model/servicecall_report_step5_response.dart'
+    hide SavedChecklist;
 import 'package:service_app/src/remote/models/servicecall_report_step6_model/servicecall_report_step6_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step6_autofill_model/servicecall_report_step6_autofill_response.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_step1_usecase.dart';
@@ -148,8 +150,7 @@ abstract class Repository {
   Future<Either<Failure, CommissioningWorkCreateResponse>>
   commissioningWorkUpdate(CommissioningWorkUpdateParams params, String workId);
 
-  Future<Either<Failure, String>>
-  commissioningWorkDelete(String workId);
+  Future<Either<Failure, String>> commissioningWorkDelete(String workId);
 
   Future<Either<Failure, CommissioningReportHistoryResponse>>
   commissioningReportHistory(CommissioningReportHistoryParams params);
@@ -161,67 +162,80 @@ abstract class Repository {
   commissioningWorkDetails(String workId);
 
   Future<Either<Failure, AssignedServiceCallsResponse>> assignedServiceCalls(
-      AssignedServiceCallsParams params);
+    AssignedServiceCallsParams params,
+  );
 
   Future<Either<Failure, PendingServiceCallsResponse>> pendingServiceCalls(
-      PendingServiceCallsParams params);
+    PendingServiceCallsParams params,
+  );
 
-  Future<Either<Failure, ActiveTechniciansServiceCallsResponse>> activeTechniciansServiceCalls(NoParams params);
+  Future<Either<Failure, ActiveTechniciansServiceCallsResponse>>
+  activeTechniciansServiceCalls(NoParams params);
 
-  Future<Either<Failure, AssignTechnicianServiceCallsResponse>> assignTechnicianServiceCalls(
-      AssignTechnicianServiceCallsParams params);
+  Future<Either<Failure, AssignTechnicianServiceCallsResponse>>
+  assignTechnicianServiceCalls(AssignTechnicianServiceCallsParams params);
 
   Future<Either<Failure, CloseOverCallResponse>> closeOverCall(
-      CloseOverCallParams params);
+    CloseOverCallParams params,
+  );
 
   Future<Either<Failure, ServiceCallStep1Response>> serviceCallReportStep1(
-      ServiceCallReportStep1Params params);
+    ServiceCallReportStep1Params params,
+  );
 
-  Future<Either<Failure, ServiceCallStep1Response>> serviceCallReportStep1AutoFill(
-      String complaintId);
+  Future<Either<Failure, ServiceCallStep1Response>>
+  serviceCallReportStep1AutoFill(String complaintId);
 
   Future<Either<Failure, ServiceCallStep2Response>> serviceCallReportStep2(
-      ServiceCallReportStep2Params params);
+    ServiceCallReportStep2Params params,
+  );
 
-  Future<Either<Failure, ServiceCallStep2Response>> serviceCallReportStep2AutoFill(
-      String complaintId);
+  Future<Either<Failure, ServiceCallStep2Response>>
+  serviceCallReportStep2AutoFill(String complaintId);
 
   Future<Either<Failure, ServiceCallStep3Response>> serviceCallReportStep3(
-      ServiceCallReportStep3Params params);
+    ServiceCallReportStep3Params params,
+  );
 
-  Future<Either<Failure, ServiceCallStep3Response>> serviceCallReportStep3AutoFill(
-      String reportId);
+  Future<Either<Failure, ServiceCallStep3Response>>
+  serviceCallReportStep3AutoFill(String reportId);
 
-  Future<Either<Failure, ServiceCallStep4Response>> serviceCallReportStep4AutoFill(
-      String reportId);
+  Future<Either<Failure, ServiceCallStep4Response>>
+  serviceCallReportStep4AutoFill(String reportId);
 
   Future<Either<Failure, ServiceCallStep4Response>> serviceCallReportStep4(
-      String reportId, List<Map<String, dynamic>> descriptions);
+    String reportId,
+    List<Map<String, dynamic>> descriptions,
+  );
 
   Future<Either<Failure, ServiceCallStep5Response>> serviceCallReportStep5(
-      String reportId,
-      bool isMechanicalChecklistNa,
-      bool isPipelineChecklistNa,
-      bool isElectricalChecklistNa,
-      List<Map<String, dynamic>> checklistItems);
+    String reportId,
+    bool isMechanicalChecklistNa,
+    bool isPipelineChecklistNa,
+    bool isElectricalChecklistNa,
+    List<Map<String, dynamic>> checklistItems,
+  );
 
-  Future<Either<Failure, ServiceCallStep5Response>> serviceCallReportStep5AutoFill(
-      String reportId);
+  Future<Either<Failure, ServiceCallStep5Response>>
+  serviceCallReportStep5AutoFill(String reportId);
 
-  Future<Either<Failure, AssignedServiceCallTechnicianResponse>> assignedServiceCallTechnicians(
-      String reportId);
+  Future<Either<Failure, AssignedServiceCallTechnicianResponse>>
+  assignedServiceCallTechnicians(String reportId);
 
   Future<Either<Failure, ServiceCallStep6Response>> serviceCallReportStep6(
-      ServiceCallReportStep6Params params);
+    ServiceCallReportStep6Params params,
+  );
 
-  Future<Either<Failure, ServiceCallReportStep6AutoFillResponse>> serviceCallReportStep6AutoFill(
-      String reportId);
+  Future<Either<Failure, ServiceCallReportStep6AutoFillResponse>>
+  serviceCallReportStep6AutoFill(String reportId);
 
   Future<Either<Failure, AddCustomerResponse>> createNewCustomer(
-      CreateNewCustomerParams params);
+    CreateNewCustomerParams params,
+  );
 
   Future<Either<Failure, AddSiteResponse>> createNewSite(
-      CreateNewSiteParams params);
+    CreateNewSiteParams params,
+  );
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -967,7 +981,7 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, CommissioningWorkCreateResponse>>
-      commissioningWorkUpdate(CommissioningWorkUpdateParams params, String workId) {
+  commissioningWorkUpdate(CommissioningWorkUpdateParams params, String workId) {
     return _networkInfo.check<CommissioningWorkCreateResponse>(
       connected: () async {
         try {
@@ -1001,8 +1015,7 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, String>>
-      commissioningWorkDelete(String workId) {
+  Future<Either<Failure, String>> commissioningWorkDelete(String workId) {
     return _networkInfo.check<String>(
       connected: () async {
         try {
@@ -1031,7 +1044,7 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, CommissioningReportHistoryResponse>>
-      commissioningReportHistory(CommissioningReportHistoryParams params) {
+  commissioningReportHistory(CommissioningReportHistoryParams params) {
     return _networkInfo.check<CommissioningReportHistoryResponse>(
       connected: () async {
         try {
@@ -1065,7 +1078,7 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, CommissioningDetailsResponse>>
-      commissioningReportDetails(String reportId) {
+  commissioningReportDetails(String reportId) {
     return _networkInfo.check<CommissioningDetailsResponse>(
       connected: () async {
         try {
@@ -1099,7 +1112,7 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, CommissioningWorkDetailsResponse>>
-      commissioningWorkDetails(String workId) {
+  commissioningWorkDetails(String workId) {
     return _networkInfo.check<CommissioningWorkDetailsResponse>(
       connected: () async {
         try {
@@ -1133,16 +1146,14 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, AssignedServiceCallsResponse>> assignedServiceCalls(
-      AssignedServiceCallsParams params) {
+    AssignedServiceCallsParams params,
+  ) {
     return _networkInfo.check<AssignedServiceCallsResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final assignedServiceCallsResponse =
-              await _remoteDataSource.assignedServiceCalls(
-            params,
-            token,
-          );
+          final assignedServiceCallsResponse = await _remoteDataSource
+              .assignedServiceCalls(params, token);
           return Right(assignedServiceCallsResponse);
         } catch (e) {
           if (e is ApiException) {
@@ -1163,16 +1174,14 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, PendingServiceCallsResponse>> pendingServiceCalls(
-      PendingServiceCallsParams params) {
+    PendingServiceCallsParams params,
+  ) {
     return _networkInfo.check<PendingServiceCallsResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final pendingServiceCallsResponse =
-              await _remoteDataSource.pendingServiceCalls(
-            params,
-            token,
-          );
+          final pendingServiceCallsResponse = await _remoteDataSource
+              .pendingServiceCalls(params, token);
           return Right(pendingServiceCallsResponse);
         } catch (e) {
           if (e is ApiException) {
@@ -1192,17 +1201,19 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ActiveTechniciansServiceCallsResponse>> activeTechniciansServiceCalls(NoParams params) {
+  Future<Either<Failure, ActiveTechniciansServiceCallsResponse>>
+  activeTechniciansServiceCalls(NoParams params) {
     return _networkInfo.check<ActiveTechniciansServiceCallsResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.activeTechniciansServiceCalls(token);
-          
+          final response = await _remoteDataSource
+              .activeTechniciansServiceCalls(token);
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1222,18 +1233,21 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, AssignTechnicianServiceCallsResponse>> assignTechnicianServiceCalls(
-      AssignTechnicianServiceCallsParams params) {
+  Future<Either<Failure, AssignTechnicianServiceCallsResponse>>
+  assignTechnicianServiceCalls(AssignTechnicianServiceCallsParams params) {
     return _networkInfo.check<AssignTechnicianServiceCallsResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.assignTechnicianServiceCalls(params, token);
-          
+          final response = await _remoteDataSource.assignTechnicianServiceCalls(
+            params,
+            token,
+          );
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1254,17 +1268,18 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, CloseOverCallResponse>> closeOverCall(
-      CloseOverCallParams params) {
+    CloseOverCallParams params,
+  ) {
     return _networkInfo.check<CloseOverCallResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           final response = await _remoteDataSource.closeOverCall(params, token);
-          
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1285,17 +1300,21 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, ServiceCallStep1Response>> serviceCallReportStep1(
-      ServiceCallReportStep1Params params) {
+    ServiceCallReportStep1Params params,
+  ) {
     return _networkInfo.check<ServiceCallStep1Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceCallReportStep1(params, token);
-          
+          final response = await _remoteDataSource.serviceCallReportStep1(
+            params,
+            token,
+          );
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1315,18 +1334,19 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceCallStep1Response>> serviceCallReportStep1AutoFill(
-      String complaintId) {
+  Future<Either<Failure, ServiceCallStep1Response>>
+  serviceCallReportStep1AutoFill(String complaintId) {
     return _networkInfo.check<ServiceCallStep1Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceCallReportStep1AutoFill(complaintId, token);
-          
+          final response = await _remoteDataSource
+              .serviceCallReportStep1AutoFill(complaintId, token);
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1346,18 +1366,19 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceCallStep2Response>> serviceCallReportStep2AutoFill(
-      String complaintId) {
+  Future<Either<Failure, ServiceCallStep2Response>>
+  serviceCallReportStep2AutoFill(String complaintId) {
     return _networkInfo.check<ServiceCallStep2Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceCallReportStep2AutoFill(complaintId, token);
-          
+          final response = await _remoteDataSource
+              .serviceCallReportStep2AutoFill(complaintId, token);
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1378,17 +1399,21 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, ServiceCallStep2Response>> serviceCallReportStep2(
-      ServiceCallReportStep2Params params) {
+    ServiceCallReportStep2Params params,
+  ) {
     return _networkInfo.check<ServiceCallStep2Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceCallReportStep2(params, token);
-          
+          final response = await _remoteDataSource.serviceCallReportStep2(
+            params,
+            token,
+          );
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1409,17 +1434,21 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, ServiceCallStep3Response>> serviceCallReportStep3(
-      ServiceCallReportStep3Params params) {
+    ServiceCallReportStep3Params params,
+  ) {
     return _networkInfo.check<ServiceCallStep3Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceCallReportStep3(params, token);
-          
+          final response = await _remoteDataSource.serviceCallReportStep3(
+            params,
+            token,
+          );
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1439,18 +1468,19 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceCallStep3Response>> serviceCallReportStep3AutoFill(
-      String reportId) {
+  Future<Either<Failure, ServiceCallStep3Response>>
+  serviceCallReportStep3AutoFill(String reportId) {
     return _networkInfo.check<ServiceCallStep3Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceCallReportStep3AutoFill(reportId, token);
-          
+          final response = await _remoteDataSource
+              .serviceCallReportStep3AutoFill(reportId, token);
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1470,18 +1500,19 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceCallStep4Response>> serviceCallReportStep4AutoFill(
-      String reportId) {
+  Future<Either<Failure, ServiceCallStep4Response>>
+  serviceCallReportStep4AutoFill(String reportId) {
     return _networkInfo.check<ServiceCallStep4Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceCallReportStep4AutoFill(reportId, token);
-          
+          final response = await _remoteDataSource
+              .serviceCallReportStep4AutoFill(reportId, token);
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1502,17 +1533,23 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, ServiceCallStep4Response>> serviceCallReportStep4(
-      String reportId, List<Map<String, dynamic>> descriptions) {
+    String reportId,
+    List<Map<String, dynamic>> descriptions,
+  ) {
     return _networkInfo.check<ServiceCallStep4Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceCallReportStep4(reportId, descriptions, token);
-          
+          final response = await _remoteDataSource.serviceCallReportStep4(
+            reportId,
+            descriptions,
+            token,
+          );
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1533,22 +1570,24 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, ServiceCallStep5Response>> serviceCallReportStep5(
-      String reportId,
-      bool isMechanicalChecklistNa,
-      bool isPipelineChecklistNa,
-      bool isElectricalChecklistNa,
-      List<Map<String, dynamic>> checklistItems) {
+    String reportId,
+    bool isMechanicalChecklistNa,
+    bool isPipelineChecklistNa,
+    bool isElectricalChecklistNa,
+    List<Map<String, dynamic>> checklistItems,
+  ) {
     return _networkInfo.check<ServiceCallStep5Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           final response = await _remoteDataSource.serviceCallReportStep5(
-              reportId,
-              isMechanicalChecklistNa,
-              isPipelineChecklistNa,
-              isElectricalChecklistNa,
-              checklistItems,
-              token);
+            reportId,
+            isMechanicalChecklistNa,
+            isPipelineChecklistNa,
+            isElectricalChecklistNa,
+            checklistItems,
+            token,
+          );
 
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
@@ -1573,17 +1612,19 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceCallStep5Response>> serviceCallReportStep5AutoFill(String reportId) {
+  Future<Either<Failure, ServiceCallStep5Response>>
+  serviceCallReportStep5AutoFill(String reportId) {
     return _networkInfo.check<ServiceCallStep5Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceCallReportStep5AutoFill(reportId, token);
-          
+          final response = await _remoteDataSource
+              .serviceCallReportStep5AutoFill(reportId, token);
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1603,17 +1644,19 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, AssignedServiceCallTechnicianResponse>> assignedServiceCallTechnicians(String reportId) {
+  Future<Either<Failure, AssignedServiceCallTechnicianResponse>>
+  assignedServiceCallTechnicians(String reportId) {
     return _networkInfo.check<AssignedServiceCallTechnicianResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.assignedServiceCallTechnicians(reportId, token);
-          
+          final response = await _remoteDataSource
+              .assignedServiceCallTechnicians(reportId, token);
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1633,17 +1676,22 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceCallStep6Response>> serviceCallReportStep6(ServiceCallReportStep6Params params) {
+  Future<Either<Failure, ServiceCallStep6Response>> serviceCallReportStep6(
+    ServiceCallReportStep6Params params,
+  ) {
     return _networkInfo.check<ServiceCallStep6Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceCallReportStep6(params, token);
-          
+          final response = await _remoteDataSource.serviceCallReportStep6(
+            params,
+            token,
+          );
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1663,18 +1711,19 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceCallReportStep6AutoFillResponse>> serviceCallReportStep6AutoFill(
-      String reportId) {
+  Future<Either<Failure, ServiceCallReportStep6AutoFillResponse>>
+  serviceCallReportStep6AutoFill(String reportId) {
     return _networkInfo.check<ServiceCallReportStep6AutoFillResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceCallReportStep6AutoFill(reportId, token);
-          
+          final response = await _remoteDataSource
+              .serviceCallReportStep6AutoFill(reportId, token);
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1692,18 +1741,24 @@ class AuthRepositoryImpl implements Repository {
       },
     );
   }
+
   @override
-  Future<Either<Failure, AddCustomerResponse>> createNewCustomer(CreateNewCustomerParams params) {
+  Future<Either<Failure, AddCustomerResponse>> createNewCustomer(
+    CreateNewCustomerParams params,
+  ) {
     return _networkInfo.check<AddCustomerResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.createNewCustomer(params, token);
-          
+          final response = await _remoteDataSource.createNewCustomer(
+            params,
+            token,
+          );
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1721,18 +1776,21 @@ class AuthRepositoryImpl implements Repository {
       },
     );
   }
+
   @override
-  Future<Either<Failure, AddSiteResponse>> createNewSite(CreateNewSiteParams params) {
+  Future<Either<Failure, AddSiteResponse>> createNewSite(
+    CreateNewSiteParams params,
+  ) {
     return _networkInfo.check<AddSiteResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           final response = await _remoteDataSource.createNewSite(params, token);
-          
+
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
-          
+
           return Right(response);
         } catch (e) {
           if (e is ApiException) {

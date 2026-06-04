@@ -11,8 +11,8 @@ sealed class CommissioningStep2AutoFillEvent extends Equatable {
 
 /// Event for CommissioningStep2AutoFill.
 
-class CommissioningStep2AutoFillGetEvent extends CommissioningStep2AutoFillEvent {
-
+class CommissioningStep2AutoFillGetEvent
+    extends CommissioningStep2AutoFillEvent {
   final String commissioning_report_id;
 
   const CommissioningStep2AutoFillGetEvent(this.commissioning_report_id);

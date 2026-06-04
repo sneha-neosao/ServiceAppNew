@@ -13,7 +13,9 @@ class CommissioningReportFeedbackStatusCheckResponse extends Equatable {
     required this.message,
   });
 
-  factory CommissioningReportFeedbackStatusCheckResponse.fromJson(Map<String, dynamic> json) {
+  factory CommissioningReportFeedbackStatusCheckResponse.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return CommissioningReportFeedbackStatusCheckResponse(
       status: json['status'],
       success: json['success'],
@@ -39,14 +41,10 @@ class FeedbackStatusData extends Equatable {
   const FeedbackStatusData({required this.feedbackSubmitted});
 
   factory FeedbackStatusData.fromJson(Map<String, dynamic> json) {
-    return FeedbackStatusData(
-      feedbackSubmitted: json['feedback_submitted'],
-    );
+    return FeedbackStatusData(feedbackSubmitted: json['feedback_submitted']);
   }
 
-  Map<String, dynamic> toJson() => {
-    'feedback_submitted': feedbackSubmitted,
-  };
+  Map<String, dynamic> toJson() => {'feedback_submitted': feedbackSubmitted};
 
   @override
   List<Object?> get props => [feedbackSubmitted];

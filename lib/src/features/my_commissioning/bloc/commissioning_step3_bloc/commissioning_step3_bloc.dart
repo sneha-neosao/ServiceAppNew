@@ -3,15 +3,18 @@ import '../../domain/usecase/commissioning_step3_usecase.dart';
 import 'commissioning_step3_event.dart';
 import 'commissioning_step3_state.dart';
 
-class CommissioningStep3Bloc extends Bloc<CommissioningStep3Event, CommissioningStep3State> {
+class CommissioningStep3Bloc
+    extends Bloc<CommissioningStep3Event, CommissioningStep3State> {
   final CommissioningStep3Usecase _commissioningStep3Usecase;
-  CommissioningStep3Bloc(
-      this._commissioningStep3Usecase,
-      ) : super(CommissioningStep3InitialState()) {
+  CommissioningStep3Bloc(this._commissioningStep3Usecase)
+    : super(CommissioningStep3InitialState()) {
     on<CommissioningStep3GetEvent>(_commissioningStep3);
   }
 
-  Future _commissioningStep3(CommissioningStep3GetEvent event, Emitter emit) async {
+  Future _commissioningStep3(
+    CommissioningStep3GetEvent event,
+    Emitter emit,
+  ) async {
     emit(CommissioningStep3LoadingState());
 
     final result = await _commissioningStep3Usecase.call(
@@ -23,7 +26,9 @@ class CommissioningStep3Bloc extends Bloc<CommissioningStep3Event, Commissioning
     );
 
     result.fold(
-      (failure) => emit(CommissioningStep3FailureState(failure.message ?? "An error occurred")),
+      (failure) => emit(
+        CommissioningStep3FailureState(failure.message ?? "An error occurred"),
+      ),
       (data) {
         emit(CommissioningStep3SuccessState(data));
       },

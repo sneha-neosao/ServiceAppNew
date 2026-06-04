@@ -13,11 +13,15 @@ class ServiceCallReportStep6AutoFillResponse extends Equatable {
     required this.message,
   });
 
-  factory ServiceCallReportStep6AutoFillResponse.fromJson(Map<String, dynamic> json) {
+  factory ServiceCallReportStep6AutoFillResponse.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return ServiceCallReportStep6AutoFillResponse(
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
-      data: json['data'] != null ? ServiceCallStep6Data.fromJson(json['data']) : const ServiceCallStep6Data.empty(),
+      data: json['data'] != null
+          ? ServiceCallStep6Data.fromJson(json['data'])
+          : const ServiceCallStep6Data.empty(),
       message: json['message'] ?? '',
     );
   }
@@ -63,17 +67,17 @@ class ServiceCallStep6Data extends Equatable {
   });
 
   const ServiceCallStep6Data.empty()
-      : id = '',
-        technicianRemarks = '',
-        customerRemarks = '',
-        technicianSignature = '',
-        customerRepresentativeName = '',
-        customerSignature = '',
-        savedWorkPhotos = const [],
-        technicianRepresentativeName = '',
-        lastCompletedStep = 5,
-        qrCodeUrl = '',
-        qrCodeImage = '';
+    : id = '',
+      technicianRemarks = '',
+      customerRemarks = '',
+      technicianSignature = '',
+      customerRepresentativeName = '',
+      customerSignature = '',
+      savedWorkPhotos = const [],
+      technicianRepresentativeName = '',
+      lastCompletedStep = 5,
+      qrCodeUrl = '',
+      qrCodeImage = '';
 
   factory ServiceCallStep6Data.fromJson(Map<String, dynamic> json) {
     return ServiceCallStep6Data(
@@ -84,7 +88,8 @@ class ServiceCallStep6Data extends Equatable {
       customerRepresentativeName: json['customer_representative_name'] ?? '',
       customerSignature: json['customer_signature'] ?? '',
       savedWorkPhotos: List<String>.from(json['saved_work_photos'] ?? []),
-      technicianRepresentativeName: json['technician_representative_name'] ?? '',
+      technicianRepresentativeName:
+          json['technician_representative_name'] ?? '',
       lastCompletedStep: json['last_completed_step'] ?? 5,
       qrCodeUrl: json['qr_code_url'] ?? '',
       qrCodeImage: json['qr_code_image'] ?? '',

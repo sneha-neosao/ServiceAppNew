@@ -11,9 +11,12 @@ class ServiceCallReportStep4Usecase
 
   @override
   Future<Either<Failure, ServiceCallStep4Response>> call(
-      ServiceCallReportStep4Params params) async {
+    ServiceCallReportStep4Params params,
+  ) async {
     return await repository.serviceCallReportStep4(
-        params.reportId, params.descriptions);
+      params.reportId,
+      params.descriptions,
+    );
   }
 }
 

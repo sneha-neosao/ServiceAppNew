@@ -7,14 +7,15 @@ import 'package:service_app/src/remote/models/commissioning_report_step1_model/c
 
 /// Domain layer use case for verifying user and CommissioningStep1Response
 
-class CommissioningStep1Usecase implements UseCase<CommissioningStep1Response, CommissioningStep1Params> {
-
+class CommissioningStep1Usecase
+    implements UseCase<CommissioningStep1Response, CommissioningStep1Params> {
   final Repository _authRepository;
   const CommissioningStep1Usecase(this._authRepository);
 
   @override
-  Future<Either<Failure, CommissioningStep1Response>> call(CommissioningStep1Params params) async {
-
+  Future<Either<Failure, CommissioningStep1Response>> call(
+    CommissioningStep1Params params,
+  ) async {
     final result = await _authRepository.commissioning_report_step1(params);
 
     return result;
@@ -31,10 +32,7 @@ class CommissioningStep1Params extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-    commissioningWorkId,
-    technicianIds,
-  ];
+  List<Object?> get props => [commissioningWorkId, technicianIds];
 
   factory CommissioningStep1Params.fromJson(Map<String, dynamic> json) {
     return CommissioningStep1Params(

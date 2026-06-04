@@ -30,13 +30,13 @@ class CommissioningStep6SubmitEvent extends CommissioningStep6Event {
 
   @override
   List<Object?> get props => [
-        commissioning_report_id,
-        technicianRemarks,
-        customerRemarks,
-        technicianRepresentative,
-        customerRepresentativeName,
-        technicianSignaturePath,
-        customerSignaturePath,
-        workPhotosPaths,
-      ];
+    commissioning_report_id,
+    technicianRemarks,
+    customerRemarks,
+    technicianRepresentative,
+    customerRepresentativeName,
+    technicianSignaturePath,
+    customerSignaturePath,
+    workPhotosPaths,
+  ];
 }

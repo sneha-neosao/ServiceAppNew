@@ -35,10 +35,7 @@ class AuthLoginBloc extends Bloc<AuthEvent, AuthLoginState> {
     emit(AuthLoginLoadingState());
 
     final result = await _loginUseCase.call(
-      LoginParams(
-        phone: event.phone,
-        password: event.password,
-      ),
+      LoginParams(phone: event.phone, password: event.password),
     );
 
     // fold() is synchronous — never put async work inside its callbacks.
@@ -60,7 +57,7 @@ class AuthLoginBloc extends Bloc<AuthEvent, AuthLoginState> {
     try {
       final result = await SessionManager.isLoggedIn();
 
-      if(result==true) {
+      if (result == true) {
         final resultData = await SessionManager.getUserSession();
         return Right(resultData!);
       }
@@ -70,15 +67,17 @@ class AuthLoginBloc extends Bloc<AuthEvent, AuthLoginState> {
     }
   }
 
-  Future _checkSignInStatus(AuthCheckSignInStatusEvent event, Emitter emit) async
-  {
-      emit(AuthCheckSignInStatusLoadingState());
+  Future _checkSignInStatus(
+    AuthCheckSignInStatusEvent event,
+    Emitter emit,
+  ) async {
+    emit(AuthCheckSignInStatusLoadingState());
 
-      final result= await checkSignInStatus();
-      result.fold(
-            (l) => emit(AuthCheckSignInStatusFailureState(mapFailureToMessage(l))),
-            (r) => emit(AuthCheckSignInStatusSuccessState(r)),
-      );
+    final result = await checkSignInStatus();
+    result.fold(
+      (l) => emit(AuthCheckSignInStatusFailureState(mapFailureToMessage(l))),
+      (r) => emit(AuthCheckSignInStatusSuccessState(r)),
+    );
   }
 
   /// - **Logout:** Handles [AuthLogoutEvent] → saves false status then clears [SessionManager]
@@ -89,8 +88,8 @@ class AuthLoginBloc extends Bloc<AuthEvent, AuthLoginState> {
     final result = await SessionManager.clear();
 
     result.fold(
-          (l) => emit(AuthLogoutFailureState(mapFailureToMessage(l))),
-          (r) => emit(const AuthLogoutSuccessState("Logout Success")),
+      (l) => emit(AuthLogoutFailureState(mapFailureToMessage(l))),
+      (r) => emit(const AuthLogoutSuccessState("Logout Success")),
     );
   }
   //

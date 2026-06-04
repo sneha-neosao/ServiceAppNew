@@ -5,13 +5,16 @@ import 'package:service_app/src/core/errors/failures.dart';
 import 'package:service_app/src/core/usecases/usecase.dart';
 import 'package:service_app/src/remote/models/create_new_customer_model/create_new_customer_response.dart';
 
-class CreateNewCustomerUsecase implements UseCase<AddCustomerResponse, CreateNewCustomerParams> {
+class CreateNewCustomerUsecase
+    implements UseCase<AddCustomerResponse, CreateNewCustomerParams> {
   final Repository _repository;
 
   const CreateNewCustomerUsecase(this._repository);
 
   @override
-  Future<Either<Failure, AddCustomerResponse>> call(CreateNewCustomerParams params) async {
+  Future<Either<Failure, AddCustomerResponse>> call(
+    CreateNewCustomerParams params,
+  ) async {
     return await _repository.createNewCustomer(params);
   }
 }

@@ -15,10 +15,7 @@ class ServiceCallReportStep1Params extends Equatable {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'complaint_id': complaintId,
-      'technician_ids': technicianIds,
-    };
+    return {'complaint_id': complaintId, 'technician_ids': technicianIds};
   }
 
   @override
@@ -33,8 +30,8 @@ class ServiceCallReportStep1Usecase
 
   @override
   Future<Either<Failure, ServiceCallStep1Response>> call(
-      ServiceCallReportStep1Params params) async {
+    ServiceCallReportStep1Params params,
+  ) async {
     return await repository.serviceCallReportStep1(params);
   }
 }
-
