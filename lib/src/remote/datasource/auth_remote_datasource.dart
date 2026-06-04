@@ -73,6 +73,7 @@ import '../../features/common/domain/usecase/create_new_customer_usecase.dart';
 import '../models/create_new_site_model/create_new_site_response.dart';
 import '../../features/common/domain/usecase/create_new_site_usecase.dart';
 import '../models/feedback_model/feedback_response.dart';
+import '../models/servicecalls_report_history_model/servicecalls_report_history_response.dart';
 
 sealed class RemoteDataSource {
   Future<LoginResponse> login(LoginParams params);
@@ -288,6 +289,8 @@ sealed class RemoteDataSource {
     String reportId,
     String token,
   );
+
+  Future<ServiceCallReportResponse> getServiceCallsReportHistory(String token);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -1818,6 +1821,31 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = FeedbackResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<ServiceCallReportResponse> getServiceCallsReportHistory(String token) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: ApiUrl.serviceCallReportHistory,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = ServiceCallReportResponse.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

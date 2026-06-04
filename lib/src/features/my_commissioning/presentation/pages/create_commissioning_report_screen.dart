@@ -4084,83 +4084,83 @@ class _CreateCommissioningReportScreenState
               );
             }),
           ),
-          if (selected == 'not_ok') ...[
-            const SizedBox(height: 12),
-            _step5Media.containsKey(label)
-                ? Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _step5Media[label]!.path.endsWith('.mp4')
-                              ? Icons.videocam
-                              : Icons.image,
-                          size: 16,
-                          color: const Color(0xFF64748B),
-                        ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            _step5Media[label]!.path.split('/').last,
-                            style: AppFont.style(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF475569),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _step5Media.remove(label);
-                            });
-                          },
-                          child: const Icon(
-                            Icons.close,
-                            size: 16,
-                            color: Color(0xFFEF4444),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _buildMediaActionBtn(
-                        icon: Icons.photo_camera_outlined,
-                        text: 'Upload',
-                        onTap: () =>
-                            _pickMedia(label, ImageSource.gallery, false),
-                      ),
-                      _buildMediaActionBtn(
-                        icon: Icons.camera_alt_outlined,
-                        text: 'Capture Photo',
-                        onTap: () =>
-                            _pickMedia(label, ImageSource.camera, false),
-                      ),
-                      _buildMediaActionBtn(
-                        icon: Icons.videocam_outlined,
-                        text: 'Capture Video',
-                        onTap: () =>
-                            _pickMedia(label, ImageSource.camera, true),
-                      ),
-                    ],
-                  ),
-          ],
+          // if (selected == 'not_ok') ...[
+          //   const SizedBox(height: 12),
+          //   _step5Media.containsKey(label)
+          //       ? Container(
+          //           padding: const EdgeInsets.symmetric(
+          //             horizontal: 12,
+          //             vertical: 8,
+          //           ),
+          //           decoration: BoxDecoration(
+          //             color: const Color(0xFFF1F5F9),
+          //             borderRadius: BorderRadius.circular(8),
+          //             border: Border.all(color: const Color(0xFFE2E8F0)),
+          //           ),
+          //           child: Row(
+          //             mainAxisSize: MainAxisSize.min,
+          //             children: [
+          //               Icon(
+          //                 _step5Media[label]!.path.endsWith('.mp4')
+          //                     ? Icons.videocam
+          //                     : Icons.image,
+          //                 size: 16,
+          //                 color: const Color(0xFF64748B),
+          //               ),
+          //               const SizedBox(width: 8),
+          //               Flexible(
+          //                 child: Text(
+          //                   _step5Media[label]!.path.split('/').last,
+          //                   style: AppFont.style(
+          //                     fontSize: 12,
+          //                     fontWeight: FontWeight.w600,
+          //                     color: const Color(0xFF475569),
+          //                   ),
+          //                   maxLines: 1,
+          //                   overflow: TextOverflow.ellipsis,
+          //                 ),
+          //               ),
+          //               const SizedBox(width: 12),
+          //               GestureDetector(
+          //                 onTap: () {
+          //                   setState(() {
+          //                     _step5Media.remove(label);
+          //                   });
+          //                 },
+          //                 child: const Icon(
+          //                   Icons.close,
+          //                   size: 16,
+          //                   color: Color(0xFFEF4444),
+          //                 ),
+          //               ),
+          //             ],
+          //           ),
+          //         )
+          //       : Wrap(
+          //           spacing: 8,
+          //           runSpacing: 8,
+          //           children: [
+          //             _buildMediaActionBtn(
+          //               icon: Icons.photo_camera_outlined,
+          //               text: 'Upload',
+          //               onTap: () =>
+          //                   _pickMedia(label, ImageSource.gallery, false),
+          //             ),
+          //             _buildMediaActionBtn(
+          //               icon: Icons.camera_alt_outlined,
+          //               text: 'Capture Photo',
+          //               onTap: () =>
+          //                   _pickMedia(label, ImageSource.camera, false),
+          //             ),
+          //             _buildMediaActionBtn(
+          //               icon: Icons.videocam_outlined,
+          //               text: 'Capture Video',
+          //               onTap: () =>
+          //                   _pickMedia(label, ImageSource.camera, true),
+          //             ),
+          //           ],
+          //         ),
+          // ],
         ],
       ),
     );

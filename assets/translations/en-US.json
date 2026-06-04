@@ -9,9 +9,9 @@
   "skip": "Skip",
   "login_welcome_title": "Welcome Back",
   "login_welcome_subtitle": "Login to access your service management dashboard.",
-  "login_username_label": "CONTACT NUMBER",
+  "login_username_label": "Contact Number",
   "login_username_hint": "Enter your contact number",
-  "login_password_label": "PASSWORD",
+  "login_password_label": "Password",
   "login_password_hint": "Enter your password",
   "login_forgot_password": "FORGOT PASSWORD?",
   "login_sign_in": "Sign In",
@@ -186,5 +186,5 @@
   "comm_report_date": "Commissioning Date",
   "please_enter_phone": "Please enter the contact number.",
   "please_enter_password": "Please enter the password.",
-  "please_enter_valid_email": "Please enter the valid email."
+  "please_enter_valid_contact": "Please enter the valid contact number."
 }

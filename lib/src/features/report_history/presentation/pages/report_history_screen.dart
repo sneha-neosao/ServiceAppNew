@@ -16,6 +16,9 @@ import 'package:service_app/src/features/my_commissioning/domain/usecase/commiss
 import 'package:service_app/src/features/report_history/presentation/pages/feedback_details_screen.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_history_bloc/service_call_report_history_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_history_bloc/service_call_report_history_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_history_bloc/service_call_report_history_state.dart';
 
 class ReportHistoryScreen extends StatefulWidget {
   const ReportHistoryScreen({super.key});
@@ -27,6 +30,7 @@ class ReportHistoryScreen extends StatefulWidget {
 class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   int _selectedTab = 1; // Default to 'Service'
   late CommissioningReportHistoryBloc _historyBloc;
+  late ServiceCallReportHistoryBloc _serviceCallHistoryBloc;
   late CommissioningReportDetailsBloc _detailsBloc;
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
@@ -51,12 +55,18 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     );
   }
 
+  void _fetchServiceCallHistory() {
+    _serviceCallHistoryBloc.add(FetchServiceCallReportHistory());
+  }
+
   @override
   void initState() {
     super.initState();
     _historyBloc = getIt<CommissioningReportHistoryBloc>();
+    _serviceCallHistoryBloc = getIt<ServiceCallReportHistoryBloc>();
     _detailsBloc = getIt<CommissioningReportDetailsBloc>();
     _fetchReportHistory();
+    _fetchServiceCallHistory();
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
     _sitesBloc = getIt<SitesBloc>();
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
@@ -65,6 +75,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   @override
   void dispose() {
     _historyBloc.close();
+    _serviceCallHistoryBloc.close();
     _detailsBloc.close();
     _customerBloc.close();
     _sitesBloc.close();
@@ -204,10 +215,77 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                       return const SizedBox();
                     },
                   )
-                : ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: _buildReportList(),
-                  ),
+                : _selectedTab == 1
+                    ? BlocBuilder<ServiceCallReportHistoryBloc, ServiceCallReportHistoryState>(
+                        bloc: _serviceCallHistoryBloc,
+                        builder: (context, state) {
+                          if (state is ServiceCallReportHistoryLoading ||
+                              state is ServiceCallReportHistoryInitial) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF1565C0),
+                              ),
+                            );
+                          } else if (state is ServiceCallReportHistoryError) {
+                            return Center(
+                              child: Text(
+                                state.message,
+                                style: AppFont.style(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            );
+                          } else if (state is ServiceCallReportHistoryLoaded) {
+                            final items = state.response.data?.results ?? [];
+                            if (items.isEmpty) {
+                              return Center(
+                                child: Text(
+                                  'No service call reports found',
+                                  style: AppFont.style(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFFA5ABB7),
+                                  ),
+                                ),
+                              );
+                            }
+                            return ListView.separated(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: items.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 16),
+                              itemBuilder: (context, index) {
+                                final item = items[index];
+                                String formattedDate = item.submittedAt;
+                                try {
+                                  final dt = DateTime.parse(item.submittedAt);
+                                  formattedDate = DateFormat('dd MMM yyyy').format(dt);
+                                } catch (_) {}
+
+                                return _ReportCard(
+                                  id: item.complaintNumber,
+                                  reportId: item.id,
+                                  type: ReportType.service,
+                                  companyName: item.customerName,
+                                  location: item.siteName,
+                                  date: formattedDate,
+                                  technician: item.technicianRepresentativeName,
+                                  technicianId: item.dealerName,
+                                  feedbackSubmitted: item.feedbackSubmitted,
+                                  qrCodeImage: item.qrCodeImage,
+                                );
+                              },
+                            );
+                          }
+                          return const SizedBox();
+                        },
+                      )
+                    : ListView(
+                        padding: const EdgeInsets.all(16),
+                        children: _buildReportList(),
+                      ),
           ),
         ),
       ],
@@ -276,7 +354,14 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   Widget _buildSegmentTab(int index, String label) {
     bool isSelected = _selectedTab == index;
     return GestureDetector(
-      onTap: () => setState(() => _selectedTab = index),
+      onTap: () {
+        setState(() => _selectedTab = index);
+        if (index == 0) {
+          _fetchReportHistory();
+        } else if (index == 1) {
+          _fetchServiceCallHistory();
+        }
+      },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
         decoration: BoxDecoration(

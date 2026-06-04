@@ -81,6 +81,7 @@ import '../models/create_new_customer_model/create_new_customer_response.dart';
 import '../../features/common/domain/usecase/create_new_site_usecase.dart';
 import '../models/create_new_site_model/create_new_site_response.dart';
 import '../models/feedback_model/feedback_response.dart';
+import '../models/servicecalls_report_history_model/servicecalls_report_history_response.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -241,6 +242,8 @@ abstract class Repository {
   Future<Either<Failure, FeedbackResponse>> getCommissioningReportFeedback(
     String reportId,
   );
+
+  Future<Either<Failure, ServiceCallReportResponse>> getServiceCallsReportHistory();
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -1826,6 +1829,36 @@ class AuthRepositoryImpl implements Repository {
             reportId,
             token,
           );
+
+          if (response.status != 200) {
+            return Left(CredentialFailure(response.message));
+          }
+
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, ServiceCallReportResponse>> getServiceCallsReportHistory() {
+    return _networkInfo.check<ServiceCallReportResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.getServiceCallsReportHistory(token);
 
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
