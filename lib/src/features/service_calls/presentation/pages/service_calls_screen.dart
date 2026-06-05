@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
@@ -575,8 +576,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
       builder: (context, state) {
         if (state is AssignedServiceCallsLoadingState ||
             state is AssignedServiceCallsInitialState) {
-          return const Center(
-            child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: 3,
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemBuilder: (_, __) => const ListCardShimmer(),
           );
         }
 
@@ -669,8 +673,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
       builder: (context, state) {
         if (state is PendingServiceCallsLoadingState ||
             state is PendingServiceCallsInitialState) {
-          return const Center(
-            child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: 3,
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemBuilder: (_, __) => const ListCardShimmer(),
           );
         }
 

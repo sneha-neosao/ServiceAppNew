@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
@@ -231,10 +232,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     builder: (context, state) {
                       if (state is CommissioningReportHistoryLoadingState ||
                           state is CommissioningReportHistoryInitialState) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: Color(0xFF1565C0),
-                          ),
+                        return ListView.separated(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: 3,
+                          separatorBuilder: (context, index) => const SizedBox(height: 16),
+                          itemBuilder: (context, index) => const ListCardShimmer(),
                         );
                       } else if (state
                           is CommissioningReportHistoryFailureState) {
@@ -321,10 +323,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         builder: (context, state) {
                           if (state is ServiceCallReportHistoryLoading ||
                               state is ServiceCallReportHistoryInitial) {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: Color(0xFF1565C0),
-                              ),
+                            return ListView.separated(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: 3,
+                              separatorBuilder: (context, index) => const SizedBox(height: 16),
+                              itemBuilder: (context, index) => const ListCardShimmer(),
                             );
                           } else if (state is ServiceCallReportHistoryError) {
                             return Center(

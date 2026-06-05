@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
@@ -62,8 +63,14 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
         builder: (context, state) {
           if (state is CommissioningWorkListInitialState ||
               state is CommissioningWorkListLoadingState) {
-            return const Center(
-              child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+            return ListView.separated(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 20,
+              ),
+              itemCount: 3,
+              separatorBuilder: (context, index) => const SizedBox(height: 16),
+              itemBuilder: (context, index) => const ListCardShimmer(),
             );
           } else if (state is CommissioningWorkListFailureState) {
             return Center(
