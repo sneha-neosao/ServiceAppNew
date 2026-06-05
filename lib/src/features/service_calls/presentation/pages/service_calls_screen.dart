@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/my_commissioning/presentation/pages/create_commissioning_report_screen.dart';
@@ -389,12 +390,16 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               ),
               const SizedBox(width: 4),
               isLoading
-                  ? const SizedBox(
-                      width: 10,
-                      height: 10,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1.5,
-                        color: Color(0xFF1565C0),
+                  ? Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        width: 14,
+                        height: 14,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
                       ),
                     )
                   : Text(
