@@ -95,10 +95,35 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
+    return PopScope(
+      canPop: _selectedIndex == 0 && _amcViewState == _AmcViewState.dashboard,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+
+        if (_selectedIndex != 0) {
+          setState(() {
+            _selectedIndex = 0;
+            _amcViewState = _AmcViewState.dashboard;
+            _amcReportsCreated = 0;
+            _showCreateReport = false;
+            _showSystemBars = true;
+          });
+        } else if (_amcViewState != _AmcViewState.dashboard) {
+          setState(() {
+            if (_amcViewState == _AmcViewState.createReport) {
+              _amcViewState = _AmcViewState.details;
+            } else if (_amcViewState == _AmcViewState.details) {
+              _amcViewState = _AmcViewState.schedule;
+            } else {
+              _amcViewState = _AmcViewState.dashboard;
+            }
+          });
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Column(
+          children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             height: _showSystemBars ? 155 : 0,
@@ -274,6 +299,7 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             : const SizedBox(width: double.infinity, height: 0),
       ),
+    ),
     );
   }
 
@@ -378,46 +404,73 @@ class _HomeScreenState extends State<HomeScreen> {
             builder: (context, state) {
               if (state is ProfileDetailsLoadingState ||
                   state is ProfileDetailsInitialState) {
-                return Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    width: 200,
-                    height: 37,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        width: 200,
+                        height: 37,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 4),
+                    Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        width: 250,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               }
 
               String name = 'home_greeting_name'.tr();
+              String dealerName = '';
               if (state is ProfileDetailsSuccessState) {
                 final data = state.data.data;
-                if (data != null && data.name.isNotEmpty) {
+                if (data.name.isNotEmpty) {
                   name = data.name;
+                }
+                if (data.dealer.name.isNotEmpty) {
+                  dealerName = data.dealer.name;
                 }
               }
 
-              return Text(
-                name,
-                style: AppFont.style(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1A1A1A),
-                ),
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    name,
+                    style: AppFont.style(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'home_greeting_message'.tr(args: [dealerName]),
+                    style: AppFont.style(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
               );
             },
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'home_greeting_message'.tr(),
-            style: AppFont.style(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
           ),
           const SizedBox(height: 36),
           // AMC Card

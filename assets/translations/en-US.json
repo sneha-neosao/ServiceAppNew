@@ -25,7 +25,7 @@
   "forgot_send_link": "Send Reset Link",
   "forgot_back_to_login": "Back to Login",
   "home_appbar_title": "Technician Dashboard",
-  "home_greeting_message": "Good Morning from Sharma Pumps..!!",
+  "home_greeting_message": "Good Morning from {}..!!",
   "home_amc_card_title": "Upcoming AMC Visits",
   "home_amc_card_dropdown": "Today",
   "home_amc_total_label": "Total AMC Visits",
