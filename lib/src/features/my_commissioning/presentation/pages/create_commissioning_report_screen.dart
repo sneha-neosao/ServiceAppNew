@@ -455,7 +455,7 @@ class _CreateCommissioningReportScreenState
         }
 
         int warrantyYears = _selectedWarranty != null
-            ? (int.tryParse(_selectedWarranty!.split(' ').first) ?? 1)
+            ? (int.tryParse(_selectedWarranty!.split('_').first) ?? 1)
             : 1;
 
         _submitStep2Bloc.add(
@@ -2164,8 +2164,8 @@ class _CreateCommissioningReportScreenState
                                                                                                             Expanded(
                                                                                                               child: Text(
                                                                                                                 widget.isServiceReport
-                                                                                                                    ? 'Service Report'
-                                                                                                                    : 'Commissioning Report',
+                                                                                                                    ? 'service_report'.tr()
+                                                                                                                    : 'commissioning_report'.tr(),
                                                                                                                 style: AppFont.style(
                                                                                                                   fontSize: 17,
                                                                                                                   fontWeight: FontWeight.w900,
@@ -2534,7 +2534,7 @@ class _CreateCommissioningReportScreenState
                                                                                                                                                                                                                       Text(
                                                                                                                                                                                                                         _currentStep ==
                                                                                                                                                                                                                                 6
-                                                                                                                                                                                                                            ? 'SUBMIT REPORT'
+                                                                                                                                                                                                                            ? 'commissioning_submit_report'.tr()
                                                                                                                                                                                                                             : 'create_report_btn_next'.tr().toUpperCase(),
                                                                                                                                                                                                                         style: AppFont.style(
                                                                                                                                                                                                                           fontSize: 14,
@@ -2748,7 +2748,7 @@ class _CreateCommissioningReportScreenState
                   }
                   if (state.data.data.warrantyPeriodYears > 0) {
                     _selectedWarranty =
-                        '${state.data.data.warrantyPeriodYears} YEAR';
+                        '${state.data.data.warrantyPeriodYears}_year';
                   }
                   if (state.data.data.agenda.isNotEmpty) {
                     _agendaController.text = state.data.data.agenda;
@@ -3069,21 +3069,11 @@ class _CreateCommissioningReportScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      data?.dealerName ?? 'Dealer Name',
+                      data?.dealerName ?? 'commissioning_dealer_name_fallback'.tr(),
                       style: AppFont.style(
                         fontSize: 20,
                         fontWeight: FontWeight.w900,
                         color: const Color(0xFF0D121F),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Main Road, Suite 402, Business District,\nPune - 411045',
-                      style: AppFont.style(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF8E9BAE),
-                        height: 1.4,
                       ),
                     ),
                   ],
@@ -3130,7 +3120,7 @@ class _CreateCommissioningReportScreenState
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 16),
         Text(
-          'Flowmax Pumps Corporation',
+          'commissioning_service_provider_fallback'.tr(),
           style: AppFont.style(
             fontSize: 16,
             fontWeight: FontWeight.w900,
@@ -3148,7 +3138,7 @@ class _CreateCommissioningReportScreenState
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: 'Technician Name(s) :',
+                    text: 'commissioning_technician_names'.tr(),
                     style: AppFont.style(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
@@ -3298,19 +3288,19 @@ class _CreateCommissioningReportScreenState
         const SizedBox(height: 16),
 
         // ── Customer & Project Details ───────────────────────────────────
-        _buildInfoRow('Customer Name', data?.customerName ?? 'Global Infotech'),
+        _buildInfoRow('commissioning_customer_name_label'.tr(), data?.customerName ?? 'commissioning_customer_name_fallback'.tr()),
         const SizedBox(height: 24),
         _buildInfoRow(
-          'Project / Site Name',
-          data?.siteName ?? 'Main Server Room',
+          'commissioning_project_site_name_label'.tr(),
+          data?.siteName ?? 'commissioning_project_site_name_fallback'.tr(),
         ),
         const SizedBox(height: 24),
         if (widget.isServiceReport)
-          _buildInfoRow('Complaint Number', widget.complaintNo ?? 'ABC-26-0492')
+          _buildInfoRow('commissioning_complaint_number_label'.tr(), widget.complaintNo ?? 'commissioning_complaint_number_fallback'.tr())
         else
           _buildInfoRow(
-            'Application Of Equipment',
-            data?.applicationOfEquipment ?? 'Pump Application',
+            'commissioning_application_equipment_label'.tr(),
+            data?.applicationOfEquipment ?? 'commissioning_application_equipment_fallback'.tr(),
           ),
 
         const SizedBox(height: 40),
@@ -3362,7 +3352,7 @@ class _CreateCommissioningReportScreenState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // ── Member Context Label ─────────────────────────────────────────
-        _buildLabel('Member Context'),
+        _buildLabel('commissioning_member_context_label'.tr()),
         const SizedBox(height: 12),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 32),
@@ -3496,7 +3486,7 @@ class _CreateCommissioningReportScreenState
                   text: TextSpan(
                     children: [
                       TextSpan(
-                        text: 'Select Warranty Period',
+                        text: 'commissioning_select_warranty_period_label'.tr(),
                         style: AppFont.style(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
@@ -3550,11 +3540,11 @@ class _CreateCommissioningReportScreenState
                           color: const Color(0xFFA5ABB7),
                         ),
                       ),
-                      items: ['1 YEAR', '2 YEAR', '3 YEAR', '4 YEAR', '5 YEAR']
+                      items: ['1_year', '2_year', '3_year', '4_year', '5_year']
                           .map(
                             (val) => DropdownMenuItem(
                               value: val,
-                              child: Text(val),
+                              child: Text(val.tr()),
                             ),
                           )
                           .toList(),
@@ -3693,14 +3683,14 @@ class _CreateCommissioningReportScreenState
             opacity: _isTechnicalDetailsNA ? 0.38 : 1.0,
             child: Column(
               children: [
-                _buildTechField('Pump Make', _pumpMakeController),
-                _buildTechField('Pump Model', _pumpModelController),
+                _buildTechField('commissioning_pump_make'.tr(), _pumpMakeController),
+                _buildTechField('commissioning_pump_model'.tr(), _pumpModelController),
                 _buildTechField(
-                  'Pump Serial Number',
+                  'commissioning_pump_serial_number'.tr(),
                   _pumpSerialNumberController,
                 ),
                 _buildTechMultiField(
-                  'Pump Flow',
+                  'commissioning_pump_flow'.tr(),
                   ['LPM', 'M3/HR', 'LPS', 'USGPM'],
                   [
                     _pumpFlowLPMController,
@@ -3710,27 +3700,27 @@ class _CreateCommissioningReportScreenState
                   ],
                 ),
                 _buildTechMultiField(
-                  'Pump Head',
+                  'commissioning_pump_head'.tr(),
                   ['MTR'],
                   [_pumpHeadMTRController],
                 ),
-                _buildTechField('Driver Make', _driverMakeController),
+                _buildTechField('commissioning_driver_make'.tr(), _driverMakeController),
                 _buildTechField(
-                  'Driver Serial Number',
+                  'commissioning_driver_serial_number'.tr(),
                   _driverSerialNumberController,
                 ),
                 _buildTechMultiField(
-                  'Rating (KW/HP)',
+                  'commissioning_rating'.tr(),
                   ['KW', 'HP'],
                   [_ratingKWController, _ratingHPController],
                 ),
-                _buildTechField('RPM', _rpmController),
+                _buildTechField('commissioning_rpm'.tr(), _rpmController),
                 _buildTechField(
-                  'Control Panel Make',
+                  'commissioning_control_panel_make'.tr(),
                   _controlPanelMakeController,
                 ),
                 _buildTechField(
-                  'Panel Serial / Model',
+                  'commissioning_panel_serial_model'.tr(),
                   _panelSerialModelController,
                 ),
               ],
@@ -3950,7 +3940,7 @@ class _CreateCommissioningReportScreenState
                       color: const Color(0xFF0D121F),
                     ),
                     decoration: InputDecoration(
-                      hintText: '...',
+                      hintText: 'commissioning_work_description_hint'.tr(),
                       hintStyle: AppFont.style(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -4002,7 +3992,7 @@ class _CreateCommissioningReportScreenState
         // ── Mechanical Checklist ───────────────────────────────────────────────
         _buildCheckSection(
           icon: Icons.settings_outlined,
-          title: 'MECHANICAL CHECKLIST',
+          title: 'commissioning_mechanical_checklist'.tr(),
           isNA: _mechNA,
           onNATap: () => setState(() => _mechNA = !_mechNA),
           items: [
@@ -4010,28 +4000,28 @@ class _CreateCommissioningReportScreenState
               label: 'chk_bearing_noise'.tr(),
               selected: _bearingNoise,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _bearingNoise = v),
             ),
             _buildCheckItem(
               label: 'chk_vibration'.tr(),
               selected: _vibration,
               options: const ['normal', 'high'],
-              labels: const ['NORMAL', 'HIGH'],
+              labels: ['commissioning_normal'.tr(), 'commissioning_high'.tr()],
               onSelect: (v) => setState(() => _vibration = v),
             ),
             _buildCheckItem(
               label: 'chk_mech_seal'.tr(),
               selected: _mechSeal,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _mechSeal = v),
             ),
             _buildCheckItem(
               label: 'chk_pump_dry'.tr(),
               selected: _pumpDry,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _pumpDry = v),
             ),
           ],
@@ -4042,7 +4032,7 @@ class _CreateCommissioningReportScreenState
         // ── Pipeline / Hydraulic Checklist ────────────────────────────────────
         _buildCheckSection(
           icon: Icons.water_drop_outlined,
-          title: 'PIPELINE / HYDRAULIC CHECKLIST',
+          title: 'commissioning_pipeline_hydraulic_checklist'.tr(),
           isNA: _pipeNA,
           onNATap: () => setState(() => _pipeNA = !_pipeNA),
           items: [
@@ -4050,42 +4040,42 @@ class _CreateCommissioningReportScreenState
               label: 'chk_nrv'.tr(),
               selected: _nrvValve,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _nrvValve = v),
             ),
             _buildCheckItem(
               label: 'chk_strainer'.tr(),
               selected: _strainerValve,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _strainerValve = v),
             ),
             _buildCheckItem(
               label: 'chk_suction_line'.tr(),
               selected: _suctionLine,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _suctionLine = v),
             ),
             _buildCheckItem(
               label: 'chk_delivery_line'.tr(),
               selected: _deliveryLine,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _deliveryLine = v),
             ),
             _buildCheckItem(
               label: 'chk_suction_del_valve'.tr(),
               selected: _suctionDelivery,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _suctionDelivery = v),
             ),
             _buildCheckItem(
               label: 'chk_pressure_switch'.tr(),
               selected: _pressureSwitch,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _pressureSwitch = v),
             ),
           ],
@@ -4096,7 +4086,7 @@ class _CreateCommissioningReportScreenState
         // ── Electrical Checklist ───────────────────────────────────────────────
         _buildCheckSection(
           icon: Icons.bolt_outlined,
-          title: 'ELECTRICAL CHECKLIST',
+          title: 'commissioning_electrical_checklist'.tr(),
           isNA: _elecNA,
           onNATap: () => setState(() => _elecNA = !_elecNA),
           items: [
@@ -4104,35 +4094,35 @@ class _CreateCommissioningReportScreenState
               label: 'chk_elec_faults'.tr(),
               selected: _elecFaults,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _elecFaults = v),
             ),
             _buildCheckItem(
               label: 'chk_voltage'.tr(),
               selected: _voltage,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _voltage = v),
             ),
             _buildCheckItem(
               label: 'chk_phase'.tr(),
               selected: _phase,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _phase = v),
             ),
             _buildCheckItem(
               label: 'chk_current'.tr(),
               selected: _current,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _current = v),
             ),
             _buildCheckItem(
               label: 'chk_panel_wiring'.tr(),
               selected: _panelWiring,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _panelWiring = v),
             ),
           ],
@@ -4372,7 +4362,7 @@ class _CreateCommissioningReportScreenState
         ),
         const SizedBox(height: 10),
         _buildRemarksBox(
-          'Technician side remarks...',
+          'commissioning_remarks_tech_hint'.tr(),
           _technicianRemarksController,
         ),
 
@@ -4389,7 +4379,7 @@ class _CreateCommissioningReportScreenState
         ),
         const SizedBox(height: 10),
         _buildRemarksBox(
-          'Customer side remarks...',
+          'commissioning_remarks_customer_hint'.tr(),
           _customerRemarksController,
         ),
 
@@ -4430,7 +4420,7 @@ class _CreateCommissioningReportScreenState
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: 'Name',
+                      text: 'commissioning_name'.tr(),
                       style: AppFont.style(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
@@ -4519,7 +4509,7 @@ class _CreateCommissioningReportScreenState
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: 'Name',
+                      text: 'commissioning_name'.tr(),
                       style: AppFont.style(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
@@ -4602,7 +4592,7 @@ class _CreateCommissioningReportScreenState
           text: TextSpan(
             children: [
               TextSpan(
-                text: 'Upload / Capture Work Photos :',
+                text: 'commissioning_upload_work_photos'.tr(),
                 style: AppFont.style(
                   fontSize: 15,
                   fontWeight: FontWeight.w900,
