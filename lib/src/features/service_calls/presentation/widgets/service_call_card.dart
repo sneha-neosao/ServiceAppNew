@@ -82,8 +82,8 @@ class ServiceCallCard extends StatelessWidget {
                       color: const Color(0xFFE8F5E9),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Text(
-                      'COMPLETED',
+                      child: Text(
+                        'service_calls_btn_completed'.tr(),
                       style: AppFont.style(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
@@ -173,7 +173,7 @@ class ServiceCallCard extends StatelessWidget {
                     child: GestureDetector(
                       onTap: onCloseOverCall,
                       child: _buildSecondaryButton(
-                        'Close Over Call',
+                        'service_calls_btn_close_over_call'.tr(),
                         Icons.phone_disabled_outlined,
                       ),
                     ),
@@ -188,8 +188,8 @@ class ServiceCallCard extends StatelessWidget {
                       onTap: onSubmit,
                       child: _buildPrimaryButton(
                         type == ServiceCallType.ongoing
-                            ? 'Submit Service Report'
-                            : 'Assign Technician',
+                            ? 'service_calls_btn_submit'.tr()
+                            : 'service_calls_btn_assign'.tr(),
                         type == ServiceCallType.ongoing
                             ? Icons.check_circle_outline
                             : Icons.person_outline,

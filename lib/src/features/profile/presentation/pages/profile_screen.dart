@@ -231,12 +231,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
 
                   // ── Contact ──────────────────────────────────────────────────
-                  _sectionLabel('Contact'),
+                  _sectionLabel('profile_section_contact'.tr()),
                   _infoCard(
                     children: [
                       _contactRow(
                         "assets/icons/call_icon.png",
-                        'Mobile',
+                        'profile_contact_mobile_label'.tr(),
                         data?.phone,
                         isLoading,
                       ),
@@ -248,17 +248,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 20),
 
                   // ── Employer ─────────────────────────────────────────────────
-                  _sectionLabel('Dealer'),
+                  _sectionLabel('profile_section_dealer'.tr()),
                   _employerCard(data, isLoading),
 
                   const SizedBox(height: 20),
 
-                  _sectionLabel('Choose Language'),
+                  _sectionLabel('profile_section_language'.tr()),
                   _infoCard(
                     children: [
                       _prefRow(
                         "assets/icons/language.png",
-                        'Language',
+                        'profile_language_label'.tr(),
                         _selectedLanguage,
                         onTap: _showLanguageBottomSheet,
                       ),
@@ -284,18 +284,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 20),
 
                   // ── Security & session ────────────────────────────────────────
-                  _sectionLabel('Security & session'),
+                  _sectionLabel('profile_section_security'.tr()),
                   _infoCard(
                     children: [
                       _actionRow(
                         "assets/icons/logout_icon.png",
-                        'Logout',
+                        'profile_action_logout'.tr(),
                         onTap: _showLogoutDialog,
                       ),
                       _divider(),
                       _actionRow(
                         "assets/icons/accountdelete_icon.png",
-                        'Delete Account',
+                        'profile_action_delete'.tr(),
                         textColor: Colors.red,
                         onTap: _showDeleteDialog,
                       ),
@@ -364,7 +364,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   // Title centred
                   Text(
-                    'My Profile',
+                    'profile_title'.tr(),
                     style: AppFont.style(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
@@ -627,7 +627,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   _contactRow(
                     "assets/icons/dealercode_icon.png",
-                    'Dealer code',
+                    'profile_dealer_code_label'.tr(),
                     data?.dealer.code.isNotEmpty == true
                         ? data!.dealer.code
                         : '—',

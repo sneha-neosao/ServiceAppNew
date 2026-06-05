@@ -40,8 +40,8 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
   bool _siteOpen = false;
   String _customerSearch = '';
   String _siteSearch = '';
-  String _selectedCustomer = 'Select Customer';
-  String _selectedSite = 'Select Site';
+  String _selectedCustomer = 'amc_schedule_filter_select_customer'.tr();
+  String _selectedSite = 'amc_schedule_filter_select_site'.tr();
 
   List<String> get _filteredCustomers => _customers
       .where((c) => c.toLowerCase().contains(_customerSearch.toLowerCase()))
@@ -140,7 +140,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
               // ── Customer dropdown ────────────────────────────────────────
               _DropdownTrigger(
                 label: _selectedCustomer,
-                isPlaceholder: _selectedCustomer == 'Select Customer',
+                isPlaceholder: _selectedCustomer == 'amc_schedule_filter_select_customer'.tr(),
                 isOpen: _customerOpen,
                 onTap: _toggleCustomer,
               ),
@@ -159,7 +159,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
               // ── Site dropdown ────────────────────────────────────────────
               _DropdownTrigger(
                 label: _selectedSite,
-                isPlaceholder: _selectedSite == 'Select Site',
+                isPlaceholder: _selectedSite == 'amc_schedule_filter_select_site'.tr(),
                 isOpen: _siteOpen,
                 onTap: _toggleSite,
               ),
@@ -309,7 +309,7 @@ class _DropdownPanel extends StatelessWidget {
                   color: const Color(0xFF0D121F),
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Search...',
+                  hintText: 'amc_schedule_filter_search'.tr(),
                   hintStyle: AppFont.style(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,

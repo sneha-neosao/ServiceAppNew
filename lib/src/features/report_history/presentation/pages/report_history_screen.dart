@@ -171,7 +171,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             child: Row(
               children: [
                 Text(
-                  'Reports History',
+                  'reports_title'.tr(),
                   style: AppFont.style(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
@@ -193,9 +193,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             ),
             child: Row(
               children: [
-                Expanded(child: _buildSegmentTab(0, 'Commissioning')),
-                Expanded(child: _buildSegmentTab(1, 'Service')),
-                Expanded(child: _buildSegmentTab(2, 'AMC')),
+                Expanded(child: _buildSegmentTab(0, 'reports_tab_commissioning'.tr())),
+                Expanded(child: _buildSegmentTab(1, 'reports_tab_service'.tr())),
+                Expanded(child: _buildSegmentTab(2, 'reports_tab_amc'.tr())),
               ],
             ),
           ),
@@ -243,7 +243,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         if (items.isEmpty) {
                           return Center(
                             child: Text(
-                              'No commissioning reports found',
+                              'reports_empty_commissioning'.tr(),
                               style: AppFont.style(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -331,7 +331,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                             if (items.isEmpty) {
                               return Center(
                                 child: Text(
-                                  'No service call reports found',
+                                  'reports_empty_service'.tr(),
                                   style: AppFont.style(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -531,7 +531,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           )
                           .toList(),
                       child: _buildFilterDropdown(
-                        _selectedCustomerName ?? 'Select Customer',
+                        _selectedCustomerName ?? 'reports_filter_select_customer'.tr(),
                         Icons.business_outlined,
                         isLoading: state is CustomerLoadingState,
                       ),
@@ -571,7 +571,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           )
                           .toList(),
                       child: _buildFilterDropdown(
-                        _selectedSiteName ?? 'Select Site',
+                        _selectedSiteName ?? 'reports_filter_select_site'.tr(),
                         Icons.location_on_outlined,
                         isLoading: state is SitesLoadingState,
                       ),
@@ -584,7 +584,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           const SizedBox(height: 12),
           // Complaint Number
           _buildFilterInputFull(
-            'Complaint Number...',
+            'reports_filter_complaint_hint'.tr(),
             Icons.assignment_outlined,
           ),
           const SizedBox(height: 12),
@@ -593,7 +593,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             children: [
               Expanded(
                 child: _buildFilterInput(
-                  'dd-mm-yyyy',
+                  'reports_filter_date_hint'.tr(),
                   Icons.calendar_today_outlined,
                 ),
               ),
@@ -629,7 +629,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           )
                           .toList(),
                       child: _buildFilterDropdown(
-                        _selectedTechnicianName ?? 'Select Technician',
+                        _selectedTechnicianName ?? 'reports_filter_select_technician'.tr(),
                         Icons.person_outline,
                         isLoading: state is TechnicianLoadingState,
                       ),
@@ -929,7 +929,7 @@ class _ReportCard extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      'VIEW COMPLAINT REPORT',
+                      'reports_view_complaint'.tr(),
                       style: AppFont.style(
                         fontSize: 11,
                         fontWeight: FontWeight.w900,
@@ -992,11 +992,11 @@ class _ReportCard extends StatelessWidget {
   }
 
   Widget _buildViewButton(BuildContext context) {
-    String btnText = 'View Service Report';
+    String btnText = 'reports_btn_view_service'.tr();
     if (type == ReportType.commissioning) {
-      btnText = 'View Commissioning Report';
+      btnText = 'reports_btn_view_commissioning'.tr();
     } else if (type == ReportType.amc) {
-      btnText = 'View AMC Report';
+      btnText = 'reports_btn_view_amc'.tr();
     }
     return Column(
       children: [
@@ -1085,7 +1085,7 @@ class _ReportCard extends StatelessWidget {
                           if (qrCodeImage != null && qrCodeImage!.isNotEmpty) {
                             _showQrCodeDialog(context);
                           } else {
-                            appSnackBar(context, const Color(0xFFF44336), 'QR Code not available');
+                            appSnackBar(context, const Color(0xFFF44336), 'reports_qr_not_available'.tr());
                           }
                         },
                       ),
@@ -1218,7 +1218,7 @@ class _ReportCard extends StatelessWidget {
                       elevation: 0,
                     ),
                     child: Text(
-                      'Done',
+                      'create_report_btn_done'.tr(),
                       style: AppFont.style(
                         fontSize: 14,
                         fontWeight: FontWeight.w900,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
@@ -99,7 +100,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Close Over Call',
+                        'close_call_dialog_title'.tr(),
                         style: AppFont.style(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
@@ -161,7 +162,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Resolution Details (Voice to Text Mandatory)',
+                  'close_call_resolution_label'.tr(),
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
@@ -184,7 +185,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
               },
               decoration: InputDecoration(
                 hintText:
-                    'Mandatory: Summarize the resolution steps discussed over the call...',
+                    'close_call_resolution_hint'.tr(),
                 hintStyle: AppFont.style(
                   fontSize: 14,
                   color: const Color(0xFFD1D5DB),
@@ -218,7 +219,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  'Minimum 10 characters required for closure',
+                  'close_call_min_chars'.tr(),
                   style: AppFont.style(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
@@ -236,7 +237,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    'Cancel',
+                    'close_call_cancel'.tr(),
                     style: AppFont.style(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
@@ -253,7 +254,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Service call closed successfully'),
+                          content: Text('close_call_success_msg'),
                           backgroundColor: Colors.green,
                         ),
                       );
@@ -302,7 +303,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                               ),
                             const SizedBox(width: 8),
                             Text(
-                              'Close Over Call',
+                              'close_call_btn'.tr(),
                               style: AppFont.style(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w800,

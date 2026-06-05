@@ -209,7 +209,7 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                 Center(
                   child: Text(
                     reportsCreated > 0
-                        ? 'Reports Created ($reportsCreated)'
+                        ? '${'amc_details_reports_created'.tr()} ($reportsCreated)'
                         : '${'amc_details_reports_created'.tr()} (0)',
                     style: AppFont.style(
                       fontSize: 13,
@@ -259,7 +259,7 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 16),
                           Text(
-                            'Report ${index + 1} – Completed',
+                            'amc_details_report_label'.tr(args: ['${index + 1}']),
                             style: AppFont.style(
                               fontSize: 16,
                               fontWeight: FontWeight.w900,
@@ -340,7 +340,7 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Complete AMC Work',
+                    'amc_details_complete_btn'.tr(),
                     style: AppFont.style(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
@@ -69,7 +70,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           ),
           const SizedBox(width: 12),
           Text(
-            'AMC REPORT',
+            'amc_report_title'.tr(),
             style: AppFont.style(
               fontSize: 16,
               fontWeight: FontWeight.w900,
@@ -179,8 +180,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
         const SizedBox(height: 32),
 
-        // ── Service Provider Name ──────────────────────────────────────────
-        _buildSectionTitle('Service Provider Name'),
+        _buildSectionTitle('amc_report_service_provider'.tr()),
         const SizedBox(height: 12),
         Text(
           'Flowmax Pumps Corporation',
@@ -197,7 +197,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildSectionTitle('Technician Name(s) :'),
+            _buildSectionTitle('amc_report_technician_names'.tr()),
             _buildAddButton(),
           ],
         ),
@@ -207,9 +207,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         const SizedBox(height: 32),
 
         // ── Customer Info Rows ─────────────────────────────────────────────
-        _buildInfoRow('Customer Name', 'Infosys Campus'),
+        _buildInfoRow('amc_report_customer_name'.tr(), 'Infosys Campus'),
         const SizedBox(height: 24),
-        _buildInfoRow('Project / Site Name', 'Data Center B'),
+        _buildInfoRow('amc_report_site_name'.tr(), 'Data Center B'),
 
         const SizedBox(height: 32),
 
@@ -217,7 +217,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildSectionTitle('Member Presents (Customer Side) :'),
+            _buildSectionTitle('amc_report_member_presents'.tr()),
             _buildAddButton(),
           ],
         ),
@@ -227,9 +227,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         const SizedBox(height: 32),
 
         // ── Agenda / Purpose ──────────────────────────────────────────────
-        _buildSectionTitle('Agenda / Purpose of Visit :'),
+        _buildSectionTitle('amc_report_agenda'.tr()),
         const SizedBox(height: 12),
-        _buildTextArea('Enter the main purpose of this visit...'),
+        _buildTextArea('amc_report_agenda_hint'.tr()),
 
         const SizedBox(height: 40),
       ],
@@ -241,7 +241,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Inspection Checklist (Check & Tick If Found OK)',
+          'amc_report_checklist_title'.tr(),
           style: AppFont.style(
             fontSize: 16,
             fontWeight: FontWeight.w900,
@@ -250,7 +250,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         ),
         const SizedBox(height: 24),
 
-        _buildChecklistCard('MECHANICAL CHECKLIST', [
+        _buildChecklistCard('checklist_mech_title'.tr(), [
           _buildChecklistItem('Pump Foundation Bolts Tight:'),
           _buildChecklistItem('Coupling / Alignment Checked:'),
           _buildChecklistItem('Bearing Noise Checked:'),
@@ -262,7 +262,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         ]),
         const SizedBox(height: 24),
 
-        _buildChecklistCard('PIPELINE / HYDRAULIC CHECKLIST', [
+        _buildChecklistCard('checklist_pipe_title'.tr(), [
           _buildChecklistItem('Suction Line (Air & Water) Leakage Checked:'),
           _buildChecklistItem('Delivery Line (Air & Water) Leakage Checked:'),
           _buildChecklistItem(
@@ -275,7 +275,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         ]),
         const SizedBox(height: 24),
 
-        _buildChecklistCard('ELECTRICAL CHECKLIST', [
+        _buildChecklistCard('checklist_elec_title'.tr(), [
           _buildChecklistItem('Panel Cleaned:'),
           _buildChecklistItem('Contactor / Relay Condition Checked:'),
           _buildChecklistItem('Overload Setting Checked:'),
@@ -285,7 +285,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         ]),
         const SizedBox(height: 24),
 
-        _buildChecklistCard('PUMP OPERATION CHECKLIST', [
+        _buildChecklistCard('checklist_pump_title'.tr(), [
           _buildChecklistItem('Pump Started In Manual Mode:'),
           _buildChecklistItem('Auto Operation Checked:'),
           _buildChecklistItem('Water Flow & Pressure Checked:'),
@@ -378,7 +378,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         children: [
           Expanded(
             child: Text(
-              'Vibration Checked:',
+              'checklist_vibration'.tr(),
               style: AppFont.style(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
@@ -428,14 +428,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle('Remarks (Technician Side) :'),
+        _buildSectionTitle('amc_report_remarks_tech'.tr()),
         const SizedBox(height: 12),
-        _buildTextArea('Technician side remarks...'),
+        _buildTextArea('amc_report_remarks_tech_hint'.tr()),
         const SizedBox(height: 32),
 
-        _buildSectionTitle('Remarks (Customer Side) :'),
+        _buildSectionTitle('amc_report_remarks_customer'.tr()),
         const SizedBox(height: 12),
-        _buildTextArea('Customer side remarks...'),
+        _buildTextArea('amc_report_remarks_customer_hint'.tr()),
         const SizedBox(height: 32),
 
         Container(
@@ -449,7 +449,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Recorded By:',
+                'amc_report_recorded_by'.tr(),
                 style: AppFont.style(
                   fontSize: 14,
                   fontWeight: FontWeight.w900,
@@ -458,9 +458,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               ),
               const SizedBox(height: 24),
               _buildRepSection(
-                'TECHNICIAN REP',
+                'amc_report_technician_rep'.tr(),
                 'Pravin Patil',
-                'Digitally Signed',
+                'amc_report_digitally_signed'.tr(),
               ),
               const SizedBox(height: 24),
               const Divider(color: Color(0xFFE5E7EB)),
@@ -485,7 +485,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             ),
             const SizedBox(width: 8),
             Text(
-              'Upload / Capture Work Photos :',
+              'amc_report_upload_photos'.tr(),
               style: AppFont.style(
                 fontSize: 13,
                 fontWeight: FontWeight.w900,
@@ -509,7 +509,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               const Icon(Icons.add, color: Color(0xFFA5ABB7), size: 24),
               const SizedBox(height: 8),
               Text(
-                'Add Photo',
+                'amc_report_add_photo'.tr(),
                 style: AppFont.style(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
@@ -793,7 +793,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Back',
+                    'amc_report_btn_back'.tr(),
                     style: AppFont.style(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
@@ -802,7 +802,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   ),
                 ] else
                   Text(
-                    'Cancel',
+                    'amc_report_btn_cancel'.tr(),
                     style: AppFont.style(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
@@ -835,7 +835,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  _currentStep < 3 ? 'NEXT STEP' : 'SUBMIT AMC REPORT',
+                  _currentStep < 3 ? 'amc_report_btn_next'.tr() : 'amc_report_btn_submit'.tr(),
                   style: AppFont.style(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,

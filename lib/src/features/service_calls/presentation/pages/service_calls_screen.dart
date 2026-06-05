@@ -122,7 +122,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           child: Row(
             children: [
               Text(
-                'Service Calls',
+                'service_calls_title'.tr(),
                 style: AppFont.style(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -166,7 +166,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         Expanded(
                           child: _buildSegmentTab(
                             0,
-                            'Assigned',
+                            'service_calls_tab_assigned'.tr(),
                             count: assignedCount,
                             isLoading: assignedState is AssignedServiceCallsLoadingState ||
                                 assignedState is AssignedServiceCallsInitialState,
@@ -175,7 +175,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         Expanded(
                           child: _buildSegmentTab(
                             1,
-                            'Pending',
+                            'service_calls_tab_pending'.tr(),
                             count: pendingCount,
                             isLoading: pendingState is PendingServiceCallsLoadingState ||
                                 pendingState is PendingServiceCallsInitialState,
@@ -232,7 +232,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                               )
                               .toList(),
                           child: _buildFilterDropdown(
-                            _selectedCustomerName ?? 'Select Customer',
+                            _selectedCustomerName ?? 'service_calls_filter_select_customer'.tr(),
                             Icons.person_outline,
                             isLoading: state is CustomerLoadingState,
                           ),
@@ -272,7 +272,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                               )
                               .toList(),
                           child: _buildFilterDropdown(
-                            _selectedSiteName ?? 'Select Site',
+                            _selectedSiteName ?? 'service_calls_filter_select_site'.tr(),
                             Icons.location_on_outlined,
                             isLoading: state is SitesLoadingState,
                           ),
@@ -494,7 +494,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                 fontWeight: FontWeight.w500,
               ),
               decoration: InputDecoration(
-                hintText: 'Complaint No...',
+                hintText: 'service_calls_filter_complaint_hint'.tr(),
                 hintStyle: AppFont.style(
                   fontSize: 14,
                   color: const Color(0xFFA5ABB7),
@@ -549,7 +549,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                     ? DateFormat(
                         'dd MMM yyyy',
                       ).format(DateTime.parse(_selectedDate!))
-                    : 'dd-mm-yyyy',
+                    : 'service_calls_filter_date_hint'.tr(),
                 style: AppFont.style(
                   fontSize: 14,
                   color: _selectedDate != null
@@ -591,7 +591,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           if (data.data.results.isEmpty) {
             return Center(
               child: Text(
-                'No Assigned Service Calls',
+                'service_calls_empty_assigned'.tr(),
                 style: AppFont.style(
                   fontSize: 14,
                   color: const Color(0xFFA5ABB7),
@@ -686,7 +686,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           if (data.data.results.isEmpty) {
             return Center(
               child: Text(
-                'No Pending Service Calls',
+                'service_calls_empty_pending'.tr(),
                 style: AppFont.style(
                   fontSize: 14,
                   color: const Color(0xFFA5ABB7),

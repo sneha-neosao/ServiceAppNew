@@ -103,7 +103,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Complaint Number',
+                    'assign_tech_dialog_complaint_label'.tr(),
                     style: AppFont.style(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
@@ -121,7 +121,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Select Multiple Technicians',
+                    'assign_tech_dialog_select_label'.tr(),
                     style: AppFont.style(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
@@ -216,7 +216,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 isExpanded: true,
                                 value: null,
                                 hint: Text(
-                                  '-- Choose Technicians --',
+                                  'assign_tech_dialog_choose_hint'.tr(),
                                   style: AppFont.style(
                                     fontSize: 14,
                                     color: const Color(0xFFA5ABB7),
@@ -277,7 +277,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    'Cancel',
+                    'assign_tech_dialog_cancel'.tr(),
                     style: AppFont.style(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
@@ -298,7 +298,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                       // Show success snackbar
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Technicians assigned successfully'),
+                          content: Text('assign_tech_success_msg'),
                           backgroundColor: Colors.green,
                         ),
                       );
@@ -364,7 +364,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                   ),
                                 )
                               : Text(
-                                  'Assign',
+                                  'assign_tech_dialog_btn'.tr(),
                                   style: AppFont.style(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w900,
