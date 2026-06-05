@@ -5,6 +5,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/my_commissioning/presentation/pages/create_commissioning_report_screen.dart';
+import 'package:service_app/src/features/home/presentation/pages/home_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
@@ -644,7 +645,13 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                     MaterialPageRoute(
                       builder: (context) => CreateCommissioningReportScreen(
                         isServiceReport: true,
-                        onBack: () => Navigator.pop(context),
+                        onBack: () => Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomeScreen(initialIndex: 2),
+                          ),
+                          (route) => false,
+                        ),
                         commissioningWorkId: item.id,
                         complaintNo: item.complaintNumber,
                       ),

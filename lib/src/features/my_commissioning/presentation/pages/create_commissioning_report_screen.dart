@@ -2073,7 +2073,7 @@ class _CreateCommissioningReportScreenState
                                                                                                                   size: 20,
                                                                                                                   color: Color(0xFF5C616E),
                                                                                                                 ),
-                                                                                                                onPressed: _previousStep,
+                                                                                                                onPressed: widget.onBack,
                                                                                                               ),
                                                                                                             ),
                                                                                                             const SizedBox(width: 16),
