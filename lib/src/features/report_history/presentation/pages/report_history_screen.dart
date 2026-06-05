@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
@@ -516,36 +517,30 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     if (state is CustomerSuccessState) {
                       customers.addAll(state.data.data);
                     }
-                    return PopupMenuButton<Customer>(
-                      color: Colors.white,
-                      surfaceTintColor: Colors.white,
-                      onSelected: (customer) {
+                    return SearchableDropdown<Customer>(
+                      items: customers,
+                      value: _selectedCustomerId != null
+                          ? customers.where((c) => c.id == _selectedCustomerId).isEmpty
+                              ? null
+                              : customers.firstWhere((c) => c.id == _selectedCustomerId)
+                          : null,
+                      hintText: 'reports_filter_select_customer'.tr(),
+                      itemAsString: (c) => c.name,
+                      isLoading: state is CustomerLoadingState,
+                      isFilter: true,
+                      icon: const Icon(Icons.business_outlined, color: Color(0xFFA5ABB7), size: 18),
+                      onChanged: (customer) {
                         setState(() {
-                          _selectedCustomerName = customer.name;
-                          _selectedCustomerId = customer.id;
+                          _selectedCustomerName = customer?.name;
+                          _selectedCustomerId = customer?.id;
                           _selectedSiteName = null;
                           _selectedSiteId = null;
                         });
-                        _sitesBloc.add(SitesGetEvent(customer.id));
+                        if (customer != null) {
+                          _sitesBloc.add(SitesGetEvent(customer.id));
+                        }
                         _fetchReportHistory();
                       },
-                      offset: const Offset(0, 45),
-                      itemBuilder: (ctx) => customers
-                          .map(
-                            (c) => PopupMenuItem<Customer>(
-                              value: c,
-                              child: Text(
-                                c.name,
-                                style: AppFont.style(color: Colors.black),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                      child: _buildFilterDropdown(
-                        _selectedCustomerName ?? 'reports_filter_select_customer'.tr(),
-                        Icons.business_outlined,
-                        isLoading: state is CustomerLoadingState,
-                      ),
                     );
                   },
                 ),
@@ -559,33 +554,25 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     if (state is SitesSuccessState) {
                       sites.addAll(state.data.data);
                     }
-                    return PopupMenuButton<Site>(
-                      color: Colors.white,
-                      surfaceTintColor: Colors.white,
-                      onSelected: (site) {
+                    return SearchableDropdown<Site>(
+                      items: sites,
+                      value: _selectedSiteId != null
+                          ? sites.where((s) => s.id == _selectedSiteId).isEmpty
+                              ? null
+                              : sites.firstWhere((s) => s.id == _selectedSiteId)
+                          : null,
+                      hintText: 'reports_filter_select_site'.tr(),
+                      itemAsString: (s) => s.name,
+                      isLoading: state is SitesLoadingState,
+                      isFilter: true,
+                      icon: const Icon(Icons.location_on_outlined, color: Color(0xFFA5ABB7), size: 18),
+                      onChanged: (site) {
                         setState(() {
-                          _selectedSiteName = site.name;
-                          _selectedSiteId = site.id;
+                          _selectedSiteName = site?.name;
+                          _selectedSiteId = site?.id;
                         });
                         _fetchReportHistory();
                       },
-                      offset: const Offset(0, 45),
-                      itemBuilder: (ctx) => sites
-                          .map(
-                            (s) => PopupMenuItem<Site>(
-                              value: s,
-                              child: Text(
-                                s.name,
-                                style: AppFont.style(color: Colors.black),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                      child: _buildFilterDropdown(
-                        _selectedSiteName ?? 'reports_filter_select_site'.tr(),
-                        Icons.location_on_outlined,
-                        isLoading: state is SitesLoadingState,
-                      ),
                     );
                   },
                 ),
@@ -617,33 +604,25 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     if (state is TechnicianSuccessState) {
                       technicians.addAll(state.data.data);
                     }
-                    return PopupMenuButton<Technician>(
-                      color: Colors.white,
-                      surfaceTintColor: Colors.white,
-                      onSelected: (tech) {
+                    return SearchableDropdown<Technician>(
+                      items: technicians,
+                      value: _selectedTechnicianId != null
+                          ? technicians.where((t) => t.id == _selectedTechnicianId).isEmpty
+                              ? null
+                              : technicians.firstWhere((t) => t.id == _selectedTechnicianId)
+                          : null,
+                      hintText: 'reports_filter_select_technician'.tr(),
+                      itemAsString: (t) => t.name,
+                      isLoading: state is TechnicianLoadingState,
+                      isFilter: true,
+                      icon: const Icon(Icons.person_outline, color: Color(0xFFA5ABB7), size: 18),
+                      onChanged: (tech) {
                         setState(() {
-                          _selectedTechnicianName = tech.name;
-                          _selectedTechnicianId = tech.id;
+                          _selectedTechnicianName = tech?.name;
+                          _selectedTechnicianId = tech?.id;
                         });
                         _fetchReportHistory();
                       },
-                      offset: const Offset(0, 45),
-                      itemBuilder: (ctx) => technicians
-                          .map(
-                            (t) => PopupMenuItem<Technician>(
-                              value: t,
-                              child: Text(
-                                t.name,
-                                style: AppFont.style(color: Colors.black),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                      child: _buildFilterDropdown(
-                        _selectedTechnicianName ?? 'reports_filter_select_technician'.tr(),
-                        Icons.person_outline,
-                        isLoading: state is TechnicianLoadingState,
-                      ),
                     );
                   },
                 ),

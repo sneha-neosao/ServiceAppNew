@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:shimmer/shimmer.dart';
 
 class SearchableDropdown<T> extends StatelessWidget {
   final List<T> items;
@@ -10,6 +11,7 @@ class SearchableDropdown<T> extends StatelessWidget {
   final void Function(T?)? onChanged;
   final bool isLoading;
   final Widget? icon;
+  final bool isFilter;
 
   const SearchableDropdown({
     super.key,
@@ -20,32 +22,36 @@ class SearchableDropdown<T> extends StatelessWidget {
     this.onChanged,
     this.isLoading = false,
     this.icon,
+    this.isFilter = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Shimmer.fromColors(
+        baseColor: Colors.grey[200]!,
+        highlightColor: Colors.grey[50]!,
+        child: Container(
+          height: isFilter ? 44 : 56,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(isFilter ? 10 : 12),
+            border: Border.all(color: const Color(0xFFE5E7EB)),
+          ),
+        ),
+      );
+    }
+
     return Container(
+      height: isFilter ? 44 : null,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(isFilter ? 10 : 12),
         border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      child: isLoading
-          ? const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              child: Center(
-                child: SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    color: Color(0xFF1565C0),
-                    strokeWidth: 2.5,
-                  ),
-                ),
-              ),
-            )
-          : DropdownSearch<T>(
+      padding: EdgeInsets.symmetric(horizontal: isFilter ? 12 : 20, vertical: isFilter ? 0 : 4),
+      child: DropdownSearch<T>(
               items: items,
               itemAsString: itemAsString,
               selectedItem: value,
@@ -54,20 +60,20 @@ class SearchableDropdown<T> extends StatelessWidget {
                 dropdownSearchDecoration: InputDecoration(
                   hintText: hintText,
                   hintStyle: AppFont.style(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
+                    fontSize: isFilter ? 14 : 16,
+                    fontWeight: isFilter ? FontWeight.w500 : FontWeight.w700,
                     color: const Color(0xFFA5ABB7),
                   ),
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 6),
+                  contentPadding: EdgeInsets.symmetric(vertical: isFilter ? 14 : 6),
                 ),
                 baseStyle: AppFont.style(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: const Color(0xFF0D121F),
+                  fontSize: isFilter ? 14 : 16,
+                  fontWeight: isFilter ? FontWeight.w500 : FontWeight.w900,
+                  color: isFilter ? const Color(0xFFA5ABB7) : const Color(0xFF0D121F),
                 ),
               ),
               dropdownButtonProps: DropdownButtonProps(
