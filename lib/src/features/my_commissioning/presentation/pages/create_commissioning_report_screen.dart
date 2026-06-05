@@ -12,6 +12,7 @@ import 'package:service_app/src/features/common/bloc/technician_bloc/technician_
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step1_bloc/commissioning_step1_bloc.dart';
 import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
+import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step1_autofill_bloc/commissioning_step1_autofill_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step2_autofill_bloc/commissioning_step2_autofill_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step2_bloc/commissioning_step2_bloc.dart';
@@ -3239,70 +3240,28 @@ class _CreateCommissioningReportScreenState
                         }
                       }
 
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 4,
-                        ),
-                        child: isLoading
-                            ? const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 12),
-                                child: Center(
-                                  child: SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(
-                                      color: Color(0xFF1565C0),
-                                      strokeWidth: 2.5,
-                                    ),
-                                  ),
-                                ),
+                      return SearchableDropdown<dynamic>(
+                        items: validItems,
+                        value: controller.text.isNotEmpty
+                            ? validItems.firstWhere(
+                                (e) => e.id == controller.text,
+                                orElse: () => null,
                               )
-                            : DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  value: controller.text.isNotEmpty
-                                      ? controller.text
-                                      : null,
-                                  hint: Text(
-                                    'commissioning_select_technician'.tr(),
-                                    style: AppFont.style(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: const Color(0xFFA5ABB7),
-                                    ),
-                                  ),
-                                  icon: widget.isServiceReport
-                                      ? const SizedBox.shrink()
-                                      : const Icon(
-                                          Icons.keyboard_arrow_down,
-                                          color: Color(0xFFA5ABB7),
-                                        ),
-                                  style: AppFont.style(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w900,
-                                    color: const Color(0xFF0D121F),
-                                  ),
-                                  onChanged: (v) {
-                                    if (v != null) {
-                                      setState(() => controller.text = v);
-                                    }
-                                  },
-                                  items: validItems
-                                      .map<DropdownMenuItem<String>>(
-                                        (e) => DropdownMenuItem(
-                                          value: e.id,
-                                          child: Text(e.name),
-                                        ),
-                                      )
-                                      .toList(),
-                                ),
+                            : null,
+                        hintText: 'commissioning_select_technician'.tr(),
+                        itemAsString: (item) => item.name,
+                        isLoading: isLoading,
+                        icon: widget.isServiceReport
+                            ? const SizedBox.shrink()
+                            : const Icon(
+                                Icons.keyboard_arrow_down,
+                                color: Color(0xFFA5ABB7),
                               ),
+                        onChanged: (v) {
+                          if (v != null) {
+                            setState(() => controller.text = v.id);
+                          }
+                        },
                       );
                     },
                   ),
@@ -4494,65 +4453,22 @@ class _CreateCommissioningReportScreenState
             const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
             const SizedBox(width: 8),
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE5E7EB)),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 4,
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _selectedTechnicianRepId,
-                    isExpanded: true,
-                    icon: const Icon(
-                      Icons.keyboard_arrow_down,
-                      color: Color(0xFFA5ABB7),
-                    ),
-                    style: AppFont.style(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      color: const Color(0xFF0D121F),
-                    ),
-                    hint: Text(
-                      'commissioning_select_technician'.tr(),
-                      style: AppFont.style(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFFA5ABB7),
-                      ),
-                    ),
-                    items: widget.isServiceReport
-                        ? _assignedServiceCallTechniciansList
-                              .map<DropdownMenuItem<String>>((
-                                service_tech_model.AssignedTechnician tech,
-                              ) {
-                                return DropdownMenuItem<String>(
-                                  value: tech.assignId,
-                                  child: Text(tech.name),
-                                );
-                              })
-                              .toList()
-                        : _assignedTechniciansList
-                              .map<DropdownMenuItem<String>>((
-                                AssignedTechnician tech,
-                              ) {
-                                return DropdownMenuItem<String>(
-                                  value: tech.assignId,
-                                  child: Text(tech.name),
-                                );
-                              })
-                              .toList(),
-                    onChanged: (val) {
-                      setState(() {
-                        _selectedTechnicianRepId = val;
-                      });
-                    },
-                  ),
-                ),
+              child: SearchableDropdown<dynamic>(
+                items: widget.isServiceReport
+                    ? _assignedServiceCallTechniciansList
+                    : _assignedTechniciansList,
+                value: _selectedTechnicianRepId != null
+                    ? (widget.isServiceReport
+                        ? _assignedServiceCallTechniciansList.where((e) => e.assignId == _selectedTechnicianRepId).firstOrNull
+                        : _assignedTechniciansList.where((e) => e.assignId == _selectedTechnicianRepId).firstOrNull)
+                    : null,
+                hintText: 'commissioning_select_technician'.tr(),
+                itemAsString: (item) => item.name,
+                onChanged: (item) {
+                  setState(() {
+                    _selectedTechnicianRepId = item?.assignId;
+                  });
+                },
               ),
             ),
           ],

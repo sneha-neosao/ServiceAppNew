@@ -15,6 +15,7 @@ import 'package:service_app/src/features/service_calls/bloc/assigned_service_cal
 import 'package:service_app/src/features/service_calls/bloc/assigned_service_calls_bloc/assigned_service_calls_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_event.dart';
+import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 
 class AssignTechnicianDialog extends StatefulWidget {
   final String complaintId;
@@ -203,59 +204,24 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             ),
                             const SizedBox(height: 12),
                           ],
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: const Color(0xFFE5E7EB),
-                              ),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<Technician>(
-                                isExpanded: true,
-                                value: null,
-                                hint: Text(
-                                  'assign_tech_dialog_choose_hint'.tr(),
-                                  style: AppFont.style(
-                                    fontSize: 14,
-                                    color: const Color(0xFFA5ABB7),
-                                    fontWeight: FontWeight.w500,
+                          SearchableDropdown<Technician>(
+                            items: technicians
+                                .where(
+                                  (tech) => !_selectedTechnicians.any(
+                                    (selected) => selected.id == tech.id,
                                   ),
-                                ),
-                                icon: const Icon(
-                                  Icons.keyboard_arrow_down,
-                                  color: Color(0xFFA5ABB7),
-                                ),
-                                items: technicians
-                                    .where(
-                                      (tech) => !_selectedTechnicians.any(
-                                        (selected) => selected.id == tech.id,
-                                      ),
-                                    )
-                                    .map(
-                                      (tech) => DropdownMenuItem<Technician>(
-                                        value: tech,
-                                        child: Text(
-                                          tech.name,
-                                          style: AppFont.style(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            color: const Color(0xFF0D121F),
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: (tech) {
-                                  if (tech != null) {
-                                    setState(() {
-                                      _selectedTechnicians.add(tech);
-                                    });
-                                  }
-                                },
-                              ),
-                            ),
+                                )
+                                .toList(),
+                            value: null,
+                            hintText: 'assign_tech_dialog_choose_hint'.tr(),
+                            itemAsString: (tech) => tech.name,
+                            onChanged: (tech) {
+                              if (tech != null) {
+                                setState(() {
+                                  _selectedTechnicians.add(tech);
+                                });
+                              }
+                            },
                           ),
                         ],
                       );

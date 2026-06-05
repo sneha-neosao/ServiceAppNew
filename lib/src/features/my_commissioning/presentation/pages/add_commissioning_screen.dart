@@ -22,6 +22,7 @@ import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create
 import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_state.dart';
 import 'package:service_app/src/features/common/domain/usecase/create_new_site_usecase.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
+import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 
 class AddCommissioningScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -1074,59 +1075,17 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
     final bool isEnabled = onChanged != null;
 
-    return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: isEnabled ? const Color(0xFFF8F9FB) : const Color(0xFFF1F2F6),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
+    return SearchableDropdown<String>(
+      items: validItems,
+      value: value,
+      hintText: hint,
+      itemAsString: (item) => item,
+      onChanged: onChanged,
+      isLoading: isLoading,
+      icon: Icon(
+        Icons.keyboard_arrow_down,
+        color: isEnabled ? const Color(0xFFA5ABB7) : const Color(0xFFCBD5E1),
       ),
-      child: isLoading
-          ? const Center(
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  color: Color(0xFF1565C0),
-                  strokeWidth: 2.5,
-                ),
-              ),
-            )
-          : DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                isExpanded: true,
-                value: value,
-                hint: Text(
-                  hint,
-                  style: AppFont.style(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: isEnabled
-                        ? const Color(0xFFA5ABB7)
-                        : const Color(0xFFCBD5E1),
-                  ),
-                ),
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: isEnabled
-                      ? const Color(0xFFA5ABB7)
-                      : const Color(0xFFCBD5E1),
-                ),
-                dropdownColor: Colors.white,
-                style: AppFont.style(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: isEnabled
-                      ? const Color(0xFF0D121F)
-                      : const Color(0xFFA5ABB7),
-                ),
-                onChanged: onChanged,
-                items: validItems
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-              ),
-            ),
     );
   }
 
