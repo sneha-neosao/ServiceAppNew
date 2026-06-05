@@ -182,7 +182,7 @@ class ApiInterceptor extends Interceptor {
       print("🔴 Navigation Context: $context");
       if (context == null) return;
 
-      context.go(AppRoute.nextScreen.path);
+      context.go(AppRoute.loginScreen.path);
     });
   }
 }

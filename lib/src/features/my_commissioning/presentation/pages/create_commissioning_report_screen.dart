@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:service_app/src/features/widgets/step_shimmer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:signature/signature.dart';
 import 'package:path_provider/path_provider.dart';
@@ -16,7 +17,6 @@ import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step1_autofill_bloc/commissioning_step1_autofill_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step2_autofill_bloc/commissioning_step2_autofill_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step2_bloc/commissioning_step2_bloc.dart';
-
 import '../../../../remote/models/commissioning_report_step1_model/commissioning_report_step1_autofill_response.dart';
 import '../../../../remote/models/commissioning_report_step2_autofill_model/commissioning_report_step2_autofill_response.dart';
 import '../../../../remote/models/commissioning_report_step3_autofill_model/commissioning_report_step3_autofill_response.dart';
@@ -103,13 +103,11 @@ import 'package:service_app/src/features/service_calls/bloc/service_call_report_
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_autofill_bloc/service_call_report_step6_autofill_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_autofill_bloc/service_call_report_step6_autofill_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_autofill_bloc/service_call_report_step6_autofill_state.dart';
-
 class CreateCommissioningReportScreen extends StatefulWidget {
   final VoidCallback onBack;
   final bool isServiceReport;
   final String commissioningWorkId;
   final String? complaintNo;
-
   const CreateCommissioningReportScreen({
     super.key,
     required this.onBack,
@@ -117,12 +115,10 @@ class CreateCommissioningReportScreen extends StatefulWidget {
     this.isServiceReport = false,
     this.complaintNo,
   });
-
   @override
   State<CreateCommissioningReportScreen> createState() =>
       _CreateCommissioningReportScreenState();
 }
-
 class _CreateCommissioningReportScreenState
     extends State<CreateCommissioningReportScreen> {
   int _currentStep = 1;
@@ -132,19 +128,16 @@ class _CreateCommissioningReportScreenState
   String? _selectedWarranty;
   bool _isTechnicalDetailsNA = false;
   int _workDescriptionRows = 5;
-
   // ── Step 5: Preventive Maintenance Checklist ──────────────────────────────
   // NA toggles per section
   bool _mechNA = false;
   bool _pipeNA = false;
   bool _elecNA = false;
-
   // Mechanical Checklist
   String? _bearingNoise;
   String? _vibration;
   String? _mechSeal;
   String? _pumpDry;
-
   // Pipeline / Hydraulic Checklist
   String? _nrvValve;
   String? _strainerValve;
@@ -152,30 +145,24 @@ class _CreateCommissioningReportScreenState
   String? _deliveryLine;
   String? _suctionDelivery;
   String? _pressureSwitch;
-
   // Electrical Checklist
   String? _elecFaults;
   String? _voltage;
   String? _phase;
   String? _current;
   String? _panelWiring;
-
   late CommissioningStep1AutoFillBloc _step1Bloc;
   late TechnicianBloc _technicianBloc;
   late CommissioningStep1Bloc _submitStep1Bloc;
   late CommissioningStep2Bloc _submitStep2Bloc;
   late CommissioningStep2AutoFillBloc _step2Bloc;
   late TextEditingController _agendaController;
-
   late CommissioningStep3AutoFillBloc _step3Bloc;
   late CommissioningStep3Bloc _submitStep3Bloc;
-
   late CommissioningStep4AutoFillBloc _step4Bloc;
   late CommissioningStep4Bloc _submitStep4Bloc;
-
   late CommissioningStep5AutoFillBloc _step5Bloc;
   late CommissioningStep5Bloc _submitStep5Bloc;
-
   late CommissioningStep6AutoFillBloc _step6Bloc;
   late CommissioningStep6Bloc _submitStep6Bloc;
   late AssignedTechnicianRepresentativeBloc _assignedTechniciansBloc;
@@ -193,27 +180,21 @@ class _CreateCommissioningReportScreenState
   late ServiceCallReportStep5Bloc _submitServiceCallStep5Bloc;
   late ServiceCallReportStep6Bloc _submitServiceCallStep6Bloc;
   late ServiceCallReportStep6AutoFillBloc _serviceCallStep6AutoFillBloc;
-
   // Step 6 Controllers & variables
   final _technicianRemarksController = TextEditingController();
   final _customerRemarksController = TextEditingController();
   final _customerRepNameController = TextEditingController();
-
   String? _selectedTechnicianRepId;
   String? _autofilledTechRepName;
   List<AssignedTechnician> _assignedTechniciansList = [];
   List<service_tech_model.AssignedTechnician>
   _assignedServiceCallTechniciansList = [];
-
   File? _technicianSignatureFile;
   File? _customerSignatureFile;
-
   String? _existingTechnicianSignatureUrl;
   String? _existingCustomerSignatureUrl;
-
   final List<File> _workPhotos = [];
   List<String> _existingWorkPhotosUrls = [];
-
   // Step 3 Controllers
   final _pumpMakeController = TextEditingController();
   final _pumpModelController = TextEditingController();
@@ -230,17 +211,14 @@ class _CreateCommissioningReportScreenState
   final _rpmController = TextEditingController();
   final _controlPanelMakeController = TextEditingController();
   final _panelSerialModelController = TextEditingController();
-
   final List<TextEditingController> _workDescriptionControllers = [
     TextEditingController(),
     TextEditingController(),
     TextEditingController(),
   ];
-
   final Map<String, File> _step5Media = {};
   final Map<String, String?> _step5ExistingPhotos = {};
   final Map<String, String?> _step5ExistingVideos = {};
-
   Future<void> _pickMedia(String key, ImageSource source, bool isVideo) async {
     final ImagePicker picker = ImagePicker();
     if (isVideo) {
@@ -259,16 +237,13 @@ class _CreateCommissioningReportScreenState
       }
     }
   }
-
   @override
   void initState() {
     super.initState();
     _submitStep1Bloc = getIt<CommissioningStep1Bloc>();
     _submitStep2Bloc = getIt<CommissioningStep2Bloc>();
-
     _step1Bloc = getIt<CommissioningStep1AutoFillBloc>();
     _serviceCallStep1AutoFillBloc = getIt<ServiceCallReportStep1AutoFillBloc>();
-
     if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
       _serviceCallStep1AutoFillBloc.add(
         ServiceCallReportStep1AutoFillGetEvent(widget.commissioningWorkId),
@@ -278,7 +253,6 @@ class _CreateCommissioningReportScreenState
         CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId),
       );
     }
-
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
     _step2Bloc = getIt<CommissioningStep2AutoFillBloc>();
     _serviceCallStep2AutoFillBloc = getIt<ServiceCallReportStep2AutoFillBloc>();
@@ -305,11 +279,9 @@ class _CreateCommissioningReportScreenState
     _createBloc = getIt<CommissioningWorkCreateBloc>();
     _submitServiceCallStep1Bloc = getIt<ServiceCallReportStep1Bloc>();
     _agendaController = TextEditingController();
-
     _technicians = [TextEditingController()];
     _representatives = [TextEditingController()];
   }
-
   @override
   void dispose() {
     _step1Bloc.close();
@@ -372,7 +344,6 @@ class _CreateCommissioningReportScreenState
     }
     super.dispose();
   }
-
   void _nextStep() {
     if (_currentStep == 1) {
       List<String> technicianIds = [];
@@ -381,7 +352,6 @@ class _CreateCommissioningReportScreenState
           technicianIds.add(controller.text);
         }
       }
-
       if (widget.isServiceReport) {
         if (_submitServiceCallStep1Bloc.state
             is ServiceCallReportStep1LoadingState)
@@ -402,14 +372,12 @@ class _CreateCommissioningReportScreenState
       }
     } else if (_currentStep == 2) {
       if (_submitStep2Bloc.state is CommissioningStep2LoadingState) return;
-
       List<String> repNames = [];
       for (var c in _representatives) {
         if (c.text.trim().isNotEmpty) {
           repNames.add(c.text.trim());
         }
       }
-
       // if (repNames.isEmpty) {
       //   appSnackBar(
       //     context,
@@ -418,7 +386,6 @@ class _CreateCommissioningReportScreenState
       //   );
       //   return;
       // }
-
       // if (_agendaController.text.trim().isEmpty) {
       //   appSnackBar(
       //     context,
@@ -427,12 +394,10 @@ class _CreateCommissioningReportScreenState
       //   );
       //   return;
       // }
-
       if (widget.isServiceReport) {
         if (_submitServiceCallStep2Bloc.state
             is ServiceCallReportStep2LoadingState)
           return;
-
         _submitServiceCallStep2Bloc.add(
           ServiceCallReportStep2PostEvent(
             ServiceCallReportStep2Params(
@@ -444,7 +409,6 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         if (_submitStep2Bloc.state is CommissioningStep2LoadingState) return;
-
         if (!widget.isServiceReport && _selectedWarranty == null) {
           appSnackBar(
             context,
@@ -453,11 +417,9 @@ class _CreateCommissioningReportScreenState
           );
           return;
         }
-
         int warrantyYears = _selectedWarranty != null
             ? (int.tryParse(_selectedWarranty!.split('_').first) ?? 1)
             : 1;
-
         _submitStep2Bloc.add(
           CommissioningStep2GetEvent(
             _commissioningReportId ?? widget.commissioningWorkId,
@@ -487,12 +449,10 @@ class _CreateCommissioningReportScreenState
               controlPanelMake: _controlPanelMakeController.text,
               panelSerialModel: _panelSerialModelController.text,
             );
-
       if (widget.isServiceReport) {
         if (_submitServiceCallStep3Bloc.state
             is ServiceCallReportStep3LoadingState)
           return;
-
         _submitServiceCallStep3Bloc.add(
           ServiceCallReportStep3PostEvent(
             ServiceCallReportStep3Params(
@@ -504,7 +464,6 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         if (_submitStep3Bloc.state is CommissioningStep3LoadingState) return;
-
         if (!_isTechnicalDetailsNA) {
           if (_pumpMakeController.text.trim().isEmpty) {
             appSnackBar(context, const Color(0xFFF44336), 'val_enter_pump_make'.tr());
@@ -567,7 +526,6 @@ class _CreateCommissioningReportScreenState
             return;
           }
         }
-
         _submitStep3Bloc.add(
           CommissioningStep3GetEvent(
             _commissioningReportId ?? widget.commissioningWorkId,
@@ -578,7 +536,6 @@ class _CreateCommissioningReportScreenState
       }
     } else if (_currentStep == 4) {
       if (_submitStep4Bloc.state is CommissioningStep4LoadingState) return;
-
       List<SavedDescription> descriptions = [];
       for (int i = 0; i < _workDescriptionControllers.length; i++) {
         final text = _workDescriptionControllers[i].text.trim();
@@ -586,7 +543,6 @@ class _CreateCommissioningReportScreenState
           descriptions.add(SavedDescription(srNo: i + 1, description: text));
         }
       }
-
       // if (descriptions.isEmpty) {
       //   appSnackBar(
       //     context,
@@ -595,7 +551,6 @@ class _CreateCommissioningReportScreenState
       //   );
       //   return;
       // }
-
       if (widget.isServiceReport) {
         _submitServiceCallStep4Bloc.add(
           ServiceCallReportStep4PostEvent(
@@ -615,9 +570,7 @@ class _CreateCommissioningReportScreenState
       }
     } else if (_currentStep == 5) {
       if (_submitStep5Bloc.state is CommissioningStep5LoadingState) return;
-
       List<SavedChecklist> savedChecklists = [];
-
       // Add mechanical checklists if not NA
       if (!_mechNA) {
         if (_bearingNoise != null)
@@ -677,7 +630,6 @@ class _CreateCommissioningReportScreenState
             ),
           );
       }
-
       // Add pipeline checklists if not NA
       if (!_pipeNA) {
         if (_nrvValve != null)
@@ -781,7 +733,6 @@ class _CreateCommissioningReportScreenState
             ),
           );
       }
-
       // Add electrical checklists if not NA
       if (!_elecNA) {
         if (_elecFaults != null)
@@ -850,7 +801,6 @@ class _CreateCommissioningReportScreenState
             ),
           );
       }
-
       if (widget.isServiceReport) {
         _submitServiceCallStep5Bloc.add(
           ServiceCallReportStep5PostEvent(
@@ -891,7 +841,6 @@ class _CreateCommissioningReportScreenState
             return;
           }
         }
-
         // Validate pipeline section
         if (!_pipeNA) {
           if (_nrvValve == null) {
@@ -919,7 +868,6 @@ class _CreateCommissioningReportScreenState
             return;
           }
         }
-
         // Validate electrical section
         if (!_elecNA) {
           if (_elecFaults == null) {
@@ -943,7 +891,6 @@ class _CreateCommissioningReportScreenState
             return;
           }
         }
-
         _submitStep5Bloc.add(
           CommissioningStep5GetEvent(
             _commissioningReportId ?? widget.commissioningWorkId,
@@ -959,11 +906,9 @@ class _CreateCommissioningReportScreenState
           _submitServiceCallStep6Bloc.state
               is ServiceCallReportStep6LoadingState)
         return;
-
       print(
         "🚀 Submitting Step 6: technicianRepresentative = '$_selectedTechnicianRepId'",
       );
-
       if (widget.isServiceReport) {
         String? techSignaturePath = _technicianSignatureFile?.path;
         if (techSignaturePath == null &&
@@ -971,21 +916,18 @@ class _CreateCommissioningReportScreenState
             _existingTechnicianSignatureUrl!.isNotEmpty) {
           techSignaturePath = _existingTechnicianSignatureUrl;
         }
-
         String? custSignaturePath = _customerSignatureFile?.path;
         if (custSignaturePath == null &&
             _existingCustomerSignatureUrl != null &&
             _existingCustomerSignatureUrl!.isNotEmpty) {
           custSignaturePath = _existingCustomerSignatureUrl;
         }
-
         List<String> workPhotosPaths = _workPhotos.map((f) => f.path).toList();
         if (workPhotosPaths.isEmpty && _existingWorkPhotosUrls.isNotEmpty) {
           workPhotosPaths = List.from(_existingWorkPhotosUrls);
         } else if (_existingWorkPhotosUrls.isNotEmpty) {
           workPhotosPaths.addAll(_existingWorkPhotosUrls);
         }
-
         // Validation
         if (_selectedTechnicianRepId == null || _selectedTechnicianRepId!.isEmpty) {
           appSnackBar(context, const Color(0xFFF44336), 'val_sel_tech_rep'.tr());
@@ -1007,7 +949,6 @@ class _CreateCommissioningReportScreenState
           appSnackBar(context, const Color(0xFFF44336), 'val_upload_photo'.tr());
           return;
         }
-
         _submitServiceCallStep6Bloc.add(
           ServiceCallReportStep6SubmitEvent(
             reportId: _commissioningReportId ?? widget.commissioningWorkId,
@@ -1045,7 +986,6 @@ class _CreateCommissioningReportScreenState
           appSnackBar(context, const Color(0xFFF44336), 'val_upload_photo'.tr());
           return;
         }
-
         _submitStep6Bloc.add(
           CommissioningStep6SubmitEvent(
             commissioning_report_id:
@@ -1062,7 +1002,6 @@ class _CreateCommissioningReportScreenState
       }
     }
   }
-
   void _previousStep() {
     if (_currentStep > 1) {
       setState(() {
@@ -1149,7 +1088,6 @@ class _CreateCommissioningReportScreenState
       widget.onBack();
     }
   }
-
   void _showSuccessDialog({String? qrCodeImage}) {
     showDialog(
       context: context,
@@ -1272,7 +1210,6 @@ class _CreateCommissioningReportScreenState
       },
     );
   }
-
   String _getStepInfo() {
     switch (_currentStep) {
       case 1:
@@ -1291,7 +1228,6 @@ class _CreateCommissioningReportScreenState
         return 'STEP $_currentStep OF 6';
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<
@@ -1305,11 +1241,9 @@ class _CreateCommissioningReportScreenState
           _technicianRemarksController.text = data.technicianRemarks;
           _customerRemarksController.text = data.customerRemarks;
           _customerRepNameController.text = data.customerRepresentativeName;
-
           if (data.technicianRepresentativeName.isNotEmpty) {
             _autofilledTechRepName = data.technicianRepresentativeName;
           }
-
           if (data.technicianSignature.isNotEmpty) {
             _existingTechnicianSignatureUrl = data.technicianSignature;
           }
@@ -1319,7 +1253,6 @@ class _CreateCommissioningReportScreenState
           if (data.savedWorkPhotos.isNotEmpty) {
             _existingWorkPhotosUrls = data.savedWorkPhotos;
           }
-
           setState(() {});
         }
       },
@@ -1873,7 +1806,6 @@ class _CreateCommissioningReportScreenState
                                                                                 _mechNA = data.isMechanicalChecklistNa;
                                                                                 _pipeNA = data.isPipelineChecklistNa;
                                                                                 _elecNA = data.isElectricalChecklistNa;
-
                                                                                 _bearingNoise = null;
                                                                                 _vibration = null;
                                                                                 _mechSeal = null;
@@ -1889,14 +1821,11 @@ class _CreateCommissioningReportScreenState
                                                                                 _phase = null;
                                                                                 _current = null;
                                                                                 _panelWiring = null;
-
                                                                                 for (var check in data.savedChecklists) {
                                                                                   final key = check.keyChecklist;
                                                                                   final val = check.valueChecklist;
-
                                                                                   _step5ExistingPhotos[key] = check.photo;
                                                                                   _step5ExistingVideos[key] = check.video;
-
                                                                                   if (key ==
                                                                                       "Bearing noise")
                                                                                     _bearingNoise = val;
@@ -1965,7 +1894,6 @@ class _CreateCommissioningReportScreenState
                                                                                       _mechNA = data.isMechanicalChecklistNa;
                                                                                       _pipeNA = data.isPipelineChecklistNa;
                                                                                       _elecNA = data.isElectricalChecklistNa;
-
                                                                                       _bearingNoise = null;
                                                                                       _vibration = null;
                                                                                       _mechSeal = null;
@@ -1981,14 +1909,11 @@ class _CreateCommissioningReportScreenState
                                                                                       _phase = null;
                                                                                       _current = null;
                                                                                       _panelWiring = null;
-
                                                                                       for (var check in data.savedChecklists) {
                                                                                         final key = check.keyChecklist;
                                                                                         final val = check.valueChecklist;
-
                                                                                         _step5ExistingPhotos[key] = check.photo;
                                                                                         _step5ExistingVideos[key] = check.video;
-
                                                                                         if (key ==
                                                                                             "Bearing noise")
                                                                                           _bearingNoise = val;
@@ -2218,7 +2143,6 @@ class _CreateCommissioningReportScreenState
                                                                                                       ],
                                                                                                     ),
                                                                                                   ),
-
                                                                                                   const Divider(
                                                                                                     height: 1,
                                                                                                     thickness: 1,
@@ -2226,7 +2150,6 @@ class _CreateCommissioningReportScreenState
                                                                                                       0xFFF1F2F6,
                                                                                                     ),
                                                                                                   ),
-
                                                                                                   // ── Body ────────────────────────────────────────────────────────
                                                                                                   Expanded(
                                                                                                     child: SingleChildScrollView(
@@ -2237,7 +2160,6 @@ class _CreateCommissioningReportScreenState
                                                                                                       child: _buildBodyContent(),
                                                                                                     ),
                                                                                                   ),
-
                                                                                                   // ── Footer ──────────────────────────────────────────────────────
                                                                                                   Container(
                                                                                                     padding: const EdgeInsets.symmetric(
@@ -2609,7 +2531,6 @@ class _CreateCommissioningReportScreenState
       ), // Step 2 Service Call Submit
     ); // Service Call Step 6 AutoFill Submit
   }
-
   Widget _buildBodyContent() {
     switch (_currentStep) {
       case 1:
@@ -2637,12 +2558,7 @@ class _CreateCommissioningReportScreenState
             builder: (context, state) {
               if (state is ServiceCallReportStep1AutoFillLoadingState ||
                   state is ServiceCallReportStep1AutoFillInitialState) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                  ),
-                );
+                return const StepShimmer(step: 1);
               }
               // Since _buildStep1 expects CommissioningWorkData, and ServiceCallData has different fields,
               // we might need to handle this. But wait, _buildStep1 takes 'data' as dynamic or specific type?
@@ -2677,12 +2593,7 @@ class _CreateCommissioningReportScreenState
             builder: (context, state) {
               if (state is CommissioningStep1AutoFillLoadingState ||
                   state is CommissioningStep1AutoFillInitialState) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                  ),
-                );
+                return const StepShimmer(step: 1);
               }
               final data = state is CommissioningStep1AutoFillSuccessState
                   ? state.data.data
@@ -2719,12 +2630,7 @@ class _CreateCommissioningReportScreenState
             builder: (context, state) {
               if (state is ServiceCallReportStep2AutoFillLoadingState ||
                   state is ServiceCallReportStep2AutoFillInitialState) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                  ),
-                );
+                return const StepShimmer(step: 2);
               }
               return _buildStep2();
             },
@@ -2759,12 +2665,7 @@ class _CreateCommissioningReportScreenState
             builder: (context, state) {
               if (state is CommissioningStep2AutoFillLoadingState ||
                   state is CommissioningStep2AutoFillInitialState) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                  ),
-                );
+                return const StepShimmer(step: 2);
               }
               return _buildStep2();
             },
@@ -2780,12 +2681,7 @@ class _CreateCommissioningReportScreenState
             builder: (context, state) {
               if (state is ServiceCallReportStep3AutoFillLoadingState ||
                   state is ServiceCallReportStep3AutoFillInitialState) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                  ),
-                );
+                return const StepShimmer(step: 3);
               }
               return _buildStep3();
             },
@@ -2799,12 +2695,7 @@ class _CreateCommissioningReportScreenState
             builder: (context, state) {
               if (state is CommissioningStep3AutoFillLoadingState ||
                   state is CommissioningStep3AutoFillInitialState) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                  ),
-                );
+                return const StepShimmer(step: 3);
               }
               return _buildStep3();
             },
@@ -2820,12 +2711,7 @@ class _CreateCommissioningReportScreenState
             builder: (context, state) {
               if (state is ServiceCallReportStep4AutoFillLoadingState ||
                   state is ServiceCallReportStep4AutoFillInitialState) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                  ),
-                );
+                return const StepShimmer(step: 4);
               }
               return _buildStep4();
             },
@@ -2839,12 +2725,7 @@ class _CreateCommissioningReportScreenState
             builder: (context, state) {
               if (state is CommissioningStep4AutoFillLoadingState ||
                   state is CommissioningStep4AutoFillInitialState) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                  ),
-                );
+                return const StepShimmer(step: 4);
               }
               return _buildStep4();
             },
@@ -2860,12 +2741,7 @@ class _CreateCommissioningReportScreenState
             builder: (context, state) {
               if (state is ServiceCallReportStep5AutoFillLoadingState ||
                   state is ServiceCallReportStep5AutoFillInitialState) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                  ),
-                );
+                return const StepShimmer(step: 5);
               }
               return _buildStep5();
             },
@@ -2879,12 +2755,7 @@ class _CreateCommissioningReportScreenState
             builder: (context, state) {
               if (state is CommissioningStep5AutoFillLoadingState ||
                   state is CommissioningStep5AutoFillInitialState) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                  ),
-                );
+                return const StepShimmer(step: 5);
               }
               return _buildStep5();
             },
@@ -2925,12 +2796,7 @@ class _CreateCommissioningReportScreenState
             builder: (context, techState) {
               // Service report step 6 autofill is not fully implemented yet, but we handle the loading
               if (techState is AssignedServicecallTechnicianLoadingState) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-                  ),
-                );
+                return const StepShimmer(step: 6);
               }
               return _buildStep6();
             },
@@ -3015,14 +2881,7 @@ class _CreateCommissioningReportScreenState
                   if (techState
                           is AssignedTechnicianRepresentativeLoadingState ||
                       step6State is CommissioningStep6AutoFillLoadingState) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(32.0),
-                        child: CircularProgressIndicator(
-                          color: Color(0xFF1565C0),
-                        ),
-                      ),
-                    );
+                return const StepShimmer(step: 6);
                   }
                   return _buildStep6();
                 },
@@ -3034,7 +2893,6 @@ class _CreateCommissioningReportScreenState
         return const Center(child: Text("Coming Soon"));
     }
   }
-
   Widget _buildStep1([dynamic data]) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3104,9 +2962,7 @@ class _CreateCommissioningReportScreenState
             ],
           ),
         ),
-
         const SizedBox(height: 32),
-
         // ── Service Provider Name ────────────────────────────────────────
         Text(
           'commissioning_service_provider'.tr(),
@@ -3127,9 +2983,7 @@ class _CreateCommissioningReportScreenState
             color: const Color(0xFF0D121F),
           ),
         ),
-
         const SizedBox(height: 24),
-
         // ── Technician Name(s) ──────────────────────────────────────────
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -3150,7 +3004,7 @@ class _CreateCommissioningReportScreenState
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF0B68B9),
+                      color: Colors.red,
                     ),
                   ),
                 ],
@@ -3208,16 +3062,13 @@ class _CreateCommissioningReportScreenState
                       if (state is TechnicianSuccessState) {
                         validItems = List.from(state.data.data);
                       }
-
                       final otherSelected = _technicians
                           .where((c) => c != controller && c.text.isNotEmpty)
                           .map((c) => c.text)
                           .toSet();
-
                       validItems.removeWhere(
                         (item) => otherSelected.contains(item.id),
                       );
-
                       if (controller.text.isNotEmpty &&
                           !validItems.any((e) => e.id == controller.text)) {
                         if (state is TechnicianSuccessState) {
@@ -3229,7 +3080,6 @@ class _CreateCommissioningReportScreenState
                           } catch (_) {}
                         }
                       }
-
                       return SearchableDropdown<dynamic>(
                         items: validItems,
                         value: controller.text.isNotEmpty
@@ -3284,9 +3134,7 @@ class _CreateCommissioningReportScreenState
             ),
           );
         }),
-
         const SizedBox(height: 16),
-
         // ── Customer & Project Details ───────────────────────────────────
         _buildInfoRow('commissioning_customer_name_label'.tr(), data?.customerName ?? 'commissioning_customer_name_fallback'.tr()),
         const SizedBox(height: 24),
@@ -3302,12 +3150,10 @@ class _CreateCommissioningReportScreenState
             'commissioning_application_equipment_label'.tr(),
             data?.applicationOfEquipment ?? 'commissioning_application_equipment_fallback'.tr(),
           ),
-
         const SizedBox(height: 40),
       ],
     );
   }
-
   Widget _buildInfoRow(String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3345,7 +3191,6 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
-
   // Reusable Step Builders (Placeholder logic for Steps 2-6)
   Widget _buildStep2() {
     return Column(
@@ -3356,7 +3201,6 @@ class _CreateCommissioningReportScreenState
         const SizedBox(height: 12),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 32),
-
         // ── Member Presents ─────────────────────────────────────────────
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -3472,9 +3316,7 @@ class _CreateCommissioningReportScreenState
             ),
           ],
         ),
-
         const SizedBox(height: 16),
-
         // ── Select Warranty Period (Hidden for Service Report) ───────────
         if (!widget.isServiceReport) ...[
           Row(
@@ -3498,7 +3340,7 @@ class _CreateCommissioningReportScreenState
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF0B68B9),
+                          color: Colors.red,
                         ),
                       ),
                     ],
@@ -3561,13 +3403,11 @@ class _CreateCommissioningReportScreenState
           ),
           const SizedBox(height: 40),
         ],
-
         // ── Purpose of Visit Section ─────────────────────────────────────
         _buildLabel('commissioning_agenda_title'.tr()),
         const SizedBox(height: 12),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 16),
-
         // ── Purpose Text Area ────────────────────────────────────────────
         Container(
           decoration: BoxDecoration(
@@ -3615,7 +3455,6 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
-
   Widget _buildStep3() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3674,7 +3513,6 @@ class _CreateCommissioningReportScreenState
         const SizedBox(height: 12),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 32),
-
         // ── Input Fields ────────────────────────────────────────────────
         IgnorePointer(
           ignoring: _isTechnicalDetailsNA,
@@ -3727,12 +3565,10 @@ class _CreateCommissioningReportScreenState
             ),
           ),
         ),
-
         const SizedBox(height: 40),
       ],
     );
   }
-
   Widget _buildTechField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
@@ -3755,7 +3591,7 @@ class _CreateCommissioningReportScreenState
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFF0B68B9),
+                    color: Colors.red,
                   ),
                 ),
               ],
@@ -3784,7 +3620,6 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
-
   Widget _buildTechMultiField(
     String label,
     List<String> units,
@@ -3811,7 +3646,7 @@ class _CreateCommissioningReportScreenState
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFF0B68B9),
+                    color: Colors.red,
                   ),
                 ),
               ],
@@ -3868,7 +3703,6 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
-
   Widget _buildStep4() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -3887,7 +3721,6 @@ class _CreateCommissioningReportScreenState
         const SizedBox(height: 12),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 24),
-
         // ── Work Description Fields ──────────────────────────────────────
         ...List.generate(
           _workDescriptionControllers.length,
@@ -3896,12 +3729,10 @@ class _CreateCommissioningReportScreenState
             _workDescriptionControllers[index],
           ),
         ),
-
         const SizedBox(height: 40),
       ],
     );
   }
-
   Widget _buildWorkDescriptionField(
     int number,
     TextEditingController controller,
@@ -3972,7 +3803,6 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
-
   Widget _buildStep5() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3988,7 +3818,6 @@ class _CreateCommissioningReportScreenState
           ),
         ),
         const SizedBox(height: 28),
-
         // ── Mechanical Checklist ───────────────────────────────────────────────
         _buildCheckSection(
           icon: Icons.settings_outlined,
@@ -4026,9 +3855,7 @@ class _CreateCommissioningReportScreenState
             ),
           ],
         ),
-
         const SizedBox(height: 28),
-
         // ── Pipeline / Hydraulic Checklist ────────────────────────────────────
         _buildCheckSection(
           icon: Icons.water_drop_outlined,
@@ -4080,9 +3907,7 @@ class _CreateCommissioningReportScreenState
             ),
           ],
         ),
-
         const SizedBox(height: 28),
-
         // ── Electrical Checklist ───────────────────────────────────────────────
         _buildCheckSection(
           icon: Icons.bolt_outlined,
@@ -4127,12 +3952,10 @@ class _CreateCommissioningReportScreenState
             ),
           ],
         ),
-
         const SizedBox(height: 60),
       ],
     );
   }
-
   // ── Checklist section wrapper (header + NA + items with disable support) ───
   Widget _buildCheckSection({
     required IconData icon,
@@ -4198,7 +4021,6 @@ class _CreateCommissioningReportScreenState
         const SizedBox(height: 4),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 12),
-
         // Items — disabled when NA is checked
         IgnorePointer(
           ignoring: isNA,
@@ -4214,7 +4036,6 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
-
   // ── Single checklist item: label + radio-style option boxes ───────────────
   Widget _buildCheckItem({
     required String label,
@@ -4244,7 +4065,7 @@ class _CreateCommissioningReportScreenState
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFF0B68B9),
+                    color: Colors.red,
                   ),
                 ),
               ],
@@ -4313,7 +4134,6 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
-
   Widget _buildMediaActionBtn({
     required IconData icon,
     required String text,
@@ -4346,7 +4166,6 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
-
   Widget _buildStep6() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -4365,9 +4184,7 @@ class _CreateCommissioningReportScreenState
           'commissioning_remarks_tech_hint'.tr(),
           _technicianRemarksController,
         ),
-
         const SizedBox(height: 28),
-
         // ── Remarks (Customer Side) ──────────────────────────────────
         Text(
           'commissioning_remarks_customer'.tr(),
@@ -4382,11 +4199,9 @@ class _CreateCommissioningReportScreenState
           'commissioning_remarks_customer_hint'.tr(),
           _customerRemarksController,
         ),
-
         const SizedBox(height: 36),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 28),
-
         // ── Recorded By ────────────────────────────────────────────
         Text(
           'commissioning_recorded_by'.tr(),
@@ -4397,7 +4212,6 @@ class _CreateCommissioningReportScreenState
           ),
         ),
         const SizedBox(height: 24),
-
         // Technician Rep
         Text(
           'commissioning_tech_rep'.tr(),
@@ -4432,7 +4246,7 @@ class _CreateCommissioningReportScreenState
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF0B68B9),
+                        color: Colors.red,
                       ),
                     ),
                   ],
@@ -4483,9 +4297,7 @@ class _CreateCommissioningReportScreenState
             });
           },
         ),
-
         const SizedBox(height: 36),
-
         // Customer Rep
         Text(
           'commissioning_customer_rep'.tr(),
@@ -4521,7 +4333,7 @@ class _CreateCommissioningReportScreenState
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF0B68B9),
+                        color: Colors.red,
                       ),
                     ),
                   ],
@@ -4582,11 +4394,9 @@ class _CreateCommissioningReportScreenState
             });
           },
         ),
-
         const SizedBox(height: 36),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 28),
-
         // ── Upload / Capture Work Photos ──────────────────────────────
         RichText(
           text: TextSpan(
@@ -4604,14 +4414,13 @@ class _CreateCommissioningReportScreenState
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w900,
-                  color: Color(0xFF0B68B9),
+                  color: Colors.red,
                 ),
               ),
             ],
           ),
         ),
         const SizedBox(height: 16),
-
         Wrap(
           spacing: 12,
           runSpacing: 12,
@@ -4666,7 +4475,6 @@ class _CreateCommissioningReportScreenState
                 ],
               );
             }),
-
             // Render selected local photos
             ..._workPhotos.map((file) {
               return Stack(
@@ -4709,7 +4517,6 @@ class _CreateCommissioningReportScreenState
                 ],
               );
             }),
-
             // Add Photo tile
             GestureDetector(
               onTap: () {
@@ -4753,12 +4560,10 @@ class _CreateCommissioningReportScreenState
             ),
           ],
         ),
-
         const SizedBox(height: 40),
       ],
     );
   }
-
   Future<void> _showImagePickerOption(
     BuildContext context,
     Function(File) onImageSelected,
@@ -4806,7 +4611,6 @@ class _CreateCommissioningReportScreenState
       },
     );
   }
-
   Future<void> _showSignatureDrawingPad(
     BuildContext context,
     Function(File) onSignatureDrawn,
@@ -4816,7 +4620,6 @@ class _CreateCommissioningReportScreenState
       penColor: const Color(0xFF0D121F),
       exportBackgroundColor: Colors.white,
     );
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -4941,7 +4744,6 @@ class _CreateCommissioningReportScreenState
       },
     ).then((_) => signatureController.dispose());
   }
-
   Widget _buildRemarksBox(
     String placeholder,
     TextEditingController controller,
@@ -4991,7 +4793,6 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
-
   Widget _buildSignatureBox({
     required String label,
     required String placeholder,
@@ -5005,14 +4806,35 @@ class _CreateCommissioningReportScreenState
       children: [
         SizedBox(
           width: 60,
-          child: Text(
-            label,
-            style: AppFont.style(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF8E9BAE),
-            ),
-          ),
+          child: label.contains('*')
+              ? RichText(
+                  text: TextSpan(
+                    text: label.replaceAll('*', '').trimRight(),
+                    style: AppFont.style(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF8E9BAE),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: ' *',
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Text(
+                  label,
+                  style: AppFont.style(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF8E9BAE),
+                  ),
+                ),
         ),
         const SizedBox(width: 8),
         const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
@@ -5108,7 +4930,6 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
-
   Widget _buildPlaceholderStep(String title) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -5128,7 +4949,6 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
-
   Widget _buildLabel(String text) {
     return Text(
       text,
@@ -5139,7 +4959,6 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
-
   Widget _buildAddNewButton(String text) {
     return GestureDetector(
       onTap: () {},
@@ -5153,7 +4972,6 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
-
   Widget _buildDropdownField(String hint) {
     return Container(
       margin: const EdgeInsets.only(top: 12),
