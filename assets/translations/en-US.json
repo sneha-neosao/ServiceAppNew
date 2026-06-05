@@ -245,6 +245,7 @@
   "commissioning_na": "N/A",
   "commissioning_work_description": "Commissioning Work Description",
   "commissioning_work_description_hint": "Enter work description...",
+  "service_work_description": "Work Description",
   "commissioning_preventive_checklist_title": "Preventive Maintenance Checklist",
   "commissioning_mechanical_checklist": "MECHANICAL CHECKLIST",
   "chk_bearing_noise": "Bearing Noise",

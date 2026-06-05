@@ -449,6 +449,68 @@ class _CreateCommissioningReportScreenState
               controlPanelMake: _controlPanelMakeController.text,
               panelSerialModel: _panelSerialModelController.text,
             );
+      if (!_isTechnicalDetailsNA) {
+        if (_pumpMakeController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_pump_make'.tr());
+          return;
+        }
+        if (_pumpModelController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_pump_model'.tr());
+          return;
+        }
+        if (_pumpSerialNumberController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_pump_serial'.tr());
+          return;
+        }
+        if (_pumpFlowLPMController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_lpm'.tr());
+          return;
+        }
+        if (_pumpFlowM3HRController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_m3hr'.tr());
+          return;
+        }
+        if (_pumpFlowLPSController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_lps'.tr());
+          return;
+        }
+        if (_pumpFlowUSGPMController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_usgpm'.tr());
+          return;
+        }
+        if (_pumpHeadMTRController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_head'.tr());
+          return;
+        }
+        if (_driverMakeController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_driver_make'.tr());
+          return;
+        }
+        if (_driverSerialNumberController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_driver_serial'.tr());
+          return;
+        }
+        if (_ratingKWController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_kw'.tr());
+          return;
+        }
+        if (_ratingHPController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_hp'.tr());
+          return;
+        }
+        if (_rpmController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_rpm'.tr());
+          return;
+        }
+        if (_controlPanelMakeController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_panel_make'.tr());
+          return;
+        }
+        if (_panelSerialModelController.text.trim().isEmpty) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_panel_serial'.tr());
+          return;
+        }
+      }
       if (widget.isServiceReport) {
         if (_submitServiceCallStep3Bloc.state
             is ServiceCallReportStep3LoadingState)
@@ -464,68 +526,6 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         if (_submitStep3Bloc.state is CommissioningStep3LoadingState) return;
-        if (!_isTechnicalDetailsNA) {
-          if (_pumpMakeController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_pump_make'.tr());
-            return;
-          }
-          if (_pumpModelController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_pump_model'.tr());
-            return;
-          }
-          if (_pumpSerialNumberController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_pump_serial'.tr());
-            return;
-          }
-          if (_pumpFlowLPMController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_lpm'.tr());
-            return;
-          }
-          if (_pumpFlowM3HRController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_m3hr'.tr());
-            return;
-          }
-          if (_pumpFlowLPSController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_lps'.tr());
-            return;
-          }
-          if (_pumpFlowUSGPMController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_usgpm'.tr());
-            return;
-          }
-          if (_pumpHeadMTRController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_head'.tr());
-            return;
-          }
-          if (_driverMakeController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_driver_make'.tr());
-            return;
-          }
-          if (_driverSerialNumberController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_driver_serial'.tr());
-            return;
-          }
-          if (_ratingKWController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_kw'.tr());
-            return;
-          }
-          if (_ratingHPController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_hp'.tr());
-            return;
-          }
-          if (_rpmController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_rpm'.tr());
-            return;
-          }
-          if (_controlPanelMakeController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_panel_make'.tr());
-            return;
-          }
-          if (_panelSerialModelController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_enter_panel_serial'.tr());
-            return;
-          }
-        }
         _submitStep3Bloc.add(
           CommissioningStep3GetEvent(
             _commissioningReportId ?? widget.commissioningWorkId,
@@ -801,6 +801,75 @@ class _CreateCommissioningReportScreenState
             ),
           );
       }
+      // Validate mechanical section
+      if (!_mechNA) {
+        if (_bearingNoise == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_bearing'.tr());
+          return;
+        }
+        if (_vibration == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_vibration'.tr());
+          return;
+        }
+        if (_mechSeal == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_mech_seal'.tr());
+          return;
+        }
+        if (_pumpDry == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_pump_dry'.tr());
+          return;
+        }
+      }
+      // Validate pipeline section
+      if (!_pipeNA) {
+        if (_nrvValve == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_nrv'.tr());
+          return;
+        }
+        if (_strainerValve == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_strainer'.tr());
+          return;
+        }
+        if (_suctionLine == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_suction_line'.tr());
+          return;
+        }
+        if (_deliveryLine == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_del_line'.tr());
+          return;
+        }
+        if (_suctionDelivery == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_suction_del'.tr());
+          return;
+        }
+        if (_pressureSwitch == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_pressure'.tr());
+          return;
+        }
+      }
+      // Validate electrical section
+      if (!_elecNA) {
+        if (_elecFaults == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_elec_faults'.tr());
+          return;
+        }
+        if (_voltage == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_voltage'.tr());
+          return;
+        }
+        if (_phase == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_phase'.tr());
+          return;
+        }
+        if (_current == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_current'.tr());
+          return;
+        }
+        if (_panelWiring == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_panel_wiring'.tr());
+          return;
+        }
+      }
       if (widget.isServiceReport) {
         _submitServiceCallStep5Bloc.add(
           ServiceCallReportStep5PostEvent(
@@ -822,75 +891,6 @@ class _CreateCommissioningReportScreenState
           ),
         );
       } else {
-        // Validate mechanical section
-        if (!_mechNA) {
-          if (_bearingNoise == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_bearing'.tr());
-            return;
-          }
-          if (_vibration == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_vibration'.tr());
-            return;
-          }
-          if (_mechSeal == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_mech_seal'.tr());
-            return;
-          }
-          if (_pumpDry == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_pump_dry'.tr());
-            return;
-          }
-        }
-        // Validate pipeline section
-        if (!_pipeNA) {
-          if (_nrvValve == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_nrv'.tr());
-            return;
-          }
-          if (_strainerValve == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_strainer'.tr());
-            return;
-          }
-          if (_suctionLine == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_suction_line'.tr());
-            return;
-          }
-          if (_deliveryLine == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_del_line'.tr());
-            return;
-          }
-          if (_suctionDelivery == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_suction_del'.tr());
-            return;
-          }
-          if (_pressureSwitch == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_pressure'.tr());
-            return;
-          }
-        }
-        // Validate electrical section
-        if (!_elecNA) {
-          if (_elecFaults == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_elec_faults'.tr());
-            return;
-          }
-          if (_voltage == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_voltage'.tr());
-            return;
-          }
-          if (_phase == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_phase'.tr());
-            return;
-          }
-          if (_current == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_current'.tr());
-            return;
-          }
-          if (_panelWiring == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'val_sel_panel_wiring'.tr());
-            return;
-          }
-        }
         _submitStep5Bloc.add(
           CommissioningStep5GetEvent(
             _commissioningReportId ?? widget.commissioningWorkId,
@@ -3710,7 +3710,10 @@ class _CreateCommissioningReportScreenState
         // ── Work Description Label ──────────────────────────────────────
         Center(
           child: Text(
-            'commissioning_work_description'.tr(),
+            (widget.isServiceReport
+                    ? 'service_work_description'
+                    : 'commissioning_work_description')
+                .tr(),
             style: AppFont.style(
               fontSize: 16,
               fontWeight: FontWeight.w900,

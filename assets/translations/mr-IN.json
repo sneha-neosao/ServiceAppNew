@@ -245,6 +245,7 @@
   "commissioning_na": "लागू नाही",
   "commissioning_work_description": "कमिशनिंग कार्याचे वर्णन",
   "commissioning_work_description_hint": "कामाचे वर्णन प्रविष्ट करा...",
+  "service_work_description": "कार्याचे वर्णन",
   "commissioning_preventive_checklist_title": "प्रतिबंधात्मक देखभाल तपासणी सूची",
   "commissioning_mechanical_checklist": "यांत्रिक तपासणी सूची",
   "chk_bearing_noise": "बेअरिंगचा आवाज",
