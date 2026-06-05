@@ -319,7 +319,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   ),
                   child: Center(
                     child: Text(
-                      'Clear Filters',
+                      'service_calls_clear_filters'.tr(),
                       style: AppFont.style(
                         fontSize: 12,
                         fontWeight: FontWeight.w900,

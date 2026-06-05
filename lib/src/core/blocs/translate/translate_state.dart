@@ -3,22 +3,18 @@ part of 'translate_bloc.dart';
 class TranslateState extends Equatable {
   final String languageCode;
   final String countryCode;
-  final String previousCountryCode;
 
-  const TranslateState(
-    this.languageCode,
-    this.countryCode,
-    this.previousCountryCode,
-  );
+  const TranslateState(this.languageCode, this.countryCode);
+
+  bool get isMarathi => languageCode == 'mr';
 
   @override
-  List<Object> get props => [languageCode, countryCode, previousCountryCode];
+  List<Object> get props => [languageCode, countryCode];
 
   factory TranslateState.fromMap(Map<String, dynamic> map) {
     return TranslateState(
-      map["language_code"],
-      map["country_code"],
-      map["previous_country_code"],
+      map["language_code"] ?? "en",
+      map["country_code"] ?? "US",
     );
   }
 
@@ -26,7 +22,6 @@ class TranslateState extends Equatable {
     return {
       "language_code": languageCode,
       "country_code": countryCode,
-      "previous_country_code": previousCountryCode,
     };
   }
 }

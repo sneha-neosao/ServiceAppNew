@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'configs/injector/injector.dart';
 import 'configs/injector/injector_conf.dart';
 import 'core/blocs/theme/theme_bloc.dart';
+import 'core/blocs/translate/translate_bloc.dart';
+import 'core/constants/list_translation_locale.dart';
 import 'core/theme/app_theme.dart';
 import 'routes/app_route_conf.dart';
 import 'routes/app_route_path.dart';
@@ -67,25 +69,34 @@ class _MyAppState extends State<MyApp> {
             BlocProvider(create: (_) => getIt<ThemeBloc>()),
             BlocProvider(create: (_) => getIt<TranslateBloc>()),
           ],
-          child: BlocBuilder<ThemeBloc, ThemeState>(
-            builder: (_, state) {
-              final platformBrightness = MediaQuery.platformBrightnessOf(
-                context,
-              );
-              final isDark =
-                  state.isDarkMode ?? (platformBrightness == Brightness.dark);
-
-              return MaterialApp.router(
-                debugShowCheckedModeBanner: false,
-                localizationsDelegates: context.localizationDelegates,
-                supportedLocales: context.supportedLocales,
-                locale: context.locale,
-                theme: AppTheme.data(false),
-                darkTheme: AppTheme.data(true),
-                themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-                routerConfig: _router,
-              );
+          child: BlocListener<TranslateBloc, TranslateState>(
+            // When language changes, tell EasyLocalization to switch locale.
+            listener: (ctx, translateState) {
+              final newLocale = translateState.isMarathi
+                  ? marathiLocale
+                  : englishLocale;
+              ctx.setLocale(newLocale);
             },
+            child: BlocBuilder<ThemeBloc, ThemeState>(
+              builder: (_, state) {
+                final platformBrightness = MediaQuery.platformBrightnessOf(
+                  context,
+                );
+                final isDark =
+                    state.isDarkMode ?? (platformBrightness == Brightness.dark);
+
+                return MaterialApp.router(
+                  debugShowCheckedModeBanner: false,
+                  localizationsDelegates: context.localizationDelegates,
+                  supportedLocales: context.supportedLocales,
+                  locale: context.locale,
+                  theme: AppTheme.data(false),
+                  darkTheme: AppTheme.data(true),
+                  themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+                  routerConfig: _router,
+                );
+              },
+            ),
           ),
         ),
       ),

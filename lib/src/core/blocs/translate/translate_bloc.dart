@@ -5,19 +5,21 @@ part 'translate_event.dart';
 part 'translate_state.dart';
 
 /// Handles state management for **Translation** and its related entities.
+/// The BLoC persists the chosen locale via HydratedBloc so the selection
+/// survives app restarts.
 
 class TranslateBloc extends HydratedBloc<TranslateEvent, TranslateState> {
-  TranslateBloc() : super(const TranslateState("mr", "IN", "US")) {
+  TranslateBloc() : super(const TranslateState("en", "US")) {
     on<TrMarathiEvent>(_trMarathi);
     on<TrEnglishEvent>(_trEnglish);
   }
 
-  Future _trMarathi(TrMarathiEvent event, Emitter emit) async {
-    emit(TranslateState("mr", "ID", state.countryCode));
+  Future<void> _trMarathi(TrMarathiEvent event, Emitter<TranslateState> emit) async {
+    emit(const TranslateState("mr", "IN"));
   }
 
-  Future _trEnglish(TrEnglishEvent event, Emitter emit) async {
-    emit(TranslateState("en", "US", state.countryCode));
+  Future<void> _trEnglish(TrEnglishEvent event, Emitter<TranslateState> emit) async {
+    emit(const TranslateState("en", "US"));
   }
 
   @override

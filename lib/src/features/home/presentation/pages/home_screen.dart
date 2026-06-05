@@ -669,6 +669,17 @@ class _DropdownPill extends StatefulWidget {
 class _DropdownPillState extends State<_DropdownPill> {
   late String _selectedLabel;
   final List<String> _options = ['Today', 'Tomorrow', 'Week', 'Month'];
+  
+  String _getTranslation(String opt) {
+    switch (opt) {
+      case 'Today': return 'filter_today'.tr();
+      case 'Tomorrow': return 'filter_tomorrow'.tr();
+      case 'Week': return 'filter_week'.tr();
+      case 'Month': return 'filter_month'.tr();
+      default: return opt;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -681,7 +692,7 @@ class _DropdownPillState extends State<_DropdownPill> {
       color: Colors.white,
       surfaceTintColor: Colors.white,
       onSelected: (val) {
-        setState(() => _selectedLabel = val);
+        setState(() => _selectedLabel = _getTranslation(val));
         if (widget.onChanged != null) {
           widget.onChanged!(val);
         }
@@ -691,7 +702,7 @@ class _DropdownPillState extends State<_DropdownPill> {
           .map(
             (opt) => PopupMenuItem(
               value: opt,
-              child: Text(opt, style: AppFont.style(color: Colors.black)),
+              child: Text(_getTranslation(opt), style: AppFont.style(color: Colors.black)),
             ),
           )
           .toList(),

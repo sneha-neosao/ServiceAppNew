@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:service_app/src/core/blocs/translate/translate_bloc.dart';
 import 'package:service_app/src/configs/injector/injector.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
@@ -22,6 +23,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _pushNotifications = false;
   String _selectedLanguage = 'English';
 
+  @override
+  void initState() {
+    super.initState();
+    final translateState = context.read<TranslateBloc>().state;
+    _selectedLanguage = translateState.isMarathi ? 'Marathi' : 'English';
+  }
+
   // ── Language bottom sheet ──────────────────────────────────────────────────
   void _showLanguageBottomSheet() {
     showModalBottomSheet(
@@ -41,6 +49,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   final formatted = lang[0] + lang.substring(1).toLowerCase();
                   setModal(() {});
                   setState(() => _selectedLanguage = formatted);
+                  
+                  if (lang == 'MARATHI') {
+                    context.read<TranslateBloc>().add(TrMarathiEvent());
+                  } else if (lang == 'ENGLISH') {
+                    context.read<TranslateBloc>().add(TrEnglishEvent());
+                  }
+
                   Future.delayed(const Duration(milliseconds: 180), () {
                     if (mounted) Navigator.pop(ctx);
                   });

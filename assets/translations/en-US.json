@@ -181,5 +181,9 @@
   "comm_report_date": "Commissioning Date",
   "please_enter_phone": "Please enter the contact number.",
   "please_enter_password": "Please enter the password.",
-  "please_enter_valid_contact": "Please enter the valid contact number."
+  "please_enter_valid_contact": "Please enter the valid contact number.",
+  "filter_today": "Today",
+  "filter_tomorrow": "Tomorrow",
+  "filter_week": "Week",
+  "filter_month": "Month"
 }

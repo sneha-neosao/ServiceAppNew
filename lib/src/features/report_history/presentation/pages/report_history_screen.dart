@@ -663,7 +663,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               ),
               child: Center(
                 child: Text(
-                  'Clear Filters',
+                  'reports_clear_filters'.tr(),
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w900,
