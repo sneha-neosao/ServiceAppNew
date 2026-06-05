@@ -497,12 +497,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFC2E2FE),
+                        color: const Color(0xFFFDF5E6),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
                         Icons.receipt_long_outlined,
-                        color: Color(0xFF0B68B9),
+                        color: Color(0xFFD38C22),
                         size: 24,
                       ),
                     ),
@@ -513,7 +513,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: AppFont.style(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF1A1A1A),
+                          color: const Color(0xFF0A2342),
                           letterSpacing: 0.3,
                         ),
                       ),
@@ -534,7 +534,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     vertical: 14,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFC2E2FE),
+                    color: const Color(0xFFFDF8E8),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -566,7 +566,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   style: AppFont.style(
                                     fontSize: 32,
                                     fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF0B68B9),
+                                    color: const Color(0xFFD38C22),
                                   ),
                                 );
                               }
@@ -575,7 +575,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: AppFont.style(
                                   fontSize: 32,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF0B68B9),
+                                  color: const Color(0xFFD38C22),
                                 ),
                               );
                             },
@@ -586,7 +586,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: AppFont.style(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFF0B68B9),
+                              color: const Color(0xFF985A05),
                             ),
                           ),
                         ],
@@ -604,7 +604,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           child: const Icon(
                             Icons.chevron_right,
-                            color: Color(0xFF0B68B9),
+                            color: Color(0xFFD38C22),
                             size: 22,
                           ),
                         ),
@@ -709,9 +709,9 @@ class _DropdownPillState extends State<_DropdownPill> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFFF8F9FB),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFFCFD8DC)),
+          border: Border.all(color: const Color(0xFFF1F2F6)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -721,14 +721,14 @@ class _DropdownPillState extends State<_DropdownPill> {
               style: AppFont.style(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF455A64),
+                color: const Color(0xFF0A2342),
               ),
             ),
             const SizedBox(width: 8),
             const Icon(
               Icons.keyboard_arrow_down_rounded,
               size: 18,
-              color: Color(0xFF90A4AE),
+              color: Color(0xFFA5ABB7),
             ),
           ],
         ),
