@@ -162,53 +162,63 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           }
         }
       },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Reports History Header ──────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-            child: Row(
-              children: [
-                Text(
-                  'reports_title'.tr(),
-                  style: AppFont.style(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF0D121F),
+      child: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Reports History Header ──────────────────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                    child: Row(
+                      children: [
+                        Text(
+                          'reports_title'.tr(),
+                          style: AppFont.style(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF0D121F),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+
+                  // ── Segmented Tab Control ───────────────────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF1F2F6),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(child: _buildSegmentTab(0, 'reports_tab_commissioning'.tr())),
+                          Expanded(child: _buildSegmentTab(1, 'reports_tab_service'.tr())),
+                          Expanded(child: _buildSegmentTab(2, 'reports_tab_amc'.tr())),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+                  const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                ],
+              ),
             ),
-          ),
+          ];
+        },
+        body: Column(
+          children: [
+            // ── Filter Section ──────────────────────────────────────────────────
+            _buildFilterSection(),
 
-        // ── Segmented Tab Control ───────────────────────────────────────────
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Container(
-            height: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F2F6),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Expanded(child: _buildSegmentTab(0, 'reports_tab_commissioning'.tr())),
-                Expanded(child: _buildSegmentTab(1, 'reports_tab_service'.tr())),
-                Expanded(child: _buildSegmentTab(2, 'reports_tab_amc'.tr())),
-              ],
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 16),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-
-        // ── Filter Section ──────────────────────────────────────────────────
-        _buildFilterSection(),
-
-        // ── Reports List ────────────────────────────────────────────────────
-        Expanded(
+            // ── Reports List ────────────────────────────────────────────────────
+            Expanded(
           child: Container(
             color: const Color(0xFFF8F9FB),
             child: _selectedTab == 0
@@ -375,9 +385,10 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         padding: const EdgeInsets.all(16),
                         children: _buildReportList(),
                       ),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     ),
     );
   }

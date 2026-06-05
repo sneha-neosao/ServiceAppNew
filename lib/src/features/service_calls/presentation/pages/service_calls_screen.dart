@@ -35,8 +35,6 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
   late SitesBloc _sitesBloc;
   late AssignedServiceCallsBloc _assignedServiceCallsBloc;
   late PendingServiceCallsBloc _pendingServiceCallsBloc;
-
-  final ScrollController _scrollController = ScrollController();
   final TextEditingController _complaintController = TextEditingController();
 
   String? _selectedCustomerName;
@@ -57,17 +55,6 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
 
     _pendingServiceCallsBloc = getIt<PendingServiceCallsBloc>()
       ..add(const PendingServiceCallsGetEvent());
-
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        if (_selectedTab == 0) {
-          _fetchServiceCalls(isRefresh: false, isAssignedOnly: true);
-        } else {
-          _fetchServiceCalls(isRefresh: false, isPendingOnly: true);
-        }
-      }
-    });
   }
 
   void _fetchServiceCalls({
@@ -102,7 +89,6 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
     _complaintController.dispose();
     _customerBloc.close();
     _sitesBloc.close();
@@ -113,85 +99,96 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // ── Active Service Calls Header ─────────────────────────────────────
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Row(
-            children: [
-              Text(
-                'service_calls_title'.tr(),
-                style: AppFont.style(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF0D121F),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // ── Segmented Tab Control ────────────────────────────────────────────
-        BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
-          bloc: _assignedServiceCallsBloc,
-          builder: (context, assignedState) {
-            return BlocBuilder<PendingServiceCallsBloc, PendingServiceCallsState>(
-              bloc: _pendingServiceCallsBloc,
-              builder: (context, pendingState) {
-                int assignedCount = 0;
-                if (assignedState is AssignedServiceCallsSuccessState) {
-                  assignedCount = assignedState.data.data.pagination.totalItems;
-                } else if (assignedState is AssignedServiceCallsPaginationLoadingState) {
-                  assignedCount = assignedState.currentData.data.pagination.totalItems;
-                }
-                int pendingCount = 0;
-                if (pendingState is PendingServiceCallsSuccessState) {
-                  pendingCount = pendingState.data.data.pagination.totalItems;
-                } else if (pendingState is PendingServiceCallsPaginationLoadingState) {
-                  pendingCount = pendingState.currentData.data.pagination.totalItems;
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Container(
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1F2F6),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: _buildSegmentTab(
-                            0,
-                            'service_calls_tab_assigned'.tr(),
-                            count: assignedCount,
-                            isLoading: assignedState is AssignedServiceCallsLoadingState ||
-                                assignedState is AssignedServiceCallsInitialState,
-                          ),
+    return NestedScrollView(
+      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+        return <Widget>[
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Active Service Calls Header ─────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Row(
+                    children: [
+                      Text(
+                        'service_calls_title'.tr(),
+                        style: AppFont.style(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF0D121F),
                         ),
-                        Expanded(
-                          child: _buildSegmentTab(
-                            1,
-                            'service_calls_tab_pending'.tr(),
-                            count: pendingCount,
-                            isLoading: pendingState is PendingServiceCallsLoadingState ||
-                                pendingState is PendingServiceCallsInitialState,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                );
-              },
-            );
-          },
-        ),
+                ),
 
-        // ── Search & Filters ────────────────────────────────────────────────
-        Padding(
+                // ── Segmented Tab Control ────────────────────────────────────────────
+                BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
+                  bloc: _assignedServiceCallsBloc,
+                  builder: (context, assignedState) {
+                    return BlocBuilder<PendingServiceCallsBloc, PendingServiceCallsState>(
+                      bloc: _pendingServiceCallsBloc,
+                      builder: (context, pendingState) {
+                        int assignedCount = 0;
+                        if (assignedState is AssignedServiceCallsSuccessState) {
+                          assignedCount = assignedState.data.data.pagination.totalItems;
+                        } else if (assignedState is AssignedServiceCallsPaginationLoadingState) {
+                          assignedCount = assignedState.currentData.data.pagination.totalItems;
+                        }
+                        int pendingCount = 0;
+                        if (pendingState is PendingServiceCallsSuccessState) {
+                          pendingCount = pendingState.data.data.pagination.totalItems;
+                        } else if (pendingState is PendingServiceCallsPaginationLoadingState) {
+                          pendingCount = pendingState.currentData.data.pagination.totalItems;
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF1F2F6),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: _buildSegmentTab(
+                                    0,
+                                    'service_calls_tab_assigned'.tr(),
+                                    count: assignedCount,
+                                    isLoading: assignedState is AssignedServiceCallsLoadingState ||
+                                        assignedState is AssignedServiceCallsInitialState,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: _buildSegmentTab(
+                                    1,
+                                    'service_calls_tab_pending'.tr(),
+                                    count: pendingCount,
+                                    isLoading: pendingState is PendingServiceCallsLoadingState ||
+                                        pendingState is PendingServiceCallsInitialState,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ];
+      },
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Search & Filters ────────────────────────────────────────────────
+          Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
@@ -339,11 +336,25 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
 
         // ── Tab Body ────────────────────────────────────────────────────────
         Expanded(
-          child: _selectedTab == 0
-              ? _buildOngoingList()
-              : _buildActiveList(),
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification scrollInfo) {
+              if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
+                  scrollInfo.metrics.axis == Axis.vertical) {
+                if (_selectedTab == 0) {
+                  _fetchServiceCalls(isRefresh: false, isAssignedOnly: true);
+                } else {
+                  _fetchServiceCalls(isRefresh: false, isPendingOnly: true);
+                }
+              }
+              return false;
+            },
+            child: _selectedTab == 0
+                ? _buildOngoingList()
+                : _buildActiveList(),
+          ),
         ),
       ],
+    ),
     );
   }
 
@@ -601,7 +612,6 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           }
 
           return ListView.separated(
-            controller: _scrollController,
             padding: const EdgeInsets.all(16),
             itemCount: data.data.results.length + (isPaginationLoading ? 1 : 0),
             separatorBuilder: (_, __) => const SizedBox(height: 16),
@@ -696,7 +706,6 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           }
 
           return ListView.separated(
-            controller: _scrollController,
             padding: const EdgeInsets.all(16),
             itemCount: data.data.results.length + (isPaginationLoading ? 1 : 0),
             separatorBuilder: (_, __) => const SizedBox(height: 16),
