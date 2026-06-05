@@ -171,7 +171,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             child: Row(
               children: [
                 Text(
-                  'REPORTS HISTORY',
+                  'Reports History',
                   style: AppFont.style(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
@@ -193,8 +193,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             ),
             child: Row(
               children: [
-                Expanded(child: _buildSegmentTab(0, 'COMMISSIONING')),
-                Expanded(child: _buildSegmentTab(1, 'SERVICE')),
+                Expanded(child: _buildSegmentTab(0, 'Commissioning')),
+                Expanded(child: _buildSegmentTab(1, 'Service')),
                 Expanded(child: _buildSegmentTab(2, 'AMC')),
               ],
             ),
@@ -663,7 +663,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               ),
               child: Center(
                 child: Text(
-                  'CLEAR FILTERS',
+                  'Clear Filters',
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w900,
@@ -992,11 +992,11 @@ class _ReportCard extends StatelessWidget {
   }
 
   Widget _buildViewButton(BuildContext context) {
-    String btnText = 'VIEW SERVICE REPORT';
+    String btnText = 'View Service Report';
     if (type == ReportType.commissioning) {
-      btnText = 'VIEW COMMISSIONING REPORT';
+      btnText = 'View Commissioning Report';
     } else if (type == ReportType.amc) {
-      btnText = 'VIEW AMC REPORT';
+      btnText = 'View AMC Report';
     }
     return Column(
       children: [

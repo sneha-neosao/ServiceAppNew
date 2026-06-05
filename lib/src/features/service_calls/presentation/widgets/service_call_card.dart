@@ -173,7 +173,7 @@ class ServiceCallCard extends StatelessWidget {
                     child: GestureDetector(
                       onTap: onCloseOverCall,
                       child: _buildSecondaryButton(
-                        'CLOSE OVER CALL',
+                        'Close Over Call',
                         Icons.phone_disabled_outlined,
                       ),
                     ),
@@ -188,8 +188,8 @@ class ServiceCallCard extends StatelessWidget {
                       onTap: onSubmit,
                       child: _buildPrimaryButton(
                         type == ServiceCallType.ongoing
-                            ? 'SUBMIT SERVICE REPORT'
-                            : 'ASSIGN TECHNICIAN',
+                            ? 'Submit Service Report'
+                            : 'Assign Technician',
                         type == ServiceCallType.ongoing
                             ? Icons.check_circle_outline
                             : Icons.person_outline,

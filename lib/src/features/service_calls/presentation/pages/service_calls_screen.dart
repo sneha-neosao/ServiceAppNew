@@ -122,7 +122,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           child: Row(
             children: [
               Text(
-                'SERVICE CALLS',
+                'Service Calls',
                 style: AppFont.style(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -166,7 +166,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         Expanded(
                           child: _buildSegmentTab(
                             0,
-                            'ASSIGNED',
+                            'Assigned',
                             count: assignedCount,
                             isLoading: assignedState is AssignedServiceCallsLoadingState ||
                                 assignedState is AssignedServiceCallsInitialState,
@@ -175,7 +175,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         Expanded(
                           child: _buildSegmentTab(
                             1,
-                            'PENDING',
+                            'Pending',
                             count: pendingCount,
                             isLoading: pendingState is PendingServiceCallsLoadingState ||
                                 pendingState is PendingServiceCallsInitialState,
@@ -319,7 +319,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   ),
                   child: Center(
                     child: Text(
-                      'CLEAR FILTERS',
+                      'Clear Filters',
                       style: AppFont.style(
                         fontSize: 12,
                         fontWeight: FontWeight.w900,

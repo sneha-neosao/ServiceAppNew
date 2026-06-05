@@ -99,7 +99,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'CLOSE OVER CALL',
+                        'Close Over Call',
                         style: AppFont.style(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
@@ -140,16 +140,16 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
               child: Row(
                 children: [
                   Expanded(
-                    child: _buildInfoColumn('COMPLAINT NO', widget.complaintNo),
+                    child: _buildInfoColumn('Complaint No', widget.complaintNo),
                   ),
                   Expanded(
                     child: _buildInfoColumn(
-                      'CUSTOMER NAME',
+                      'Customer Name',
                       widget.customerName,
                     ),
                   ),
                   Expanded(
-                    child: _buildInfoColumn('SITE NAME', widget.siteName),
+                    child: _buildInfoColumn('Site Name', widget.siteName),
                   ),
                 ],
               ),
@@ -302,7 +302,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                               ),
                             const SizedBox(width: 8),
                             Text(
-                              'CLOSE OVER CALL',
+                              'Close Over Call',
                               style: AppFont.style(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w800,

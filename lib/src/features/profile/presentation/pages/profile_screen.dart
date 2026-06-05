@@ -7,6 +7,7 @@ import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/profile/bloc/profile_details_bloc/profile_details_bloc.dart';
 import 'package:service_app/src/features/profile/widgets/profile_dialogs.dart';
 import 'package:service_app/src/remote/models/profile_details_model/profile_details_model.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ProfileScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -178,12 +179,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             final data = state is ProfileDetailsSuccessState
                 ? state.data.data
                 : null;
+            final isLoading = state is ProfileDetailsLoadingState ||
+                state is ProfileDetailsInitialState;
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ── Blue header ────────────────────────────────────────────
-                  _buildHeader(data),
+                  _buildHeader(data, isLoading),
 
                   const SizedBox(height: 16),
 
@@ -234,7 +237,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       _contactRow(
                         "assets/icons/call_icon.png",
                         'Mobile',
-                        data?.phone ?? '—',
+                        data?.phone,
+                        isLoading,
                       ),
                       // _divider(),
                       // _contactRow("assets/icons/mail_icon.png", 'Email', data?.email ?? '—'),
@@ -245,7 +249,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   // ── Employer ─────────────────────────────────────────────────
                   _sectionLabel('Dealer'),
-                  _employerCard(data),
+                  _employerCard(data, isLoading),
 
                   const SizedBox(height: 20),
 
@@ -309,7 +313,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ── Header widget ──────────────────────────────────────────────────────────
-  Widget _buildHeader(ProfileData? data) {
+  Widget _buildHeader(ProfileData? data, bool isLoading) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -398,8 +402,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Container(
                   width: 52,
                   height: 52,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0B68B9),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF0B68B9),
                     shape: BoxShape.circle,
                     // border: Border.all(color: const Color(0xFF0B68B9), width: 2),
                   ),
@@ -409,14 +413,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      data?.name ?? '—',
-                      style: AppFont.style(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF0D121F),
-                      ),
-                    ),
+                    isLoading
+                        ? _buildShimmer(120, 20)
+                        : Text(
+                            data?.name ?? '—',
+                            style: AppFont.style(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF0D121F),
+                            ),
+                          ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
@@ -426,14 +432,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: Color(0xFFA5ABB7),
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          data != null ? 'ID: ${data.code}' : '—',
-                          style: AppFont.style(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFFA5ABB7),
-                          ),
-                        ),
+                        isLoading
+                            ? _buildShimmer(60, 14)
+                            : Text(
+                                data != null ? 'ID: ${data.code}' : '—',
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xFFA5ABB7),
+                                ),
+                              ),
                       ],
                     ),
                   ],
@@ -495,7 +503,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   );
 
   // ── Contact row ────────────────────────────────────────────────────────────
-  Widget _contactRow(String icon, String label, String value) {
+  Widget _contactRow(String icon, String label, String? value, bool isLoading) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
@@ -529,16 +537,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 2),
 
-                Text(
-                  value,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppFont.style(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF0D121F),
-                  ),
-                ),
+                isLoading
+                    ? _buildShimmer(100, 16)
+                    : Text(
+                        value ?? '—',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
               ],
             ),
           ),
@@ -548,7 +558,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ── Employer card (blue bg) ────────────────────────────────────────────────
-  Widget _employerCard(ProfileData? data) {
+  Widget _employerCard(ProfileData? data, bool isLoading) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -583,16 +593,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(width: 14),
                   Expanded(
-                    child: Text(
-                      data?.dealer.name.isNotEmpty == true
-                          ? data!.dealer.name
-                          : '—',
-                      style: AppFont.style(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: isLoading
+                        ? _buildShimmer(150, 16)
+                        : Text(
+                            data?.dealer.name.isNotEmpty == true
+                                ? data!.dealer.name
+                                : '—',
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ],
               ),
@@ -619,6 +631,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     data?.dealer.code.isNotEmpty == true
                         ? data!.dealer.code
                         : '—',
+                    isLoading,
                   ),
                   // _divider(),
                   // _contactRow("assets/icons/mail_icon.png", 'Support line', '+91 20 2233 4455'),
@@ -779,6 +792,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmer(double width, double height) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4),
         ),
       ),
     );

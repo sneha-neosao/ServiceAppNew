@@ -416,7 +416,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'SERVICE / WORK REPORT',
+                            'Service / Work Report',
                             style: AppFont.style(
                               fontSize: 20,
                               fontWeight: FontWeight.w900,
