@@ -185,5 +185,19 @@
   "filter_today": "आज",
   "filter_tomorrow": "उद्या",
   "filter_week": "आठवडा",
-  "filter_month": "महिना"
+  "filter_month": "महिना",
+  "commissioning_submit_btn": "कमिशनिंग रिपोर्ट सबमिट करा",
+  "create_report_btn_back": "मागे",
+  "create_report_btn_cancel": "रद्द करा",
+  "create_report_btn_done": "पूर्ण झाले",
+  "create_report_btn_next": "पुढील पायरी",
+  "create_report_scan_feedback": "अभिप्राय स्कॅन करा",
+  "create_report_step_info": "पायरी १/६",
+  "create_report_step_info_2": "पायरी २/६",
+  "create_report_step_info_3": "पायरी ३/६",
+  "create_report_step_info_4": "पायरी ४/६",
+  "create_report_step_info_5": "पायरी ५/६",
+  "create_report_step_info_6": "पायरी ६/६",
+  "create_report_success_subtitle": "तुमचा रिपोर्ट यशस्वीरित्या तयार झाला.",
+  "create_report_success_title": "रिपोर्ट तयार झाला"
 }

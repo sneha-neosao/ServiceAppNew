@@ -73,6 +73,16 @@ class ApiHelper {
         logger.e("🔥 Response status: ${e.response?.statusCode}");
         logger.e("🔥 Response data: ${e.response?.data}");
         logger.e("🔥 Response headers: ${e.response?.headers}");
+        
+        final data = e.response?.data;
+        if (data is Map<String, dynamic>) {
+          if (data['error'] is Map<String, dynamic> && data['error']['message'] != null) {
+            throw ApiException(data['error']['message'].toString());
+          }
+          if (data['message'] != null) {
+            throw ApiException(data['message'].toString());
+          }
+        }
       }
       throw ApiException(e.message ?? "Network error");
     }

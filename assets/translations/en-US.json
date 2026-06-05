@@ -185,5 +185,19 @@
   "filter_today": "Today",
   "filter_tomorrow": "Tomorrow",
   "filter_week": "Week",
-  "filter_month": "Month"
+  "filter_month": "Month",
+  "commissioning_submit_btn": "Submit Commissioning Report",
+  "create_report_btn_back": "Back",
+  "create_report_btn_cancel": "Cancel",
+  "create_report_btn_done": "Done",
+  "create_report_btn_next": "Next Step",
+  "create_report_scan_feedback": "Scan feedback",
+  "create_report_step_info": "STEP 1 OF 6",
+  "create_report_step_info_2": "STEP 2 OF 6",
+  "create_report_step_info_3": "STEP 3 OF 6",
+  "create_report_step_info_4": "STEP 4 OF 6",
+  "create_report_step_info_5": "STEP 5 OF 6",
+  "create_report_step_info_6": "STEP 6 OF 6",
+  "create_report_success_subtitle": "Your report was successfully created.",
+  "create_report_success_title": "Report Created"
 }

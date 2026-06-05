@@ -448,7 +448,7 @@ class _CreateCommissioningReportScreenState
           appSnackBar(
             context,
             const Color(0xFFF44336),
-            'Please select warranty period',
+            'val_select_warranty'.tr(),
           );
           return;
         }
@@ -506,63 +506,63 @@ class _CreateCommissioningReportScreenState
 
         if (!_isTechnicalDetailsNA) {
           if (_pumpMakeController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Make');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_pump_make'.tr());
             return;
           }
           if (_pumpModelController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Model');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_pump_model'.tr());
             return;
           }
           if (_pumpSerialNumberController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Serial Number');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_pump_serial'.tr());
             return;
           }
           if (_pumpFlowLPMController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (LPM)');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_lpm'.tr());
             return;
           }
           if (_pumpFlowM3HRController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (M3/HR)');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_m3hr'.tr());
             return;
           }
           if (_pumpFlowLPSController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (LPS)');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_lps'.tr());
             return;
           }
           if (_pumpFlowUSGPMController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Flow (USGPM)');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_usgpm'.tr());
             return;
           }
           if (_pumpHeadMTRController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Pump Head (MTR)');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_head'.tr());
             return;
           }
           if (_driverMakeController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Driver Make');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_driver_make'.tr());
             return;
           }
           if (_driverSerialNumberController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Driver Serial Number');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_driver_serial'.tr());
             return;
           }
           if (_ratingKWController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Rating (KW)');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_kw'.tr());
             return;
           }
           if (_ratingHPController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Rating (HP)');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_hp'.tr());
             return;
           }
           if (_rpmController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter RPM');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_rpm'.tr());
             return;
           }
           if (_controlPanelMakeController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Control Panel Make');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_panel_make'.tr());
             return;
           }
           if (_panelSerialModelController.text.trim().isEmpty) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please enter Panel Serial / Model');
+            appSnackBar(context, const Color(0xFFF44336), 'val_enter_panel_serial'.tr());
             return;
           }
         }
@@ -627,9 +627,9 @@ class _CreateCommissioningReportScreenState
               keyChecklist: "Bearing noise",
               valueChecklist: _bearingNoise!,
               photo:
-                  _step5Media['Bearing Noise / Abnormal Sound Checked:']?.path,
+                  _step5Media['chk_bearing_noise'.tr()]?.path,
               video:
-                  _step5Media['Bearing Noise / Abnormal Sound Checked:']?.path,
+                  _step5Media['chk_bearing_noise'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Bearing noise'],
               existingVideoUrl: _step5ExistingVideos['Bearing noise'],
             ),
@@ -641,8 +641,8 @@ class _CreateCommissioningReportScreenState
               checkType: "mechanical",
               keyChecklist: "Vibration",
               valueChecklist: _vibration!,
-              photo: _step5Media['Vibration Checked:']?.path,
-              video: _step5Media['Vibration Checked:']?.path,
+              photo: _step5Media['chk_vibration'.tr()]?.path,
+              video: _step5Media['chk_vibration'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Vibration'],
               existingVideoUrl: _step5ExistingVideos['Vibration'],
             ),
@@ -655,9 +655,9 @@ class _CreateCommissioningReportScreenState
               keyChecklist: "Mechanical seal",
               valueChecklist: _mechSeal!,
               photo:
-                  _step5Media['Mechanical Seal / Gland Leakage Checked:']?.path,
+                  _step5Media['chk_mech_seal'.tr()]?.path,
               video:
-                  _step5Media['Mechanical Seal / Gland Leakage Checked:']?.path,
+                  _step5Media['chk_mech_seal'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Mechanical seal'],
               existingVideoUrl: _step5ExistingVideos['Mechanical seal'],
             ),
@@ -669,8 +669,8 @@ class _CreateCommissioningReportScreenState
               checkType: "mechanical",
               keyChecklist: "Pump not running dry",
               valueChecklist: _pumpDry!,
-              photo: _step5Media['Pump Not Running Dry:']?.path,
-              video: _step5Media['Pump Not Running Dry:']?.path,
+              photo: _step5Media['chk_pump_dry'.tr()]?.path,
+              video: _step5Media['chk_pump_dry'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Pump not running dry'],
               existingVideoUrl: _step5ExistingVideos['Pump not running dry'],
             ),
@@ -687,10 +687,10 @@ class _CreateCommissioningReportScreenState
               keyChecklist: "NRV",
               valueChecklist: _nrvValve!,
               photo:
-                  _step5Media['NRV / Butterfly Valve / Gate Valve Condition Checked:']
+                  _step5Media['chk_nrv'.tr()]
                       ?.path,
               video:
-                  _step5Media['NRV / Butterfly Valve / Gate Valve Condition Checked:']
+                  _step5Media['chk_nrv'.tr()]
                       ?.path,
               existingPhotoUrl: _step5ExistingPhotos['NRV'],
               existingVideoUrl: _step5ExistingVideos['NRV'],
@@ -704,9 +704,9 @@ class _CreateCommissioningReportScreenState
               keyChecklist: "Strainer",
               valueChecklist: _strainerValve!,
               photo:
-                  _step5Media['Strainer / Foot Valve Condition Checked:']?.path,
+                  _step5Media['chk_strainer'.tr()]?.path,
               video:
-                  _step5Media['Strainer / Foot Valve Condition Checked:']?.path,
+                  _step5Media['chk_strainer'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Strainer'],
               existingVideoUrl: _step5ExistingVideos['Strainer'],
             ),
@@ -719,10 +719,10 @@ class _CreateCommissioningReportScreenState
               keyChecklist: "Suction line",
               valueChecklist: _suctionLine!,
               photo:
-                  _step5Media['Suction Line (Air Leakage & Water Leakage Checked):']
+                  _step5Media['chk_suction_line'.tr()]
                       ?.path,
               video:
-                  _step5Media['Suction Line (Air Leakage & Water Leakage Checked):']
+                  _step5Media['chk_suction_line'.tr()]
                       ?.path,
               existingPhotoUrl: _step5ExistingPhotos['Suction line'],
               existingVideoUrl: _step5ExistingVideos['Suction line'],
@@ -736,10 +736,10 @@ class _CreateCommissioningReportScreenState
               keyChecklist: "Delivery line",
               valueChecklist: _deliveryLine!,
               photo:
-                  _step5Media['Delivery Line (Air Leakage & Water Leakage Checked):']
+                  _step5Media['chk_delivery_line'.tr()]
                       ?.path,
               video:
-                  _step5Media['Delivery Line (Air Leakage & Water Leakage Checked):']
+                  _step5Media['chk_delivery_line'.tr()]
                       ?.path,
               existingPhotoUrl: _step5ExistingPhotos['Delivery line'],
               existingVideoUrl: _step5ExistingVideos['Delivery line'],
@@ -752,9 +752,9 @@ class _CreateCommissioningReportScreenState
               checkType: "pipeline_hydraulic",
               keyChecklist: "Suction / Delivery Valve",
               valueChecklist: _suctionDelivery!,
-              photo: _step5Media['Suction / Delivery Valve Condition Checked:']
+              photo: _step5Media['chk_suction_del_valve'.tr()]
                   ?.path,
-              video: _step5Media['Suction / Delivery Valve Condition Checked:']
+              video: _step5Media['chk_suction_del_valve'.tr()]
                   ?.path,
               existingPhotoUrl:
                   _step5ExistingPhotos['Suction / Delivery Valve'],
@@ -770,10 +770,10 @@ class _CreateCommissioningReportScreenState
               keyChecklist: "Pressure switch",
               valueChecklist: _pressureSwitch!,
               photo:
-                  _step5Media['Pressure Switch / Pressure Transmitter Checked:']
+                  _step5Media['chk_pressure_switch'.tr()]
                       ?.path,
               video:
-                  _step5Media['Pressure Switch / Pressure Transmitter Checked:']
+                  _step5Media['chk_pressure_switch'.tr()]
                       ?.path,
               existingPhotoUrl: _step5ExistingPhotos['Pressure switch'],
               existingVideoUrl: _step5ExistingVideos['Pressure switch'],
@@ -790,8 +790,8 @@ class _CreateCommissioningReportScreenState
               checkType: "electrical",
               keyChecklist: "Electrical Faults",
               valueChecklist: _elecFaults!,
-              photo: _step5Media['Electrical Faults Checked:']?.path,
-              video: _step5Media['Electrical Faults Checked:']?.path,
+              photo: _step5Media['chk_elec_faults'.tr()]?.path,
+              video: _step5Media['chk_elec_faults'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Electrical Faults'],
               existingVideoUrl: _step5ExistingVideos['Electrical Faults'],
             ),
@@ -803,8 +803,8 @@ class _CreateCommissioningReportScreenState
               checkType: "electrical",
               keyChecklist: "Voltage Check",
               valueChecklist: _voltage!,
-              photo: _step5Media['Voltage Checked:']?.path,
-              video: _step5Media['Voltage Checked:']?.path,
+              photo: _step5Media['chk_voltage'.tr()]?.path,
+              video: _step5Media['chk_voltage'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Voltage Check'],
               existingVideoUrl: _step5ExistingVideos['Voltage Check'],
             ),
@@ -816,8 +816,8 @@ class _CreateCommissioningReportScreenState
               checkType: "electrical",
               keyChecklist: "Phase Check",
               valueChecklist: _phase!,
-              photo: _step5Media['Phase Checked:']?.path,
-              video: _step5Media['Phase Checked:']?.path,
+              photo: _step5Media['chk_phase'.tr()]?.path,
+              video: _step5Media['chk_phase'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Phase Check'],
               existingVideoUrl: _step5ExistingVideos['Phase Check'],
             ),
@@ -829,8 +829,8 @@ class _CreateCommissioningReportScreenState
               checkType: "electrical",
               keyChecklist: "Current Check",
               valueChecklist: _current!,
-              photo: _step5Media['Current Checked:']?.path,
-              video: _step5Media['Current Checked:']?.path,
+              photo: _step5Media['chk_current'.tr()]?.path,
+              video: _step5Media['chk_current'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Current Check'],
               existingVideoUrl: _step5ExistingVideos['Current Check'],
             ),
@@ -874,19 +874,19 @@ class _CreateCommissioningReportScreenState
         // Validate mechanical section
         if (!_mechNA) {
           if (_bearingNoise == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Bearing Noise / Abnormal Sound');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_bearing'.tr());
             return;
           }
           if (_vibration == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Vibration');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_vibration'.tr());
             return;
           }
           if (_mechSeal == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Mechanical Seal / Gland Leakage');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_mech_seal'.tr());
             return;
           }
           if (_pumpDry == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Pump Not Running Dry');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_pump_dry'.tr());
             return;
           }
         }
@@ -894,27 +894,27 @@ class _CreateCommissioningReportScreenState
         // Validate pipeline section
         if (!_pipeNA) {
           if (_nrvValve == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select NRV / Butterfly Valve / Gate Valve Condition');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_nrv'.tr());
             return;
           }
           if (_strainerValve == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Strainer / Foot Valve Condition');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_strainer'.tr());
             return;
           }
           if (_suctionLine == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Suction Line');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_suction_line'.tr());
             return;
           }
           if (_deliveryLine == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Delivery Line');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_del_line'.tr());
             return;
           }
           if (_suctionDelivery == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Suction / Delivery Valve Condition');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_suction_del'.tr());
             return;
           }
           if (_pressureSwitch == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Pressure Switch / Pressure Transmitter');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_pressure'.tr());
             return;
           }
         }
@@ -922,23 +922,23 @@ class _CreateCommissioningReportScreenState
         // Validate electrical section
         if (!_elecNA) {
           if (_elecFaults == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Electrical Faults');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_elec_faults'.tr());
             return;
           }
           if (_voltage == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Voltage');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_voltage'.tr());
             return;
           }
           if (_phase == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Phase');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_phase'.tr());
             return;
           }
           if (_current == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Current');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_current'.tr());
             return;
           }
           if (_panelWiring == null) {
-            appSnackBar(context, const Color(0xFFF44336), 'Please select Control Panel Wiring');
+            appSnackBar(context, const Color(0xFFF44336), 'val_sel_panel_wiring'.tr());
             return;
           }
         }
@@ -987,23 +987,23 @@ class _CreateCommissioningReportScreenState
 
         // Validation
         if (_selectedTechnicianRepId == null || _selectedTechnicianRepId!.isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Technician Representative');
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_tech_rep'.tr());
           return;
         }
         if (techSignaturePath == null || techSignaturePath.isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please add Technician Signature');
+          appSnackBar(context, const Color(0xFFF44336), 'val_add_tech_sig'.tr());
           return;
         }
         if (_customerRepNameController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Customer Representative Name');
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_cust_rep'.tr());
           return;
         }
         if (custSignaturePath == null || custSignaturePath.isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please add Customer Signature');
+          appSnackBar(context, const Color(0xFFF44336), 'val_add_cust_sig'.tr());
           return;
         }
         if (workPhotosPaths.isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please upload at least one Work Photo');
+          appSnackBar(context, const Color(0xFFF44336), 'val_upload_photo'.tr());
           return;
         }
 
@@ -1022,26 +1022,26 @@ class _CreateCommissioningReportScreenState
       } else {
         // Validation for commissioning flow
         if (_selectedTechnicianRepId == null || _selectedTechnicianRepId!.isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please select Technician Representative');
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_tech_rep'.tr());
           return;
         }
         if (_technicianSignatureFile == null &&
             (_existingTechnicianSignatureUrl == null || _existingTechnicianSignatureUrl!.isEmpty)) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please add Technician Signature');
+          appSnackBar(context, const Color(0xFFF44336), 'val_add_tech_sig'.tr());
           return;
         }
         if (_customerRepNameController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please enter Customer Representative Name');
+          appSnackBar(context, const Color(0xFFF44336), 'val_enter_cust_rep'.tr());
           return;
         }
         if (_customerSignatureFile == null &&
             (_existingCustomerSignatureUrl == null || _existingCustomerSignatureUrl!.isEmpty)) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please add Customer Signature');
+          appSnackBar(context, const Color(0xFFF44336), 'val_add_cust_sig'.tr());
           return;
         }
         final allWorkPhotos = [..._workPhotos, ..._existingWorkPhotosUrls];
         if (allWorkPhotos.isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'Please upload at least one Work Photo');
+          appSnackBar(context, const Color(0xFFF44336), 'val_upload_photo'.tr());
           return;
         }
 
@@ -3092,7 +3092,7 @@ class _CreateCommissioningReportScreenState
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    'Date',
+                    'commissioning_date'.tr(),
                     style: AppFont.style(
                       fontSize: 12,
                       fontWeight: FontWeight.w900,
@@ -3118,7 +3118,7 @@ class _CreateCommissioningReportScreenState
 
         // ── Service Provider Name ────────────────────────────────────────
         Text(
-          'Service Provider Name',
+          'commissioning_service_provider'.tr(),
           style: AppFont.style(
             fontSize: 13,
             fontWeight: FontWeight.w800,
@@ -3186,7 +3186,7 @@ class _CreateCommissioningReportScreenState
                     const Icon(Icons.add, size: 16, color: Color(0xFF1565C0)),
                     const SizedBox(width: 4),
                     Text(
-                      '(Add+)',
+                      'commissioning_add_paren'.tr(),
                       style: AppFont.style(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
@@ -3270,7 +3270,7 @@ class _CreateCommissioningReportScreenState
                                       ? controller.text
                                       : null,
                                   hint: Text(
-                                    'Select Technician',
+                                    'commissioning_select_technician'.tr(),
                                     style: AppFont.style(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
@@ -3417,7 +3417,7 @@ class _CreateCommissioningReportScreenState
               child: Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  'Member Presents (Customer Side)',
+                  'commissioning_customer_members'.tr(),
                   style: AppFont.style(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
@@ -3459,7 +3459,7 @@ class _CreateCommissioningReportScreenState
                                   color: const Color(0xFF0D121F),
                                 ),
                                 decoration: InputDecoration(
-                                  hintText: 'Representative',
+                                  hintText: 'commissioning_representative'.tr(),
                                   hintStyle: AppFont.style(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w900,
@@ -3483,7 +3483,7 @@ class _CreateCommissioningReportScreenState
                                   });
                                 },
                                 child: Text(
-                                  'Add+',
+                                  'commissioning_add'.tr(),
                                   style: AppFont.style(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w900,
@@ -3584,7 +3584,7 @@ class _CreateCommissioningReportScreenState
                         color: const Color(0xFF0D121F),
                       ),
                       hint: Text(
-                        'Select Period',
+                        'commissioning_select_period'.tr(),
                         style: AppFont.style(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -3614,7 +3614,7 @@ class _CreateCommissioningReportScreenState
         ],
 
         // ── Purpose of Visit Section ─────────────────────────────────────
-        _buildLabel('Agenda / Purpose of Visit'),
+        _buildLabel('commissioning_agenda_title'.tr()),
         const SizedBox(height: 12),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 16),
@@ -3636,7 +3636,7 @@ class _CreateCommissioningReportScreenState
                   color: const Color(0xFF0D121F),
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Enter the main purpose of this visit...',
+                  hintText: 'commissioning_agenda_hint'.tr(),
                   hintStyle: AppFont.style(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -3676,7 +3676,7 @@ class _CreateCommissioningReportScreenState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Technical Details',
+              'commissioning_technical_details'.tr(),
               style: AppFont.style(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
@@ -3711,7 +3711,7 @@ class _CreateCommissioningReportScreenState
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'NA',
+                  'commissioning_na'.tr(),
                   style: AppFont.style(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
@@ -3927,7 +3927,7 @@ class _CreateCommissioningReportScreenState
         // ── Work Description Label ──────────────────────────────────────
         Center(
           child: Text(
-            'Work Description',
+            'commissioning_work_description'.tr(),
             style: AppFont.style(
               fontSize: 16,
               fontWeight: FontWeight.w900,
@@ -4030,7 +4030,7 @@ class _CreateCommissioningReportScreenState
       children: [
         // ── Title ─────────────────────────────────────────────────────────────
         Text(
-          'Preventive Maintenance Checklist\n(Check & Tick if Found OK / NOT OK)',
+          'commissioning_preventive_checklist_title'.tr(),
           textAlign: TextAlign.center,
           style: AppFont.style(
             fontSize: 14,
@@ -4048,28 +4048,28 @@ class _CreateCommissioningReportScreenState
           onNATap: () => setState(() => _mechNA = !_mechNA),
           items: [
             _buildCheckItem(
-              label: 'Bearing Noise / Abnormal Sound Checked:',
+              label: 'chk_bearing_noise'.tr(),
               selected: _bearingNoise,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _bearingNoise = v),
             ),
             _buildCheckItem(
-              label: 'Vibration Checked:',
+              label: 'chk_vibration'.tr(),
               selected: _vibration,
               options: const ['normal', 'high'],
               labels: const ['NORMAL', 'HIGH'],
               onSelect: (v) => setState(() => _vibration = v),
             ),
             _buildCheckItem(
-              label: 'Mechanical Seal / Gland Leakage Checked:',
+              label: 'chk_mech_seal'.tr(),
               selected: _mechSeal,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _mechSeal = v),
             ),
             _buildCheckItem(
-              label: 'Pump Not Running Dry:',
+              label: 'chk_pump_dry'.tr(),
               selected: _pumpDry,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
@@ -4088,42 +4088,42 @@ class _CreateCommissioningReportScreenState
           onNATap: () => setState(() => _pipeNA = !_pipeNA),
           items: [
             _buildCheckItem(
-              label: 'NRV / Butterfly Valve / Gate Valve Condition Checked:',
+              label: 'chk_nrv'.tr(),
               selected: _nrvValve,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _nrvValve = v),
             ),
             _buildCheckItem(
-              label: 'Strainer / Foot Valve Condition Checked:',
+              label: 'chk_strainer'.tr(),
               selected: _strainerValve,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _strainerValve = v),
             ),
             _buildCheckItem(
-              label: 'Suction Line (Air Leakage & Water Leakage Checked):',
+              label: 'chk_suction_line'.tr(),
               selected: _suctionLine,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _suctionLine = v),
             ),
             _buildCheckItem(
-              label: 'Delivery Line (Air Leakage & Water Leakage Checked):',
+              label: 'chk_delivery_line'.tr(),
               selected: _deliveryLine,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _deliveryLine = v),
             ),
             _buildCheckItem(
-              label: 'Suction / Delivery Valve Condition Checked:',
+              label: 'chk_suction_del_valve'.tr(),
               selected: _suctionDelivery,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _suctionDelivery = v),
             ),
             _buildCheckItem(
-              label: 'Pressure Switch / Pressure Transmitter Checked:',
+              label: 'chk_pressure_switch'.tr(),
               selected: _pressureSwitch,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
@@ -4142,35 +4142,35 @@ class _CreateCommissioningReportScreenState
           onNATap: () => setState(() => _elecNA = !_elecNA),
           items: [
             _buildCheckItem(
-              label: 'Electrical Faults Checked:',
+              label: 'chk_elec_faults'.tr(),
               selected: _elecFaults,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _elecFaults = v),
             ),
             _buildCheckItem(
-              label: 'Voltage Checked:',
+              label: 'chk_voltage'.tr(),
               selected: _voltage,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _voltage = v),
             ),
             _buildCheckItem(
-              label: 'Phase Checked:',
+              label: 'chk_phase'.tr(),
               selected: _phase,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _phase = v),
             ),
             _buildCheckItem(
-              label: 'Current Checked:',
+              label: 'chk_current'.tr(),
               selected: _current,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _current = v),
             ),
             _buildCheckItem(
-              label: 'Control Panel Wiring Checked:',
+              label: 'chk_panel_wiring'.tr(),
               selected: _panelWiring,
               options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
@@ -4234,7 +4234,7 @@ class _CreateCommissioningReportScreenState
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    '(NA)',
+                    'commissioning_na_paren'.tr(),
                     style: AppFont.style(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
@@ -4404,7 +4404,7 @@ class _CreateCommissioningReportScreenState
       children: [
         // ── Remarks (Technician Side) ─────────────────────────────────
         Text(
-          'Remarks (Technician Side) :',
+          'commissioning_remarks_tech'.tr(),
           style: AppFont.style(
             fontSize: 13,
             fontWeight: FontWeight.w800,
@@ -4421,7 +4421,7 @@ class _CreateCommissioningReportScreenState
 
         // ── Remarks (Customer Side) ──────────────────────────────────
         Text(
-          'Remarks (Customer Side) :',
+          'commissioning_remarks_customer'.tr(),
           style: AppFont.style(
             fontSize: 13,
             fontWeight: FontWeight.w800,
@@ -4440,7 +4440,7 @@ class _CreateCommissioningReportScreenState
 
         // ── Recorded By ────────────────────────────────────────────
         Text(
-          'Recorded By :',
+          'commissioning_recorded_by'.tr(),
           style: AppFont.style(
             fontSize: 16,
             fontWeight: FontWeight.w900,
@@ -4451,7 +4451,7 @@ class _CreateCommissioningReportScreenState
 
         // Technician Rep
         Text(
-          'TECHNICIAN REP',
+          'commissioning_tech_rep'.tr(),
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w900,
@@ -4518,7 +4518,7 @@ class _CreateCommissioningReportScreenState
                       color: const Color(0xFF0D121F),
                     ),
                     hint: Text(
-                      'Select Technician',
+                      'commissioning_select_technician'.tr(),
                       style: AppFont.style(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -4559,8 +4559,8 @@ class _CreateCommissioningReportScreenState
         ),
         const SizedBox(height: 16),
         _buildSignatureBox(
-          label: 'Sign *',
-          placeholder: 'Tap to sign',
+          label: 'commissioning_sign_star'.tr(),
+          placeholder: 'commissioning_tap_sign'.tr(),
           signatureFile: _technicianSignatureFile,
           existingUrl: _existingTechnicianSignatureUrl,
           onTap: () {
@@ -4582,7 +4582,7 @@ class _CreateCommissioningReportScreenState
 
         // Customer Rep
         Text(
-          'CUSTOMER REP',
+          'commissioning_customer_rep'.tr(),
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w900,
@@ -4634,7 +4634,7 @@ class _CreateCommissioningReportScreenState
                   color: const Color(0xFF0D121F),
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Enter name',
+                  hintText: 'commissioning_enter_name'.tr(),
                   hintStyle: AppFont.style(
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
@@ -4658,8 +4658,8 @@ class _CreateCommissioningReportScreenState
         ),
         const SizedBox(height: 16),
         _buildSignatureBox(
-          label: 'Sign *',
-          placeholder: 'Tap to sign',
+          label: 'commissioning_sign_star'.tr(),
+          placeholder: 'commissioning_tap_sign'.tr(),
           signatureFile: _customerSignatureFile,
           existingUrl: _existingCustomerSignatureUrl,
           onTap: () {
@@ -4834,7 +4834,7 @@ class _CreateCommissioningReportScreenState
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'ADD+',
+                      'commissioning_add_caps'.tr(),
                       style: AppFont.style(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
@@ -4868,7 +4868,7 @@ class _CreateCommissioningReportScreenState
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text('Gallery'),
+                title: Text('commissioning_gallery'.tr()),
                 onTap: () async {
                   Navigator.pop(context);
                   final ImagePicker picker = ImagePicker();
@@ -4882,7 +4882,7 @@ class _CreateCommissioningReportScreenState
               ),
               ListTile(
                 leading: const Icon(Icons.photo_camera),
-                title: const Text('Camera'),
+                title: Text('commissioning_camera'.tr()),
                 onTap: () async {
                   Navigator.pop(context);
                   final ImagePicker picker = ImagePicker();
@@ -4934,7 +4934,7 @@ class _CreateCommissioningReportScreenState
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Draw Your Signature',
+                        'commissioning_draw_signature'.tr(),
                         style: AppFont.style(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
@@ -4980,7 +4980,7 @@ class _CreateCommissioningReportScreenState
                             ),
                           ),
                           child: Text(
-                            'Clear',
+                            'commissioning_clear'.tr(),
                             style: AppFont.style(
                               fontSize: 14,
                               fontWeight: FontWeight.w800,
@@ -5016,7 +5016,7 @@ class _CreateCommissioningReportScreenState
                             ),
                           ),
                           child: Text(
-                            'Done',
+                            'commissioning_done'.tr(),
                             style: AppFont.style(
                               fontSize: 14,
                               fontWeight: FontWeight.w800,

@@ -288,16 +288,18 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: AnimatedSize(
         duration: const Duration(milliseconds: 300),
         alignment: Alignment.topCenter,
-        child: _showSystemBars
-            ? SafeArea(
-                top: false,
-                child: _CustomBottomNavBar(
-                  selectedIndex: _selectedIndex,
-                  onTap: _onTabTapped,
-                  navItems: _navItems,
-                ),
-              )
-            : const SizedBox(width: double.infinity, height: 0),
+        child: Align(
+          alignment: Alignment.topCenter,
+          heightFactor: _showSystemBars ? 1.0 : 0.0,
+          child: SafeArea(
+            top: false,
+            child: _CustomBottomNavBar(
+              selectedIndex: _selectedIndex,
+              onTap: _onTabTapped,
+              navItems: _navItems,
+            ),
+          ),
+        ),
       ),
     ),
     );
@@ -322,13 +324,13 @@ class _HomeScreenState extends State<HomeScreen> {
         child = _buildPlaceholder();
     }
 
-    if (_selectedIndex == 2 || _selectedIndex == 3) {
+    if (_selectedIndex == 1 || _selectedIndex == 2 || _selectedIndex == 3) {
       return NotificationListener<ScrollUpdateNotification>(
         onNotification: (notification) {
           if (notification.metrics.axis == Axis.vertical) {
             if (notification.metrics.pixels <= 0) {
               if (!_showSystemBars) setState(() => _showSystemBars = true);
-            } else if (notification.scrollDelta != null) {
+            } else if (!notification.metrics.outOfRange && notification.scrollDelta != null) {
               if (notification.scrollDelta! > 2) {
                 // User scrolls down the list (content goes up) -> hide bars
                 if (_showSystemBars) setState(() => _showSystemBars = false);
