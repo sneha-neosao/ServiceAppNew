@@ -28,13 +28,15 @@ class FeedbackDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return isServiceCall
         ? BlocProvider(
-            create: (_) => getIt<ServiceCallCheckFeedbackBloc>()
-              ..add(FetchServiceCallCheckFeedbackEvent(reportId: reportId)),
+            create: (_) =>
+                getIt<ServiceCallCheckFeedbackBloc>()
+                  ..add(FetchServiceCallCheckFeedbackEvent(reportId: reportId)),
             child: _buildScreen(context),
           )
         : BlocProvider(
-            create: (_) => getIt<CheckFeedbackBloc>()
-              ..add(FetchCheckFeedbackEvent(reportId: reportId)),
+            create: (_) =>
+                getIt<CheckFeedbackBloc>()
+                  ..add(FetchCheckFeedbackEvent(reportId: reportId)),
             child: _buildScreen(context),
           );
   }
@@ -94,15 +96,23 @@ class FeedbackDetailsScreen extends StatelessWidget {
             // ── Content ───────────────────────────────────────────────────────
             Expanded(
               child: isServiceCall
-                  ? BlocBuilder<ServiceCallCheckFeedbackBloc, ServiceCallCheckFeedbackState>(
+                  ? BlocBuilder<
+                      ServiceCallCheckFeedbackBloc,
+                      ServiceCallCheckFeedbackState
+                    >(
                       builder: (context, state) {
                         if (state is ServiceCallCheckFeedbackLoading) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         } else if (state is ServiceCallCheckFeedbackError) {
                           return Center(
                             child: Text(
                               state.message,
-                              style: AppFont.style(fontSize: 14, color: Colors.red),
+                              style: AppFont.style(
+                                fontSize: 14,
+                                color: Colors.red,
+                              ),
                             ),
                           );
                         } else if (state is ServiceCallCheckFeedbackLoaded) {
@@ -111,7 +121,10 @@ class FeedbackDetailsScreen extends StatelessWidget {
                             return Center(
                               child: Text(
                                 'No feedback found',
-                                style: AppFont.style(fontSize: 14, color: Colors.grey),
+                                style: AppFont.style(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
                               ),
                             );
                           }
@@ -123,12 +136,17 @@ class FeedbackDetailsScreen extends StatelessWidget {
                   : BlocBuilder<CheckFeedbackBloc, CheckFeedbackState>(
                       builder: (context, state) {
                         if (state is CheckFeedbackLoading) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         } else if (state is CheckFeedbackError) {
                           return Center(
                             child: Text(
                               state.message,
-                              style: AppFont.style(fontSize: 14, color: Colors.red),
+                              style: AppFont.style(
+                                fontSize: 14,
+                                color: Colors.red,
+                              ),
                             ),
                           );
                         } else if (state is CheckFeedbackLoaded) {
@@ -137,7 +155,10 @@ class FeedbackDetailsScreen extends StatelessWidget {
                             return Center(
                               child: Text(
                                 'No feedback found',
-                                style: AppFont.style(fontSize: 14, color: Colors.grey),
+                                style: AppFont.style(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
                               ),
                             );
                           }
@@ -185,11 +206,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const Divider(
-                height: 1,
-                thickness: 1,
-                color: Color(0xFFF1F2F6),
-              ),
+              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
               _buildRow(
                 icon: Icons.phone_outlined,
@@ -204,11 +221,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const Divider(
-                height: 1,
-                thickness: 1,
-                color: Color(0xFFF1F2F6),
-              ),
+              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
               _buildRow(
                 icon: Icons.verified_user_outlined,
@@ -223,7 +236,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: data.issueResolved 
+                      color: data.issueResolved
                           ? const Color(0xFF00C853)
                           : Colors.red,
                     ),
@@ -233,18 +246,14 @@ class FeedbackDetailsScreen extends StatelessWidget {
                     style: AppFont.style(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
-                      color: data.issueResolved 
+                      color: data.issueResolved
                           ? const Color(0xFF00C853)
                           : Colors.red,
                     ),
                   ),
                 ),
               ),
-              const Divider(
-                height: 1,
-                thickness: 1,
-                color: Color(0xFFF1F2F6),
-              ),
+              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
               _buildRow(
                 icon: Icons.star_outline,
@@ -254,9 +263,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: List.generate(5, (index) {
                     return Icon(
-                      index < data.rating 
-                          ? Icons.star 
-                          : Icons.star_border,
+                      index < data.rating ? Icons.star : Icons.star_border,
                       color: index < data.rating
                           ? const Color(0xFFFF9800)
                           : const Color(0xFFE0E0E0),
@@ -265,11 +272,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                   }),
                 ),
               ),
-              const Divider(
-                height: 1,
-                thickness: 1,
-                color: Color(0xFFF1F2F6),
-              ),
+              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
               _buildRow(
                 icon: Icons.workspace_premium_outlined,
@@ -283,16 +286,18 @@ class FeedbackDetailsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: const Color(0xFF00C853),
-                    ),
+                    border: Border.all(color: const Color(0xFF00C853)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        data.technicianBehavior.toLowerCase() == 'good' 
-                          ? '👍' : (data.technicianBehavior.toLowerCase() == 'excellent' ? '🌟' : '💬'),
+                        data.technicianBehavior.toLowerCase() == 'good'
+                            ? '👍'
+                            : (data.technicianBehavior.toLowerCase() ==
+                                      'excellent'
+                                  ? '🌟'
+                                  : '💬'),
                         style: const TextStyle(fontSize: 13),
                       ),
                       const SizedBox(width: 6),
@@ -308,11 +313,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const Divider(
-                height: 1,
-                thickness: 1,
-                color: Color(0xFFF1F2F6),
-              ),
+              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
               _buildCommentRow(
                 icon: Icons.chat_bubble_outline,

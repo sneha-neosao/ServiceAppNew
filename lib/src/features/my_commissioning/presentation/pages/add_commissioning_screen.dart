@@ -53,7 +53,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   late TextEditingController _equipmentController;
 
   // ── Technicians ───────────────────────────────────────────────────────────
-  List<TextEditingController> _technicianControllers = [TextEditingController()];
+  List<TextEditingController> _technicianControllers = [
+    TextEditingController(),
+  ];
 
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
@@ -583,7 +585,11 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
         .toList();
 
     if (technicianIds.isEmpty) {
-      appSnackBar(context, const Color(0xFFF44336), "Please assign at least 1 technician");
+      appSnackBar(
+        context,
+        const Color(0xFFF44336),
+        "Please assign at least 1 technician",
+      );
       return;
     }
 
@@ -723,7 +729,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           if (!_customers.contains(data.customer.name)) {
                             _customers.insert(0, data.customer.name);
                           }
-                          _createdCustomerIds[data.customer.name] = data.customer.id;
+                          _createdCustomerIds[data.customer.name] =
+                              data.customer.id;
 
                           _selectedSite = data.site.name;
                           if (!_sites.contains(data.site.name)) {
@@ -737,7 +744,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           if (data.assignedTechnicians.isNotEmpty) {
                             _technicianControllers.clear();
                             for (var t in data.assignedTechnicians) {
-                              _technicianControllers.add(TextEditingController(text: t.id));
+                              _technicianControllers.add(
+                                TextEditingController(text: t.id),
+                              );
                             }
                           }
                         });
@@ -791,10 +800,22 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                   isLoading: isLoading,
                                   filterFn: (item, filter) => true,
                                   onSearchChanged: (v) {
-                                    _customerBloc.add(CustomerGetEvent(search: v, page: 1, pageSize: 10));
+                                    _customerBloc.add(
+                                      CustomerGetEvent(
+                                        search: v,
+                                        page: 1,
+                                        pageSize: 10,
+                                      ),
+                                    );
                                   },
                                   onLoadMore: (lastSearch) {
-                                    _customerBloc.add(CustomerGetEvent(search: lastSearch, page: 2, pageSize: 10));
+                                    _customerBloc.add(
+                                      CustomerGetEvent(
+                                        search: lastSearch,
+                                        page: 2,
+                                        pageSize: 10,
+                                      ),
+                                    );
                                   },
                                   onChanged: (v) {
                                     setState(() {
@@ -817,7 +838,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                       }
                                       if (customerId != null) {
                                         _sitesBloc.add(
-                                          SitesGetEvent(customerId),
+                                          SitesGetEvent(customer_id: customerId),
                                         );
                                       }
                                     }
@@ -853,6 +874,71 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                   value: _selectedSite,
                                   items: _sites,
                                   isLoading: isLoading,
+                                  filterFn: (item, filter) => true,
+                                  onSearchChanged: _selectedCustomer != null
+                                      ? (v) {
+                                          String? customerId =
+                                              _createdCustomerIds[_selectedCustomer!];
+                                          if (customerId == null &&
+                                              _customerBloc.state
+                                                  is CustomerSuccessState) {
+                                            final list =
+                                                (_customerBloc.state
+                                                        as CustomerSuccessState)
+                                                    .data
+                                                    .data
+                                                    .where(
+                                                      (x) =>
+                                                          x.name ==
+                                                          _selectedCustomer,
+                                                    );
+                                            if (list.isNotEmpty)
+                                              customerId = list.first.id;
+                                          }
+                                          if (customerId != null) {
+                                            _sitesBloc.add(
+                                              SitesGetEvent(
+                                                customer_id: customerId,
+                                                search: v,
+                                                page: 1,
+                                                pageSize: 10,
+                                              ),
+                                            );
+                                          }
+                                        }
+                                      : null,
+                                  onLoadMore: _selectedCustomer != null
+                                      ? (lastSearch) {
+                                          String? customerId =
+                                              _createdCustomerIds[_selectedCustomer!];
+                                          if (customerId == null &&
+                                              _customerBloc.state
+                                                  is CustomerSuccessState) {
+                                            final list =
+                                                (_customerBloc.state
+                                                        as CustomerSuccessState)
+                                                    .data
+                                                    .data
+                                                    .where(
+                                                      (x) =>
+                                                          x.name ==
+                                                          _selectedCustomer,
+                                                    );
+                                            if (list.isNotEmpty)
+                                              customerId = list.first.id;
+                                          }
+                                          if (customerId != null) {
+                                            _sitesBloc.add(
+                                              SitesGetEvent(
+                                                customer_id: customerId,
+                                                search: lastSearch,
+                                                page: 2,
+                                                pageSize: 10,
+                                              ),
+                                            );
+                                          }
+                                        }
+                                      : null,
                                   onChanged: _selectedCustomer != null
                                       ? (v) => setState(() => _selectedSite = v)
                                       : null,
@@ -880,11 +966,15 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                               showAdd: true,
                               onAddTap: () {
                                 setState(() {
-                                  _technicianControllers.add(TextEditingController());
+                                  _technicianControllers.add(
+                                    TextEditingController(),
+                                  );
                                 });
                               },
                             ),
-                            ..._technicianControllers.asMap().entries.map((entry) {
+                            ..._technicianControllers.asMap().entries.map((
+                              entry,
+                            ) {
                               int idx = entry.key;
                               TextEditingController controller = entry.value;
                               bool isFirst = idx == 0;
@@ -893,59 +983,95 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                 child: Row(
                                   children: [
                                     Expanded(
-                                      child: BlocBuilder<TechnicianBloc, TechnicianState>(
-                                        bloc: _technicianBloc,
-                                        builder: (context, state) {
-                                          bool isLoading = state is TechnicianLoadingState;
-                                          List<dynamic> validItems = [];
-                                          if (state is TechnicianSuccessState) {
-                                            validItems = List.from(state.data.data);
-                                          }
-                                          final otherSelected = _technicianControllers
-                                              .where((c) => c != controller && c.text.isNotEmpty)
-                                              .map((c) => c.text)
-                                              .toSet();
-                                          validItems.removeWhere(
-                                            (item) => otherSelected.contains(item.id),
-                                          );
-                                          if (controller.text.isNotEmpty &&
-                                              !validItems.any((e) => e.id == controller.text)) {
-                                            if (state is TechnicianSuccessState) {
-                                              try {
-                                                final match = state.data.data.firstWhere(
-                                                  (e) => e.id == controller.text,
+                                      child:
+                                          BlocBuilder<
+                                            TechnicianBloc,
+                                            TechnicianState
+                                          >(
+                                            bloc: _technicianBloc,
+                                            builder: (context, state) {
+                                              bool isLoading =
+                                                  state
+                                                      is TechnicianLoadingState;
+                                              List<dynamic> validItems = [];
+                                              if (state
+                                                  is TechnicianSuccessState) {
+                                                validItems = List.from(
+                                                  state.data.data,
                                                 );
-                                                validItems.add(match);
-                                              } catch (_) {}
-                                            }
-                                          }
-                                          return SearchableDropdown<dynamic>(
-                                            items: validItems,
-                                            value: controller.text.isNotEmpty
-                                                ? validItems.firstWhere(
-                                                    (e) => e.id == controller.text,
-                                                    orElse: () => null,
-                                                  )
-                                                : null,
-                                            hintText: 'Choose Technician...',
-                                            itemAsString: (item) => item.name,
-                                            isLoading: isLoading,
-                                            onChanged: (v) {
-                                              setState(() {
-                                                if (v != null) controller.text = v.id;
-                                              });
+                                              }
+                                              final otherSelected =
+                                                  _technicianControllers
+                                                      .where(
+                                                        (c) =>
+                                                            c != controller &&
+                                                            c.text.isNotEmpty,
+                                                      )
+                                                      .map((c) => c.text)
+                                                      .toSet();
+                                              validItems.removeWhere(
+                                                (item) => otherSelected
+                                                    .contains(item.id),
+                                              );
+                                              if (controller.text.isNotEmpty &&
+                                                  !validItems.any(
+                                                    (e) =>
+                                                        e.id == controller.text,
+                                                  )) {
+                                                if (state
+                                                    is TechnicianSuccessState) {
+                                                  try {
+                                                    final match = state
+                                                        .data
+                                                        .data
+                                                        .firstWhere(
+                                                          (e) =>
+                                                              e.id ==
+                                                              controller.text,
+                                                        );
+                                                    validItems.add(match);
+                                                  } catch (_) {}
+                                                }
+                                              }
+                                              return SearchableDropdown<
+                                                dynamic
+                                              >(
+                                                items: validItems,
+                                                value:
+                                                    controller.text.isNotEmpty
+                                                    ? validItems.firstWhere(
+                                                        (e) =>
+                                                            e.id ==
+                                                            controller.text,
+                                                        orElse: () => null,
+                                                      )
+                                                    : null,
+                                                hintText:
+                                                    'Choose Technician...',
+                                                itemAsString: (item) =>
+                                                    item.name,
+                                                isLoading: isLoading,
+                                                onChanged: (v) {
+                                                  setState(() {
+                                                    if (v != null)
+                                                      controller.text = v.id;
+                                                  });
+                                                },
+                                              );
                                             },
-                                          );
-                                        },
-                                      ),
+                                          ),
                                     ),
                                     if (!isFirst)
                                       Padding(
-                                        padding: const EdgeInsets.only(left: 12),
+                                        padding: const EdgeInsets.only(
+                                          left: 12,
+                                        ),
                                         child: GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              _technicianControllers.removeAt(idx);
+                                              _technicianControllers.removeAt(
+                                                idx,
+                                              );
                                             });
                                           },
                                           child: Container(
@@ -953,7 +1079,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                             height: 44,
                                             decoration: BoxDecoration(
                                               color: const Color(0xFFFEF2F2),
-                                              borderRadius: BorderRadius.circular(10),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                               border: Border.all(
                                                 color: const Color(0xFFFCA5A5),
                                               ),
@@ -1206,6 +1333,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
       ),
     );
   }
+
   void _showMergeCustomerDialog(BuildContext parentContext, String name) {
     showDialog(
       context: parentContext,
@@ -1216,7 +1344,11 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           listener: (ctx, state) {
             if (state is CreateNewCustomerSuccessState) {
               Navigator.pop(ctx); // Close dialog
-              appSnackBar(parentContext, const Color(0xFF4CAF50), state.data.message);
+              appSnackBar(
+                parentContext,
+                const Color(0xFF4CAF50),
+                state.data.message,
+              );
               final newName = state.data.data?.name ?? name;
               setState(() {
                 if (!_customers.contains(newName)) {
@@ -1231,14 +1363,20 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
               });
             } else if (state is CreateNewCustomerFailureState) {
               Navigator.pop(ctx); // Close dialog
-              appSnackBar(parentContext, const Color(0xFFF44336), state.message);
+              appSnackBar(
+                parentContext,
+                const Color(0xFFF44336),
+                state.message,
+              );
             }
           },
           builder: (ctx, state) {
             final isLoading = state is CreateNewCustomerLoadingState;
             return AlertDialog(
               backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               contentPadding: const EdgeInsets.all(24),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -1281,7 +1419,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                     children: [
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: isLoading ? null : () => Navigator.pop(dialogCtx),
+                          onPressed: isLoading
+                              ? null
+                              : () => Navigator.pop(dialogCtx),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFF1F2F6),
                             foregroundColor: const Color(0xFF0D121F),
@@ -1303,16 +1443,18 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: isLoading ? null : () {
-                            _createNewCustomerBloc.add(
-                              CreateNewCustomerSubmitEvent(
-                                CreateNewCustomerParams(
-                                  name: name,
-                                  mergeExisting: true,
-                                ),
-                              ),
-                            );
-                          },
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  _createNewCustomerBloc.add(
+                                    CreateNewCustomerSubmitEvent(
+                                      CreateNewCustomerParams(
+                                        name: name,
+                                        mergeExisting: true,
+                                      ),
+                                    ),
+                                  );
+                                },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE65100),
                             foregroundColor: Colors.white,
@@ -1322,7 +1464,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
-                          child: isLoading 
+                          child: isLoading
                               ? const SizedBox(
                                   height: 20,
                                   width: 20,

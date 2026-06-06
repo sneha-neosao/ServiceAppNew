@@ -129,20 +129,28 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
             bloc: _assignedServiceCallsBloc,
             builder: (context, assignedState) {
-              return BlocBuilder<PendingServiceCallsBloc, PendingServiceCallsState>(
+              return BlocBuilder<
+                PendingServiceCallsBloc,
+                PendingServiceCallsState
+              >(
                 bloc: _pendingServiceCallsBloc,
                 builder: (context, pendingState) {
                   int assignedCount = 0;
                   if (assignedState is AssignedServiceCallsSuccessState) {
-                    assignedCount = assignedState.data.data.pagination.totalItems;
-                  } else if (assignedState is AssignedServiceCallsPaginationLoadingState) {
-                    assignedCount = assignedState.currentData.data.pagination.totalItems;
+                    assignedCount =
+                        assignedState.data.data.pagination.totalItems;
+                  } else if (assignedState
+                      is AssignedServiceCallsPaginationLoadingState) {
+                    assignedCount =
+                        assignedState.currentData.data.pagination.totalItems;
                   }
                   int pendingCount = 0;
                   if (pendingState is PendingServiceCallsSuccessState) {
                     pendingCount = pendingState.data.data.pagination.totalItems;
-                  } else if (pendingState is PendingServiceCallsPaginationLoadingState) {
-                    pendingCount = pendingState.currentData.data.pagination.totalItems;
+                  } else if (pendingState
+                      is PendingServiceCallsPaginationLoadingState) {
+                    pendingCount =
+                        pendingState.currentData.data.pagination.totalItems;
                   }
 
                   return Padding(
@@ -160,8 +168,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                               0,
                               'service_calls_tab_assigned'.tr(),
                               count: assignedCount,
-                              isLoading: assignedState is AssignedServiceCallsLoadingState ||
-                                  assignedState is AssignedServiceCallsInitialState,
+                              isLoading:
+                                  assignedState
+                                      is AssignedServiceCallsLoadingState ||
+                                  assignedState
+                                      is AssignedServiceCallsInitialState,
                             ),
                           ),
                           Expanded(
@@ -169,8 +180,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                               1,
                               'service_calls_tab_pending'.tr(),
                               count: pendingCount,
-                              isLoading: pendingState is PendingServiceCallsLoadingState ||
-                                  pendingState is PendingServiceCallsInitialState,
+                              isLoading:
+                                  pendingState
+                                      is PendingServiceCallsLoadingState ||
+                                  pendingState
+                                      is PendingServiceCallsInitialState,
                             ),
                           ),
                         ],
@@ -208,22 +222,45 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                           return SearchableDropdown<Customer>(
                             items: customers,
                             value: _selectedCustomerId != null
-                                ? customers.where((c) => c.id == _selectedCustomerId).isEmpty
-                                    ? null
-                                    : customers.firstWhere((c) => c.id == _selectedCustomerId)
+                                ? customers
+                                          .where(
+                                            (c) => c.id == _selectedCustomerId,
+                                          )
+                                          .isEmpty
+                                      ? null
+                                      : customers.firstWhere(
+                                          (c) => c.id == _selectedCustomerId,
+                                        )
                                 : null,
-                            hintText: 'service_calls_filter_select_customer'.tr(),
+                            hintText: 'service_calls_filter_select_customer'
+                                .tr(),
                             itemAsString: (c) => c.name,
                             isLoading: state is CustomerLoadingState,
                             isFilter: true,
                             filterFn: (item, filter) => true,
                             onSearchChanged: (v) {
-                              _customerBloc.add(CustomerGetEvent(search: v, page: 1, pageSize: 10));
+                              _customerBloc.add(
+                                CustomerGetEvent(
+                                  search: v,
+                                  page: 1,
+                                  pageSize: 10,
+                                ),
+                              );
                             },
                             onLoadMore: (lastSearch) {
-                              _customerBloc.add(CustomerGetEvent(search: lastSearch, page: 2, pageSize: 10));
+                              _customerBloc.add(
+                                CustomerGetEvent(
+                                  search: lastSearch,
+                                  page: 2,
+                                  pageSize: 10,
+                                ),
+                              );
                             },
-                            icon: const Icon(Icons.person_outline, color: Color(0xFFA5ABB7), size: 18),
+                            icon: const Icon(
+                              Icons.person_outline,
+                              color: Color(0xFFA5ABB7),
+                              size: 18,
+                            ),
                             onChanged: (customer) {
                               setState(() {
                                 _selectedCustomerName = customer?.name;
@@ -232,7 +269,9 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                                 _selectedSiteId = null;
                               });
                               if (customer != null) {
-                                _sitesBloc.add(SitesGetEvent(customer.id));
+                                _sitesBloc.add(
+                                  SitesGetEvent(customer_id: customer.id),
+                                );
                               }
                               _fetchServiceCalls(isRefresh: true);
                             },
@@ -249,18 +288,58 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                           if (state is SitesSuccessState) {
                             sites.addAll(state.data.data);
                           }
+
+                          Site? initialValue;
+                          if (_selectedSiteId != null) {
+                            final matches = sites.where(
+                              (s) => s.id == _selectedSiteId,
+                            );
+                            if (matches.isNotEmpty) {
+                              initialValue = matches.first;
+                            } else if (_selectedSiteName != null) {
+                              // If it's selected but not in the current paginated list, manually add it
+                              final s = Site(
+                                id: _selectedSiteId!,
+                                name: _selectedSiteName!,
+                              );
+                              sites.add(s);
+                              initialValue = s;
+                            }
+                          }
+
                           return SearchableDropdown<Site>(
                             items: sites,
-                            value: _selectedSiteId != null
-                                ? sites.where((s) => s.id == _selectedSiteId).isEmpty
-                                    ? null
-                                    : sites.firstWhere((s) => s.id == _selectedSiteId)
-                                : null,
+                            value: initialValue,
                             hintText: 'service_calls_filter_select_site'.tr(),
                             itemAsString: (s) => s.name,
                             isLoading: state is SitesLoadingState,
                             isFilter: true,
-                            icon: const Icon(Icons.location_on_outlined, color: Color(0xFFA5ABB7), size: 18),
+                            filterFn: (item, filter) => true,
+                            icon: const Icon(
+                              Icons.location_on_outlined,
+                              color: Color(0xFFA5ABB7),
+                              size: 18,
+                            ),
+                            onSearchChanged: _selectedCustomerId != null
+                                ? (v) => _sitesBloc.add(
+                                    SitesGetEvent(
+                                      customer_id: _selectedCustomerId!,
+                                      search: v,
+                                      page: 1,
+                                      pageSize: 10,
+                                    ),
+                                  )
+                                : null,
+                            onLoadMore: _selectedCustomerId != null
+                                ? (lastSearch) => _sitesBloc.add(
+                                    SitesGetEvent(
+                                      customer_id: _selectedCustomerId!,
+                                      search: lastSearch,
+                                      page: 2,
+                                      pageSize: 10,
+                                    ),
+                                  )
+                                : null,
                             onChanged: (site) {
                               setState(() {
                                 _selectedSiteName = site?.name;
@@ -331,10 +410,14 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               color: const Color(0xFFF8F9FB),
               child: NotificationListener<ScrollNotification>(
                 onNotification: (ScrollNotification scrollInfo) {
-                  if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
+                  if (scrollInfo.metrics.pixels >=
+                          scrollInfo.metrics.maxScrollExtent &&
                       scrollInfo.metrics.axis == Axis.vertical) {
                     if (_selectedTab == 0) {
-                      _fetchServiceCalls(isRefresh: false, isAssignedOnly: true);
+                      _fetchServiceCalls(
+                        isRefresh: false,
+                        isAssignedOnly: true,
+                      );
                     } else {
                       _fetchServiceCalls(isRefresh: false, isPendingOnly: true);
                     }
@@ -352,8 +435,12 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
     );
   }
 
-  Widget _buildSegmentTab(int index, String label,
-      {int count = 0, bool isLoading = false}) {
+  Widget _buildSegmentTab(
+    int index,
+    String label, {
+    int count = 0,
+    bool isLoading = false,
+  }) {
     final bool isSelected = _selectedTab == index;
     return GestureDetector(
       onTap: () {
@@ -652,7 +739,8 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         onBack: () => Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const HomeScreen(initialIndex: 2),
+                            builder: (context) =>
+                                const HomeScreen(initialIndex: 2),
                           ),
                           (route) => false,
                         ),

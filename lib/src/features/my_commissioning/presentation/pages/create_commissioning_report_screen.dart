@@ -104,6 +104,7 @@ import 'package:service_app/src/features/service_calls/bloc/service_call_report_
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_autofill_bloc/service_call_report_step6_autofill_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_autofill_bloc/service_call_report_step6_autofill_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_step6_autofill_bloc/service_call_report_step6_autofill_state.dart';
+
 class CreateCommissioningReportScreen extends StatefulWidget {
   final VoidCallback onBack;
   final bool isServiceReport;
@@ -120,6 +121,7 @@ class CreateCommissioningReportScreen extends StatefulWidget {
   State<CreateCommissioningReportScreen> createState() =>
       _CreateCommissioningReportScreenState();
 }
+
 class _CreateCommissioningReportScreenState
     extends State<CreateCommissioningReportScreen> {
   int _currentStep = 1;
@@ -238,6 +240,7 @@ class _CreateCommissioningReportScreenState
       }
     }
   }
+
   bool _isAutoCalculatingFlow = false;
   bool _isAutoCalculatingRating = false;
 
@@ -254,10 +257,14 @@ class _CreateCommissioningReportScreenState
   void _calculateFlow(String source) {
     if (_isAutoCalculatingFlow) return;
     String text = "";
-    if (source == 'LPM') text = _pumpFlowLPMController.text;
-    else if (source == 'LPS') text = _pumpFlowLPSController.text;
-    else if (source == 'M3HR') text = _pumpFlowM3HRController.text;
-    else if (source == 'USGPM') text = _pumpFlowUSGPMController.text;
+    if (source == 'LPM')
+      text = _pumpFlowLPMController.text;
+    else if (source == 'LPS')
+      text = _pumpFlowLPSController.text;
+    else if (source == 'M3HR')
+      text = _pumpFlowM3HRController.text;
+    else if (source == 'USGPM')
+      text = _pumpFlowUSGPMController.text;
 
     if (text.isEmpty) {
       _isAutoCalculatingFlow = true;
@@ -302,17 +309,31 @@ class _CreateCommissioningReportScreenState
         break;
     }
 
-    if (source != 'LPM') _pumpFlowLPMController.text = lpm.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
-    if (source != 'LPS') _pumpFlowLPSController.text = lps.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
-    if (source != 'M3HR') _pumpFlowM3HRController.text = m3hr.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
-    if (source != 'USGPM') _pumpFlowUSGPMController.text = usgpm.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
-    
+    if (source != 'LPM')
+      _pumpFlowLPMController.text = lpm
+          .toStringAsFixed(2)
+          .replaceAll(RegExp(r'\.00$'), '');
+    if (source != 'LPS')
+      _pumpFlowLPSController.text = lps
+          .toStringAsFixed(2)
+          .replaceAll(RegExp(r'\.00$'), '');
+    if (source != 'M3HR')
+      _pumpFlowM3HRController.text = m3hr
+          .toStringAsFixed(2)
+          .replaceAll(RegExp(r'\.00$'), '');
+    if (source != 'USGPM')
+      _pumpFlowUSGPMController.text = usgpm
+          .toStringAsFixed(2)
+          .replaceAll(RegExp(r'\.00$'), '');
+
     _isAutoCalculatingFlow = false;
   }
 
   void _calculateRating(String source) {
     if (_isAutoCalculatingRating) return;
-    String text = source == 'KW' ? _ratingKWController.text : _ratingHPController.text;
+    String text = source == 'KW'
+        ? _ratingKWController.text
+        : _ratingHPController.text;
 
     if (text.isEmpty) {
       _isAutoCalculatingRating = true;
@@ -331,13 +352,19 @@ class _CreateCommissioningReportScreenState
     if (source == 'KW') {
       kw = value;
       hp = kw / 0.746;
-      if (source != 'HP') _ratingHPController.text = hp.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+      if (source != 'HP')
+        _ratingHPController.text = hp
+            .toStringAsFixed(2)
+            .replaceAll(RegExp(r'\.00$'), '');
     } else {
       hp = value;
       kw = hp * 0.746;
-      if (source != 'KW') _ratingKWController.text = kw.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+      if (source != 'KW')
+        _ratingKWController.text = kw
+            .toStringAsFixed(2)
+            .replaceAll(RegExp(r'\.00$'), '');
     }
-    
+
     _isAutoCalculatingRating = false;
   }
 
@@ -387,6 +414,7 @@ class _CreateCommissioningReportScreenState
     _technicians = [TextEditingController()];
     _representatives = [TextEditingController()];
   }
+
   @override
   void dispose() {
     _step1Bloc.close();
@@ -449,6 +477,7 @@ class _CreateCommissioningReportScreenState
     }
     super.dispose();
   }
+
   void _nextStep() {
     if (_currentStep == 1) {
       List<String> technicianIds = [];
@@ -556,31 +585,59 @@ class _CreateCommissioningReportScreenState
             );
       if (!_isTechnicalDetailsNA) {
         if (_pumpMakeController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_pump_make'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_enter_pump_make'.tr(),
+          );
           return;
         }
         if (_pumpModelController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_pump_model'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_enter_pump_model'.tr(),
+          );
           return;
         }
         if (_pumpSerialNumberController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_pump_serial'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_enter_pump_serial'.tr(),
+          );
           return;
         }
         if (_pumpFlowLPMController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_lpm'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_enter_flow_lpm'.tr(),
+          );
           return;
         }
         if (_pumpFlowM3HRController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_m3hr'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_enter_flow_m3hr'.tr(),
+          );
           return;
         }
         if (_pumpFlowLPSController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_lps'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_enter_flow_lps'.tr(),
+          );
           return;
         }
         if (_pumpFlowUSGPMController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_flow_usgpm'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_enter_flow_usgpm'.tr(),
+          );
           return;
         }
         if (_pumpHeadMTRController.text.trim().isEmpty) {
@@ -588,11 +645,19 @@ class _CreateCommissioningReportScreenState
           return;
         }
         if (_driverMakeController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_driver_make'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_enter_driver_make'.tr(),
+          );
           return;
         }
         if (_driverSerialNumberController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_driver_serial'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_enter_driver_serial'.tr(),
+          );
           return;
         }
         if (_ratingKWController.text.trim().isEmpty) {
@@ -608,11 +673,19 @@ class _CreateCommissioningReportScreenState
           return;
         }
         if (_controlPanelMakeController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_panel_make'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_enter_panel_make'.tr(),
+          );
           return;
         }
         if (_panelSerialModelController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_panel_serial'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_enter_panel_serial'.tr(),
+          );
           return;
         }
       }
@@ -685,10 +758,8 @@ class _CreateCommissioningReportScreenState
               checkType: "mechanical",
               keyChecklist: "Bearing noise",
               valueChecklist: _bearingNoise!,
-              photo:
-                  _step5Media['chk_bearing_noise'.tr()]?.path,
-              video:
-                  _step5Media['chk_bearing_noise'.tr()]?.path,
+              photo: _step5Media['chk_bearing_noise'.tr()]?.path,
+              video: _step5Media['chk_bearing_noise'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Bearing noise'],
               existingVideoUrl: _step5ExistingVideos['Bearing noise'],
             ),
@@ -713,10 +784,8 @@ class _CreateCommissioningReportScreenState
               checkType: "mechanical",
               keyChecklist: "Mechanical seal",
               valueChecklist: _mechSeal!,
-              photo:
-                  _step5Media['chk_mech_seal'.tr()]?.path,
-              video:
-                  _step5Media['chk_mech_seal'.tr()]?.path,
+              photo: _step5Media['chk_mech_seal'.tr()]?.path,
+              video: _step5Media['chk_mech_seal'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Mechanical seal'],
               existingVideoUrl: _step5ExistingVideos['Mechanical seal'],
             ),
@@ -744,12 +813,8 @@ class _CreateCommissioningReportScreenState
               checkType: "pipeline_hydraulic",
               keyChecklist: "NRV",
               valueChecklist: _nrvValve!,
-              photo:
-                  _step5Media['chk_nrv'.tr()]
-                      ?.path,
-              video:
-                  _step5Media['chk_nrv'.tr()]
-                      ?.path,
+              photo: _step5Media['chk_nrv'.tr()]?.path,
+              video: _step5Media['chk_nrv'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['NRV'],
               existingVideoUrl: _step5ExistingVideos['NRV'],
             ),
@@ -761,10 +826,8 @@ class _CreateCommissioningReportScreenState
               checkType: "pipeline_hydraulic",
               keyChecklist: "Strainer",
               valueChecklist: _strainerValve!,
-              photo:
-                  _step5Media['chk_strainer'.tr()]?.path,
-              video:
-                  _step5Media['chk_strainer'.tr()]?.path,
+              photo: _step5Media['chk_strainer'.tr()]?.path,
+              video: _step5Media['chk_strainer'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Strainer'],
               existingVideoUrl: _step5ExistingVideos['Strainer'],
             ),
@@ -776,12 +839,8 @@ class _CreateCommissioningReportScreenState
               checkType: "pipeline_hydraulic",
               keyChecklist: "Suction line",
               valueChecklist: _suctionLine!,
-              photo:
-                  _step5Media['chk_suction_line'.tr()]
-                      ?.path,
-              video:
-                  _step5Media['chk_suction_line'.tr()]
-                      ?.path,
+              photo: _step5Media['chk_suction_line'.tr()]?.path,
+              video: _step5Media['chk_suction_line'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Suction line'],
               existingVideoUrl: _step5ExistingVideos['Suction line'],
             ),
@@ -793,12 +852,8 @@ class _CreateCommissioningReportScreenState
               checkType: "pipeline_hydraulic",
               keyChecklist: "Delivery line",
               valueChecklist: _deliveryLine!,
-              photo:
-                  _step5Media['chk_delivery_line'.tr()]
-                      ?.path,
-              video:
-                  _step5Media['chk_delivery_line'.tr()]
-                      ?.path,
+              photo: _step5Media['chk_delivery_line'.tr()]?.path,
+              video: _step5Media['chk_delivery_line'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Delivery line'],
               existingVideoUrl: _step5ExistingVideos['Delivery line'],
             ),
@@ -810,10 +865,8 @@ class _CreateCommissioningReportScreenState
               checkType: "pipeline_hydraulic",
               keyChecklist: "Suction / Delivery Valve",
               valueChecklist: _suctionDelivery!,
-              photo: _step5Media['chk_suction_del_valve'.tr()]
-                  ?.path,
-              video: _step5Media['chk_suction_del_valve'.tr()]
-                  ?.path,
+              photo: _step5Media['chk_suction_del_valve'.tr()]?.path,
+              video: _step5Media['chk_suction_del_valve'.tr()]?.path,
               existingPhotoUrl:
                   _step5ExistingPhotos['Suction / Delivery Valve'],
               existingVideoUrl:
@@ -827,12 +880,8 @@ class _CreateCommissioningReportScreenState
               checkType: "pipeline_hydraulic",
               keyChecklist: "Pressure switch",
               valueChecklist: _pressureSwitch!,
-              photo:
-                  _step5Media['chk_pressure_switch'.tr()]
-                      ?.path,
-              video:
-                  _step5Media['chk_pressure_switch'.tr()]
-                      ?.path,
+              photo: _step5Media['chk_pressure_switch'.tr()]?.path,
+              video: _step5Media['chk_pressure_switch'.tr()]?.path,
               existingPhotoUrl: _step5ExistingPhotos['Pressure switch'],
               existingVideoUrl: _step5ExistingVideos['Pressure switch'],
             ),
@@ -913,15 +962,27 @@ class _CreateCommissioningReportScreenState
           return;
         }
         if (_vibration == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_vibration'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_vibration'.tr(),
+          );
           return;
         }
         if (_mechSeal == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_mech_seal'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_mech_seal'.tr(),
+          );
           return;
         }
         if (_pumpDry == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_pump_dry'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_pump_dry'.tr(),
+          );
           return;
         }
       }
@@ -932,30 +993,54 @@ class _CreateCommissioningReportScreenState
           return;
         }
         if (_strainerValve == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_strainer'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_strainer'.tr(),
+          );
           return;
         }
         if (_suctionLine == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_suction_line'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_suction_line'.tr(),
+          );
           return;
         }
         if (_deliveryLine == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_del_line'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_del_line'.tr(),
+          );
           return;
         }
         if (_suctionDelivery == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_suction_del'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_suction_del'.tr(),
+          );
           return;
         }
         if (_pressureSwitch == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_pressure'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_pressure'.tr(),
+          );
           return;
         }
       }
       // Validate electrical section
       if (!_elecNA) {
         if (_elecFaults == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_elec_faults'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_elec_faults'.tr(),
+          );
           return;
         }
         if (_voltage == null) {
@@ -971,7 +1056,11 @@ class _CreateCommissioningReportScreenState
           return;
         }
         if (_panelWiring == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_panel_wiring'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_panel_wiring'.tr(),
+          );
           return;
         }
       }
@@ -1034,24 +1123,45 @@ class _CreateCommissioningReportScreenState
           workPhotosPaths.addAll(_existingWorkPhotosUrls);
         }
         // Validation
-        if (_selectedTechnicianRepId == null || _selectedTechnicianRepId!.isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_tech_rep'.tr());
+        if (_selectedTechnicianRepId == null ||
+            _selectedTechnicianRepId!.isEmpty) {
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_tech_rep'.tr(),
+          );
           return;
         }
         if (techSignaturePath == null || techSignaturePath.isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_add_tech_sig'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_add_tech_sig'.tr(),
+          );
           return;
         }
         if (_customerRepNameController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_cust_rep'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_enter_cust_rep'.tr(),
+          );
           return;
         }
         if (custSignaturePath == null || custSignaturePath.isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_add_cust_sig'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_add_cust_sig'.tr(),
+          );
           return;
         }
         if (workPhotosPaths.isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_upload_photo'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_upload_photo'.tr(),
+          );
           return;
         }
         _submitServiceCallStep6Bloc.add(
@@ -1068,27 +1178,50 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         // Validation for commissioning flow
-        if (_selectedTechnicianRepId == null || _selectedTechnicianRepId!.isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_tech_rep'.tr());
+        if (_selectedTechnicianRepId == null ||
+            _selectedTechnicianRepId!.isEmpty) {
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_tech_rep'.tr(),
+          );
           return;
         }
         if (_technicianSignatureFile == null &&
-            (_existingTechnicianSignatureUrl == null || _existingTechnicianSignatureUrl!.isEmpty)) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_add_tech_sig'.tr());
+            (_existingTechnicianSignatureUrl == null ||
+                _existingTechnicianSignatureUrl!.isEmpty)) {
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_add_tech_sig'.tr(),
+          );
           return;
         }
         if (_customerRepNameController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_cust_rep'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_enter_cust_rep'.tr(),
+          );
           return;
         }
         if (_customerSignatureFile == null &&
-            (_existingCustomerSignatureUrl == null || _existingCustomerSignatureUrl!.isEmpty)) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_add_cust_sig'.tr());
+            (_existingCustomerSignatureUrl == null ||
+                _existingCustomerSignatureUrl!.isEmpty)) {
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_add_cust_sig'.tr(),
+          );
           return;
         }
         final allWorkPhotos = [..._workPhotos, ..._existingWorkPhotosUrls];
         if (allWorkPhotos.isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_upload_photo'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_upload_photo'.tr(),
+          );
           return;
         }
         _submitStep6Bloc.add(
@@ -1107,6 +1240,7 @@ class _CreateCommissioningReportScreenState
       }
     }
   }
+
   void _previousStep() {
     if (_currentStep > 1) {
       setState(() {
@@ -1193,6 +1327,7 @@ class _CreateCommissioningReportScreenState
       widget.onBack();
     }
   }
+
   void _showSuccessDialog({String? qrCodeImage}) {
     showDialog(
       context: context,
@@ -1315,6 +1450,7 @@ class _CreateCommissioningReportScreenState
       },
     );
   }
+
   String _getStepInfo() {
     switch (_currentStep) {
       case 1:
@@ -1333,6 +1469,7 @@ class _CreateCommissioningReportScreenState
         return 'STEP $_currentStep OF 6';
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<
@@ -2162,13 +2299,24 @@ class _CreateCommissioningReportScreenState
                                                                                                               height: 44,
                                                                                                               decoration: BoxDecoration(
                                                                                                                 color: Colors.white,
-                                                                                                                borderRadius: BorderRadius.circular(12),
-                                                                                                                border: Border.all(color: const Color(0xFFE5E7EB)),
+                                                                                                                borderRadius: BorderRadius.circular(
+                                                                                                                  12,
+                                                                                                                ),
+                                                                                                                border: Border.all(
+                                                                                                                  color: const Color(
+                                                                                                                    0xFFE5E7EB,
+                                                                                                                  ),
+                                                                                                                ),
                                                                                                                 boxShadow: [
                                                                                                                   BoxShadow(
-                                                                                                                    color: Colors.black.withOpacity(0.04),
+                                                                                                                    color: Colors.black.withOpacity(
+                                                                                                                      0.04,
+                                                                                                                    ),
                                                                                                                     blurRadius: 8,
-                                                                                                                    offset: const Offset(0, 2),
+                                                                                                                    offset: const Offset(
+                                                                                                                      0,
+                                                                                                                      2,
+                                                                                                                    ),
                                                                                                                   ),
                                                                                                                 ],
                                                                                                               ),
@@ -2176,21 +2324,31 @@ class _CreateCommissioningReportScreenState
                                                                                                                 icon: const Icon(
                                                                                                                   Icons.arrow_back,
                                                                                                                   size: 20,
-                                                                                                                  color: Color(0xFF5C616E),
+                                                                                                                  color: Color(
+                                                                                                                    0xFF5C616E,
+                                                                                                                  ),
                                                                                                                 ),
                                                                                                                 onPressed: widget.onBack,
                                                                                                               ),
                                                                                                             ),
-                                                                                                            const SizedBox(width: 16),
+                                                                                                            const SizedBox(
+                                                                                                              width: 16,
+                                                                                                            ),
                                                                                                             Container(
                                                                                                               width: 4,
                                                                                                               height: 24,
                                                                                                               decoration: BoxDecoration(
-                                                                                                                color: const Color(0xFF0B68B9),
-                                                                                                                borderRadius: BorderRadius.circular(2),
+                                                                                                                color: const Color(
+                                                                                                                  0xFF0B68B9,
+                                                                                                                ),
+                                                                                                                borderRadius: BorderRadius.circular(
+                                                                                                                  2,
+                                                                                                                ),
                                                                                                               ),
                                                                                                             ),
-                                                                                                            const SizedBox(width: 12),
+                                                                                                            const SizedBox(
+                                                                                                              width: 12,
+                                                                                                            ),
                                                                                                             Expanded(
                                                                                                               child: Text(
                                                                                                                 widget.isServiceReport
@@ -2199,7 +2357,9 @@ class _CreateCommissioningReportScreenState
                                                                                                                 style: AppFont.style(
                                                                                                                   fontSize: 17,
                                                                                                                   fontWeight: FontWeight.w900,
-                                                                                                                  color: const Color(0xFF0D121F),
+                                                                                                                  color: const Color(
+                                                                                                                    0xFF0D121F,
+                                                                                                                  ),
                                                                                                                 ),
                                                                                                               ),
                                                                                                             ),
@@ -2636,6 +2796,7 @@ class _CreateCommissioningReportScreenState
       ), // Step 2 Service Call Submit
     ); // Service Call Step 6 AutoFill Submit
   }
+
   Widget _buildBodyContent() {
     switch (_currentStep) {
       case 1:
@@ -2986,7 +3147,7 @@ class _CreateCommissioningReportScreenState
                   if (techState
                           is AssignedTechnicianRepresentativeLoadingState ||
                       step6State is CommissioningStep6AutoFillLoadingState) {
-                return const StepShimmer(step: 6);
+                    return const StepShimmer(step: 6);
                   }
                   return _buildStep6();
                 },
@@ -2998,6 +3159,7 @@ class _CreateCommissioningReportScreenState
         return const Center(child: Text("Coming Soon"));
     }
   }
+
   Widget _buildStep1([dynamic data]) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3032,7 +3194,8 @@ class _CreateCommissioningReportScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      data?.dealerName ?? 'commissioning_dealer_name_fallback'.tr(),
+                      data?.dealerName ??
+                          'commissioning_dealer_name_fallback'.tr(),
                       style: AppFont.style(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
@@ -3221,7 +3384,10 @@ class _CreateCommissioningReportScreenState
         }),
         const SizedBox(height: 16),
         // ── Customer & Project Details ───────────────────────────────────
-        _buildInfoRow('commissioning_customer_name_label'.tr(), data?.customerName ?? 'commissioning_customer_name_fallback'.tr()),
+        _buildInfoRow(
+          'commissioning_customer_name_label'.tr(),
+          data?.customerName ?? 'commissioning_customer_name_fallback'.tr(),
+        ),
         const SizedBox(height: 24),
         _buildInfoRow(
           'commissioning_project_site_name_label'.tr(),
@@ -3229,11 +3395,16 @@ class _CreateCommissioningReportScreenState
         ),
         const SizedBox(height: 24),
         if (widget.isServiceReport)
-          _buildInfoRow('commissioning_complaint_number_label'.tr(), widget.complaintNo ?? 'commissioning_complaint_number_fallback'.tr()),
+          _buildInfoRow(
+            'commissioning_complaint_number_label'.tr(),
+            widget.complaintNo ??
+                'commissioning_complaint_number_fallback'.tr(),
+          ),
         const SizedBox(height: 40),
       ],
     );
   }
+
   Widget _buildInfoRow(String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3271,6 +3442,7 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
+
   // Reusable Step Builders (Placeholder logic for Steps 2-6)
   Widget _buildStep2() {
     return Column(
@@ -3535,6 +3707,7 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
+
   Widget _buildStep3() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3601,8 +3774,14 @@ class _CreateCommissioningReportScreenState
             opacity: _isTechnicalDetailsNA ? 0.38 : 1.0,
             child: Column(
               children: [
-                _buildTechField('commissioning_pump_make'.tr(), _pumpMakeController),
-                _buildTechField('commissioning_pump_model'.tr(), _pumpModelController),
+                _buildTechField(
+                  'commissioning_pump_make'.tr(),
+                  _pumpMakeController,
+                ),
+                _buildTechField(
+                  'commissioning_pump_model'.tr(),
+                  _pumpModelController,
+                ),
                 _buildTechField(
                   'commissioning_pump_serial_number'.tr(),
                   _pumpSerialNumberController,
@@ -3622,7 +3801,10 @@ class _CreateCommissioningReportScreenState
                   ['MTR'],
                   [_pumpHeadMTRController],
                 ),
-                _buildTechField('commissioning_driver_make'.tr(), _driverMakeController),
+                _buildTechField(
+                  'commissioning_driver_make'.tr(),
+                  _driverMakeController,
+                ),
                 _buildTechField(
                   'commissioning_driver_serial_number'.tr(),
                   _driverSerialNumberController,
@@ -3649,6 +3831,7 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
+
   Widget _buildTechField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
@@ -3700,6 +3883,7 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
+
   Widget _buildTechMultiField(
     String label,
     List<String> units,
@@ -3755,9 +3939,13 @@ class _CreateCommissioningReportScreenState
                     const SizedBox(height: 2),
                     TextField(
                       controller: controller,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*')),
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+\.?\d*'),
+                        ),
                       ],
                       style: AppFont.style(
                         fontSize: 15,
@@ -3787,6 +3975,7 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
+
   Widget _buildStep4() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -3820,6 +4009,7 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
+
   Widget _buildWorkDescriptionField(
     int number,
     TextEditingController controller,
@@ -3890,6 +4080,7 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
+
   Widget _buildStep5() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -4043,6 +4234,7 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
+
   // ── Checklist section wrapper (header + NA + items with disable support) ───
   Widget _buildCheckSection({
     required IconData icon,
@@ -4123,6 +4315,7 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
+
   // ── Single checklist item: label + radio-style option boxes ───────────────
   Widget _buildCheckItem({
     required String label,
@@ -4221,6 +4414,7 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
+
   Widget _buildMediaActionBtn({
     required IconData icon,
     required String text,
@@ -4253,6 +4447,7 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
+
   Widget _buildStep6() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -4350,8 +4545,16 @@ class _CreateCommissioningReportScreenState
                     : _assignedTechniciansList,
                 value: _selectedTechnicianRepId != null
                     ? (widget.isServiceReport
-                        ? _assignedServiceCallTechniciansList.where((e) => e.assignId == _selectedTechnicianRepId).firstOrNull
-                        : _assignedTechniciansList.where((e) => e.assignId == _selectedTechnicianRepId).firstOrNull)
+                          ? _assignedServiceCallTechniciansList
+                                .where(
+                                  (e) => e.assignId == _selectedTechnicianRepId,
+                                )
+                                .firstOrNull
+                          : _assignedTechniciansList
+                                .where(
+                                  (e) => e.assignId == _selectedTechnicianRepId,
+                                )
+                                .firstOrNull)
                     : null,
                 hintText: 'commissioning_select_technician'.tr(),
                 itemAsString: (item) => item.name,
@@ -4651,6 +4854,7 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
+
   Future<void> _showImagePickerOption(
     BuildContext context,
     Function(File) onImageSelected,
@@ -4698,6 +4902,7 @@ class _CreateCommissioningReportScreenState
       },
     );
   }
+
   Future<void> _showSignatureDrawingPad(
     BuildContext context,
     Function(File) onSignatureDrawn,
@@ -4831,6 +5036,7 @@ class _CreateCommissioningReportScreenState
       },
     ).then((_) => signatureController.dispose());
   }
+
   Widget _buildRemarksBox(
     String placeholder,
     TextEditingController controller,
@@ -4880,6 +5086,7 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
+
   Widget _buildSignatureBox({
     required String label,
     required String placeholder,
@@ -5017,6 +5224,7 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
+
   Widget _buildPlaceholderStep(String title) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -5036,6 +5244,7 @@ class _CreateCommissioningReportScreenState
       ],
     );
   }
+
   Widget _buildLabel(String text) {
     return Text(
       text,
@@ -5046,6 +5255,7 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
+
   Widget _buildAddNewButton(String text) {
     return GestureDetector(
       onTap: () {},
@@ -5059,6 +5269,7 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
+
   Widget _buildDropdownField(String hint) {
     return Container(
       margin: const EdgeInsets.only(top: 12),

@@ -13,9 +13,17 @@ sealed class SitesEvent extends Equatable {
 
 class SitesGetEvent extends SitesEvent {
   final String customer_id;
+  final int page;
+  final int pageSize;
+  final String search;
 
-  const SitesGetEvent(this.customer_id);
+  const SitesGetEvent({
+    required this.customer_id,
+    this.page = 1,
+    this.pageSize = 10,
+    this.search = '',
+  });
 
   @override
-  List<Object?> get props => [customer_id];
+  List<Object?> get props => [customer_id, page, pageSize, search];
 }

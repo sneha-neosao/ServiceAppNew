@@ -113,13 +113,14 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
         await dir.create(recursive: true);
       }
 
-      String fileName = 'Commissioning_Report_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      String fileName =
+          'Commissioning_Report_${DateTime.now().millisecondsSinceEpoch}.pdf';
       if (url.contains('.pdf')) {
         fileName = url.split('/').last.split('?').first;
       }
 
       final savePath = '${dir.path}/$fileName';
-      
+
       if (mounted) {
         appSnackBar(context, const Color(0xFF1565C0), 'Downloading report...');
       }
@@ -127,7 +128,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       await Dio().download(url, savePath);
 
       if (mounted) {
-        appSnackBar(context, const Color(0xFF4CAF50), 'Downloaded successfully to $savePath');
+        appSnackBar(
+          context,
+          const Color(0xFF4CAF50),
+          'Downloaded successfully to $savePath',
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -138,14 +143,19 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CommissioningReportPdfBloc, CommissioningReportPdfState>(
+    return BlocListener<
+      CommissioningReportPdfBloc,
+      CommissioningReportPdfState
+    >(
       bloc: _pdfBloc,
       listener: (context, state) {
         if (state is CommissioningReportPdfLoading) {
           showDialog(
             context: context,
             barrierDismissible: false,
-            builder: (_) => const Center(child: CircularProgressIndicator(color: Color(0xFF1565C0))),
+            builder: (_) => const Center(
+              child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+            ),
           );
         } else if (state is CommissioningReportPdfError) {
           Navigator.pop(context);
@@ -197,9 +207,18 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 ),
                 child: Row(
                   children: [
-                    Expanded(child: _buildSegmentTab(0, 'reports_tab_commissioning'.tr())),
-                    Expanded(child: _buildSegmentTab(1, 'reports_tab_service'.tr())),
-                    Expanded(child: _buildSegmentTab(2, 'reports_tab_amc'.tr())),
+                    Expanded(
+                      child: _buildSegmentTab(
+                        0,
+                        'reports_tab_commissioning'.tr(),
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildSegmentTab(1, 'reports_tab_service'.tr()),
+                    ),
+                    Expanded(
+                      child: _buildSegmentTab(2, 'reports_tab_amc'.tr()),
+                    ),
                   ],
                 ),
               ),
@@ -213,104 +232,113 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
 
             // ── Reports List ────────────────────────────────────────────────────
             Expanded(
-          child: Container(
-            color: const Color(0xFFF8F9FB),
-            child: _selectedTab == 0
-                ? BlocBuilder<
-                    CommissioningReportHistoryBloc,
-                    CommissioningReportHistoryState
-                  >(
-                    bloc: _historyBloc,
-                    builder: (context, state) {
-                      if (state is CommissioningReportHistoryLoadingState ||
-                          state is CommissioningReportHistoryInitialState) {
-                        return ListView.separated(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: 3,
-                          separatorBuilder: (context, index) => const SizedBox(height: 16),
-                          itemBuilder: (context, index) => const ListCardShimmer(),
-                        );
-                      } else if (state
-                          is CommissioningReportHistoryFailureState) {
-                        return Center(
-                          child: Text(
-                            state.message,
-                            style: AppFont.style(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.red,
-                            ),
-                          ),
-                        );
-                      } else if (state
-                          is CommissioningReportHistorySuccessState) {
-                        final items = state.data.data.results;
-                        if (items.isEmpty) {
-                          return Center(
-                            child: Text(
-                              'reports_empty_commissioning'.tr(),
-                              style: AppFont.style(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFFA5ABB7),
+              child: Container(
+                color: const Color(0xFFF8F9FB),
+                child: _selectedTab == 0
+                    ? BlocBuilder<
+                        CommissioningReportHistoryBloc,
+                        CommissioningReportHistoryState
+                      >(
+                        bloc: _historyBloc,
+                        builder: (context, state) {
+                          if (state is CommissioningReportHistoryLoadingState ||
+                              state is CommissioningReportHistoryInitialState) {
+                            return ListView.separated(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: 3,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 16),
+                              itemBuilder: (context, index) =>
+                                  const ListCardShimmer(),
+                            );
+                          } else if (state
+                              is CommissioningReportHistoryFailureState) {
+                            return Center(
+                              child: Text(
+                                state.message,
+                                style: AppFont.style(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.red,
+                                ),
                               ),
-                            ),
-                          );
-                        }
-                        return ListView.separated(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: items.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 16),
-                          itemBuilder: (context, index) {
-                            final item = items[index];
-                            String formattedDate = item.submittedAt;
-                            try {
-                              final dt = DateTime.parse(item.submittedAt);
-                              formattedDate = DateFormat(
-                                'dd MMM yyyy',
-                              ).format(dt);
-                            } catch (_) {}
+                            );
+                          } else if (state
+                              is CommissioningReportHistorySuccessState) {
+                            final items = state.data.data.results;
+                            if (items.isEmpty) {
+                              return Center(
+                                child: Text(
+                                  'reports_empty_commissioning'.tr(),
+                                  style: AppFont.style(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFFA5ABB7),
+                                  ),
+                                ),
+                              );
+                            }
+                            return ListView.separated(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: items.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 16),
+                              itemBuilder: (context, index) {
+                                final item = items[index];
+                                String formattedDate = item.submittedAt;
+                                try {
+                                  final dt = DateTime.parse(item.submittedAt);
+                                  formattedDate = DateFormat(
+                                    'dd MMM yyyy',
+                                  ).format(dt);
+                                } catch (_) {}
 
-                            return _ReportCard(
-                              id: item.commissioningWorkId,
-                              reportId: item.id,
-                              type: ReportType.commissioning,
-                              companyName: item.customerName,
-                              location: item.siteName,
-                              date: formattedDate,
-                              technician:
-                                  item.technicianRepresentativeName ??
-                                  'No representative',
-                              technicianId: item.dealerName,
-                              feedbackSubmitted: item.feedbackSubmitted,
-                              qrCodeImage: item.qrCodeImage,
-                              onViewTap: (id) {
-                                _detailsBloc.add(
-                                  CommissioningReportDetailsGetEvent(id),
+                                return _ReportCard(
+                                  id: item.commissioningWorkId,
+                                  reportId: item.id,
+                                  type: ReportType.commissioning,
+                                  companyName: item.customerName,
+                                  location: item.siteName,
+                                  date: formattedDate,
+                                  technician:
+                                      item.technicianRepresentativeName ??
+                                      'No representative',
+                                  technicianId: item.dealerName,
+                                  feedbackSubmitted: item.feedbackSubmitted,
+                                  qrCodeImage: item.qrCodeImage,
+                                  onViewTap: (id) {
+                                    _detailsBloc.add(
+                                      CommissioningReportDetailsGetEvent(id),
+                                    );
+                                  },
+                                  onViewPdfTap: (id) {
+                                    _pdfBloc.add(
+                                      FetchCommissioningReportPdfEvent(
+                                        reportId: id,
+                                        action: PdfAction.view,
+                                      ),
+                                    );
+                                  },
+                                  onDownloadPdfTap: (id) {
+                                    _pdfBloc.add(
+                                      FetchCommissioningReportPdfEvent(
+                                        reportId: id,
+                                        action: PdfAction.download,
+                                      ),
+                                    );
+                                  },
                                 );
                               },
-                              onViewPdfTap: (id) {
-                                _pdfBloc.add(FetchCommissioningReportPdfEvent(
-                                  reportId: id, 
-                                  action: PdfAction.view,
-                                ));
-                              },
-                              onDownloadPdfTap: (id) {
-                                _pdfBloc.add(FetchCommissioningReportPdfEvent(
-                                  reportId: id, 
-                                  action: PdfAction.download,
-                                ));
-                              },
                             );
-                          },
-                        );
-                      }
-                      return const SizedBox();
-                    },
-                  )
-                : _selectedTab == 1
-                    ? BlocBuilder<ServiceCallReportHistoryBloc, ServiceCallReportHistoryState>(
+                          }
+                          return const SizedBox();
+                        },
+                      )
+                    : _selectedTab == 1
+                    ? BlocBuilder<
+                        ServiceCallReportHistoryBloc,
+                        ServiceCallReportHistoryState
+                      >(
                         bloc: _serviceCallHistoryBloc,
                         builder: (context, state) {
                           if (state is ServiceCallReportHistoryLoading ||
@@ -318,8 +346,10 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                             return ListView.separated(
                               padding: const EdgeInsets.all(16),
                               itemCount: 3,
-                              separatorBuilder: (context, index) => const SizedBox(height: 16),
-                              itemBuilder: (context, index) => const ListCardShimmer(),
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 16),
+                              itemBuilder: (context, index) =>
+                                  const ListCardShimmer(),
                             );
                           } else if (state is ServiceCallReportHistoryError) {
                             return Center(
@@ -356,7 +386,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                 String formattedDate = item.submittedAt;
                                 try {
                                   final dt = DateTime.parse(item.submittedAt);
-                                  formattedDate = DateFormat('dd MMM yyyy').format(dt);
+                                  formattedDate = DateFormat(
+                                    'dd MMM yyyy',
+                                  ).format(dt);
                                 } catch (_) {}
 
                                 return _ReportCard(
@@ -381,11 +413,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         padding: const EdgeInsets.all(16),
                         children: _buildReportList(),
                       ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 
@@ -515,9 +547,13 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     return SearchableDropdown<Customer>(
                       items: customers,
                       value: _selectedCustomerId != null
-                          ? customers.where((c) => c.id == _selectedCustomerId).isEmpty
-                              ? null
-                              : customers.firstWhere((c) => c.id == _selectedCustomerId)
+                          ? customers
+                                    .where((c) => c.id == _selectedCustomerId)
+                                    .isEmpty
+                                ? null
+                                : customers.firstWhere(
+                                    (c) => c.id == _selectedCustomerId,
+                                  )
                           : null,
                       hintText: 'reports_filter_select_customer'.tr(),
                       itemAsString: (c) => c.name,
@@ -525,12 +561,24 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                       isFilter: true,
                       filterFn: (item, filter) => true,
                       onSearchChanged: (v) {
-                        _customerBloc.add(CustomerGetEvent(search: v, page: 1, pageSize: 10));
+                        _customerBloc.add(
+                          CustomerGetEvent(search: v, page: 1, pageSize: 10),
+                        );
                       },
                       onLoadMore: (lastSearch) {
-                        _customerBloc.add(CustomerGetEvent(search: lastSearch, page: 2, pageSize: 10));
+                        _customerBloc.add(
+                          CustomerGetEvent(
+                            search: lastSearch,
+                            page: 2,
+                            pageSize: 10,
+                          ),
+                        );
                       },
-                      icon: const Icon(Icons.person_outline, color: Color(0xFFA5ABB7), size: 18),
+                      icon: const Icon(
+                        Icons.person_outline,
+                        color: Color(0xFFA5ABB7),
+                        size: 18,
+                      ),
                       onChanged: (customer) {
                         setState(() {
                           _selectedCustomerName = customer?.name;
@@ -539,7 +587,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           _selectedSiteId = null;
                         });
                         if (customer != null) {
-                          _sitesBloc.add(SitesGetEvent(customer.id));
+                          _sitesBloc.add(
+                            SitesGetEvent(customer_id: customer.id),
+                          );
                         }
                         _fetchReportHistory();
                       },
@@ -556,18 +606,58 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     if (state is SitesSuccessState) {
                       sites.addAll(state.data.data);
                     }
+
+                    Site? initialValue;
+                    if (_selectedSiteId != null) {
+                      final matches = sites.where(
+                        (s) => s.id == _selectedSiteId,
+                      );
+                      if (matches.isNotEmpty) {
+                        initialValue = matches.first;
+                      } else if (_selectedSiteName != null) {
+                        // If it's selected but not in the current paginated list, manually add it
+                        final s = Site(
+                          id: _selectedSiteId!,
+                          name: _selectedSiteName!,
+                        );
+                        sites.add(s);
+                        initialValue = s;
+                      }
+                    }
+
                     return SearchableDropdown<Site>(
                       items: sites,
-                      value: _selectedSiteId != null
-                          ? sites.where((s) => s.id == _selectedSiteId).isEmpty
-                              ? null
-                              : sites.firstWhere((s) => s.id == _selectedSiteId)
-                          : null,
+                      value: initialValue,
                       hintText: 'reports_filter_select_site'.tr(),
                       itemAsString: (s) => s.name,
                       isLoading: state is SitesLoadingState,
                       isFilter: true,
-                      icon: const Icon(Icons.location_on_outlined, color: Color(0xFFA5ABB7), size: 18),
+                      filterFn: (item, filter) => true,
+                      icon: const Icon(
+                        Icons.location_on_outlined,
+                        color: Color(0xFFA5ABB7),
+                        size: 18,
+                      ),
+                      onSearchChanged: _selectedCustomerId != null
+                          ? (v) => _sitesBloc.add(
+                              SitesGetEvent(
+                                customer_id: _selectedCustomerId!,
+                                search: v,
+                                page: 1,
+                                pageSize: 10,
+                              ),
+                            )
+                          : null,
+                      onLoadMore: _selectedCustomerId != null
+                          ? (lastSearch) => _sitesBloc.add(
+                              SitesGetEvent(
+                                customer_id: _selectedCustomerId!,
+                                search: lastSearch,
+                                page: 2,
+                                pageSize: 10,
+                              ),
+                            )
+                          : null,
                       onChanged: (site) {
                         setState(() {
                           _selectedSiteName = site?.name;
@@ -609,15 +699,23 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     return SearchableDropdown<Technician>(
                       items: technicians,
                       value: _selectedTechnicianId != null
-                          ? technicians.where((t) => t.id == _selectedTechnicianId).isEmpty
-                              ? null
-                              : technicians.firstWhere((t) => t.id == _selectedTechnicianId)
+                          ? technicians
+                                    .where((t) => t.id == _selectedTechnicianId)
+                                    .isEmpty
+                                ? null
+                                : technicians.firstWhere(
+                                    (t) => t.id == _selectedTechnicianId,
+                                  )
                           : null,
                       hintText: 'reports_filter_select_technician'.tr(),
                       itemAsString: (t) => t.name,
                       isLoading: state is TechnicianLoadingState,
                       isFilter: true,
-                      icon: const Icon(Icons.person_outline, color: Color(0xFFA5ABB7), size: 18),
+                      icon: const Icon(
+                        Icons.person_outline,
+                        color: Color(0xFFA5ABB7),
+                        size: 18,
+                      ),
                       onChanged: (tech) {
                         setState(() {
                           _selectedTechnicianName = tech?.name;
@@ -994,7 +1092,9 @@ class _ReportCard extends StatelessWidget {
       children: [
         InkWell(
           onTap: () {
-            if (type == ReportType.commissioning && onViewPdfTap != null && reportId != null) {
+            if (type == ReportType.commissioning &&
+                onViewPdfTap != null &&
+                reportId != null) {
               onViewPdfTap!(reportId!);
             } else if (onViewTap != null && reportId != null) {
               onViewTap!(reportId!);
@@ -1036,7 +1136,8 @@ class _ReportCard extends StatelessWidget {
                   iconColor: const Color(0xFF6B7280),
                   onTap: () {
                     if (reportId != null) {
-                      if (type == ReportType.commissioning && onDownloadPdfTap != null) {
+                      if (type == ReportType.commissioning &&
+                          onDownloadPdfTap != null) {
                         onDownloadPdfTap!(reportId!);
                       } else {
                         onViewTap?.call(reportId!);
@@ -1077,7 +1178,11 @@ class _ReportCard extends StatelessWidget {
                           if (qrCodeImage != null && qrCodeImage!.isNotEmpty) {
                             _showQrCodeDialog(context);
                           } else {
-                            appSnackBar(context, const Color(0xFFF44336), 'reports_qr_not_available'.tr());
+                            appSnackBar(
+                              context,
+                              const Color(0xFFF44336),
+                              'reports_qr_not_available'.tr(),
+                            );
                           }
                         },
                       ),

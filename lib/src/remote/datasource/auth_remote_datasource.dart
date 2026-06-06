@@ -368,11 +368,15 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CustomerResponse> customers(CustomerParams params, String token) async {
+  Future<CustomerResponse> customers(
+    CustomerParams params,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
-        url: '${ApiUrl.customerDropdown}?page=${params.page}&page_size=${params.pageSize}&search=${params.search}',
+        url:
+            '${ApiUrl.customerDropdown}?page=${params.page}&page_size=${params.pageSize}&search=${params.search}',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
@@ -398,7 +402,8 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     try {
       final response = await _helper.execute(
         method: Method.get,
-        url: "${ApiUrl.siteDropdown}?customer_id=${params.customer_id}",
+        url:
+            "${ApiUrl.siteDropdown}?customer_id=${params.customer_id}&page=${params.page}&page_size=${params.pageSize}&search=${params.search}",
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
@@ -1905,7 +1910,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<ServiceCallReportResponse> getServiceCallsReportHistory(String token) async {
+  Future<ServiceCallReportResponse> getServiceCallsReportHistory(
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,

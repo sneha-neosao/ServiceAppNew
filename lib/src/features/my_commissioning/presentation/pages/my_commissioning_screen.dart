@@ -64,10 +64,7 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
           if (state is CommissioningWorkListInitialState ||
               state is CommissioningWorkListLoadingState) {
             return ListView.separated(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 20,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               itemCount: 3,
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) => const ListCardShimmer(),
@@ -173,7 +170,8 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                                     onBack: () => Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const HomeScreen(initialIndex: 1),
+                                        builder: (context) =>
+                                            const HomeScreen(initialIndex: 1),
                                       ),
                                       (route) => false,
                                     ),

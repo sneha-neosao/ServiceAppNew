@@ -10,6 +10,7 @@ import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
+
 class CreateReportScreen extends StatefulWidget {
   final VoidCallback onBack;
   const CreateReportScreen({super.key, required this.onBack});
@@ -55,10 +56,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   void _calculateFlow(String source) {
     if (_isAutoCalculatingFlow) return;
     String text = "";
-    if (source == 'LPM') text = _pumpFlowLpmCtrl.text;
-    else if (source == 'LPS') text = _pumpFlowLpsCtrl.text;
-    else if (source == 'M3HR') text = _pumpFlowM3hrCtrl.text;
-    else if (source == 'USGPM') text = _pumpFlowUsgpmCtrl.text;
+    if (source == 'LPM')
+      text = _pumpFlowLpmCtrl.text;
+    else if (source == 'LPS')
+      text = _pumpFlowLpsCtrl.text;
+    else if (source == 'M3HR')
+      text = _pumpFlowM3hrCtrl.text;
+    else if (source == 'USGPM')
+      text = _pumpFlowUsgpmCtrl.text;
 
     if (text.isEmpty) {
       _isAutoCalculatingFlow = true;
@@ -103,11 +108,23 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         break;
     }
 
-    if (source != 'LPM') _pumpFlowLpmCtrl.text = lpm.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
-    if (source != 'LPS') _pumpFlowLpsCtrl.text = lps.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
-    if (source != 'M3HR') _pumpFlowM3hrCtrl.text = m3hr.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
-    if (source != 'USGPM') _pumpFlowUsgpmCtrl.text = usgpm.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
-    
+    if (source != 'LPM')
+      _pumpFlowLpmCtrl.text = lpm
+          .toStringAsFixed(2)
+          .replaceAll(RegExp(r'\.00$'), '');
+    if (source != 'LPS')
+      _pumpFlowLpsCtrl.text = lps
+          .toStringAsFixed(2)
+          .replaceAll(RegExp(r'\.00$'), '');
+    if (source != 'M3HR')
+      _pumpFlowM3hrCtrl.text = m3hr
+          .toStringAsFixed(2)
+          .replaceAll(RegExp(r'\.00$'), '');
+    if (source != 'USGPM')
+      _pumpFlowUsgpmCtrl.text = usgpm
+          .toStringAsFixed(2)
+          .replaceAll(RegExp(r'\.00$'), '');
+
     _isAutoCalculatingFlow = false;
   }
 
@@ -132,13 +149,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     if (source == 'KW') {
       kw = value;
       hp = kw / 0.746;
-      if (source != 'HP') _ratingHpCtrl.text = hp.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+      if (source != 'HP')
+        _ratingHpCtrl.text = hp
+            .toStringAsFixed(2)
+            .replaceAll(RegExp(r'\.00$'), '');
     } else {
       hp = value;
       kw = hp * 0.746;
-      if (source != 'KW') _ratingKwCtrl.text = kw.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+      if (source != 'KW')
+        _ratingKwCtrl.text = kw
+            .toStringAsFixed(2)
+            .replaceAll(RegExp(r'\.00$'), '');
     }
-    
+
     _isAutoCalculatingRating = false;
   }
 
@@ -882,24 +905,31 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 final apiNames = state.data.data.map((e) => e.name).toList();
                 _customersList.addAll(apiNames);
               }
-              
+
               List<String> validItems = List.from(_customersList);
-              if (_selectedCustomer != 'Select Customer' && !validItems.contains(_selectedCustomer)) {
+              if (_selectedCustomer != 'Select Customer' &&
+                  !validItems.contains(_selectedCustomer)) {
                 validItems.add(_selectedCustomer);
               }
 
               return SearchableDropdown<String>(
                 items: validItems,
-                value: _selectedCustomer == 'Select Customer' ? null : _selectedCustomer,
+                value: _selectedCustomer == 'Select Customer'
+                    ? null
+                    : _selectedCustomer,
                 hintText: 'Select Customer',
                 itemAsString: (item) => item,
                 isLoading: isLoading,
                 filterFn: (item, filter) => true,
                 onSearchChanged: (v) {
-                  _customerBloc.add(CustomerGetEvent(search: v, page: 1, pageSize: 10));
+                  _customerBloc.add(
+                    CustomerGetEvent(search: v, page: 1, pageSize: 10),
+                  );
                 },
                 onLoadMore: (lastSearch) {
-                  _customerBloc.add(CustomerGetEvent(search: lastSearch, page: 2, pageSize: 10));
+                  _customerBloc.add(
+                    CustomerGetEvent(search: lastSearch, page: 2, pageSize: 10),
+                  );
                 },
                 onChanged: (val) {
                   setState(() {
@@ -908,7 +938,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   if (state is CustomerSuccessState && val != null) {
                     final cList = state.data.data.where((x) => x.name == val);
                     if (cList.isNotEmpty) {
-                      _sitesBloc.add(SitesGetEvent(cList.first.id));
+                      _sitesBloc.add(SitesGetEvent(customer_id: cList.first.id));
                     }
                   }
                 },
@@ -976,43 +1006,77 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             builder: (context, state) {
               bool isLoading = state is SitesLoadingState;
               if (state is SitesSuccessState) {
+                _sitesList.clear();
                 final apiNames = state.data.data.map((e) => e.name).toList();
-                for (var name in apiNames) {
-                  if (!_sitesList.contains(name)) _sitesList.add(name);
-                }
+                _sitesList.addAll(apiNames);
               }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (!isLoading) {
-                        setState(() {
-                          _isSiteDropdownOpen = !_isSiteDropdownOpen;
-                          _isCustomerDropdownOpen = false;
-                        });
-                      }
-                    },
-                    child: _buildDropdownField(
-                      isLoading ? 'Loading...' : _selectedSite,
-                      _isSiteDropdownOpen,
-                      isLoading: isLoading,
-                    ),
-                  ),
-                  if (_isSiteDropdownOpen)
-                    _buildDropdownList(
-                      title: 'Select Site',
-                      items: _sitesList,
-                      onSelect: (val) {
-                        setState(() {
-                          _selectedSite = val;
-                          _isSiteDropdownOpen = false;
-                        });
-                      },
-                    ),
-                ],
+
+              List<String> validItems = List.from(_sitesList);
+              if (_selectedSite != 'Select Site' &&
+                  !validItems.contains(_selectedSite)) {
+                validItems.add(_selectedSite);
+              }
+
+              return SearchableDropdown<String>(
+                items: validItems,
+                value: _selectedSite == 'Select Site' ? null : _selectedSite,
+                hintText: 'Select Site',
+                itemAsString: (item) => item,
+                isLoading: isLoading,
+                filterFn: (item, filter) => true,
+                onSearchChanged: _selectedCustomer != 'Select Customer'
+                    ? (v) {
+                  String? customerId;
+                  if (_customerBloc.state is CustomerSuccessState) {
+                    final list =
+                    (_customerBloc.state as CustomerSuccessState)
+                        .data
+                        .data
+                        .where((x) => x.name == _selectedCustomer);
+                    if (list.isNotEmpty) customerId = list.first.id;
+                  }
+                  if (customerId != null) {
+                    _sitesBloc.add(
+                      SitesGetEvent(
+                        customer_id: customerId,
+                        search: v,
+                        page: 1,
+                        pageSize: 10,
+                      ),
+                    );
+                  }
+                }
+                    : null,
+                onLoadMore: _selectedCustomer != 'Select Customer'
+                    ? (lastSearch) {
+                  String? customerId2;
+                  if (_customerBloc.state is CustomerSuccessState) {
+                    final list2 =
+                    (_customerBloc.state as CustomerSuccessState)
+                        .data
+                        .data
+                        .where((x) => x.name == _selectedCustomer);
+                    if (list2.isNotEmpty) customerId2 = list2.first.id;
+                  }
+                  if (customerId2 != null) {
+                    _sitesBloc.add(
+                      SitesGetEvent(
+                        customer_id: customerId2,
+                        search: lastSearch,
+                        page: 2,
+                        pageSize: 10,
+                      ),
+                    );
+                  }
+                }
+                    : null,
+                onChanged: (val) {
+                  setState(() {
+                    _selectedSite = val ?? 'Select Site';
+                  });
+                },
               );
-            },
+            }
           ),
         ],
 
@@ -1434,11 +1498,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     );
   }
 
-  Widget _buildUnderlineField(TextEditingController ctrl, {String hint = '', bool isNumeric = false}) {
+  Widget _buildUnderlineField(
+    TextEditingController ctrl, {
+    String hint = '',
+    bool isNumeric = false,
+  }) {
     return TextField(
       controller: ctrl,
-      keyboardType: isNumeric ? const TextInputType.numberWithOptions(decimal: true) : null,
-      inputFormatters: isNumeric ? [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))] : null,
+      keyboardType: isNumeric
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : null,
+      inputFormatters: isNumeric
+          ? [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))]
+          : null,
       style: AppFont.style(
         fontSize: 15,
         fontWeight: FontWeight.w500,
