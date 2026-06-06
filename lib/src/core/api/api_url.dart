@@ -120,5 +120,7 @@ class ApiUrl {
 
   static const serviceCallCheckFeedback = "technician/service-call-report";
 
+  static const serviceCallReport = "technician/service-call-report";
+
   static const serviceCallReportHistory = "technician/service-call-reports/history";
 }

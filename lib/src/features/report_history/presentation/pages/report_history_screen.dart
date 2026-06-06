@@ -24,7 +24,11 @@ import 'package:service_app/src/features/service_calls/bloc/service_call_report_
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_pdf_bloc/commissioning_report_pdf_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_pdf_bloc/commissioning_report_pdf_event.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_pdf_bloc/commissioning_report_pdf_state.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_pdf_bloc/service_call_report_pdf_bloc.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_pdf_bloc/service_call_report_pdf_event.dart';
+import 'package:service_app/src/features/service_calls/bloc/service_call_report_pdf_bloc/service_call_report_pdf_state.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -43,6 +47,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   late ServiceCallReportHistoryBloc _serviceCallHistoryBloc;
   late CommissioningReportDetailsBloc _detailsBloc;
   late CommissioningReportPdfBloc _pdfBloc;
+  late ServiceCallReportPdfBloc _serviceCallPdfBloc;
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
   late TechnicianBloc _technicianBloc;
@@ -82,6 +87,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     _serviceCallHistoryBloc = getIt<ServiceCallReportHistoryBloc>();
     _detailsBloc = getIt<CommissioningReportDetailsBloc>();
     _pdfBloc = getIt<CommissioningReportPdfBloc>();
+    _serviceCallPdfBloc = getIt<ServiceCallReportPdfBloc>();
     _fetchReportHistory();
     _fetchServiceCallHistory();
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
@@ -95,6 +101,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     _serviceCallHistoryBloc.close();
     _detailsBloc.close();
     _pdfBloc.close();
+    _serviceCallPdfBloc.close();
     _customerBloc.close();
     _sitesBloc.close();
     _technicianBloc.close();
@@ -119,7 +126,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       }
 
       String fileName =
-          'Commissioning_Report_${DateTime.now().millisecondsSinceEpoch}.pdf';
+          'Report_${DateTime.now().millisecondsSinceEpoch}.pdf';
       if (url.contains('.pdf')) {
         fileName = url.split('/').last.split('?').first;
       }
@@ -148,37 +155,67 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<
-      CommissioningReportPdfBloc,
-      CommissioningReportPdfState
-    >(
-      bloc: _pdfBloc,
-      listener: (context, state) {
-        if (state is CommissioningReportPdfLoading) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => const Center(
-              child: CircularProgressIndicator(color: Color(0xFF1565C0)),
-            ),
-          );
-        } else if (state is CommissioningReportPdfError) {
-          Navigator.pop(context);
-          appSnackBar(context, const Color(0xFFF44336), state.message);
-        } else if (state is CommissioningReportPdfLoaded) {
-          Navigator.pop(context);
-          final url = state.response.data?.pdfUrl;
-          if (url != null && url.isNotEmpty) {
-            if (state.action == PdfAction.view) {
-              launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-            } else if (state.action == PdfAction.download) {
-              _downloadPdf(url);
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<CommissioningReportPdfBloc, CommissioningReportPdfState>(
+          bloc: _pdfBloc,
+          listener: (context, state) {
+            if (state is CommissioningReportPdfLoading) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => const Center(
+                  child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                ),
+              );
+            } else if (state is CommissioningReportPdfError) {
+              Navigator.pop(context);
+              appSnackBar(context, const Color(0xFFF44336), state.message);
+            } else if (state is CommissioningReportPdfLoaded) {
+              Navigator.pop(context);
+              final url = state.response.data?.pdfUrl;
+              if (url != null && url.isNotEmpty) {
+                if (state.action == PdfAction.view) {
+                  launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                } else if (state.action == PdfAction.download) {
+                  _downloadPdf(url);
+                }
+              } else {
+                appSnackBar(context, const Color(0xFFF44336), 'PDF URL is empty');
+              }
             }
-          } else {
-            appSnackBar(context, const Color(0xFFF44336), 'PDF URL is empty');
-          }
-        }
-      },
+          },
+        ),
+        BlocListener<ServiceCallReportPdfBloc, ServiceCallReportPdfState>(
+          bloc: _serviceCallPdfBloc,
+          listener: (context, state) {
+            if (state is ServiceCallReportPdfLoading) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => const Center(
+                  child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                ),
+              );
+            } else if (state is ServiceCallReportPdfError) {
+              Navigator.pop(context);
+              appSnackBar(context, const Color(0xFFF44336), state.message);
+            } else if (state is ServiceCallReportPdfLoaded) {
+              Navigator.pop(context);
+              final url = state.response.data?.pdfUrl;
+              if (url != null && url.isNotEmpty) {
+                if (state.action == ServiceCallPdfAction.view) {
+                  launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                } else if (state.action == ServiceCallPdfAction.download) {
+                  _downloadPdf(url);
+                }
+              } else {
+                appSnackBar(context, const Color(0xFFF44336), 'PDF URL is empty');
+              }
+            }
+          },
+        ),
+      ],
       child: Container(
         color: Colors.white,
         child: Column(
@@ -408,6 +445,22 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   technicianId: item.dealerName,
                                   feedbackSubmitted: item.feedbackSubmitted,
                                   qrCodeImage: item.qrCodeImage,
+                                  onViewPdfTap: (id) {
+                                    _serviceCallPdfBloc.add(
+                                      FetchServiceCallReportPdfEvent(
+                                        reportId: id,
+                                        action: ServiceCallPdfAction.view,
+                                      ),
+                                    );
+                                  },
+                                  onDownloadPdfTap: (id) {
+                                    _serviceCallPdfBloc.add(
+                                      FetchServiceCallReportPdfEvent(
+                                        reportId: id,
+                                        action: ServiceCallPdfAction.download,
+                                      ),
+                                    );
+                                  },
                                 );
                               },
                             );
@@ -1063,44 +1116,44 @@ class _ReportCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (complaintNo != null) ...[
-              const SizedBox(height: 16),
-              // Complaint Row
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFFBF2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      complaintNo!,
-                      style: AppFont.style(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFFE65100),
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      'reports_view_complaint'.tr(),
-                      style: AppFont.style(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFFE65100),
-                        letterSpacing: 0.5,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            // if (complaintNo != null) ...[
+            //   const SizedBox(height: 16),
+            //   // Complaint Row
+            //   Container(
+            //     width: double.infinity,
+            //     padding: const EdgeInsets.symmetric(
+            //       horizontal: 12,
+            //       vertical: 12,
+            //     ),
+            //     decoration: BoxDecoration(
+            //       color: const Color(0xFFFFFBF2),
+            //       borderRadius: BorderRadius.circular(10),
+            //     ),
+            //     child: Row(
+            //       children: [
+            //         Text(
+            //           complaintNo!,
+            //           style: AppFont.style(
+            //             fontSize: 13,
+            //             fontWeight: FontWeight.w900,
+            //             color: const Color(0xFFE65100),
+            //           ),
+            //         ),
+            //         const Spacer(),
+            //         Text(
+            //           'reports_view_complaint'.tr(),
+            //           style: AppFont.style(
+            //             fontSize: 11,
+            //             fontWeight: FontWeight.w900,
+            //             color: const Color(0xFFE65100),
+            //             letterSpacing: 0.5,
+            //             decoration: TextDecoration.underline,
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ],
             const SizedBox(height: 16),
             const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
             const SizedBox(height: 16),
@@ -1164,7 +1217,7 @@ class _ReportCard extends StatelessWidget {
       children: [
         InkWell(
           onTap: () {
-            if (type == ReportType.commissioning &&
+            if ((type == ReportType.commissioning || type == ReportType.service) &&
                 onViewPdfTap != null &&
                 reportId != null) {
               onViewPdfTap!(reportId!);
@@ -1208,7 +1261,7 @@ class _ReportCard extends StatelessWidget {
                   iconColor: const Color(0xFF6B7280),
                   onTap: () {
                     if (reportId != null) {
-                      if (type == ReportType.commissioning &&
+                      if ((type == ReportType.commissioning || type == ReportType.service) &&
                           onDownloadPdfTap != null) {
                         onDownloadPdfTap!(reportId!);
                       } else {

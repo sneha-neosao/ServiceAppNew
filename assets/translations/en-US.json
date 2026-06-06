@@ -80,7 +80,7 @@
   "reports_clear_filters": "Clear Filters",
   "reports_empty_commissioning": "No commissioning reports found",
   "reports_empty_service": "No service call reports found",
-  "reports_view_complaint": "VIEW COMPLAINT REPORT",
+  "reports_view_complaint": "View Complaint Report",
   "reports_btn_view_service": "View Service Report",
   "reports_btn_view_commissioning": "View Commissioning Report",
   "reports_btn_view_amc": "View AMC Report",
@@ -219,7 +219,7 @@
   "service_report": "Service Report",
   "commissioning_member_context_label": "Member Context",
   "commissioning_customer_members": "Member Presents (Customer Side) :",
-  "commissioning_representative": "Enter Representative Name",
+  "commissioning_representative": "Representative",
   "commissioning_add": "Add",
   "commissioning_select_warranty_period_label": "Select Warranty Period",
   "commissioning_select_period": "Select Period",
@@ -322,5 +322,9 @@
   "val_add_tech_sig": "Please add technician signature.",
   "val_enter_cust_rep": "Please enter customer representative name.",
   "val_add_cust_sig": "Please add customer signature.",
-  "val_upload_photo": "Please upload work photos."
+  "val_upload_photo": "Please upload work photos.",
+  "commissioning_draw_signature": "Draw Signature",
+  "commissioning_clear": "Clear",
+  "commissioning_done": "Done",
+  "complaint_report_btn_download": "download"
 }

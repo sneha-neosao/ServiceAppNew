@@ -42,6 +42,8 @@ import '../../features/service_calls/domain/usecase/service_call_report_history_
 import '../../features/service_calls/bloc/service_call_report_history_bloc/service_call_report_history_bloc.dart';
 import '../../features/service_calls/domain/usecase/service_call_check_feedback_usecase.dart';
 import '../../features/service_calls/bloc/service_call_check_feedback_bloc/service_call_check_feedback_bloc.dart';
+import '../../features/service_calls/domain/usecase/service_call_report_pdf_usecase.dart';
+import '../../features/service_calls/bloc/service_call_report_pdf_bloc/service_call_report_pdf_bloc.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_details_usecase.dart';
 import '../../features/my_commissioning/bloc/commissioning_work_details_bloc/commissioning_work_details_bloc.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_update_usecase.dart';
@@ -335,6 +337,14 @@ void configureDepedencies() {
 
   getIt.registerFactory(
     () => ServiceCallCheckFeedbackBloc(usecase: getIt<ServiceCallCheckFeedbackUsecase>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => ServiceCallReportPdfUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => ServiceCallReportPdfBloc(usecase: getIt<ServiceCallReportPdfUseCase>()),
   );
 
   getIt.registerLazySingleton(
