@@ -53,9 +53,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   late TextEditingController _equipmentController;
 
   // ── Technicians ───────────────────────────────────────────────────────────
-  List<String> _technicians = [];
-  String? _selectedTechnician;
-  final Map<String, List<String>> _selectedTechIdsMap = {};
+  List<TextEditingController> _technicianControllers = [TextEditingController()];
 
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
@@ -578,19 +576,15 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
     final appOfEquipment = _equipmentController.text.trim();
 
-    List<String> technicianIds = [];
-    if (_selectedTechnician != null && _selectedTechIdsMap.containsKey(_selectedTechnician)) {
-      technicianIds = _selectedTechIdsMap[_selectedTechnician]!;
-    } else {
-      final techState = _technicianBloc.state;
-      if (techState is TechnicianSuccessState) {
-        for (var t in techState.data.data) {
-          if (t.name == _selectedTechnician) {
-            technicianIds = [t.id];
-            break;
-          }
-        }
-      }
+    List<String> technicianIds = _technicianControllers
+        .where((c) => c.text.isNotEmpty)
+        .map((c) => c.text)
+        .toSet()
+        .toList();
+
+    if (technicianIds.isEmpty) {
+      appSnackBar(context, const Color(0xFFF44336), "Please assign at least 1 technician");
+      return;
     }
 
     if (widget.editWorkId != null) {
@@ -741,14 +735,10 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                               data.applicationOfEquipment;
 
                           if (data.assignedTechnicians.isNotEmpty) {
-                            final techNames = data.assignedTechnicians
-                                .map((t) => t.name)
-                                .join(', ');
-                            _selectedTechnician = techNames;
-                            if (!_technicians.contains(techNames)) {
-                              _technicians.insert(0, techNames);
+                            _technicianControllers.clear();
+                            for (var t in data.assignedTechnicians) {
+                              _technicianControllers.add(TextEditingController(text: t.id));
                             }
-                            _selectedTechIdsMap[techNames] = data.assignedTechnicians.map((t) => t.id).toList();
                           }
                         });
                       } else if (state
@@ -883,32 +873,98 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                             // ── STEP 4: ASSIGN TECHNICIANS ───────────────────────
                             _buildSectionHeader(
                               label: 'STEP 4: ASSIGN TECHNICIANS',
-                              showAdd: false,
-                            ),
-                            BlocBuilder<TechnicianBloc, TechnicianState>(
-                              bloc: _technicianBloc,
-                              builder: (context, state) {
-                                bool isLoading =
-                                    state is TechnicianLoadingState;
-                                if (state is TechnicianSuccessState) {
-                                  final apiNames = state.data.data
-                                      .map((e) => e.name)
-                                      .toList();
-                                  for (var name in apiNames) {
-                                    if (!_technicians.contains(name))
-                                      _technicians.add(name);
-                                  }
-                                }
-                                return _buildDropdown(
-                                  hint: 'Choose Technicians...',
-                                  value: _selectedTechnician,
-                                  items: _technicians,
-                                  isLoading: isLoading,
-                                  onChanged: (v) =>
-                                      setState(() => _selectedTechnician = v),
-                                );
+                              showAdd: true,
+                              onAddTap: () {
+                                setState(() {
+                                  _technicianControllers.add(TextEditingController());
+                                });
                               },
                             ),
+                            ..._technicianControllers.asMap().entries.map((entry) {
+                              int idx = entry.key;
+                              TextEditingController controller = entry.value;
+                              bool isFirst = idx == 0;
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: BlocBuilder<TechnicianBloc, TechnicianState>(
+                                        bloc: _technicianBloc,
+                                        builder: (context, state) {
+                                          bool isLoading = state is TechnicianLoadingState;
+                                          List<dynamic> validItems = [];
+                                          if (state is TechnicianSuccessState) {
+                                            validItems = List.from(state.data.data);
+                                          }
+                                          final otherSelected = _technicianControllers
+                                              .where((c) => c != controller && c.text.isNotEmpty)
+                                              .map((c) => c.text)
+                                              .toSet();
+                                          validItems.removeWhere(
+                                            (item) => otherSelected.contains(item.id),
+                                          );
+                                          if (controller.text.isNotEmpty &&
+                                              !validItems.any((e) => e.id == controller.text)) {
+                                            if (state is TechnicianSuccessState) {
+                                              try {
+                                                final match = state.data.data.firstWhere(
+                                                  (e) => e.id == controller.text,
+                                                );
+                                                validItems.add(match);
+                                              } catch (_) {}
+                                            }
+                                          }
+                                          return SearchableDropdown<dynamic>(
+                                            items: validItems,
+                                            value: controller.text.isNotEmpty
+                                                ? validItems.firstWhere(
+                                                    (e) => e.id == controller.text,
+                                                    orElse: () => null,
+                                                  )
+                                                : null,
+                                            hintText: 'Choose Technician...',
+                                            itemAsString: (item) => item.name,
+                                            isLoading: isLoading,
+                                            onChanged: (v) {
+                                              setState(() {
+                                                if (v != null) controller.text = v.id;
+                                              });
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    if (!isFirst)
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 12),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              _technicianControllers.removeAt(idx);
+                                            });
+                                          },
+                                          child: Container(
+                                            width: 44,
+                                            height: 44,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFFEF2F2),
+                                              borderRadius: BorderRadius.circular(10),
+                                              border: Border.all(
+                                                color: const Color(0xFFFCA5A5),
+                                              ),
+                                            ),
+                                            child: const Icon(
+                                              Icons.remove,
+                                              color: Color(0xFFEF4444),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              );
+                            }),
 
                             const SizedBox(height: 48),
 

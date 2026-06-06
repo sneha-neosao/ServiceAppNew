@@ -16,11 +16,11 @@ class CustomerResponse {
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      data:
-          (json['data'] as List<dynamic>?)
-              ?.map((e) => Customer.fromJson(e))
-              .toList() ??
-          [],
+      data: (json['data'] != null && json['data']['results'] != null)
+          ? (json['data']['results'] as List<dynamic>)
+              .map((e) => Customer.fromJson(e))
+              .toList()
+          : [],
     );
   }
 

@@ -16,11 +16,11 @@ class TechnicianResponse {
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      data:
-          (json['data'] as List<dynamic>?)
-              ?.map((e) => Technician.fromJson(e))
-              .toList() ??
-          [],
+      data: (json['data'] != null && json['data']['results'] != null)
+          ? (json['data']['results'] as List<dynamic>)
+              .map((e) => Technician.fromJson(e))
+              .toList()
+          : [],
     );
   }
 
