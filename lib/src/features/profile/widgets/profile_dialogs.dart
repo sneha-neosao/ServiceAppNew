@@ -18,9 +18,16 @@ class ProfileLogoutDialog extends StatelessWidget {
       child: BlocListener<AuthLoginBloc, AuthLoginState>(
         listener: (context, state) {
           if (state is AuthLogoutSuccessState) {
-            // Close the dialog then go to login, clearing the back stack
-            Navigator.of(context, rootNavigator: true).pop();
-            context.goNamed(AppRoute.loginScreen.name);
+            final nav = Navigator.of(context, rootNavigator: true);
+            final router = GoRouter.of(context);
+            
+            // Pop the dialog
+            nav.pop();
+            // Pop the ProfileScreen
+            nav.pop();
+            
+            // Replace declarative route with LoginScreen
+            router.goNamed(AppRoute.loginScreen.name);
           }
         },
         child: Dialog(

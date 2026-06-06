@@ -23,8 +23,10 @@ class CreateNewCustomerBloc
     final result = await _createNewCustomerUsecase(event.params);
 
     result.fold(
-      (failure) =>
-          emit(CreateNewCustomerFailureState(mapFailureToMessage(failure))),
+      (failure) {
+        final msg = failure.message.isNotEmpty ? failure.message : mapFailureToMessage(failure);
+        emit(CreateNewCustomerFailureState(msg));
+      },
       (data) => emit(CreateNewCustomerSuccessState(data)),
     );
   }

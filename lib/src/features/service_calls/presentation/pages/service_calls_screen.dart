@@ -103,96 +103,86 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return <Widget>[
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Service Calls Header ──────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+            child: Row(
               children: [
-                // ── Service Calls Header ──────────────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                  child: Row(
-                    children: [
-                      Text(
-                        'service_calls_title'.tr(),
-                        style: AppFont.style(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF0D121F),
-                        ),
-                      ),
-                    ],
+                Text(
+                  'service_calls_title'.tr(),
+                  style: AppFont.style(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF0D121F),
                   ),
                 ),
-
-                // ── Segmented Tab Control ───────────────────────────────────────────
-                BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
-                  bloc: _assignedServiceCallsBloc,
-                  builder: (context, assignedState) {
-                    return BlocBuilder<PendingServiceCallsBloc, PendingServiceCallsState>(
-                      bloc: _pendingServiceCallsBloc,
-                      builder: (context, pendingState) {
-                        int assignedCount = 0;
-                        if (assignedState is AssignedServiceCallsSuccessState) {
-                          assignedCount = assignedState.data.data.pagination.totalItems;
-                        } else if (assignedState is AssignedServiceCallsPaginationLoadingState) {
-                          assignedCount = assignedState.currentData.data.pagination.totalItems;
-                        }
-                        int pendingCount = 0;
-                        if (pendingState is PendingServiceCallsSuccessState) {
-                          pendingCount = pendingState.data.data.pagination.totalItems;
-                        } else if (pendingState is PendingServiceCallsPaginationLoadingState) {
-                          pendingCount = pendingState.currentData.data.pagination.totalItems;
-                        }
-
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Container(
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF1F2F6),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: _buildSegmentTab(
-                                    0,
-                                    'service_calls_tab_assigned'.tr(),
-                                    count: assignedCount,
-                                    isLoading: assignedState is AssignedServiceCallsLoadingState ||
-                                        assignedState is AssignedServiceCallsInitialState,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: _buildSegmentTab(
-                                    1,
-                                    'service_calls_tab_pending'.tr(),
-                                    count: pendingCount,
-                                    isLoading: pendingState is PendingServiceCallsLoadingState ||
-                                        pendingState is PendingServiceCallsInitialState,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
               ],
             ),
           ),
-        ];
-      },
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+
+          // ── Segmented Tab Control ───────────────────────────────────────────
+          BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
+            bloc: _assignedServiceCallsBloc,
+            builder: (context, assignedState) {
+              return BlocBuilder<PendingServiceCallsBloc, PendingServiceCallsState>(
+                bloc: _pendingServiceCallsBloc,
+                builder: (context, pendingState) {
+                  int assignedCount = 0;
+                  if (assignedState is AssignedServiceCallsSuccessState) {
+                    assignedCount = assignedState.data.data.pagination.totalItems;
+                  } else if (assignedState is AssignedServiceCallsPaginationLoadingState) {
+                    assignedCount = assignedState.currentData.data.pagination.totalItems;
+                  }
+                  int pendingCount = 0;
+                  if (pendingState is PendingServiceCallsSuccessState) {
+                    pendingCount = pendingState.data.data.pagination.totalItems;
+                  } else if (pendingState is PendingServiceCallsPaginationLoadingState) {
+                    pendingCount = pendingState.currentData.data.pagination.totalItems;
+                  }
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF1F2F6),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _buildSegmentTab(
+                              0,
+                              'service_calls_tab_assigned'.tr(),
+                              count: assignedCount,
+                              isLoading: assignedState is AssignedServiceCallsLoadingState ||
+                                  assignedState is AssignedServiceCallsInitialState,
+                            ),
+                          ),
+                          Expanded(
+                            child: _buildSegmentTab(
+                              1,
+                              'service_calls_tab_pending'.tr(),
+                              count: pendingCount,
+                              isLoading: pendingState is PendingServiceCallsLoadingState ||
+                                  pendingState is PendingServiceCallsInitialState,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
           // ── Search & Filters ────────────────────────────────────────────────
           Container(
             margin: const EdgeInsets.all(16),

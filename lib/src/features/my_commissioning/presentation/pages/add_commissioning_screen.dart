@@ -55,6 +55,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   // ── Technicians ───────────────────────────────────────────────────────────
   List<String> _technicians = [];
   String? _selectedTechnician;
+  final Map<String, List<String>> _selectedTechIdsMap = {};
 
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
@@ -98,6 +99,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     super.dispose();
   }
 
+  String _pendingNewCustomerName = "";
+
   Future<void> _showAddCustomerBottomSheet() async {
     final controller = TextEditingController();
     await showModalBottomSheet(
@@ -129,7 +132,12 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                 _sites.clear();
               });
             } else if (state is CreateNewCustomerFailureState) {
-              appSnackBar(ctx, const Color(0xFFF44336), state.message);
+              if (state.message.contains('merged with the existing record')) {
+                Navigator.pop(ctx); // Close the bottom sheet immediately
+                _showMergeCustomerDialog(context, controller.text.trim());
+              } else {
+                appSnackBar(ctx, const Color(0xFFF44336), state.message);
+              }
             }
           },
           builder: (ctx, state) {
@@ -245,6 +253,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                             : () {
                                 final text = controller.text.trim();
                                 if (text.isNotEmpty) {
+                                  _pendingNewCustomerName = text;
                                   _createNewCustomerBloc.add(
                                     CreateNewCustomerSubmitEvent(
                                       CreateNewCustomerParams(name: text),
@@ -265,7 +274,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                 ),
                               )
                             : Text(
-                                'SAVE ENTRY',
+                                'Save Entry',
                                 style: AppFont.style(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
@@ -503,7 +512,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                 ),
                               )
                             : Text(
-                                'SAVE ENTRY',
+                                'Save Entry',
                                 style: AppFont.style(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
@@ -569,13 +578,17 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
     final appOfEquipment = _equipmentController.text.trim();
 
-    String technicianId = "";
-    final techState = _technicianBloc.state;
-    if (techState is TechnicianSuccessState) {
-      for (var t in techState.data.data) {
-        if (t.name == _selectedTechnician) {
-          technicianId = t.id;
-          break;
+    List<String> technicianIds = [];
+    if (_selectedTechnician != null && _selectedTechIdsMap.containsKey(_selectedTechnician)) {
+      technicianIds = _selectedTechIdsMap[_selectedTechnician]!;
+    } else {
+      final techState = _technicianBloc.state;
+      if (techState is TechnicianSuccessState) {
+        for (var t in techState.data.data) {
+          if (t.name == _selectedTechnician) {
+            technicianIds = [t.id];
+            break;
+          }
         }
       }
     }
@@ -587,7 +600,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           customerId: customerId,
           siteId: siteId,
           applicationOfEquipment: appOfEquipment,
-          technicians: technicianId.isNotEmpty ? [technicianId] : [],
+          technicians: technicianIds,
         ),
       );
     } else {
@@ -596,7 +609,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           customerId: customerId,
           siteId: siteId,
           applicationOfEquipment: appOfEquipment,
-          technicians: technicianId.isNotEmpty ? [technicianId] : [],
+          technicians: technicianIds,
         ),
       );
     }
@@ -716,11 +729,13 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           if (!_customers.contains(data.customer.name)) {
                             _customers.insert(0, data.customer.name);
                           }
+                          _createdCustomerIds[data.customer.name] = data.customer.id;
 
                           _selectedSite = data.site.name;
                           if (!_sites.contains(data.site.name)) {
                             _sites.insert(0, data.site.name);
                           }
+                          _createdSiteIds[data.site.name] = data.site.id;
 
                           _equipmentController.text =
                               data.applicationOfEquipment;
@@ -733,6 +748,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                             if (!_technicians.contains(techNames)) {
                               _technicians.insert(0, techNames);
                             }
+                            _selectedTechIdsMap[techNames] = data.assignedTechnicians.map((t) => t.id).toList();
                           }
                         });
                       } else if (state
@@ -963,8 +979,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                                       Text(
                                                         widget.editWorkId !=
                                                                 null
-                                                            ? 'UPDATE'
-                                                            : 'ASSIGN',
+                                                            ? 'Update'
+                                                            : 'Assign',
                                                         style: AppFont.style(
                                                           fontSize: 14,
                                                           fontWeight:
@@ -1122,6 +1138,150 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           ),
         ),
       ),
+    );
+  }
+  void _showMergeCustomerDialog(BuildContext parentContext, String name) {
+    showDialog(
+      context: parentContext,
+      barrierDismissible: false,
+      builder: (dialogCtx) {
+        return BlocConsumer<CreateNewCustomerBloc, CreateNewCustomerState>(
+          bloc: _createNewCustomerBloc,
+          listener: (ctx, state) {
+            if (state is CreateNewCustomerSuccessState) {
+              Navigator.pop(ctx); // Close dialog
+              appSnackBar(parentContext, const Color(0xFF4CAF50), state.data.message);
+              final newName = state.data.data?.name ?? name;
+              setState(() {
+                if (!_customers.contains(newName)) {
+                  _customers.insert(0, newName);
+                }
+                if (state.data.data?.id != null) {
+                  _createdCustomerIds[newName] = state.data.data!.id;
+                }
+                _selectedCustomer = newName;
+                _selectedSite = null;
+                _sites.clear();
+              });
+            } else if (state is CreateNewCustomerFailureState) {
+              Navigator.pop(ctx); // Close dialog
+              appSnackBar(parentContext, const Color(0xFFF44336), state.message);
+            }
+          },
+          builder: (ctx, state) {
+            final isLoading = state is CreateNewCustomerLoadingState;
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              contentPadding: const EdgeInsets.all(24),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFFF7E6),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.error_outline,
+                      color: Color(0xFFFF9800),
+                      size: 32,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Merge Customer?',
+                    style: AppFont.style(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0D121F),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'This customer name already exists and can be merged with the existing record. Click "Yes" to merge, or click "No" and enter a different name to save the record.',
+                    textAlign: TextAlign.center,
+                    style: AppFont.style(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF5C616E),
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: isLoading ? null : () => Navigator.pop(dialogCtx),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFF1F2F6),
+                            foregroundColor: const Color(0xFF0D121F),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: Text(
+                            'No',
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: isLoading ? null : () {
+                            _createNewCustomerBloc.add(
+                              CreateNewCustomerSubmitEvent(
+                                CreateNewCustomerParams(
+                                  name: name,
+                                  mergeExisting: true,
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE65100),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: isLoading 
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(
+                                  'Yes',
+                                  style: AppFont.style(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
