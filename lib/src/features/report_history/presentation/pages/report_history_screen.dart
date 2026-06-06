@@ -531,7 +531,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                       itemAsString: (c) => c.name,
                       isLoading: state is CustomerLoadingState,
                       isFilter: true,
-                      icon: const Icon(Icons.business_outlined, color: Color(0xFFA5ABB7), size: 18),
+                      icon: const Icon(Icons.person_outline, color: Color(0xFFA5ABB7), size: 18),
                       onChanged: (customer) {
                         setState(() {
                           _selectedCustomerName = customer?.name;

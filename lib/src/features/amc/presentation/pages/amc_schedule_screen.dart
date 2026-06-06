@@ -1,7 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
+import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
+import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
-
 class AmcScheduleScreen extends StatefulWidget {
   final VoidCallback onBack;
   final Function(String title, String location, String visitInfo, String window)
@@ -35,37 +38,33 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
     'Pantry Area',
   ];
 
-  // ── State ──────────────────────────────────────────────────────────────────
-  bool _customerOpen = false;
-  bool _siteOpen = false;
-  String _customerSearch = '';
-  String _siteSearch = '';
-  String _selectedCustomer = 'amc_schedule_filter_select_customer'.tr();
-  String _selectedSite = 'amc_schedule_filter_select_site'.tr();
+  late CustomerBloc _customerBloc;
 
-  List<String> get _filteredCustomers => _customers
-      .where((c) => c.toLowerCase().contains(_customerSearch.toLowerCase()))
-      .toList();
+  @override
+  void initState() {
+    super.initState();
+    _customerBloc = getIt<CustomerBloc>()..add(const CustomerGetEvent());
+  }
+
+  @override
+  void dispose() {
+    _customerBloc.close();
+    super.dispose();
+  }
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  bool _siteOpen = false;
+  String _siteSearch = '';
+  String? _selectedCustomer;
+  String _selectedSite = 'amc_schedule_filter_select_site'.tr();
 
   List<String> get _filteredSites => _sites
       .where((s) => s.toLowerCase().contains(_siteSearch.toLowerCase()))
       .toList();
 
-  void _toggleCustomer() => setState(() {
-    _customerOpen = !_customerOpen;
-    _siteOpen = false;
-    _customerSearch = '';
-  });
-
   void _toggleSite() => setState(() {
     _siteOpen = !_siteOpen;
-    _customerOpen = false;
     _siteSearch = '';
-  });
-
-  void _selectCustomer(String v) => setState(() {
-    _selectedCustomer = v;
-    _customerOpen = false;
   });
 
   void _selectSite(String v) => setState(() {
@@ -138,21 +137,38 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
             children: [
               // ── Customer dropdown ────────────────────────────────────────
-              _DropdownTrigger(
-                label: _selectedCustomer,
-                isPlaceholder: _selectedCustomer == 'amc_schedule_filter_select_customer'.tr(),
-                isOpen: _customerOpen,
-                onTap: _toggleCustomer,
+              BlocBuilder<CustomerBloc, CustomerState>(
+                bloc: _customerBloc,
+                builder: (context, state) {
+                  bool isLoading = state is CustomerLoadingState;
+                  if (state is CustomerSuccessState) {
+                    final apiNames = state.data.data.map((e) => e.name).toList();
+                    for (var name in apiNames) {
+                      if (!_customers.contains(name)) {
+                        _customers.add(name);
+                      }
+                    }
+                  }
+
+                  List<String> validItems = List.from(_customers);
+                  if (_selectedCustomer != null && !validItems.contains(_selectedCustomer)) {
+                    validItems.add(_selectedCustomer!);
+                  }
+
+                  return SearchableDropdown<String>(
+                    items: validItems,
+                    value: _selectedCustomer,
+                    hintText: 'amc_schedule_filter_select_customer'.tr(),
+                    itemAsString: (item) => item,
+                    isLoading: isLoading,
+                    onChanged: (v) {
+                      setState(() {
+                        _selectedCustomer = v;
+                      });
+                    },
+                  );
+                },
               ),
-              if (_customerOpen) ...[
-                const SizedBox(height: 6),
-                _DropdownPanel(
-                  searchValue: _customerSearch,
-                  onSearchChanged: (v) => setState(() => _customerSearch = v),
-                  items: _filteredCustomers,
-                  onSelect: _selectCustomer,
-                ),
-              ],
 
               const SizedBox(height: 12),
 

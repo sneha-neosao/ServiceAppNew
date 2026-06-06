@@ -110,9 +110,9 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Active Service Calls Header ─────────────────────────────────────
+                // ── Service Calls Header ──────────────────────────────────────────
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
                   child: Row(
                     children: [
                       Text(
@@ -127,7 +127,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   ),
                 ),
 
-                // ── Segmented Tab Control ────────────────────────────────────────────
+                // ── Segmented Tab Control ───────────────────────────────────────────
                 BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
                   bloc: _assignedServiceCallsBloc,
                   builder: (context, assignedState) {
@@ -183,6 +183,8 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                     );
                   },
                 ),
+                const SizedBox(height: 16),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
               ],
             ),
           ),
@@ -192,159 +194,164 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Search & Filters ────────────────────────────────────────────────
-          Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              // Filter Row 1
-              Row(
-                children: [
-                  Expanded(
-                    child: BlocBuilder<CustomerBloc, CustomerState>(
-                      bloc: _customerBloc,
-                      builder: (context, state) {
-                        final customers = <Customer>[];
-                        if (state is CustomerSuccessState) {
-                          customers.addAll(state.data.data);
-                        }
-                        return SearchableDropdown<Customer>(
-                          items: customers,
-                          value: _selectedCustomerId != null
-                              ? customers.where((c) => c.id == _selectedCustomerId).isEmpty
-                                  ? null
-                                  : customers.firstWhere((c) => c.id == _selectedCustomerId)
-                              : null,
-                          hintText: 'service_calls_filter_select_customer'.tr(),
-                          itemAsString: (c) => c.name,
-                          isLoading: state is CustomerLoadingState,
-                          isFilter: true,
-                          icon: const Icon(Icons.person_outline, color: Color(0xFFA5ABB7), size: 18),
-                          onChanged: (customer) {
-                            setState(() {
-                              _selectedCustomerName = customer?.name;
-                              _selectedCustomerId = customer?.id;
-                              _selectedSiteName = null;
-                              _selectedSiteId = null;
-                            });
-                            if (customer != null) {
-                              _sitesBloc.add(SitesGetEvent(customer.id));
-                            }
-                            _fetchServiceCalls(isRefresh: true);
-                          },
-                        );
-                      },
+          Container(
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFF1F2F6)),
+            ),
+            child: Column(
+              children: [
+                // Filter Row 1
+                Row(
+                  children: [
+                    Expanded(
+                      child: BlocBuilder<CustomerBloc, CustomerState>(
+                        bloc: _customerBloc,
+                        builder: (context, state) {
+                          final customers = <Customer>[];
+                          if (state is CustomerSuccessState) {
+                            customers.addAll(state.data.data);
+                          }
+                          return SearchableDropdown<Customer>(
+                            items: customers,
+                            value: _selectedCustomerId != null
+                                ? customers.where((c) => c.id == _selectedCustomerId).isEmpty
+                                    ? null
+                                    : customers.firstWhere((c) => c.id == _selectedCustomerId)
+                                : null,
+                            hintText: 'service_calls_filter_select_customer'.tr(),
+                            itemAsString: (c) => c.name,
+                            isLoading: state is CustomerLoadingState,
+                            isFilter: true,
+                            icon: const Icon(Icons.person_outline, color: Color(0xFFA5ABB7), size: 18),
+                            onChanged: (customer) {
+                              setState(() {
+                                _selectedCustomerName = customer?.name;
+                                _selectedCustomerId = customer?.id;
+                                _selectedSiteName = null;
+                                _selectedSiteId = null;
+                              });
+                              if (customer != null) {
+                                _sitesBloc.add(SitesGetEvent(customer.id));
+                              }
+                              _fetchServiceCalls(isRefresh: true);
+                            },
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: BlocBuilder<SitesBloc, SitesState>(
-                      bloc: _sitesBloc,
-                      builder: (context, state) {
-                        final sites = <Site>[];
-                        if (state is SitesSuccessState) {
-                          sites.addAll(state.data.data);
-                        }
-                        return SearchableDropdown<Site>(
-                          items: sites,
-                          value: _selectedSiteId != null
-                              ? sites.where((s) => s.id == _selectedSiteId).isEmpty
-                                  ? null
-                                  : sites.firstWhere((s) => s.id == _selectedSiteId)
-                              : null,
-                          hintText: 'service_calls_filter_select_site'.tr(),
-                          itemAsString: (s) => s.name,
-                          isLoading: state is SitesLoadingState,
-                          isFilter: true,
-                          icon: const Icon(Icons.location_on_outlined, color: Color(0xFFA5ABB7), size: 18),
-                          onChanged: (site) {
-                            setState(() {
-                              _selectedSiteName = site?.name;
-                              _selectedSiteId = site?.id;
-                            });
-                            _fetchServiceCalls(isRefresh: true);
-                          },
-                        );
-                      },
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: BlocBuilder<SitesBloc, SitesState>(
+                        bloc: _sitesBloc,
+                        builder: (context, state) {
+                          final sites = <Site>[];
+                          if (state is SitesSuccessState) {
+                            sites.addAll(state.data.data);
+                          }
+                          return SearchableDropdown<Site>(
+                            items: sites,
+                            value: _selectedSiteId != null
+                                ? sites.where((s) => s.id == _selectedSiteId).isEmpty
+                                    ? null
+                                    : sites.firstWhere((s) => s.id == _selectedSiteId)
+                                : null,
+                            hintText: 'service_calls_filter_select_site'.tr(),
+                            itemAsString: (s) => s.name,
+                            isLoading: state is SitesLoadingState,
+                            isFilter: true,
+                            icon: const Icon(Icons.location_on_outlined, color: Color(0xFFA5ABB7), size: 18),
+                            onChanged: (site) {
+                              setState(() {
+                                _selectedSiteName = site?.name;
+                                _selectedSiteId = site?.id;
+                              });
+                              _fetchServiceCalls(isRefresh: true);
+                            },
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              // Filter Row 2
-              Row(
-                children: [
-                  Expanded(child: _buildComplaintInput()),
-                  const SizedBox(width: 12),
-                  Expanded(child: _buildDateInput()),
-                ],
-              ),
-              const SizedBox(height: 16),
-              // Clear Filters Button
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedCustomerName = null;
-                    _selectedCustomerId = null;
-                    _selectedSiteName = null;
-                    _selectedSiteId = null;
-                    _selectedDate = null;
-                    _complaintController.clear();
-                  });
-                  _fetchServiceCalls(isRefresh: true);
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    // Using dashed-like border by using a light solid border if no package is available
-                    border: Border.all(
-                      color: const Color(0xFFE5E7EB),
-                      width: 1,
+                  ],
+                ),
+                const SizedBox(height: 12),
+                // Filter Row 2
+                Row(
+                  children: [
+                    Expanded(child: _buildComplaintInput()),
+                    const SizedBox(width: 12),
+                    Expanded(child: _buildDateInput()),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // Clear Filters Button
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedCustomerName = null;
+                      _selectedCustomerId = null;
+                      _selectedSiteName = null;
+                      _selectedSiteId = null;
+                      _selectedDate = null;
+                      _complaintController.clear();
+                    });
+                    _fetchServiceCalls(isRefresh: true);
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: const Color(0xFFE5E7EB),
+                        width: 1,
+                      ),
                     ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'service_calls_clear_filters'.tr(),
-                      style: AppFont.style(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFFA5ABB7),
-                        letterSpacing: 0.5,
+                    child: Center(
+                      child: Text(
+                        'service_calls_clear_filters'.tr(),
+                        style: AppFont.style(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFFA5ABB7),
+                          letterSpacing: 0.5,
+                        ),
                       ),
                     ),
                   ),
                 ),
+              ],
+            ),
+          ),
+
+          // ── Tab Body ────────────────────────────────────────────────────────
+          Expanded(
+            child: Container(
+              color: const Color(0xFFF8F9FB),
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (ScrollNotification scrollInfo) {
+                  if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
+                      scrollInfo.metrics.axis == Axis.vertical) {
+                    if (_selectedTab == 0) {
+                      _fetchServiceCalls(isRefresh: false, isAssignedOnly: true);
+                    } else {
+                      _fetchServiceCalls(isRefresh: false, isPendingOnly: true);
+                    }
+                  }
+                  return false;
+                },
+                child: _selectedTab == 0
+                    ? _buildOngoingList()
+                    : _buildActiveList(),
               ),
-            ],
+            ),
           ),
-        ),
-
-        const SizedBox(height: 8),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-
-        // ── Tab Body ────────────────────────────────────────────────────────
-        Expanded(
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (ScrollNotification scrollInfo) {
-              if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
-                  scrollInfo.metrics.axis == Axis.vertical) {
-                if (_selectedTab == 0) {
-                  _fetchServiceCalls(isRefresh: false, isAssignedOnly: true);
-                } else {
-                  _fetchServiceCalls(isRefresh: false, isPendingOnly: true);
-                }
-              }
-              return false;
-            },
-            child: _selectedTab == 0
-                ? _buildOngoingList()
-                : _buildActiveList(),
-          ),
-        ),
-      ],
-    ),
+        ],
+      ),
     );
   }
 

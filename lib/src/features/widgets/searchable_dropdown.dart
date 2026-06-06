@@ -59,6 +59,14 @@ class SearchableDropdown<T> extends StatelessWidget {
               dropdownDecoratorProps: DropDownDecoratorProps(
                 dropdownSearchDecoration: InputDecoration(
                   hintText: hintText,
+                  hintMaxLines: 1,
+                  prefixIcon: icon != null
+                      ? Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: icon,
+                        )
+                      : null,
+                  prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
                   hintStyle: AppFont.style(
                     fontSize: isFilter ? 14 : 16,
                     fontWeight: isFilter ? FontWeight.w500 : FontWeight.w700,
@@ -76,13 +84,14 @@ class SearchableDropdown<T> extends StatelessWidget {
                   color: isFilter ? const Color(0xFFA5ABB7) : const Color(0xFF0D121F),
                 ),
               ),
-              dropdownButtonProps: DropdownButtonProps(
-                icon: icon ?? const Icon(
+              dropdownButtonProps: const DropdownButtonProps(
+                icon: Icon(
                   Icons.keyboard_arrow_down,
                   color: Color(0xFFA5ABB7),
+                  size: 18,
                 ),
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
+                constraints: BoxConstraints(),
               ),
               popupProps: PopupProps.menu(
                 showSearchBox: true,
