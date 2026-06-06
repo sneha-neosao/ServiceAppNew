@@ -3013,8 +3013,8 @@ class _CreateCommissioningReportScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 80,
-                height: 80,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
                   color: const Color(0xFFF8F9FB),
                   borderRadius: BorderRadius.circular(8),
@@ -3023,10 +3023,10 @@ class _CreateCommissioningReportScreenState
                 child: const Icon(
                   Icons.business_outlined,
                   color: Color(0xFFA5ABB7),
-                  size: 32,
+                  size: 24,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -3034,7 +3034,7 @@ class _CreateCommissioningReportScreenState
                     Text(
                       data?.dealerName ?? 'commissioning_dealer_name_fallback'.tr(),
                       style: AppFont.style(
-                        fontSize: 20,
+                        fontSize: 16,
                         fontWeight: FontWeight.w900,
                         color: const Color(0xFF0D121F),
                       ),
@@ -3068,27 +3068,7 @@ class _CreateCommissioningReportScreenState
           ),
         ),
         const SizedBox(height: 32),
-        // ── Service Provider Name ────────────────────────────────────────
-        Text(
-          'commissioning_service_provider'.tr(),
-          style: AppFont.style(
-            fontSize: 13,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFF5C6672),
-          ),
-        ),
-        const SizedBox(height: 12),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-        const SizedBox(height: 16),
-        Text(
-          'commissioning_service_provider_fallback'.tr(),
-          style: AppFont.style(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-            color: const Color(0xFF0D121F),
-          ),
-        ),
-        const SizedBox(height: 24),
+
         // ── Technician Name(s) ──────────────────────────────────────────
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -3249,12 +3229,7 @@ class _CreateCommissioningReportScreenState
         ),
         const SizedBox(height: 24),
         if (widget.isServiceReport)
-          _buildInfoRow('commissioning_complaint_number_label'.tr(), widget.complaintNo ?? 'commissioning_complaint_number_fallback'.tr())
-        else
-          _buildInfoRow(
-            'commissioning_application_equipment_label'.tr(),
-            data?.applicationOfEquipment ?? 'commissioning_application_equipment_fallback'.tr(),
-          ),
+          _buildInfoRow('commissioning_complaint_number_label'.tr(), widget.complaintNo ?? 'commissioning_complaint_number_fallback'.tr()),
         const SizedBox(height: 40),
       ],
     );
@@ -4341,7 +4316,7 @@ class _CreateCommissioningReportScreenState
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-              width: 60,
+              width: 80,
               child: RichText(
                 text: TextSpan(
                   children: [
@@ -4428,7 +4403,7 @@ class _CreateCommissioningReportScreenState
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-              width: 60,
+              width: 80,
               child: RichText(
                 text: TextSpan(
                   children: [
@@ -4917,7 +4892,7 @@ class _CreateCommissioningReportScreenState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 60,
+          width: 80,
           child: label.contains('*')
               ? RichText(
                   text: TextSpan(

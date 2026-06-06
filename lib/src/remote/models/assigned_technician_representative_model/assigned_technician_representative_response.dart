@@ -17,9 +17,14 @@ class AssignedTechnicianResponse extends Equatable {
     return AssignedTechnicianResponse(
       status: json['status'],
       success: json['success'],
-      data: (json['data'] as List)
-          .map((e) => AssignedTechnician.fromJson(e))
-          .toList(),
+      data: (json['data'] != null && json['data'] is Map && json['data']['results'] != null)
+          ? (json['data']['results'] as List)
+              .map((e) => AssignedTechnician.fromJson(e))
+              .toList()
+          : (json['data'] as List?)
+                  ?.map((e) => AssignedTechnician.fromJson(e))
+                  .toList() ??
+              [],
       message: json['message'],
     );
   }

@@ -19,11 +19,11 @@ class AssignedServiceCallTechnicianResponse extends Equatable {
     return AssignedServiceCallTechnicianResponse(
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
-      data:
-          (json['data'] as List<dynamic>?)
-              ?.map((e) => AssignedTechnician.fromJson(e))
-              .toList() ??
-          [],
+      data: (json['data'] != null && json['data']['results'] != null)
+          ? (json['data']['results'] as List<dynamic>)
+              .map((e) => AssignedTechnician.fromJson(e))
+              .toList()
+          : [],
       message: json['message'] ?? '',
     );
   }
