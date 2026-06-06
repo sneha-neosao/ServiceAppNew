@@ -3986,6 +3986,27 @@ class _CreateCommissioningReportScreenState
             _workDescriptionControllers[index],
           ),
         ),
+        Align(
+          alignment: Alignment.center,
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                _workDescriptionControllers.add(TextEditingController());
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                '+ Add More Rows',
+                style: AppFont.style(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFF1565C0),
+                ),
+              ),
+            ),
+          ),
+        ),
         const SizedBox(height: 40),
       ],
     );
