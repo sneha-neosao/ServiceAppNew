@@ -38,7 +38,7 @@ class ReportHistoryScreen extends StatefulWidget {
 }
 
 class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
-  int _selectedTab = 1; // Default to 'Service'
+  int _selectedTab = 0; // Default to 'Commissioning'
   late CommissioningReportHistoryBloc _historyBloc;
   late ServiceCallReportHistoryBloc _serviceCallHistoryBloc;
   late CommissioningReportDetailsBloc _detailsBloc;
@@ -52,13 +52,18 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   String? _selectedSiteId;
   String? _selectedTechnicianName;
   String? _selectedTechnicianId;
+  DateTime? _selectedDate;
 
   void _fetchReportHistory() {
+    final String? dateStr = _selectedDate != null
+        ? '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}'
+        : null;
     _historyBloc.add(
       CommissioningReportHistoryGetEvent(
         params: CommissioningReportHistoryParams(
           customerId: _selectedCustomerId,
           siteId: _selectedSiteId,
+          date: dateStr,
           page: 1,
           pageSize: 10,
         ),
@@ -672,19 +677,81 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          // Complaint Number
-          _buildFilterInputFull(
-            'reports_filter_complaint_hint'.tr(),
-            Icons.assignment_outlined,
-          ),
-          const SizedBox(height: 12),
+          // Complaint Number — only for Service tab
+          if (_selectedTab == 1) ...[
+            _buildFilterInputFull(
+              'reports_filter_complaint_hint'.tr(),
+              Icons.assignment_outlined,
+            ),
+            const SizedBox(height: 12),
+          ],
           // Filter Row 2
           Row(
             children: [
               Expanded(
-                child: _buildFilterInput(
-                  'reports_filter_date_hint'.tr(),
-                  Icons.calendar_today_outlined,
+                child: GestureDetector(
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: _selectedDate ?? DateTime.now(),
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime(2030),
+                      builder: (context, child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: const ColorScheme.light(
+                              primary: Color(0xFF1565C0),
+                              onPrimary: Colors.white,
+                              onSurface: Color(0xFF0D121F),
+                            ),
+                          ),
+                          child: child!,
+                        );
+                      },
+                    );
+                    if (picked != null) {
+                      setState(() => _selectedDate = picked);
+                      _fetchReportHistory();
+                    }
+                  },
+                  child: Container(
+                    height: 44,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.calendar_today_outlined, color: Color(0xFFA5ABB7), size: 18),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _selectedDate != null
+                                ? '${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}'
+                                : 'reports_filter_date_hint'.tr(),
+                            style: AppFont.style(
+                              fontSize: 14,
+                              color: _selectedDate != null
+                                  ? const Color(0xFF0D121F)
+                                  : const Color(0xFFA5ABB7),
+                              fontWeight: FontWeight.w500,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (_selectedDate != null)
+                          GestureDetector(
+                            onTap: () {
+                              setState(() => _selectedDate = null);
+                              _fetchReportHistory();
+                            },
+                            child: const Icon(Icons.close, color: Color(0xFFA5ABB7), size: 16),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -740,6 +807,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 _selectedSiteId = null;
                 _selectedTechnicianName = null;
                 _selectedTechnicianId = null;
+                _selectedDate = null;
               });
               _fetchReportHistory();
             },
@@ -1059,14 +1127,6 @@ class _ReportCard extends StatelessWidget {
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF0D121F),
-                      ),
-                    ),
-                    Text(
-                      technicianId,
-                      style: AppFont.style(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFFA5ABB7),
                       ),
                     ),
                   ],

@@ -131,6 +131,7 @@ class _CreateCommissioningReportScreenState
   String? _selectedWarranty;
   bool _isTechnicalDetailsNA = false;
   int _workDescriptionRows = 5;
+  String _warrantySearchQuery = '';
   // ── Step 5: Preventive Maintenance Checklist ──────────────────────────────
   // NA toggles per section
   bool _mechNA = false;
@@ -3449,10 +3450,10 @@ class _CreateCommissioningReportScreenState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // ── Member Context Label ─────────────────────────────────────────
-        _buildLabel('commissioning_member_context_label'.tr()),
+        // _buildLabel('commissioning_member_context_label'.tr()),
         const SizedBox(height: 12),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-        const SizedBox(height: 32),
+        // const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        // const SizedBox(height: 32),
         // ── Member Presents ─────────────────────────────────────────────
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -3603,52 +3604,31 @@ class _CreateCommissioningReportScreenState
               const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
               const SizedBox(width: 8),
               Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 4,
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: _selectedWarranty,
-                      isExpanded: true,
-                      icon: const Icon(
-                        Icons.keyboard_arrow_down,
-                        color: Color(0xFFA5ABB7),
-                      ),
-                      style: AppFont.style(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF0D121F),
-                      ),
-                      hint: Text(
-                        'commissioning_select_period'.tr(),
-                        style: AppFont.style(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFFA5ABB7),
-                        ),
-                      ),
-                      items: ['1_year', '2_year', '3_year', '4_year', '5_year']
-                          .map(
-                            (val) => DropdownMenuItem(
-                              value: val,
-                              child: Text(val.tr()),
-                            ),
-                          )
+                child: SearchableDropdown<String>(
+                  items: _warrantySearchQuery.isEmpty
+                      ? const ['1_year', '2_year', '3_year', '4_year', '5_year']
+                      : ['1_year', '2_year', '3_year', '4_year', '5_year']
+                          .where((val) =>
+                              val.tr().toLowerCase().contains(_warrantySearchQuery.toLowerCase()))
                           .toList(),
-                      onChanged: (val) {
-                        setState(() {
-                          _selectedWarranty = val;
-                        });
-                      },
-                    ),
+                  value: _selectedWarranty,
+                  hintText: 'commissioning_select_period'.tr(),
+                  itemAsString: (val) => val.tr(),
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Color(0xFFA5ABB7),
                   ),
+                  onChanged: (val) {
+                    setState(() {
+                      _selectedWarranty = val;
+                      _warrantySearchQuery = '';
+                    });
+                  },
+                  onSearchChanged: (query) {
+                    setState(() {
+                      _warrantySearchQuery = query;
+                    });
+                  },
                 ),
               ),
             ],
@@ -3924,7 +3904,8 @@ class _CreateCommissioningReportScreenState
               final unit = units[index];
               final controller = controllers[index];
               return FractionallySizedBox(
-                widthFactor: 0.45,
+                widthFactor: units.length == 1 ? 1.0 : 0.45,
+                alignment: Alignment.centerLeft,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
