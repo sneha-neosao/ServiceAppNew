@@ -1,8 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:service_app/src/core/usecases/usecase.dart';
 import 'package:service_app/src/core/utils/logger.dart';
-import 'package:service_app/src/features/common/domain/usecase/customer_usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/customer_usecase.dart';
 import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
 
@@ -13,24 +11,61 @@ part 'customer_state.dart';
 
 class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
   final CustomerUseCase _customerUseCase;
+
+  int _currentPage = 1;
+  String _currentSearch = '';
+  List<Customer> _allCustomers = [];
+  bool _hasMore = true;
+
   CustomerBloc(this._customerUseCase) : super(CustomerInitialState()) {
     on<CustomerGetEvent>(_customers);
   }
 
   /// - **Customer:** Handles [CustomerGetEvent] → calls [CustomerUseCase]
   Future _customers(CustomerGetEvent event, Emitter emit) async {
-    emit(CustomerLoadingState());
+    // If search text changed, reset everything
+    if (event.search != _currentSearch) {
+      _currentSearch = event.search;
+      _currentPage = 1;
+      _allCustomers.clear();
+      _hasMore = true;
+    }
 
-    final result = await _customerUseCase.call(NoParams());
+    // Only load more if there's more to load
+    if (!_hasMore && event.page > 1) return;
 
-    // fold() is synchronous — never put async work inside its callbacks.
-    // Instead check the result and await outside fold.
+    if (_currentPage == 1) {
+      emit(CustomerLoadingState());
+    }
+
+    final result = await _customerUseCase.call(CustomerParams(
+      page: _currentPage,
+      pageSize: event.pageSize,
+      search: _currentSearch,
+    ));
+
     if (result.isLeft()) {
       final failure = result.getLeft().toNullable()!;
       emit(CustomerFailureState(failure.message));
     } else {
-      final data = result.getRight().toNullable()!;
-      emit(CustomerSuccessState(data));
+      final response = result.getRight().toNullable()!;
+      
+      if (response.data.isEmpty || response.data.length < event.pageSize) {
+        _hasMore = false;
+      }
+      
+      _allCustomers.addAll(response.data);
+      
+      // We must emit a new CustomerResponse with the accumulated _allCustomers
+      final newResponse = CustomerResponse(
+        status: response.status,
+        success: response.success,
+        message: response.message,
+        data: List.from(_allCustomers),
+      );
+      
+      _currentPage++;
+      emit(CustomerSuccessState(newResponse));
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
+import 'package:service_app/src/features/common/domain/usecase/customer_usecase.dart';
 import 'package:service_app/src/features/home/domain/usecase/upcoming_amc_usecase.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
 import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
@@ -81,7 +82,7 @@ sealed class RemoteDataSource {
 
   Future<ProfileDetailsResponse> profileDetails(String token);
 
-  Future<CustomerResponse> customers(String token);
+  Future<CustomerResponse> customers(CustomerParams params, String token);
 
   Future<SiteResponse> sites(SitesParams params, String token);
 
@@ -367,11 +368,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CustomerResponse> customers(String token) async {
+  Future<CustomerResponse> customers(CustomerParams params, String token) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
-        url: ApiUrl.customerDropdown,
+        url: '${ApiUrl.customerDropdown}?page=${params.page}&page_size=${params.pageSize}&search=${params.search}',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 

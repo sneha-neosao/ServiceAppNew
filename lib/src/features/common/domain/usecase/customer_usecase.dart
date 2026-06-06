@@ -10,12 +10,27 @@ import 'package:service_app/src/remote/models/customer_model/customer_response.d
 
 /// Domain layer use case for fetching customers
 
-class CustomerUseCase implements UseCase<CustomerResponse, NoParams> {
+class CustomerParams extends Equatable {
+  final int page;
+  final int pageSize;
+  final String search;
+
+  const CustomerParams({
+    this.page = 1,
+    this.pageSize = 100,
+    this.search = '',
+  });
+
+  @override
+  List<Object> get props => [page, pageSize, search];
+}
+
+class CustomerUseCase implements UseCase<CustomerResponse, CustomerParams> {
   final Repository _authRepository;
   const CustomerUseCase(this._authRepository);
 
   @override
-  Future<Either<Failure, CustomerResponse>> call(NoParams params) async {
+  Future<Either<Failure, CustomerResponse>> call(CustomerParams params) async {
     final result = await _authRepository.customers(params);
 
     return result;

@@ -778,20 +778,24 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                               builder: (context, state) {
                                 bool isLoading = state is CustomerLoadingState;
                                 if (state is CustomerSuccessState) {
+                                  _customers.clear();
                                   final apiNames = state.data.data
                                       .map((e) => e.name)
                                       .toList();
-                                  for (var name in apiNames) {
-                                    if (!_customers.contains(name)) {
-                                      _customers.add(name);
-                                    }
-                                  }
+                                  _customers.addAll(apiNames);
                                 }
                                 return _buildDropdown(
                                   hint: 'Select Customer',
                                   value: _selectedCustomer,
                                   items: _customers,
                                   isLoading: isLoading,
+                                  filterFn: (item, filter) => true,
+                                  onSearchChanged: (v) {
+                                    _customerBloc.add(CustomerGetEvent(search: v, page: 1, pageSize: 10));
+                                  },
+                                  onLoadMore: (lastSearch) {
+                                    _customerBloc.add(CustomerGetEvent(search: lastSearch, page: 2, pageSize: 10));
+                                  },
                                   onChanged: (v) {
                                     setState(() {
                                       _selectedCustomer = v;
@@ -1138,6 +1142,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     required List<String> items,
     required ValueChanged<String?>? onChanged,
     bool isLoading = false,
+    void Function(String)? onSearchChanged,
+    void Function(String)? onLoadMore,
+    bool Function(String, String)? filterFn,
   }) {
     // Make sure current value is in items to avoid DropdownButton error
     List<String> validItems = List.from(items);
@@ -1153,6 +1160,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
       hintText: hint,
       itemAsString: (item) => item,
       onChanged: onChanged,
+      onSearchChanged: onSearchChanged,
+      onLoadMore: onLoadMore,
+      filterFn: filterFn,
       isLoading: isLoading,
       icon: Icon(
         Icons.keyboard_arrow_down,

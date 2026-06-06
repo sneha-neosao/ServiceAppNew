@@ -9,7 +9,7 @@ import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
-
+import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 class CreateReportScreen extends StatefulWidget {
   final VoidCallback onBack;
   const CreateReportScreen({super.key, required this.onBack});
@@ -878,49 +878,40 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             builder: (context, state) {
               bool isLoading = state is CustomerLoadingState;
               if (state is CustomerSuccessState) {
+                _customersList.clear();
                 final apiNames = state.data.data.map((e) => e.name).toList();
-                for (var name in apiNames) {
-                  if (!_customersList.contains(name)) _customersList.add(name);
-                }
+                _customersList.addAll(apiNames);
               }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (!isLoading) {
-                        setState(() {
-                          _isCustomerDropdownOpen = !_isCustomerDropdownOpen;
-                          _isSiteDropdownOpen = false;
-                        });
-                      }
-                    },
-                    child: _buildDropdownField(
-                      isLoading ? 'Loading...' : _selectedCustomer,
-                      _isCustomerDropdownOpen,
-                      isLoading: isLoading,
-                    ),
-                  ),
-                  if (_isCustomerDropdownOpen)
-                    _buildDropdownList(
-                      title: 'Select Customer',
-                      items: _customersList,
-                      onSelect: (val) {
-                        setState(() {
-                          _selectedCustomer = val;
-                          _isCustomerDropdownOpen = false;
-                        });
-                        if (state is CustomerSuccessState) {
-                          final cList = state.data.data.where(
-                            (x) => x.name == val,
-                          );
-                          if (cList.isNotEmpty) {
-                            _sitesBloc.add(SitesGetEvent(cList.first.id));
-                          }
-                        }
-                      },
-                    ),
-                ],
+              
+              List<String> validItems = List.from(_customersList);
+              if (_selectedCustomer != 'Select Customer' && !validItems.contains(_selectedCustomer)) {
+                validItems.add(_selectedCustomer);
+              }
+
+              return SearchableDropdown<String>(
+                items: validItems,
+                value: _selectedCustomer == 'Select Customer' ? null : _selectedCustomer,
+                hintText: 'Select Customer',
+                itemAsString: (item) => item,
+                isLoading: isLoading,
+                filterFn: (item, filter) => true,
+                onSearchChanged: (v) {
+                  _customerBloc.add(CustomerGetEvent(search: v, page: 1, pageSize: 10));
+                },
+                onLoadMore: (lastSearch) {
+                  _customerBloc.add(CustomerGetEvent(search: lastSearch, page: 2, pageSize: 10));
+                },
+                onChanged: (val) {
+                  setState(() {
+                    _selectedCustomer = val ?? 'Select Customer';
+                  });
+                  if (state is CustomerSuccessState && val != null) {
+                    final cList = state.data.data.where((x) => x.name == val);
+                    if (cList.isNotEmpty) {
+                      _sitesBloc.add(SitesGetEvent(cList.first.id));
+                    }
+                  }
+                },
               );
             },
           ),

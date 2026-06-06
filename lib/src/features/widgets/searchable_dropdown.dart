@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:shimmer/shimmer.dart';
 
-class SearchableDropdown<T> extends StatelessWidget {
+class SearchableDropdown<T> extends StatefulWidget {
   final List<T> items;
   final T? value;
   final String hintText;
   final String Function(T) itemAsString;
   final void Function(T?)? onChanged;
+  final void Function(String)? onSearchChanged;
+  final void Function(String)? onLoadMore;
+  final bool Function(T, String)? filterFn;
   final bool isLoading;
   final Widget? icon;
   final bool isFilter;
@@ -20,90 +22,99 @@ class SearchableDropdown<T> extends StatelessWidget {
     required this.hintText,
     required this.itemAsString,
     this.onChanged,
+    this.onSearchChanged,
+    this.onLoadMore,
+    this.filterFn,
     this.isLoading = false,
     this.icon,
     this.isFilter = false,
   });
 
   @override
-  Widget build(BuildContext context) {
-    if (isLoading) {
-      return Shimmer.fromColors(
-        baseColor: Colors.grey[200]!,
-        highlightColor: Colors.grey[50]!,
-        child: Container(
-          height: isFilter ? 44 : 56,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(isFilter ? 10 : 12),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
-          ),
-        ),
-      );
-    }
+  State<SearchableDropdown<T>> createState() => _SearchableDropdownState<T>();
+}
 
-    return Container(
-      height: isFilter ? 44 : null,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(isFilter ? 10 : 12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
+  late ValueNotifier<List<T>> _itemsNotifier;
+  late ValueNotifier<bool> _loadingNotifier;
+  String _lastSearch = '';
+  bool _hasRenderedOnce = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _itemsNotifier = ValueNotifier(widget.items);
+    _loadingNotifier = ValueNotifier(widget.isLoading);
+  }
+
+  @override
+  void didUpdateWidget(covariant SearchableDropdown<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.items != oldWidget.items || widget.isLoading != oldWidget.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _itemsNotifier.value = widget.items;
+          _loadingNotifier.value = widget.isLoading;
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _itemsNotifier.dispose();
+    _loadingNotifier.dispose();
+    super.dispose();
+  }
+
+  void _showBottomSheet() {
+    final scrollController = ScrollController();
+    final searchController = TextEditingController(text: _lastSearch);
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 50) {
+        widget.onLoadMore?.call(_lastSearch);
+      }
+    });
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      padding: EdgeInsets.symmetric(horizontal: isFilter ? 12 : 20, vertical: isFilter ? 0 : 4),
-      child: DropdownSearch<T>(
-              items: items,
-              itemAsString: itemAsString,
-              selectedItem: value,
-              onChanged: onChanged,
-              dropdownDecoratorProps: DropDownDecoratorProps(
-                dropdownSearchDecoration: InputDecoration(
-                  hintText: hintText,
-                  hintMaxLines: 1,
-                  prefixIcon: icon != null
-                      ? Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: icon,
-                        )
-                      : null,
-                  prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
-                  hintStyle: AppFont.style(
-                    fontSize: isFilter ? 14 : 16,
-                    fontWeight: isFilter ? FontWeight.w500 : FontWeight.w700,
-                    color: const Color(0xFFA5ABB7),
-                  ),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  isDense: true,
-                  contentPadding: EdgeInsets.symmetric(vertical: isFilter ? 14 : 6),
-                ),
-                baseStyle: AppFont.style(
-                  fontSize: isFilter ? 14 : 16,
-                  fontWeight: isFilter ? FontWeight.w500 : FontWeight.w900,
-                  color: isFilter ? const Color(0xFFA5ABB7) : const Color(0xFF0D121F),
-                ),
-              ),
-              dropdownButtonProps: DropdownButtonProps(
-                isVisible: isFilter,
-                icon: const Icon(
-                  Icons.keyboard_arrow_down,
-                  color: Color(0xFFA5ABB7),
-                  size: 18,
-                ),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-              popupProps: PopupProps.menu(
-                showSearchBox: true,
-                searchFieldProps: TextFieldProps(
+      builder: (ctx) {
+        return SafeArea(
+          bottom: false,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom,
+            ),
+            child: Container(
+              height: MediaQuery.of(ctx).size.height * 0.5,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Column(
+              children: [
+                // Search Field
+                TextField(
+                  controller: searchController,
+                  autofocus: true,
+                  onChanged: (val) {
+                    _lastSearch = val;
+                    widget.onSearchChanged?.call(val);
+                  },
                   decoration: InputDecoration(
                     hintText: 'Search...',
                     hintStyle: AppFont.style(
                       fontSize: 14,
                       color: const Color(0xFFA5ABB7),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
@@ -122,26 +133,162 @@ class SearchableDropdown<T> extends StatelessWidget {
                     color: const Color(0xFF0D121F),
                   ),
                 ),
-                menuProps: MenuProps(
-                  backgroundColor: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  elevation: 4,
+                const SizedBox(height: 12),
+
+                // List View
+                Expanded(
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: _loadingNotifier,
+                    builder: (context, isLoading, _) {
+                      return ValueListenableBuilder<List<T>>(
+                        valueListenable: _itemsNotifier,
+                        builder: (context, items, _) {
+                          if (isLoading && items.isEmpty) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF1565C0),
+                              ),
+                            );
+                          }
+
+                          if (items.isEmpty) {
+                            return Center(
+                              child: Text(
+                                'No data found',
+                                style: AppFont.style(
+                                  fontSize: 16,
+                                  color: const Color(0xFFA5ABB7),
+                                ),
+                              ),
+                            );
+                          }
+
+                          return ListView.builder(
+                            controller: scrollController,
+                            itemCount: items.length + (isLoading ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (index == items.length) {
+                                return const Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: Color(0xFF1565C0),
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              final item = items[index];
+                              final isSelected = item == widget.value;
+
+                              return InkWell(
+                                onTap: () {
+                                  widget.onChanged?.call(item);
+                                  Navigator.pop(ctx);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 12,
+                                  ),
+                                  child: Text(
+                                    widget.itemAsString(item),
+                                    style: AppFont.style(
+                                      fontSize: 16,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w900
+                                          : FontWeight.w500,
+                                      color: isSelected
+                                          ? const Color(0xFF1565C0)
+                                          : const Color(0xFF0D121F),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-                itemBuilder: (context, item, isSelected) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    child: Text(
-                      itemAsString(item),
-                      style: AppFont.style(
-                        fontSize: 16,
-                        fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
-                        color: isSelected ? const Color(0xFF1565C0) : const Color(0xFF0D121F),
-                      ),
-                    ),
-                  );
-                },
+              ],
+            ),
+          ),
+          )
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.isLoading && !_hasRenderedOnce) {
+      return Shimmer.fromColors(
+        baseColor: Colors.grey[200]!,
+        highlightColor: Colors.grey[50]!,
+        child: Container(
+          height: widget.isFilter ? 44 : 56,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(widget.isFilter ? 10 : 12),
+            border: Border.all(color: const Color(0xFFE5E7EB)),
+          ),
+        ),
+      );
+    }
+
+    _hasRenderedOnce = true;
+
+    return GestureDetector(
+      onTap: _showBottomSheet,
+      child: Container(
+        height: widget.isFilter ? 44 : 56,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(widget.isFilter ? 10 : 12),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+        ),
+        padding: EdgeInsets.symmetric(
+          horizontal: widget.isFilter ? 12 : 20,
+          vertical: widget.isFilter ? 0 : 4,
+        ),
+        child: Row(
+          children: [
+            if (widget.icon != null) ...[
+              widget.icon!,
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: Text(
+                widget.value != null
+                    ? widget.itemAsString(widget.value as T)
+                    : widget.hintText,
+                style: AppFont.style(
+                  fontSize: widget.isFilter ? 14 : 16,
+                  fontWeight: widget.value != null
+                      ? (widget.isFilter ? FontWeight.w500 : FontWeight.w900)
+                      : (widget.isFilter ? FontWeight.w500 : FontWeight.w700),
+                  color: widget.value != null
+                      ? (widget.isFilter
+                            ? const Color(0xFFA5ABB7)
+                            : const Color(0xFF0D121F))
+                      : const Color(0xFFA5ABB7),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
+            if (widget.isFilter)
+              const Icon(
+                Icons.keyboard_arrow_down,
+                color: Color(0xFFA5ABB7),
+                size: 18,
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

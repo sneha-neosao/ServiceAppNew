@@ -523,6 +523,13 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                       itemAsString: (c) => c.name,
                       isLoading: state is CustomerLoadingState,
                       isFilter: true,
+                      filterFn: (item, filter) => true,
+                      onSearchChanged: (v) {
+                        _customerBloc.add(CustomerGetEvent(search: v, page: 1, pageSize: 10));
+                      },
+                      onLoadMore: (lastSearch) {
+                        _customerBloc.add(CustomerGetEvent(search: lastSearch, page: 2, pageSize: 10));
+                      },
                       icon: const Icon(Icons.person_outline, color: Color(0xFFA5ABB7), size: 18),
                       onChanged: (customer) {
                         setState(() {

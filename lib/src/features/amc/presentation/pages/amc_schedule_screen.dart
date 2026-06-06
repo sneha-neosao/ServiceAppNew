@@ -142,12 +142,9 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                 builder: (context, state) {
                   bool isLoading = state is CustomerLoadingState;
                   if (state is CustomerSuccessState) {
+                    _customers.clear();
                     final apiNames = state.data.data.map((e) => e.name).toList();
-                    for (var name in apiNames) {
-                      if (!_customers.contains(name)) {
-                        _customers.add(name);
-                      }
-                    }
+                    _customers.addAll(apiNames);
                   }
 
                   List<String> validItems = List.from(_customers);
@@ -161,6 +158,13 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                     hintText: 'amc_schedule_filter_select_customer'.tr(),
                     itemAsString: (item) => item,
                     isLoading: isLoading,
+                    filterFn: (item, filter) => true, // Disable local filtering so API takes over
+                    onSearchChanged: (v) {
+                      _customerBloc.add(CustomerGetEvent(search: v, page: 1, pageSize: 10));
+                    },
+                    onLoadMore: (lastSearch) {
+                      _customerBloc.add(CustomerGetEvent(search: lastSearch, page: 2, pageSize: 10));
+                    },
                     onChanged: (v) {
                       setState(() {
                         _selectedCustomer = v;

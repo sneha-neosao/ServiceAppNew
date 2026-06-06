@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:service_app/src/core/usecases/usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
+import 'package:service_app/src/features/common/domain/usecase/customer_usecase.dart';
 import 'package:service_app/src/features/home/domain/usecase/upcoming_amc_usecase.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
 import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_work_update_usecase.dart';
@@ -93,7 +94,7 @@ abstract class Repository {
     NoParams params,
   );
 
-  Future<Either<Failure, CustomerResponse>> customers(NoParams params);
+  Future<Either<Failure, CustomerResponse>> customers(CustomerParams params);
 
   Future<Either<Failure, SiteResponse>> sites(SitesParams params);
 
@@ -356,13 +357,13 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CustomerResponse>> customers(NoParams params) {
+  Future<Either<Failure, CustomerResponse>> customers(CustomerParams params) {
     return _networkInfo.check<CustomerResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
 
-          final respData = await _remoteDataSource.customers(token);
+          final respData = await _remoteDataSource.customers(params, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message!));

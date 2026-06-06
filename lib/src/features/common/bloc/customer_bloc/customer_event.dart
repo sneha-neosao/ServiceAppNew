@@ -12,8 +12,16 @@ sealed class CustomerEvent extends Equatable {
 /// Event for Customer.
 
 class CustomerGetEvent extends CustomerEvent {
-  const CustomerGetEvent();
+  final int page;
+  final int pageSize;
+  final String search;
+
+  const CustomerGetEvent({
+    this.page = 1,
+    this.pageSize = 100,
+    this.search = '',
+  });
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [page, pageSize, search];
 }
