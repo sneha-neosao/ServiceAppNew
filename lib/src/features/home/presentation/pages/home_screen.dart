@@ -16,6 +16,7 @@ import 'package:service_app/src/features/profile/presentation/pages/profile_scre
 import 'package:service_app/src/features/reports/presentation/pages/create_report_screen.dart';
 import 'package:service_app/src/features/service_calls/presentation/pages/service_calls_screen.dart';
 import 'package:service_app/src/features/home/presentation/widgets/upcoming_amc_card.dart';
+import 'package:service_app/src/features/amc/presentation/pages/amc_workflow_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
@@ -24,8 +25,6 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
-
-enum _AmcViewState { dashboard, schedule, details, createReport }
 
 class _HomeScreenState extends State<HomeScreen> {
   late UpcomingAmcBloc _upcomingAmcBloc;
@@ -49,15 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late int _selectedIndex = widget.initialIndex;
   bool _showCreateReport = false;
-  _AmcViewState _amcViewState = _AmcViewState.dashboard;
-  int _amcReportsCreated = 0;
-
-  // Selected AMC Item Data
-  String? _selectedAmcTitle;
-  String? _selectedAmcLocation;
-  String? _selectedAmcVisitInfo;
-  String? _selectedAmcWindow;
-
   // ── Bottom nav tab labels & icons ─────────────────────────────────────────
   static const List<_NavItem> _navItems = [
     _NavItem(
@@ -87,8 +77,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onTabTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      _amcViewState = _AmcViewState.dashboard;
-      _amcReportsCreated = 0;
       _showCreateReport = false;
       _showSystemBars = true;
     });
@@ -97,27 +85,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: _selectedIndex == 0 && _amcViewState == _AmcViewState.dashboard,
+      canPop: _selectedIndex == 0,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
 
         if (_selectedIndex != 0) {
           setState(() {
             _selectedIndex = 0;
-            _amcViewState = _AmcViewState.dashboard;
-            _amcReportsCreated = 0;
             _showCreateReport = false;
             _showSystemBars = true;
-          });
-        } else if (_amcViewState != _AmcViewState.dashboard) {
-          setState(() {
-            if (_amcViewState == _AmcViewState.createReport) {
-              _amcViewState = _AmcViewState.details;
-            } else if (_amcViewState == _AmcViewState.details) {
-              _amcViewState = _AmcViewState.schedule;
-            } else {
-              _amcViewState = _AmcViewState.dashboard;
-            }
           });
         }
       },
@@ -159,12 +135,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  _selectedIndex = 0;
-                                  _amcViewState = _AmcViewState.dashboard;
-                                  _amcReportsCreated = 0;
-                                  _showCreateReport = false;
-                                  _showSystemBars = true;
-                                });
+                                    _selectedIndex = 0;
+                                    _showCreateReport = false;
+                                    _showSystemBars = true;
+                                  });
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -310,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Widget child;
     switch (_selectedIndex) {
       case 0:
-        child = _buildHomeTab();
+        child = _buildHomeBody();
         break;
       case 1:
         child = const MyCommissioningScreen();
@@ -349,51 +323,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return child;
   }
 
-  Widget _buildHomeTab() {
-    switch (_amcViewState) {
-      case _AmcViewState.details:
-        return AmcVisitDetailsScreen(
-          title: _selectedAmcTitle ?? '',
-          location: _selectedAmcLocation ?? '',
-          visitInfo: _selectedAmcVisitInfo ?? '',
-          window: _selectedAmcWindow ?? '',
-          reportsCreated: _amcReportsCreated,
-          onBack: () => setState(() => _amcViewState = _AmcViewState.schedule),
-          onSubmit: () =>
-              setState(() => _amcViewState = _AmcViewState.createReport),
-          onCompleteAmcWork: () {
-            setState(() {
-              _amcViewState = _AmcViewState.dashboard;
-              _amcReportsCreated = 0;
-            });
-          },
-        );
-      case _AmcViewState.createReport:
-        return CreateAmcReportScreen(
-          onBack: () => setState(() => _amcViewState = _AmcViewState.details),
-          onSubmit: () => setState(() {
-            _amcReportsCreated++;
-            _amcViewState = _AmcViewState.details;
-          }),
-        );
-      case _AmcViewState.schedule:
-        return AmcScheduleScreen(
-          onBack: () => setState(() => _amcViewState = _AmcViewState.dashboard),
-          onItemTap: (title, location, visitInfo, window) {
-            setState(() {
-              _selectedAmcTitle = title;
-              _selectedAmcLocation = location;
-              _selectedAmcVisitInfo = visitInfo;
-              _selectedAmcWindow = window;
-              _amcReportsCreated = 0;
-              _amcViewState = _AmcViewState.details;
-            });
-          },
-        );
-      case _AmcViewState.dashboard:
-        return _buildHomeBody();
-    }
-  }
+  
 
   Widget _buildHomeBody() {
     return SingleChildScrollView(
@@ -479,9 +409,14 @@ class _HomeScreenState extends State<HomeScreen> {
           // AMC Card
           UpcomingAmcCard(
             upcomingAmcBloc: _upcomingAmcBloc,
-            onScheduleTap: () => setState(
-              () => _amcViewState = _AmcViewState.schedule,
-            ),
+            onScheduleTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AmcWorkflowScreen(),
+                ),
+              );
+            },
           ),
         ],
       ),

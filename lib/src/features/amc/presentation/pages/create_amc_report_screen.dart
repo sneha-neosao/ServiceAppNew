@@ -52,9 +52,34 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      color: Colors.white, // Or transparent depending on background
+      color: Colors.white,
       child: Row(
         children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
+                size: 20,
+                color: Color(0xFF5C616E),
+              ),
+              onPressed: widget.onBack,
+            ),
+          ),
+          const SizedBox(width: 16),
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(

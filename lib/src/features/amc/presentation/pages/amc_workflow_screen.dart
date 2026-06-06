@@ -1,0 +1,86 @@
+import 'package:flutter/material.dart';
+import 'package:service_app/src/features/amc/presentation/pages/amc_schedule_screen.dart';
+import 'package:service_app/src/features/amc/presentation/pages/amc_visit_details_screen.dart';
+import 'package:service_app/src/features/amc/presentation/pages/create_amc_report_screen.dart';
+
+enum AmcViewState { schedule, details, createReport }
+
+class AmcWorkflowScreen extends StatefulWidget {
+  const AmcWorkflowScreen({super.key});
+
+  @override
+  State<AmcWorkflowScreen> createState() => _AmcWorkflowScreenState();
+}
+
+class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
+  AmcViewState _viewState = AmcViewState.schedule;
+  int _amcReportsCreated = 0;
+
+  String? _selectedAmcTitle;
+  String? _selectedAmcLocation;
+  String? _selectedAmcVisitInfo;
+  String? _selectedAmcWindow;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: _viewState == AmcViewState.schedule,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        setState(() {
+          if (_viewState == AmcViewState.createReport) {
+            _viewState = AmcViewState.details;
+          } else if (_viewState == AmcViewState.details) {
+            _viewState = AmcViewState.schedule;
+          }
+        });
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: _buildCurrentView(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCurrentView() {
+    switch (_viewState) {
+      case AmcViewState.schedule:
+        return AmcScheduleScreen(
+          onBack: () => Navigator.pop(context),
+          onItemTap: (title, location, visitInfo, window) {
+            setState(() {
+              _selectedAmcTitle = title;
+              _selectedAmcLocation = location;
+              _selectedAmcVisitInfo = visitInfo;
+              _selectedAmcWindow = window;
+              _amcReportsCreated = 0;
+              _viewState = AmcViewState.details;
+            });
+          },
+        );
+      case AmcViewState.details:
+        return AmcVisitDetailsScreen(
+          title: _selectedAmcTitle ?? '',
+          location: _selectedAmcLocation ?? '',
+          visitInfo: _selectedAmcVisitInfo ?? '',
+          window: _selectedAmcWindow ?? '',
+          reportsCreated: _amcReportsCreated,
+          onBack: () => setState(() => _viewState = AmcViewState.schedule),
+          onSubmit: () => setState(() => _viewState = AmcViewState.createReport),
+          onCompleteAmcWork: () {
+            Navigator.pop(context);
+          },
+        );
+      case AmcViewState.createReport:
+        return CreateAmcReportScreen(
+          onBack: () => setState(() => _viewState = AmcViewState.details),
+          onSubmit: () => setState(() {
+            _amcReportsCreated++;
+            _viewState = AmcViewState.details;
+          }),
+        );
+    }
+  }
+}
