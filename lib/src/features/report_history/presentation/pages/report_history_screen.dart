@@ -398,6 +398,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
 
                                 return _ReportCard(
                                   id: item.complaintNumber,
+                                  complaintNo: item.complaintNumber,
                                   reportId: item.id,
                                   type: ReportType.service,
                                   companyName: item.customerName,
@@ -1100,7 +1101,9 @@ class _ReportCard extends StatelessWidget {
                 ),
               ),
             ],
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+            const SizedBox(height: 16),
             // Technician Row
             Row(
               children: [
@@ -1127,6 +1130,15 @@ class _ReportCard extends StatelessWidget {
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF0D121F),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      technicianId,
+                      style: AppFont.style(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFA5ABB7),
                       ),
                     ),
                   ],
