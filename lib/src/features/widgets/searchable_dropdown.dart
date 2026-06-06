@@ -84,14 +84,15 @@ class SearchableDropdown<T> extends StatelessWidget {
                   color: isFilter ? const Color(0xFFA5ABB7) : const Color(0xFF0D121F),
                 ),
               ),
-              dropdownButtonProps: const DropdownButtonProps(
-                icon: Icon(
+              dropdownButtonProps: DropdownButtonProps(
+                isVisible: isFilter,
+                icon: const Icon(
                   Icons.keyboard_arrow_down,
                   color: Color(0xFFA5ABB7),
                   size: 18,
                 ),
                 padding: EdgeInsets.zero,
-                constraints: BoxConstraints(),
+                constraints: const BoxConstraints(),
               ),
               popupProps: PopupProps.menu(
                 showSearchBox: true,

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
@@ -38,9 +39,113 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
 
+  bool _isAutoCalculatingFlow = false;
+  bool _isAutoCalculatingRating = false;
+
+  void _setupAutoCalculateListeners() {
+    _pumpFlowLpmCtrl.addListener(() => _calculateFlow('LPM'));
+    _pumpFlowLpsCtrl.addListener(() => _calculateFlow('LPS'));
+    _pumpFlowM3hrCtrl.addListener(() => _calculateFlow('M3HR'));
+    _pumpFlowUsgpmCtrl.addListener(() => _calculateFlow('USGPM'));
+
+    _ratingKwCtrl.addListener(() => _calculateRating('KW'));
+    _ratingHpCtrl.addListener(() => _calculateRating('HP'));
+  }
+
+  void _calculateFlow(String source) {
+    if (_isAutoCalculatingFlow) return;
+    String text = "";
+    if (source == 'LPM') text = _pumpFlowLpmCtrl.text;
+    else if (source == 'LPS') text = _pumpFlowLpsCtrl.text;
+    else if (source == 'M3HR') text = _pumpFlowM3hrCtrl.text;
+    else if (source == 'USGPM') text = _pumpFlowUsgpmCtrl.text;
+
+    if (text.isEmpty) {
+      _isAutoCalculatingFlow = true;
+      if (source != 'LPM') _pumpFlowLpmCtrl.text = "";
+      if (source != 'LPS') _pumpFlowLpsCtrl.text = "";
+      if (source != 'M3HR') _pumpFlowM3hrCtrl.text = "";
+      if (source != 'USGPM') _pumpFlowUsgpmCtrl.text = "";
+      _isAutoCalculatingFlow = false;
+      return;
+    }
+
+    double? value = double.tryParse(text);
+    if (value == null) return;
+
+    _isAutoCalculatingFlow = true;
+    double lpm = 0, lps = 0, m3hr = 0, usgpm = 0;
+
+    switch (source) {
+      case 'LPM':
+        lpm = value;
+        lps = lpm / 60;
+        m3hr = lpm * 0.06;
+        usgpm = lpm / 3.78541;
+        break;
+      case 'LPS':
+        lps = value;
+        lpm = lps * 60;
+        m3hr = lps * 3.6;
+        usgpm = lps * 15.8503;
+        break;
+      case 'M3HR':
+        m3hr = value;
+        lpm = m3hr * 16.6667;
+        lps = m3hr / 3.6;
+        usgpm = m3hr * 4.40287;
+        break;
+      case 'USGPM':
+        usgpm = value;
+        lpm = usgpm * 3.78541;
+        lps = usgpm * 0.0630902;
+        m3hr = usgpm * 0.227125;
+        break;
+    }
+
+    if (source != 'LPM') _pumpFlowLpmCtrl.text = lpm.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+    if (source != 'LPS') _pumpFlowLpsCtrl.text = lps.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+    if (source != 'M3HR') _pumpFlowM3hrCtrl.text = m3hr.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+    if (source != 'USGPM') _pumpFlowUsgpmCtrl.text = usgpm.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+    
+    _isAutoCalculatingFlow = false;
+  }
+
+  void _calculateRating(String source) {
+    if (_isAutoCalculatingRating) return;
+    String text = source == 'KW' ? _ratingKwCtrl.text : _ratingHpCtrl.text;
+
+    if (text.isEmpty) {
+      _isAutoCalculatingRating = true;
+      if (source != 'KW') _ratingKwCtrl.text = "";
+      if (source != 'HP') _ratingHpCtrl.text = "";
+      _isAutoCalculatingRating = false;
+      return;
+    }
+
+    double? value = double.tryParse(text);
+    if (value == null) return;
+
+    _isAutoCalculatingRating = true;
+    double kw = 0, hp = 0;
+
+    if (source == 'KW') {
+      kw = value;
+      hp = kw / 0.746;
+      if (source != 'HP') _ratingHpCtrl.text = hp.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+    } else {
+      hp = value;
+      kw = hp * 0.746;
+      if (source != 'KW') _ratingKwCtrl.text = kw.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+    }
+    
+    _isAutoCalculatingRating = false;
+  }
+
   @override
   void initState() {
     super.initState();
+    _setupAutoCalculateListeners();
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
     _sitesBloc = getIt<SitesBloc>();
   }
@@ -1338,9 +1443,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     );
   }
 
-  Widget _buildUnderlineField(TextEditingController ctrl, {String hint = ''}) {
+  Widget _buildUnderlineField(TextEditingController ctrl, {String hint = '', bool isNumeric = false}) {
     return TextField(
       controller: ctrl,
+      keyboardType: isNumeric ? const TextInputType.numberWithOptions(decimal: true) : null,
+      inputFormatters: isNumeric ? [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))] : null,
       style: AppFont.style(
         fontSize: 15,
         fontWeight: FontWeight.w500,
@@ -1379,7 +1486,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ),
         ),
         const SizedBox(height: 2),
-        _buildUnderlineField(ctrl),
+        _buildUnderlineField(ctrl, isNumeric: true),
       ],
     );
   }

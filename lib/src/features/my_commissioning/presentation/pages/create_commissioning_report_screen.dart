@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:service_app/src/features/widgets/step_shimmer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -237,9 +238,113 @@ class _CreateCommissioningReportScreenState
       }
     }
   }
+  bool _isAutoCalculatingFlow = false;
+  bool _isAutoCalculatingRating = false;
+
+  void _setupAutoCalculateListeners() {
+    _pumpFlowLPMController.addListener(() => _calculateFlow('LPM'));
+    _pumpFlowLPSController.addListener(() => _calculateFlow('LPS'));
+    _pumpFlowM3HRController.addListener(() => _calculateFlow('M3HR'));
+    _pumpFlowUSGPMController.addListener(() => _calculateFlow('USGPM'));
+
+    _ratingKWController.addListener(() => _calculateRating('KW'));
+    _ratingHPController.addListener(() => _calculateRating('HP'));
+  }
+
+  void _calculateFlow(String source) {
+    if (_isAutoCalculatingFlow) return;
+    String text = "";
+    if (source == 'LPM') text = _pumpFlowLPMController.text;
+    else if (source == 'LPS') text = _pumpFlowLPSController.text;
+    else if (source == 'M3HR') text = _pumpFlowM3HRController.text;
+    else if (source == 'USGPM') text = _pumpFlowUSGPMController.text;
+
+    if (text.isEmpty) {
+      _isAutoCalculatingFlow = true;
+      if (source != 'LPM') _pumpFlowLPMController.text = "";
+      if (source != 'LPS') _pumpFlowLPSController.text = "";
+      if (source != 'M3HR') _pumpFlowM3HRController.text = "";
+      if (source != 'USGPM') _pumpFlowUSGPMController.text = "";
+      _isAutoCalculatingFlow = false;
+      return;
+    }
+
+    double? value = double.tryParse(text);
+    if (value == null) return;
+
+    _isAutoCalculatingFlow = true;
+    double lpm = 0, lps = 0, m3hr = 0, usgpm = 0;
+
+    switch (source) {
+      case 'LPM':
+        lpm = value;
+        lps = lpm / 60;
+        m3hr = lpm * 0.06;
+        usgpm = lpm / 3.78541;
+        break;
+      case 'LPS':
+        lps = value;
+        lpm = lps * 60;
+        m3hr = lps * 3.6;
+        usgpm = lps * 15.8503;
+        break;
+      case 'M3HR':
+        m3hr = value;
+        lpm = m3hr * 16.6667;
+        lps = m3hr / 3.6;
+        usgpm = m3hr * 4.40287;
+        break;
+      case 'USGPM':
+        usgpm = value;
+        lpm = usgpm * 3.78541;
+        lps = usgpm * 0.0630902;
+        m3hr = usgpm * 0.227125;
+        break;
+    }
+
+    if (source != 'LPM') _pumpFlowLPMController.text = lpm.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+    if (source != 'LPS') _pumpFlowLPSController.text = lps.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+    if (source != 'M3HR') _pumpFlowM3HRController.text = m3hr.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+    if (source != 'USGPM') _pumpFlowUSGPMController.text = usgpm.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+    
+    _isAutoCalculatingFlow = false;
+  }
+
+  void _calculateRating(String source) {
+    if (_isAutoCalculatingRating) return;
+    String text = source == 'KW' ? _ratingKWController.text : _ratingHPController.text;
+
+    if (text.isEmpty) {
+      _isAutoCalculatingRating = true;
+      if (source != 'KW') _ratingKWController.text = "";
+      if (source != 'HP') _ratingHPController.text = "";
+      _isAutoCalculatingRating = false;
+      return;
+    }
+
+    double? value = double.tryParse(text);
+    if (value == null) return;
+
+    _isAutoCalculatingRating = true;
+    double kw = 0, hp = 0;
+
+    if (source == 'KW') {
+      kw = value;
+      hp = kw / 0.746;
+      if (source != 'HP') _ratingHPController.text = hp.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+    } else {
+      hp = value;
+      kw = hp * 0.746;
+      if (source != 'KW') _ratingKWController.text = kw.toStringAsFixed(2).replaceAll(RegExp(r'\.00$'), '');
+    }
+    
+    _isAutoCalculatingRating = false;
+  }
+
   @override
   void initState() {
     super.initState();
+    _setupAutoCalculateListeners();
     _submitStep1Bloc = getIt<CommissioningStep1Bloc>();
     _submitStep2Bloc = getIt<CommissioningStep2Bloc>();
     _step1Bloc = getIt<CommissioningStep1AutoFillBloc>();
@@ -3675,6 +3780,10 @@ class _CreateCommissioningReportScreenState
                     const SizedBox(height: 2),
                     TextField(
                       controller: controller,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*')),
+                      ],
                       style: AppFont.style(
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
