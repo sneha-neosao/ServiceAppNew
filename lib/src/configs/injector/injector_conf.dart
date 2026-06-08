@@ -86,6 +86,8 @@ import '../../features/service_calls/domain/usecase/service_call_report_step6_us
 import '../../features/service_calls/bloc/service_call_report_step6_bloc/service_call_report_step6_bloc.dart';
 import '../../features/service_calls/domain/usecase/service_call_report_step6_autofill_usecase.dart';
 import '../../features/service_calls/bloc/service_call_report_step6_autofill_bloc/service_call_report_step6_autofill_bloc.dart';
+import '../../features/service_calls/domain/usecase/service_call_details_usecase.dart';
+import '../../features/service_calls/bloc/service_call_details_bloc/service_call_details_bloc.dart';
 import '../../features/common/domain/usecase/create_new_customer_usecase.dart';
 import '../../features/common/bloc/create_new_customer_bloc/create_new_customer_bloc.dart';
 import '../../features/common/domain/usecase/create_new_site_usecase.dart';
@@ -591,6 +593,14 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => AmcVisitReportsUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => ServiceCallDetailsBloc(getIt<ServiceCallDetailsUseCase>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => ServiceCallDetailsUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper

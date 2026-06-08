@@ -12,6 +12,7 @@ import 'package:service_app/src/features/service_calls/domain/usecase/pending_se
 import 'package:service_app/src/remote/models/service_calls_model/assigned_service_calls_response.dart';
 import 'package:service_app/src/remote/models/service_calls_model/pending_serbice_calls_response.dart';
 import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
+import 'package:service_app/src/remote/models/service_calls_details_model/service_calls_details_response.dart';
 import 'package:service_app/src/remote/models/assign_technician_service_call_model/assign_technician_service_calls_response.dart';
 import 'package:service_app/src/remote/models/assigned_servicecall_technician_model/assigned_servicecall_technician_response.dart';
 import 'package:service_app/src/remote/models/assigned_technician_representative_model/assigned_technician_representative_response.dart';
@@ -268,6 +269,10 @@ abstract class Repository {
 
   Future<Either<Failure, AmcVisitReportsResponse>> amcVisitReports(
     String visitId,
+  );
+
+  Future<Either<Failure, ServiceCallDetailsResponse>> serviceCallDetails(
+    String id,
   );
 }
 
@@ -2053,6 +2058,40 @@ class AuthRepositoryImpl implements Repository {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           final respData = await _remoteDataSource.amcVisitReports(visitId, token);
+
+          if (respData.status != 200) {
+            return Left(CredentialFailure(respData.message));
+          }
+
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, ServiceCallDetailsResponse>> serviceCallDetails(
+    String id,
+  ) {
+    return _networkInfo.check<ServiceCallDetailsResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.serviceCallDetails(id, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message));

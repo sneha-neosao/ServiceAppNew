@@ -724,7 +724,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                 companyName: item.customerName,
                 location: item.siteName,
                 assignedTo: techs.isNotEmpty ? techs : 'UNASSIGNED',
-                onView: () => _showReportDialog(context),
+                onView: () => _showReportDialog(context, item.id),
                 onEdit: () => _showAssignTechDialog(
                   context,
                   item.id,
@@ -824,7 +824,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                 complaintNo: item.complaintNumber,
                 companyName: item.customerName,
                 location: item.siteName,
-                onView: () => _showReportDialog(context),
+                onView: () => _showReportDialog(context, item.id),
                 onEdit: () => _showAssignTechDialog(
                   context,
                   item.id,
@@ -869,24 +869,20 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           location: 'TOWER A',
           assignedTo: 'RAHUL DESHMUKH',
           isCompleted: true,
-          onView: () => _showReportDialog(context),
+          onView: () => _showReportDialog(context, 'dummy_id'),
           onEdit: () {},
         ),
       ],
     );
   }
 
-  void _showReportDialog(BuildContext context) {
+  void _showReportDialog(BuildContext context, String complaintId) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        return const ComplaintReportDialog(
-          complaintNo: 'ABC-26-0492',
-          date: '22 Apr 2026',
-          client: 'Reliance Mart',
-          site: 'Chiller Plant',
-          issue: 'Water leakage from seal',
+        return ComplaintReportDialog(
+          complaintId: complaintId,
         );
       },
     );
