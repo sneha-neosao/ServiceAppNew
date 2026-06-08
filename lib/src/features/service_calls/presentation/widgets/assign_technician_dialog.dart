@@ -21,12 +21,14 @@ class AssignTechnicianDialog extends StatefulWidget {
   final String complaintId;
   final String complaintNo;
   final VoidCallback onSuccess;
+  final List<Technician>? initialTechnicians;
 
   const AssignTechnicianDialog({
     super.key,
     required this.complaintId,
     required this.complaintNo,
     required this.onSuccess,
+    this.initialTechnicians,
   });
 
   @override
@@ -41,6 +43,9 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialTechnicians != null) {
+      _selectedTechnicians = List.from(widget.initialTechnicians!);
+    }
     _activeTechsBloc = getIt<ActiveTechniciansServiceCallsBloc>()
       ..add(const ActiveTechniciansServiceCallsGetEvent());
     _assignBloc = getIt<AssignTechnicianServiceCallsBloc>();

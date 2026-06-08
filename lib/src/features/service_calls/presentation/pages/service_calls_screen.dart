@@ -21,6 +21,7 @@ import 'package:service_app/src/features/service_calls/bloc/pending_service_call
 import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_state.dart';
 import 'package:service_app/src/remote/models/service_calls_model/pending_serbice_calls_response.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/assign_technician_dialog.dart';
+import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/complaint_report_dialog.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/service_call_card.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/close_over_call_dialog.dart';
@@ -729,6 +730,13 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   context,
                   item.id,
                   item.complaintNumber,
+                  initialTechnicians: item.assignedTechnicians
+                      .map((e) => Technician(
+                            id: e.id,
+                            name: e.name,
+                            code: e.code,
+                          ))
+                      .toList(),
                 ),
                 onSubmit: () {
                   Navigator.push(
@@ -829,6 +837,13 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   context,
                   item.id,
                   item.complaintNumber,
+                  initialTechnicians: item.assignedTechnicians
+                      .map((e) => Technician(
+                            id: e.id,
+                            name: e.name,
+                            code: e.code,
+                          ))
+                      .toList(),
                 ),
                 onCloseOverCall: () => _showCloseOverCallDialog(
                   context,
@@ -841,6 +856,13 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   context,
                   item.id,
                   item.complaintNumber,
+                  initialTechnicians: item.assignedTechnicians
+                      .map((e) => Technician(
+                            id: e.id,
+                            name: e.name,
+                            code: e.code,
+                          ))
+                      .toList(),
                 ),
               );
             },
@@ -889,10 +911,8 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
   }
 
   void _showAssignTechDialog(
-    BuildContext context,
-    String complaintId,
-    String complaintNo,
-  ) {
+      BuildContext context, String complaintId, String complaintNo,
+      {List<Technician>? initialTechnicians}) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -900,6 +920,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
         return AssignTechnicianDialog(
           complaintId: complaintId,
           complaintNo: complaintNo,
+          initialTechnicians: initialTechnicians,
           onSuccess: () => _fetchServiceCalls(isRefresh: true),
         );
       },
