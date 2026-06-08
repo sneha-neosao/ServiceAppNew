@@ -332,5 +332,13 @@
   "complaint_report_client_label": "Customer Name",
   "complaint_report_site_label": "Site / Location",
   "complaint_report_issue_label": "Complaint / Problem Details",
-  "complaint_report_title": "Complaint Report"
+  "complaint_report_title": "Complaint Report",
+  "create_report_tech_name": "Technician Name",
+  "create_report_customer_name": "Customer Name",
+  "create_report_add_new": "Add",
+  "create_report_site_name": "Project / Site Name",
+  "create_report_member_presents": "Member Presents (Customer Side)",
+  "create_report_add_plus": "Add",
+  "create_report_agenda": "Agenda / Purpose of Visit",
+  "create_report_digitally_signed": "Tap to sign"
 }

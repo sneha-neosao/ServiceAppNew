@@ -1080,23 +1080,23 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ),
         ],
 
-        const SizedBox(height: 32),
-
-        // Complaint No
-        Row(
-          children: [
-            _buildLabel('create_report_complaint_no'.tr()),
-            const SizedBox(width: 40),
-            Text(
-              ':    -',
-              style: AppFont.style(
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-                color: const Color(0xFF0D121F),
-              ),
-            ),
-          ],
-        ),
+        // const SizedBox(height: 32),
+        //
+        // // Complaint No
+        // Row(
+        //   children: [
+        //     _buildLabel('create_report_complaint_no'.tr()),
+        //     const SizedBox(width: 40),
+        //     Text(
+        //       ':    -',
+        //       style: AppFont.style(
+        //         fontSize: 16,
+        //         fontWeight: FontWeight.w900,
+        //         color: const Color(0xFF0D121F),
+        //       ),
+        //     ),
+        //   ],
+        // ),
         const SizedBox(height: 32),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 32),

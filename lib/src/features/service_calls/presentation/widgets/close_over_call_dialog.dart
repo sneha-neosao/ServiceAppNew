@@ -253,8 +253,8 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                       widget.onSuccess();
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('close_call_success_msg'),
+                         SnackBar(
+                          content: Text(state.data.message),
                           backgroundColor: Colors.green,
                         ),
                       );

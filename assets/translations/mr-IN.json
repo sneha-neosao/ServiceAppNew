@@ -327,5 +327,13 @@
   "complaint_report_received_label": "प्राप्त दिनांक",
   "complaint_report_site_label": "साइट / ठिकाण",
   "complaint_report_issue_label": "तक्रार / समस्या तपशील",
-  "complaint_report_title": "तक्रार अहवाल"
+  "complaint_report_title": "तक्रार अहवाल",
+  "create_report_tech_name": "तंत्रज्ञाचे नाव",
+  "create_report_customer_name": "ग्राहकाचे नाव",
+  "create_report_add_new": "जोडा",
+  "create_report_site_name": "प्रकल्प / साइटचे नाव",
+  "create_report_member_presents": "सदस्य उपस्थित (ग्राहक बाजू)",
+  "create_report_add_plus": "जोडा",
+  "create_report_agenda": "भेटीचा उद्देश / अजेंडा",
+  "create_report_digitally_signed": "स्वाक्षरी करण्यासाठी टॅप करा"
 }
