@@ -5,6 +5,12 @@ import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
+import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
+import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
+import 'package:service_app/src/features/amc/bloc/amc_visits_list_bloc/amc_visits_list_bloc.dart';
+import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
+import 'package:service_app/src/remote/models/amc_visit_model/amc_visit_list_response.dart';
 class AmcScheduleScreen extends StatefulWidget {
   final VoidCallback onBack;
   final Function(String title, String location, String visitInfo, String window)
@@ -21,56 +27,33 @@ class AmcScheduleScreen extends StatefulWidget {
 
 class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
   // ── Dropdown data ──────────────────────────────────────────────────────────
-  final List<String> _customers = [
-    'All',
-    'Global Infotech',
-    'Reliance Mart',
-    'Tata Motors',
-    'Wipro',
-    'Infosys',
-  ];
-  final List<String> _sites = [
-    'All',
-    'Main Server Room',
-    'Chiller Plant',
-    'Assembly Line 4',
-    'Data Center B',
-    'Pantry Area',
-  ];
+  final List<Customer> _customers = [];
+  final List<Site> _sites = [];
+  final List<AmcVisitData> _amcVisits = [];
 
   late CustomerBloc _customerBloc;
+  late SitesBloc _sitesBloc;
+  late AmcVisitsListBloc _amcVisitsListBloc;
 
   @override
   void initState() {
     super.initState();
     _customerBloc = getIt<CustomerBloc>()..add(const CustomerGetEvent());
+    _sitesBloc = getIt<SitesBloc>();
+    _amcVisitsListBloc = getIt<AmcVisitsListBloc>()..add(const AmcVisitsListGetEvent());
   }
 
   @override
   void dispose() {
     _customerBloc.close();
+    _sitesBloc.close();
+    _amcVisitsListBloc.close();
     super.dispose();
   }
 
   // ── State ──────────────────────────────────────────────────────────────────
-  bool _siteOpen = false;
-  String _siteSearch = '';
-  String? _selectedCustomer;
-  String _selectedSite = 'amc_schedule_filter_select_site'.tr();
-
-  List<String> get _filteredSites => _sites
-      .where((s) => s.toLowerCase().contains(_siteSearch.toLowerCase()))
-      .toList();
-
-  void _toggleSite() => setState(() {
-    _siteOpen = !_siteOpen;
-    _siteSearch = '';
-  });
-
-  void _selectSite(String v) => setState(() {
-    _selectedSite = v;
-    _siteOpen = false;
-  });
+  Customer? _selectedCustomer;
+  Site? _selectedSite;
 
   @override
   Widget build(BuildContext context) {
@@ -143,20 +126,19 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                   bool isLoading = state is CustomerLoadingState;
                   if (state is CustomerSuccessState) {
                     _customers.clear();
-                    final apiNames = state.data.data.map((e) => e.name).toList();
-                    _customers.addAll(apiNames);
+                    _customers.addAll(state.data.data);
                   }
 
-                  List<String> validItems = List.from(_customers);
-                  if (_selectedCustomer != null && !validItems.contains(_selectedCustomer)) {
+                  List<Customer> validItems = List.from(_customers);
+                  if (_selectedCustomer != null && !validItems.any((e) => e.id == _selectedCustomer!.id)) {
                     validItems.add(_selectedCustomer!);
                   }
 
-                  return SearchableDropdown<String>(
+                  return SearchableDropdown<Customer>(
                     items: validItems,
                     value: _selectedCustomer,
                     hintText: 'amc_schedule_filter_select_customer'.tr(),
-                    itemAsString: (item) => item,
+                    itemAsString: (item) => item.name,
                     isLoading: isLoading,
                     filterFn: (item, filter) => true, // Disable local filtering so API takes over
                     onSearchChanged: (v) {
@@ -168,7 +150,12 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                     onChanged: (v) {
                       setState(() {
                         _selectedCustomer = v;
+                        _selectedSite = null;
+                        _sites.clear();
                       });
+                      if (v != null) {
+                        _sitesBloc.add(SitesGetEvent(customer_id: v.id, page: 1, pageSize: 10));
+                      }
                     },
                   );
                 },
@@ -177,49 +164,121 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
               const SizedBox(height: 12),
 
               // ── Site dropdown ────────────────────────────────────────────
-              _DropdownTrigger(
-                label: _selectedSite,
-                isPlaceholder: _selectedSite == 'amc_schedule_filter_select_site'.tr(),
-                isOpen: _siteOpen,
-                onTap: _toggleSite,
+              BlocBuilder<SitesBloc, SitesState>(
+                bloc: _sitesBloc,
+                builder: (context, state) {
+                  bool isLoading = state is SitesLoadingState;
+                  if (state is SitesSuccessState) {
+                    _sites.clear();
+                    _sites.addAll(state.data.data);
+                  }
+
+                  List<Site> validItems = List.from(_sites);
+                  if (_selectedSite != null && !validItems.any((e) => e.id == _selectedSite!.id)) {
+                    validItems.add(_selectedSite!);
+                  }
+
+                  return SearchableDropdown<Site>(
+                    items: validItems,
+                    value: _selectedSite,
+                    hintText: 'amc_schedule_filter_select_site'.tr(),
+                    itemAsString: (item) => item.name,
+                    isLoading: isLoading,
+                    filterFn: (item, filter) => true,
+                    onSearchChanged: (v) {
+                      if (_selectedCustomer != null) {
+                        _sitesBloc.add(SitesGetEvent(
+                            customer_id: _selectedCustomer!.id, search: v, page: 1, pageSize: 10));
+                      }
+                    },
+                    onLoadMore: (lastSearch) {
+                      if (_selectedCustomer != null) {
+                        _sitesBloc.add(SitesGetEvent(
+                            customer_id: _selectedCustomer!.id, search: lastSearch, page: 2, pageSize: 10));
+                      }
+                    },
+                    onChanged: (v) {
+                      setState(() {
+                        _selectedSite = v;
+                      });
+                    },
+                  );
+                },
               ),
-              if (_siteOpen) ...[
-                const SizedBox(height: 6),
-                _DropdownPanel(
-                  searchValue: _siteSearch,
-                  onSearchChanged: (v) => setState(() => _siteSearch = v),
-                  items: _filteredSites,
-                  onSelect: _selectSite,
-                ),
-              ],
 
               const SizedBox(height: 20),
 
               // ── Schedule cards ───────────────────────────────────────────
-              _AmcScheduleCard(
-                title: 'Infosys Campus',
-                location: 'Data Center B',
-                visitInfo: 'Visit 1 of 4',
-                window: 'Apr 29 - May 05',
-                onTap: () => widget.onItemTap(
-                  'Infosys Campus',
-                  'Data Center B',
-                  'Visit 1 of 4',
-                  'Apr 29 - May 05',
-                ),
-              ),
-              const SizedBox(height: 20),
-              _AmcScheduleCard(
-                title: 'Wipro Office',
-                location: 'Pantry Area',
-                visitInfo: 'Visit 2 of 6',
-                window: 'Apr 30 - May 10',
-                onTap: () => widget.onItemTap(
-                  'Wipro Office',
-                  'Pantry Area',
-                  'Visit 2 of 6',
-                  'Apr 30 - May 10',
-                ),
+              BlocBuilder<AmcVisitsListBloc, AmcVisitsListState>(
+                bloc: _amcVisitsListBloc,
+                builder: (context, state) {
+                  if (state is AmcVisitsListLoadingState) {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 4,
+                      itemBuilder: (context, index) {
+                        return const Padding(
+                          padding: EdgeInsets.only(bottom: 20),
+                          child: ListCardShimmer(),
+                        );
+                      },
+                    );
+                  }
+
+                  if (state is AmcVisitsListSuccessState) {
+                    _amcVisits.clear();
+                    _amcVisits.addAll(state.data.data);
+                  }
+
+                  // Filter logic
+                  var filteredVisits = _amcVisits;
+                  if (_selectedCustomer != null && _selectedCustomer!.name != 'All') {
+                    filteredVisits = filteredVisits.where((e) => e.customerName == _selectedCustomer!.name).toList();
+                  }
+                  if (_selectedSite != null && _selectedSite!.name != 'All') {
+                    filteredVisits = filteredVisits.where((e) => e.siteName == _selectedSite!.name).toList();
+                  }
+
+                  if (filteredVisits.isEmpty && state is AmcVisitsListSuccessState) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 40),
+                        child: Text(
+                          'No AMC visits found.',
+                          style: AppFont.style(
+                            fontSize: 15,
+                            color: const Color(0xFFA5ABB7),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: filteredVisits.length,
+                    itemBuilder: (context, index) {
+                      final visit = filteredVisits[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: _AmcScheduleCard(
+                          title: visit.customerName,
+                          location: visit.siteName,
+                          visitInfo: 'Visit ${visit.visitNumber}',
+                          window: visit.status,
+                          onTap: () => widget.onItemTap(
+                            visit.customerName,
+                            visit.siteName,
+                            'Visit ${visit.visitNumber}',
+                            visit.status,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ],
           ),
@@ -229,161 +288,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
   }
 }
 
-// ── Dropdown trigger ───────────────────────────────────────────────────────────
-class _DropdownTrigger extends StatelessWidget {
-  final String label;
-  final bool isPlaceholder;
-  final bool isOpen;
-  final VoidCallback onTap;
 
-  const _DropdownTrigger({
-    required this.label,
-    required this.isPlaceholder,
-    required this.isOpen,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 52,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 4),
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                label,
-                style: AppFont.style(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: isPlaceholder
-                      ? const Color(0xFFA5ABB7)
-                      : const Color(0xFF0D121F),
-                ),
-              ),
-            ),
-            Icon(
-              isOpen
-                  ? Icons.keyboard_arrow_up_rounded
-                  : Icons.keyboard_arrow_down_rounded,
-              color: const Color(0xFFA5ABB7),
-              size: 22,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Dropdown panel (search + scrollable list) ──────────────────────────────────
-class _DropdownPanel extends StatelessWidget {
-  final String searchValue;
-  final ValueChanged<String> onSearchChanged;
-  final List<String> items;
-  final ValueChanged<String> onSelect;
-
-  const _DropdownPanel({
-    required this.searchValue,
-    required this.onSearchChanged,
-    required this.items,
-    required this.onSelect,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 4),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Search box ─────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Container(
-              height: 44,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF2F4F7),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextField(
-                onChanged: onSearchChanged,
-                style: AppFont.style(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xFF0D121F),
-                ),
-                decoration: InputDecoration(
-                  hintText: 'amc_schedule_filter_search'.tr(),
-                  hintStyle: AppFont.style(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFFA5ABB7),
-                  ),
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: Color(0xFFA5ABB7),
-                    size: 20,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-              ),
-            ),
-          ),
-
-          // ── Items ──────────────────────────────────────────────────────
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 200),
-            child: Scrollbar(
-              thumbVisibility: true,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: items.length,
-                itemBuilder: (_, index) {
-                  final item = items[index];
-                  return InkWell(
-                    onTap: () => onSelect(item),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 14,
-                      ),
-                      child: Text(
-                        item,
-                        style: AppFont.style(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF0D121F),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-        ],
-      ),
-    );
-  }
-}
 
 // ── Schedule card ──────────────────────────────────────────────────────────────
 class _AmcScheduleCard extends StatelessWidget {

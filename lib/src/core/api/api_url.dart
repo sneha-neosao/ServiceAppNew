@@ -15,6 +15,8 @@ class ApiUrl {
 
   static const upcomingAmcVisits = "dashboard/upcoming-amc-visits";
 
+  static const technicianAmcs = "technician/amcs";
+
   static const profileDetails = "technician/profile";
 
   static const customerDropdown = "technician/dropdowns/customers";

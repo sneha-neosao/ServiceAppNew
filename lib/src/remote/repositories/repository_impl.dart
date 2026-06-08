@@ -84,6 +84,8 @@ import '../../features/common/domain/usecase/create_new_site_usecase.dart';
 import '../models/create_new_site_model/create_new_site_response.dart';
 import '../models/feedback_model/feedback_response.dart';
 import '../models/servicecalls_report_history_model/servicecalls_report_history_response.dart';
+import '../models/amc_visit_model/amc_visit_list_response.dart';
+import '../models/amc_visit_model/amc_visit_list_response.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -245,19 +247,22 @@ abstract class Repository {
     String reportId,
   );
 
-  Future<Either<Failure, CommissioningReportPdfResponse>> getCommissioningReportPdf(
-    String reportId,
-  );
+  Future<Either<Failure, CommissioningReportPdfResponse>>
+  getCommissioningReportPdf(String reportId);
 
   Future<Either<Failure, FeedbackResponse>> getServiceCallReportFeedback(
     String reportId,
   );
 
-  Future<Either<Failure, CommissioningReportPdfResponse>> getServiceCallReportPdf(
-    String reportId,
-  );
+  Future<Either<Failure, CommissioningReportPdfResponse>>
+  getServiceCallReportPdf(String reportId);
 
-  Future<Either<Failure, ServiceCallReportResponse>> getServiceCallsReportHistory();
+  Future<Either<Failure, ServiceCallReportResponse>>
+  getServiceCallsReportHistory();
+
+  Future<Either<Failure, AmcVisitsListResponse>> technicianAmcs(
+    NoParams params,
+  );
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -1839,10 +1844,8 @@ class AuthRepositoryImpl implements Repository {
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.getCommissioningReportFeedback(
-            reportId,
-            token,
-          );
+          final response = await _remoteDataSource
+              .getCommissioningReportFeedback(reportId, token);
 
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
@@ -1867,9 +1870,8 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningReportPdfResponse>> getCommissioningReportPdf(
-    String reportId,
-  ) {
+  Future<Either<Failure, CommissioningReportPdfResponse>>
+  getCommissioningReportPdf(String reportId) {
     return _networkInfo.check<CommissioningReportPdfResponse>(
       connected: () async {
         try {
@@ -1937,9 +1939,8 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, CommissioningReportPdfResponse>> getServiceCallReportPdf(
-    String reportId,
-  ) {
+  Future<Either<Failure, CommissioningReportPdfResponse>>
+  getServiceCallReportPdf(String reportId) {
     return _networkInfo.check<CommissioningReportPdfResponse>(
       connected: () async {
         try {
@@ -1972,18 +1973,55 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceCallReportResponse>> getServiceCallsReportHistory() {
+  Future<Either<Failure, ServiceCallReportResponse>>
+  getServiceCallsReportHistory() {
     return _networkInfo.check<ServiceCallReportResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.getServiceCallsReportHistory(token);
+          final response = await _remoteDataSource.getServiceCallsReportHistory(
+            token,
+          );
 
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
           }
 
           return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, AmcVisitsListResponse>> technicianAmcs(
+    NoParams params,
+  ) {
+    return _networkInfo.check<AmcVisitsListResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.technicianAmcs(token);
+
+          if (respData.status != 200) {
+            return Left(CredentialFailure(respData.message));
+          }
+
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));
