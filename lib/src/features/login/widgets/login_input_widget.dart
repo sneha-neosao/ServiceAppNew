@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/features/login/bloc/auth_login_form/login_form_bloc.dart';
 import 'login_text_field.dart';
@@ -33,7 +34,8 @@ class _LoginInputWidgetState extends State<LoginInputWidget> {
           onChanged: (val) {
             formBloc.add(LoginFormEmailChangedEvent(val.trim()));
           },
-          keyboardType: TextInputType.emailAddress,
+          keyboardType: TextInputType.number,
+          inputFormat: [FilteringTextInputFormatter.digitsOnly],
         ),
         const SizedBox(height: 24),
         LoginTextField<AuthLoginFormBloc>(

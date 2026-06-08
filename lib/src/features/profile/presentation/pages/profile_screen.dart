@@ -1,12 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/core/blocs/translate/translate_bloc.dart';
 import 'package:service_app/src/configs/injector/injector.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/profile/bloc/profile_details_bloc/profile_details_bloc.dart';
 import 'package:service_app/src/features/profile/widgets/profile_dialogs.dart';
+import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:service_app/src/remote/models/profile_details_model/profile_details_model.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -42,14 +45,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (BuildContext ctx, StateSetter setModal) {
-            Widget option(String lang) {
-              final isSelected = _selectedLanguage.toUpperCase() == lang;
+            Widget option(String lang, String nativeName, String englishName) {
+              final isSelected =
+                  _selectedLanguage.toLowerCase() == englishName.toLowerCase();
               return GestureDetector(
                 onTap: () {
-                  final formatted = lang[0] + lang.substring(1).toLowerCase();
                   setModal(() {});
-                  setState(() => _selectedLanguage = formatted);
-                  
+                  setState(() => _selectedLanguage = englishName);
+
                   if (lang == 'MARATHI') {
                     context.read<TranslateBloc>().add(TrMarathiEvent());
                   } else if (lang == 'ENGLISH') {
@@ -62,45 +65,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
                 child: Container(
                   width: double.infinity,
-                  height: 56,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  margin: const EdgeInsets.only(bottom: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: isSelected
-                          ? const Color(0xFF0B68B9)
-                          : const Color(0xFFF1F2F6),
-                      width: isSelected ? 2 : 1,
-                    ),
+                    color: isSelected
+                        ? const Color(0xFFE8F2FF)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        lang,
-                        style: AppFont.style(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: isSelected
-                              ? const Color(0xFF0B68B9)
-                              : const Color(0xFF8E9BAE),
+                      if (isSelected)
+                        const Icon(Icons.circle,
+                            size: 8, color: Color(0xFF0B68B9))
+                      else
+                        const SizedBox(width: 8),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              nativeName,
+                              style: AppFont.style(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: isSelected
+                                    ? const Color(0xFF0B68B9)
+                                    : const Color(0xFF4B5563),
+                              ),
+                            ),
+                            Text(
+                              englishName,
+                              style: AppFont.style(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: isSelected
+                                    ? const Color(0xFF0B68B9).withOpacity(0.6)
+                                    : const Color(0xFF9CA3AF),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       if (isSelected)
-                        Container(
-                          width: 26,
-                          height: 26,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF0B68B9),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.check,
-                            size: 16,
-                            color: Colors.white,
-                          ),
+                        const Icon(
+                          Icons.check,
+                          size: 20,
+                          color: Color(0xFF0B68B9),
                         ),
                     ],
                   ),
@@ -110,52 +123,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             return Padding(
               padding: EdgeInsets.fromLTRB(
+                16,
                 24,
-                24,
-                24,
+                16,
                 MediaQuery.of(ctx).viewInsets.bottom + 32,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'profile_language_title'.tr(),
-                        style: AppFont.style(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF0D121F),
-                        ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, bottom: 12),
+                    child: Text(
+                      'Select Language',
+                      style: AppFont.style(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF9CA3AF),
                       ),
-                      GestureDetector(
-                        onTap: () => Navigator.pop(ctx),
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFF8F9FB),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.close,
-                            size: 18,
-                            color: Color(0xFFA5ABB7),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  for (final l in [
-                    'ENGLISH',
-                    'MARATHI',
-                    'HINDI',
-                    'GUJARATI',
-                    'KANNADA',
-                  ])
-                    option(l),
+                  const Divider(color: Color(0xFFF1F2F6), thickness: 1),
+                  const SizedBox(height: 12),
+                  option('ENGLISH', 'English', 'English'),
+                  option('MARATHI', 'मराठी', 'Marathi'),
+                  option('HINDI', 'हिंदी', 'Hindi'),
+                  option('GUJARATI', 'ગુજરાતી', 'Gujarati'),
+                  option('KANNADA', 'ಕನ್ನಡ', 'Kannada'),
                 ],
               ),
             );
@@ -518,7 +512,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   );
 
   // ── Contact row ────────────────────────────────────────────────────────────
-  Widget _contactRow(String icon, String label, String? value, bool isLoading) {
+  Widget _contactRow(String icon, String label, String? value, bool isLoading,
+      {Widget? trailing}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
@@ -567,6 +562,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
           ),
+          if (trailing != null) trailing,
         ],
       ),
     );
@@ -647,6 +643,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ? data!.dealer.code
                         : '—',
                     isLoading,
+                    trailing: (!isLoading && data?.dealer.code.isNotEmpty == true)
+                        ? IconButton(
+                            onPressed: () {
+                              Clipboard.setData(
+                                  ClipboardData(text: data!.dealer.code));
+                              appSnackBar(
+                                  context, AppColor.green, "Code copied");
+                            },
+                            icon: const Icon(
+                              Icons.copy_rounded,
+                              size: 18,
+                              color: Color(0xFF0B68B9),
+                            ),
+                          )
+                        : null,
                   ),
                   // _divider(),
                   // _contactRow("assets/icons/mail_icon.png", 'Support line', '+91 20 2233 4455'),
