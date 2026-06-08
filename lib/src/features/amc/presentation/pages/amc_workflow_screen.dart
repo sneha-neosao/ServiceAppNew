@@ -20,6 +20,7 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
   String? _selectedAmcLocation;
   String? _selectedAmcVisitInfo;
   String? _selectedAmcWindow;
+  String? _selectedAmcVisitId;
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +50,9 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
       case AmcViewState.schedule:
         return AmcScheduleScreen(
           onBack: () => Navigator.pop(context),
-          onItemTap: (title, location, visitInfo, window) {
+          onItemTap: (visitId, title, location, visitInfo, window) {
             setState(() {
+              _selectedAmcVisitId = visitId;
               _selectedAmcTitle = title;
               _selectedAmcLocation = location;
               _selectedAmcVisitInfo = visitInfo;
@@ -62,6 +64,7 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
         );
       case AmcViewState.details:
         return AmcVisitDetailsScreen(
+          visitId: _selectedAmcVisitId ?? '',
           title: _selectedAmcTitle ?? '',
           location: _selectedAmcLocation ?? '',
           visitInfo: _selectedAmcVisitInfo ?? '',

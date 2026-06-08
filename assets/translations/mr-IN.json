@@ -322,5 +322,10 @@
   "val_add_tech_sig": "कृपया तंत्रज्ञांची स्वाक्षरी जोडा.",
   "val_enter_cust_rep": "कृपया ग्राहक प्रतिनिधीचे नाव प्रविष्ट करा.",
   "val_add_cust_sig": "कृपया ग्राहकाची स्वाक्षरी जोडा.",
-  "val_upload_photo": "कृपया कामाचे फोटो अपलोड करा."
+  "val_upload_photo": "कृपया कामाचे फोटो अपलोड करा.",
+  "complaint_report_no_label": "तक्रार क्रमांक",
+  "complaint_report_received_label": "प्राप्त दिनांक",
+  "complaint_report_site_label": "साइट / ठिकाण",
+  "complaint_report_issue_label": "तक्रार / समस्या तपशील",
+  "complaint_report_title": "तक्रार अहवाल"
 }

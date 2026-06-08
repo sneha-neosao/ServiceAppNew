@@ -1,5 +1,3 @@
-import 'package:equatable/equatable.dart';
-
 part of 'amc_visits_list_bloc.dart';
 
 sealed class AmcVisitsListEvent extends Equatable {

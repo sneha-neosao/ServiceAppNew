@@ -2,10 +2,16 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 
-class AmcVisitDetailsScreen extends StatelessWidget {
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
+import 'package:service_app/src/features/amc/bloc/amc_visit_reports_bloc/amc_visit_reports_bloc.dart';
+import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
+
+class AmcVisitDetailsScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSubmit;
   final VoidCallback? onCompleteAmcWork;
+  final String visitId;
   final String title;
   final String location;
   final String visitInfo;
@@ -17,6 +23,7 @@ class AmcVisitDetailsScreen extends StatelessWidget {
     required this.onBack,
     required this.onSubmit,
     this.onCompleteAmcWork,
+    required this.visitId,
     required this.title,
     required this.location,
     required this.visitInfo,
@@ -25,7 +32,36 @@ class AmcVisitDetailsScreen extends StatelessWidget {
   });
 
   @override
+  State<AmcVisitDetailsScreen> createState() => _AmcVisitDetailsScreenState();
+}
+
+class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
+  late AmcVisitReportsBloc _reportsBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _reportsBloc = getIt<AmcVisitReportsBloc>()
+      ..add(AmcVisitReportsGetEvent(visitId: widget.visitId));
+  }
+
+  @override
+  void dispose() {
+    _reportsBloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    return BlocBuilder<AmcVisitReportsBloc, AmcVisitReportsState>(
+      bloc: _reportsBloc,
+      builder: (context, state) {
+        int reportsCount = widget.reportsCreated;
+        bool isLoading = state is AmcVisitReportsLoadingState;
+        
+        if (state is AmcVisitReportsSuccessState) {
+          reportsCount = state.data.data.reports.length;
+        }
     return Column(
       children: [
         // ── Scrollable body ──────────────────────────────────────────────────
@@ -59,7 +95,7 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                             size: 20,
                             color: Color(0xFF5C616E),
                           ),
-                          onPressed: onBack,
+                          onPressed: widget.onBack,
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -67,7 +103,7 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            title,
+                            widget.title,
                             style: AppFont.style(
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
@@ -83,7 +119,7 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                location,
+                                widget.location,
                                 style: AppFont.style(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -132,7 +168,7 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 10),
                             _OutlineBadge(
-                              label: visitInfo,
+                              label: widget.visitInfo,
                               borderColor: const Color(0xFF1B5E20),
                               textColor: const Color(0xFF1B5E20),
                               bgColor: Color(0xFFC8E6C9),
@@ -154,7 +190,7 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                                 ),
                               ),
                               TextSpan(
-                                text: window,
+                                text: widget.window,
                                 style: AppFont.style(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w800,
@@ -164,14 +200,14 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        if (reportsCreated == 0) ...[
+                        if (reportsCount == 0) ...[
                           const SizedBox(height: 20),
                           // ── Submit button ───────────────────────────────────
                           SizedBox(
                             width: double.infinity,
                             height: 56,
                             child: ElevatedButton(
-                              onPressed: onSubmit,
+                              onPressed: widget.onSubmit,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF1565C0),
                                 foregroundColor: Colors.white,
@@ -208,8 +244,8 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                 // ── Reports Created label ──────────────────────────────────
                 Center(
                   child: Text(
-                    reportsCreated > 0
-                        ? '${'amc_details_reports_created'.tr()} ($reportsCreated)'
+                    reportsCount > 0
+                        ? '${'amc_details_reports_created'.tr()} ($reportsCount)'
                         : '${'amc_details_reports_created'.tr()} (0)',
                     style: AppFont.style(
                       fontSize: 13,
@@ -220,10 +256,15 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                   ),
                 ),
 
-                if (reportsCreated > 0) ...[
+                if (isLoading)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    child: ListCardShimmer(),
+                  )
+                else if (reportsCount > 0) ...[
                   const SizedBox(height: 16),
 
-                  ...List.generate(reportsCreated, (index) {
+                  ...List.generate(reportsCount, (index) {
                     return Container(
                       margin: const EdgeInsets.only(
                         left: 20,
@@ -258,12 +299,30 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          Text(
-                            'amc_details_report_label'.tr(args: ['${index + 1}']),
-                            style: AppFont.style(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xFF0D121F),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'amc_details_report_label'.tr(args: ['${index + 1}']),
+                                  style: AppFont.style(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                    color: const Color(0xFF0D121F),
+                                  ),
+                                ),
+                                if (state is AmcVisitReportsSuccessState) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    state.data.data.reports[index].customerName,
+                                    style: AppFont.style(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xFFA5ABB7),
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
                           ),
                         ],
@@ -273,7 +332,7 @@ class AmcVisitDetailsScreen extends StatelessWidget {
 
                   // + Create Another Report (dashed)
                   GestureDetector(
-                    onTap: onSubmit,
+                    onTap: widget.onSubmit,
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -318,12 +377,12 @@ class AmcVisitDetailsScreen extends StatelessWidget {
           color: const Color(0xFFF8F8F8),
           padding: const EdgeInsets.fromLTRB(22, 12, 22, 24),
           child: GestureDetector(
-            onTap: reportsCreated > 0 ? onCompleteAmcWork : null,
+            onTap: reportsCount > 0 ? widget.onCompleteAmcWork : null,
             child: Container(
               width: double.infinity,
               height: 56,
               decoration: BoxDecoration(
-                color: reportsCreated > 0
+                color: reportsCount > 0
                     ? const Color(0xFF1565C0)
                     : const Color(0xFFECEFF1),
                 borderRadius: BorderRadius.circular(20),
@@ -334,7 +393,7 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                   Icon(
                     Icons.check_circle_outline,
                     size: 20,
-                    color: reportsCreated > 0
+                    color: reportsCount > 0
                         ? Colors.white
                         : Colors.grey.shade400,
                   ),
@@ -344,7 +403,7 @@ class AmcVisitDetailsScreen extends StatelessWidget {
                     style: AppFont.style(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: reportsCreated > 0
+                      color: reportsCount > 0
                           ? Colors.white
                           : Colors.grey.shade400,
                     ),
@@ -355,6 +414,8 @@ class AmcVisitDetailsScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+      },
     );
   }
 }

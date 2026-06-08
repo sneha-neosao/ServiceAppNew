@@ -29,6 +29,8 @@ String mapFailureToMessage(Failure failure) {
       return "Invalid pan number format";
     case InvalidPasswordFailure:
       return "Invalid password format";
+    case ApiFailure:
+      return failure.message;
     default:
       return "Unexpected error";
   }

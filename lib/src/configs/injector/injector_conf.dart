@@ -92,6 +92,8 @@ import '../../features/common/domain/usecase/create_new_site_usecase.dart';
 import '../../features/common/bloc/create_new_site_bloc/create_new_site_bloc.dart';
 import '../../features/amc/domain/usecase/amc_visits_list_usecase.dart';
 import '../../features/amc/bloc/amc_visits_list_bloc/amc_visits_list_bloc.dart';
+import '../../features/amc/domain/usecase/amc_visit_reports_usecase.dart';
+import '../../features/amc/bloc/amc_visit_reports_bloc/amc_visit_reports_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -583,6 +585,12 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => AmcVisitsListUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(() => AmcVisitReportsBloc(getIt<AmcVisitReportsUsecase>()));
+
+  getIt.registerLazySingleton(
+    () => AmcVisitReportsUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper

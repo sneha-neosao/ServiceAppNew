@@ -62,7 +62,7 @@
   "close_call_complaint_no_label": "Complaint No",
   "close_call_customer_name_label": "Customer Name",
   "close_call_site_name_label": "Site Name",
-  "close_call_resolution_label": "Resolution Details (Voice to Text Mandatory)",
+  "close_call_resolution_label": "Resolution Details",
   "close_call_resolution_hint": "Mandatory: Summarize the resolution steps discussed over the call...",
   "close_call_min_chars": "Minimum 10 characters required for closure",
   "close_call_cancel": "Cancel",
@@ -326,5 +326,11 @@
   "commissioning_draw_signature": "Draw Signature",
   "commissioning_clear": "Clear",
   "commissioning_done": "Done",
-  "complaint_report_btn_download": "download"
+  "complaint_report_btn_download": "download",
+  "complaint_report_no_label": "Complaint No.",
+  "complaint_report_received_label": "Received On",
+  "complaint_report_client_label": "Customer Name",
+  "complaint_report_site_label": "Site / Location",
+  "complaint_report_issue_label": "Complaint / Problem Details",
+  "complaint_report_title": "Complaint Report"
 }

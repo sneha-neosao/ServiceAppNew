@@ -77,6 +77,7 @@ import '../../features/common/domain/usecase/create_new_site_usecase.dart';
 import '../models/feedback_model/feedback_response.dart';
 import '../models/servicecalls_report_history_model/servicecalls_report_history_response.dart';
 import '../models/amc_visit_model/amc_visit_list_response.dart';
+import '../models/amc_visit_model/amc_visit_reports_response.dart';
 
 sealed class RemoteDataSource {
   Future<LoginResponse> login(LoginParams params);
@@ -311,6 +312,8 @@ sealed class RemoteDataSource {
   );
 
   Future<AmcVisitsListResponse> technicianAmcs(String token);
+
+  Future<AmcVisitReportsResponse> amcVisitReports(String visitId, String token);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -1981,6 +1984,30 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = AmcVisitsListResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+  @override
+  Future<AmcVisitReportsResponse> amcVisitReports(String visitId, String token) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: '${ApiUrl.amcVisitReports}$visitId/reports',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = AmcVisitReportsResponse.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

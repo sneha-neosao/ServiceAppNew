@@ -13,7 +13,7 @@ import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
 import 'package:service_app/src/remote/models/amc_visit_model/amc_visit_list_response.dart';
 class AmcScheduleScreen extends StatefulWidget {
   final VoidCallback onBack;
-  final Function(String title, String location, String visitInfo, String window)
+  final Function(String visitId, String title, String location, String visitInfo, String window)
   onItemTap;
   const AmcScheduleScreen({
     super.key,
@@ -269,6 +269,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                           visitInfo: 'Visit ${visit.visitNumber}',
                           window: visit.status,
                           onTap: () => widget.onItemTap(
+                            visit.amcVisitId,
                             visit.customerName,
                             visit.siteName,
                             'Visit ${visit.visitNumber}',
