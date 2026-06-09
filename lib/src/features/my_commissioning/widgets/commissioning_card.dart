@@ -4,6 +4,7 @@ import 'package:service_app/src/core/theme/app_font.dart';
 
 class CommissioningCard extends StatelessWidget {
   final String companyName;
+  final String equipmentName;
   final String location;
   final String members;
   final VoidCallback onEdit;
@@ -13,6 +14,7 @@ class CommissioningCard extends StatelessWidget {
   const CommissioningCard({
     super.key,
     required this.companyName,
+    required this.equipmentName,
     required this.location,
     required this.members,
     required this.onEdit,
@@ -73,6 +75,29 @@ class CommissioningCard extends StatelessWidget {
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: const Color(0xFFA5ABB7),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      // Location
+                      Row(
+                        children: [
+                          Text(
+                            'name_of_equipment'.tr(),
+                            style: AppFont.style(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFFA5ABB7),
+                            ),
+                          ),
+                          const SizedBox(width: 3),
+                          Text(
+                            equipmentName,
+                            style: AppFont.style(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
                             ),
                           ),
                         ],

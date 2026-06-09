@@ -149,6 +149,7 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
 
                           return CommissioningCard(
                             companyName: item.customer.name,
+                            equipmentName: item.applicationOfEquipment,
                             location: item.site.name,
                             members: membersString,
                             onEdit: () async {
