@@ -2729,8 +2729,11 @@ class _CreateCommissioningReportScreenState
                                                                                                                                                                                   Text(
                                                                                                                                                                                     _currentStep ==
                                                                                                                                                                                         6
-                                                                                                                                                                                        ? 'commissioning_submit_report'
-                                                                                                                                                                                        .tr()
+                                                                                                                                                                                        ? (widget.isServiceReport
+                                                                                                                                                                                            ? 'service_calls_btn_submit'
+                                                                                                                                                                                                .tr()
+                                                                                                                                                                                            : 'commissioning_submit_report'
+                                                                                                                                                                                                .tr())
                                                                                                                                                                                         : 'create_report_btn_next'
                                                                                                                                                                                         .tr(),
                                                                                                                                                                                     style: AppFont

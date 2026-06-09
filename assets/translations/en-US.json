@@ -350,5 +350,6 @@
   "select_technician": "Select Technician",
   "no_technician_assigned": "No technicians assigned",
   "name_of_equipment": "Equipment: ",
-  "add": "Add"
+  "add": "Add",
+  "create_report_date": "Date"
 }

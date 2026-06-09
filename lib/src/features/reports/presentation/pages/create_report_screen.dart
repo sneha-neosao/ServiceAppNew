@@ -766,14 +766,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'create_report_service_provider'.tr(),
-                      style: AppFont.style(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFFA5ABB7),
-                      ),
-                    ),
+                    // Text(
+                    //   'create_report_service_provider'.tr(),
+                    //   style: AppFont.style(
+                    //     fontSize: 12,
+                    //     fontWeight: FontWeight.w800,
+                    //     color: const Color(0xFFA5ABB7),
+                    //   ),
+                    // ),
                     Text(
                       'Flowmax Pumps Corporation',
                       style: AppFont.style(
