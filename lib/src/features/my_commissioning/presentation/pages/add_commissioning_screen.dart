@@ -23,6 +23,7 @@ import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create
 import 'package:service_app/src/features/common/domain/usecase/create_new_site_usecase.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
+import 'package:shimmer/shimmer.dart';
 
 class AddCommissioningScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -779,7 +780,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
                             // ── STEP 1: SELECT CUSTOMER ──────────────────────────
                             _buildSectionHeader(
-                              label: 'Step 1: Select Customer',
+                              label: 'commissioning_step_1',
                               onAddTap: _showAddCustomerBottomSheet,
                             ),
                             BlocBuilder<CustomerBloc, CustomerState>(
@@ -794,7 +795,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                   _customers.addAll(apiNames);
                                 }
                                 return _buildDropdown(
-                                  hint: 'Select Customer',
+                                  hint: 'select_customer'.tr(),
                                   value: _selectedCustomer,
                                   items: _customers,
                                   isLoading: isLoading,
@@ -851,7 +852,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
                             // ── STEP 2: SELECT SITE ──────────────────────────────
                             _buildSectionHeader(
-                              label: 'Step 2: Select Site',
+                              label: 'commissioning_step_2',
                               onAddTap: _selectedCustomer != null
                                   ? _showAddSiteBottomSheet
                                   : null,
@@ -870,7 +871,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                   }
                                 }
                                 return _buildDropdown(
-                                  hint: 'Choose Site...',
+                                  hint: 'select_site'.tr(),
                                   value: _selectedSite,
                                   items: _sites,
                                   isLoading: isLoading,
@@ -950,152 +951,102 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
                             // ── STEP 3: APPLICATION OF EQUIPMENT ─────────────────
                             _buildSectionHeader(
-                              label: 'Step 3: Application Of Equipment',
+                              label: 'commissioning_step_3',
                               showAdd: false,
                             ),
                             _buildTextField(
-                              hint: 'Enter Application of Equipment',
+                              hint: 'enter_application_of_equipment'.tr(),
                               controller: _equipmentController,
+                              enabled: _selectedSite != null,
                             ),
 
                             const SizedBox(height: 32),
 
                             // ── STEP 4: ASSIGN TECHNICIANS ───────────────────────
-                            _buildSectionHeader(
-                              label: 'Step 4: Assign Technicians',
-                              showAdd: true,
-                              onAddTap: () {
-                                setState(() {
-                                  _technicianControllers.add(
-                                    TextEditingController(),
-                                  );
-                                });
+                            ValueListenableBuilder<TextEditingValue>(
+                              valueListenable: _equipmentController,
+                              builder: (context, equipmentValue, _) {
+                                final bool isTechnicianEnabled = equipmentValue.text.trim().isNotEmpty;
+                                return IgnorePointer(
+                                  ignoring: !isTechnicianEnabled,
+                                  child: Opacity(
+                                    opacity: isTechnicianEnabled ? 1.0 : 0.5,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        _buildSectionHeader(
+                                          label: 'commissioning_step_4',
+                                          showAdd: false,
+                                        ),
+                                        BlocBuilder<TechnicianBloc, TechnicianState>(
+                                          bloc: _technicianBloc,
+                                          builder: (context, state) {
+                                            bool isLoading = state is TechnicianLoadingState;
+                                            
+                                            if (isLoading) {
+                                              return Shimmer.fromColors(
+                                                baseColor: Colors.grey[200]!,
+                                                highlightColor: Colors.grey[50]!,
+                                                child: Container(
+                                                  height: 56,
+                                                  width: double.infinity,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius: BorderRadius.circular(12),
+                                                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+
+                                            int selectedCount = _technicianControllers.where((c) => c.text.isNotEmpty).length;
+
+                                            return GestureDetector(
+                                              onTap: () {
+                                                FocusManager.instance.primaryFocus?.unfocus();
+                                                if (state is TechnicianSuccessState) {
+                                                  _showMultiSelectTechnicianBottomSheet(state.data.data);
+                                                }
+                                              },
+                                              child: Container(
+                                                height: 56,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.circular(12),
+                                                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                                                ),
+                                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        selectedCount == 0
+                                                            ? 'select_technician'.tr()
+                                                            : '$selectedCount Selected',
+                                                        style: AppFont.style(
+                                                          fontSize: 16,
+                                                          fontWeight: selectedCount == 0
+                                                              ? FontWeight.w700
+                                                              : FontWeight.w900,
+                                                          color: selectedCount == 0
+                                                              ? const Color(0xFFA5ABB7)
+                                                              : const Color(0xFF0D121F),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7), size: 18),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
                               },
                             ),
-                            ..._technicianControllers.asMap().entries.map((
-                              entry,
-                            ) {
-                              int idx = entry.key;
-                              TextEditingController controller = entry.value;
-                              bool isFirst = idx == 0;
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child:
-                                          BlocBuilder<
-                                            TechnicianBloc,
-                                            TechnicianState
-                                          >(
-                                            bloc: _technicianBloc,
-                                            builder: (context, state) {
-                                              bool isLoading =
-                                                  state
-                                                      is TechnicianLoadingState;
-                                              List<dynamic> validItems = [];
-                                              if (state
-                                                  is TechnicianSuccessState) {
-                                                validItems = List.from(
-                                                  state.data.data,
-                                                );
-                                              }
-                                              final otherSelected =
-                                                  _technicianControllers
-                                                      .where(
-                                                        (c) =>
-                                                            c != controller &&
-                                                            c.text.isNotEmpty,
-                                                      )
-                                                      .map((c) => c.text)
-                                                      .toSet();
-                                              validItems.removeWhere(
-                                                (item) => otherSelected
-                                                    .contains(item.id),
-                                              );
-                                              if (controller.text.isNotEmpty &&
-                                                  !validItems.any(
-                                                    (e) =>
-                                                        e.id == controller.text,
-                                                  )) {
-                                                if (state
-                                                    is TechnicianSuccessState) {
-                                                  try {
-                                                    final match = state
-                                                        .data
-                                                        .data
-                                                        .firstWhere(
-                                                          (e) =>
-                                                              e.id ==
-                                                              controller.text,
-                                                        );
-                                                    validItems.add(match);
-                                                  } catch (_) {}
-                                                }
-                                              }
-                                              return SearchableDropdown<
-                                                dynamic
-                                              >(
-                                                items: validItems,
-                                                value:
-                                                    controller.text.isNotEmpty
-                                                    ? validItems.firstWhere(
-                                                        (e) =>
-                                                            e.id ==
-                                                            controller.text,
-                                                        orElse: () => null,
-                                                      )
-                                                    : null,
-                                                hintText:
-                                                    'Choose Technician...',
-                                                itemAsString: (item) =>
-                                                    item.name,
-                                                isLoading: isLoading,
-                                                onChanged: (v) {
-                                                  setState(() {
-                                                    if (v != null)
-                                                      controller.text = v.id;
-                                                  });
-                                                },
-                                              );
-                                            },
-                                          ),
-                                    ),
-                                    if (!isFirst)
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          left: 12,
-                                        ),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              _technicianControllers.removeAt(
-                                                idx,
-                                              );
-                                            });
-                                          },
-                                          child: Container(
-                                            width: 44,
-                                            height: 44,
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFFFEF2F2),
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: Border.all(
-                                                color: const Color(0xFFFCA5A5),
-                                              ),
-                                            ),
-                                            child: const Icon(
-                                              Icons.remove,
-                                              color: Color(0xFFEF4444),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              );
-                            }),
 
                             const SizedBox(height: 48),
 
@@ -1218,7 +1169,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
         children: [
           RichText(
             text: TextSpan(
-              text: label,
+              text: label.tr(),
               style: AppFont.style(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w900,
@@ -1281,20 +1232,26 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
     final bool isEnabled = onChanged != null;
 
-    return SearchableDropdown<String>(
-      items: validItems,
-      value: value,
-      hintText: hint,
-      itemAsString: (item) => item,
-      onChanged: onChanged,
-      onSearchChanged: onSearchChanged,
-      onLoadMore: onLoadMore,
-      filterFn: filterFn,
-      isLoading: isLoading,
-      // icon: Icon(
-      //   Icons.keyboard_arrow_down,
-      //   color: isEnabled ? const Color(0xFFA5ABB7) : const Color(0xFFCBD5E1),
-      // ),
+    return IgnorePointer(
+      ignoring: !isEnabled,
+      child: Opacity(
+        opacity: isEnabled ? 1.0 : 0.5,
+        child: SearchableDropdown<String>(
+          items: validItems,
+          value: value,
+          hintText: hint,
+          itemAsString: (item) => item,
+          onChanged: onChanged,
+          onSearchChanged: onSearchChanged,
+          onLoadMore: onLoadMore,
+          filterFn: filterFn,
+          isLoading: isLoading,
+          // icon: Icon(
+          //   Icons.keyboard_arrow_down,
+          //   color: isEnabled ? const Color(0xFFA5ABB7) : const Color(0xFFCBD5E1),
+          // ),
+        ),
+      ),
     );
   }
 
@@ -1302,32 +1259,39 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   Widget _buildTextField({
     required String hint,
     required TextEditingController controller,
+    bool enabled = true,
   }) {
-    return Container(
-      height: 56,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FB),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
-      ),
-      child: TextField(
-        controller: controller,
-        style: AppFont.style(
-          fontSize: 15,
-          fontWeight: FontWeight.w700,
-          color: const Color(0xFF0D121F),
-        ),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: AppFont.style(
-            fontSize: 15,
-            fontWeight: FontWeight.w500,
-            color: const Color(0xFFA5ABB7),
+    return IgnorePointer(
+      ignoring: !enabled,
+      child: Opacity(
+        opacity: enabled ? 1.0 : 0.5,
+        child: Container(
+          height: 56,
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8F9FB),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFF1F2F6)),
           ),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
+          child: TextField(
+            controller: controller,
+            style: AppFont.style(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF0D121F),
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: AppFont.style(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFFA5ABB7),
+              ),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+            ),
           ),
         ),
       ),
@@ -1485,6 +1449,202 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                     ],
                   ),
                 ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showMultiSelectTechnicianBottomSheet(List<dynamic> allTechnicians) {
+    List<String> tempSelectedIds = _technicianControllers
+        .where((c) => c.text.isNotEmpty)
+        .map((c) => c.text)
+        .toList();
+
+    String searchQuery = '';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final filteredList = allTechnicians.where((t) {
+              return t.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
+                     (t.id?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false);
+            }).toList();
+
+            return SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                ),
+                child: Container(
+                  height: MediaQuery.of(ctx).size.height * 0.6,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  child: Column(
+                    children: [
+                      // Search Field
+                      TextField(
+                        onChanged: (val) {
+                          setModalState(() {
+                            searchQuery = val;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Search here...',
+                          prefixIcon: const Icon(Icons.search, color: Color(0xFFA5ABB7), size: 20),
+                          hintStyle: AppFont.style(
+                            fontSize: 14,
+                            color: const Color(0xFFA5ABB7),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFF1565C0)),
+                          ),
+                        ),
+                        style: AppFont.style(
+                          fontSize: 14,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // List View
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: filteredList.length,
+                          itemBuilder: (context, index) {
+                            final item = filteredList[index];
+                            final isSelected = tempSelectedIds.contains(item.id);
+
+                            return InkWell(
+                              onTap: () {
+                                setModalState(() {
+                                  if (isSelected) {
+                                    tempSelectedIds.remove(item.id);
+                                  } else {
+                                    tempSelectedIds.add(item.id);
+                                  }
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: isSelected ? const Border(
+                                    left: BorderSide(color: Color(0xFF1565C0), width: 4),
+                                  ) : null,
+                                  color: isSelected ? const Color(0xFFF8F9FB) : Colors.white,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 12,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            item.name,
+                                            style: AppFont.style(
+                                              fontSize: 16,
+                                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                                              color: isSelected ? const Color(0xFF1565C0) : const Color(0xFF0D121F),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'TECH ID: ${item.code ?? item.id}',
+                                            style: AppFont.style(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w700,
+                                              color: const Color(0xFFA5ABB7),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // Checkbox
+                                    Container(
+                                      width: 24,
+                                      height: 24,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                          color: isSelected ? const Color(0xFF1565C0) : const Color(0xFFE5E7EB),
+                                        ),
+                                        color: isSelected ? const Color(0xFF1565C0) : Colors.white,
+                                      ),
+                                      child: isSelected
+                                          ? const Icon(Icons.check, size: 16, color: Colors.white)
+                                          : null,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            setState(() {
+                              _technicianControllers.clear();
+                              if (tempSelectedIds.isEmpty) {
+                                _technicianControllers.add(TextEditingController());
+                              } else {
+                                for (var id in tempSelectedIds) {
+                                  _technicianControllers.add(TextEditingController(text: id));
+                                }
+                              }
+                            });
+                            Navigator.pop(ctx);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1565C0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            minimumSize: const Size(0, 36),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          ),
+                          child: Text(
+                            'DONE',
+                            style: AppFont.style(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             );
           },

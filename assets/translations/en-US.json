@@ -340,5 +340,13 @@
   "create_report_member_presents": "Member Presents (Customer Side)",
   "create_report_add_plus": "Add",
   "create_report_agenda": "Agenda / Purpose of Visit",
-  "create_report_digitally_signed": "Tap to sign"
+  "create_report_digitally_signed": "Tap to sign",
+  "commissioning_step_1": "Step 1: Select Customer",
+  "select_customer": "Select Customer",
+  "commissioning_step_2": "Step 2: Select Site",
+  "select_site": "Select Site",
+  "commissioning_step_3": "Step 3: Application Of Equipment",
+  "enter_application_of_equipment": "Enter Application of Equipment",
+  "commissioning_step_4": "Step 4: Assign Technicians",
+  "select_technician": "Select Technician"
 }
