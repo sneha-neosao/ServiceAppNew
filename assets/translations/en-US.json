@@ -348,5 +348,6 @@
   "commissioning_step_3": "Step 3: Application Of Equipment",
   "enter_application_of_equipment": "Enter Application of Equipment",
   "commissioning_step_4": "Step 4: Assign Technicians",
-  "select_technician": "Select Technician"
+  "select_technician": "Select Technician",
+  "no_technician_assigned": "No technicians assigned"
 }

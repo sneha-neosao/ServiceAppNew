@@ -29,14 +29,15 @@ class CommissioningCard extends StatelessWidget {
         border: Border.all(color: const Color(0xFFF1F2F6), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.07),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.12), // slightly stronger but still soft
+            blurRadius: 12,                        // more blur for smoother edges
+            spreadRadius: 1,                        // light spread to soften
+            offset: const Offset(0, 4),             // downward shadow, less diagonal
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -56,7 +57,7 @@ class CommissioningCard extends StatelessWidget {
                           color: const Color(0xFF0D121F),
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       // Location
                       Row(
                         children: [
@@ -89,7 +90,7 @@ class CommissioningCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
 
             // ── Members row ───────────────────────────────────────────────
             Container(
@@ -101,10 +102,12 @@ class CommissioningCard extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.people_outline,
+                  Icon(
+                    members.contains(',')
+                        ? Icons.people_outline   // multiple technicians
+                        : Icons.person_outline,   // single technician
                     size: 18,
-                    color: Color(0xFFA5ABB7),
+                    color: const Color(0xFFA5ABB7),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
