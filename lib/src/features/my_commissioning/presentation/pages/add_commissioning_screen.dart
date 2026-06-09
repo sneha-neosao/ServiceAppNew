@@ -779,7 +779,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
                             // ── STEP 1: SELECT CUSTOMER ──────────────────────────
                             _buildSectionHeader(
-                              label: 'STEP 1: SELECT CUSTOMER',
+                              label: 'Step 1: Select Customer',
                               onAddTap: _showAddCustomerBottomSheet,
                             ),
                             BlocBuilder<CustomerBloc, CustomerState>(
@@ -851,7 +851,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
                             // ── STEP 2: SELECT SITE ──────────────────────────────
                             _buildSectionHeader(
-                              label: 'STEP 2: SELECT SITE',
+                              label: 'Step 2: Select Site',
                               onAddTap: _selectedCustomer != null
                                   ? _showAddSiteBottomSheet
                                   : null,
@@ -950,7 +950,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
                             // ── STEP 3: APPLICATION OF EQUIPMENT ─────────────────
                             _buildSectionHeader(
-                              label: 'STEP 3: APPLICATION OF EQUIPMENT',
+                              label: 'Step 3: Application Of Equipment',
                               showAdd: false,
                             ),
                             _buildTextField(
@@ -962,7 +962,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
                             // ── STEP 4: ASSIGN TECHNICIANS ───────────────────────
                             _buildSectionHeader(
-                              label: 'STEP 4: ASSIGN TECHNICIANS',
+                              label: 'Step 4: Assign Technicians',
                               showAdd: true,
                               onAddTap: () {
                                 setState(() {
@@ -1291,10 +1291,10 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
       onLoadMore: onLoadMore,
       filterFn: filterFn,
       isLoading: isLoading,
-      icon: Icon(
-        Icons.keyboard_arrow_down,
-        color: isEnabled ? const Color(0xFFA5ABB7) : const Color(0xFFCBD5E1),
-      ),
+      // icon: Icon(
+      //   Icons.keyboard_arrow_down,
+      //   color: isEnabled ? const Color(0xFFA5ABB7) : const Color(0xFFCBD5E1),
+      // ),
     );
   }
 

@@ -387,16 +387,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     name,
                     style: AppFont.style(
-                      fontSize: 26,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF1A1A1A),
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Text(
                     'home_greeting_message'.tr(args: [dealerName]),
                     style: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),
@@ -406,17 +406,22 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           const SizedBox(height: 36),
-          // AMC Card
-          UpcomingAmcCard(
-            upcomingAmcBloc: _upcomingAmcBloc,
-            onScheduleTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const AmcWorkflowScreen(),
-                ),
-              );
-            },
+          // AMC Card – centered
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: UpcomingAmcCard(
+                upcomingAmcBloc: _upcomingAmcBloc,
+                onScheduleTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AmcWorkflowScreen(),
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
         ],
       ),

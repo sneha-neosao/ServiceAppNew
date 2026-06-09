@@ -12,7 +12,7 @@ class SearchableDropdown<T> extends StatefulWidget {
   final void Function(String)? onLoadMore;
   final bool Function(T, String)? filterFn;
   final bool isLoading;
-  final Widget? icon;
+  // final Widget? icon;
   final bool isFilter;
 
   const SearchableDropdown({
@@ -26,7 +26,7 @@ class SearchableDropdown<T> extends StatefulWidget {
     this.onLoadMore,
     this.filterFn,
     this.isLoading = false,
-    this.icon,
+    // this.icon,
     this.isFilter = false,
   });
 
@@ -256,10 +256,10 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
         ),
         child: Row(
           children: [
-            if (widget.icon != null) ...[
-              widget.icon!,
-              const SizedBox(width: 8),
-            ],
+            // if (widget.icon != null) ...[
+            //   widget.icon!,
+            //   const SizedBox(width: 8),
+            // ],
             Expanded(
               child: Text(
                 widget.value != null

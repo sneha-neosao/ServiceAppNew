@@ -257,11 +257,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                                 ),
                               );
                             },
-                            icon: const Icon(
-                              Icons.person_outline,
-                              color: Color(0xFFA5ABB7),
-                              size: 18,
-                            ),
+                            // icon: const Icon(
+                            //   Icons.person_outline,
+                            //   color: Color(0xFFA5ABB7),
+                            //   size: 18,
+                            // ),
                             onChanged: (customer) {
                               setState(() {
                                 _selectedCustomerName = customer?.name;
@@ -316,11 +316,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                             isLoading: state is SitesLoadingState,
                             isFilter: true,
                             filterFn: (item, filter) => true,
-                            icon: const Icon(
-                              Icons.location_on_outlined,
-                              color: Color(0xFFA5ABB7),
-                              size: 18,
-                            ),
+                            // icon: const Icon(
+                            //   Icons.location_on_outlined,
+                            //   color: Color(0xFFA5ABB7),
+                            //   size: 18,
+                            // ),
                             onSearchChanged: _selectedCustomerId != null
                                 ? (v) => _sitesBloc.add(
                                     SitesGetEvent(

@@ -3340,12 +3340,12 @@ class _CreateCommissioningReportScreenState
                         hintText: 'commissioning_select_technician'.tr(),
                         itemAsString: (item) => item.name,
                         isLoading: isLoading,
-                        icon: widget.isServiceReport
-                            ? const SizedBox.shrink()
-                            : const Icon(
-                                Icons.keyboard_arrow_down,
-                                color: Color(0xFFA5ABB7),
-                              ),
+                        // icon: widget.isServiceReport
+                        //     ? const SizedBox.shrink()
+                        //     : const Icon(
+                        //         Icons.keyboard_arrow_down,
+                        //         color: Color(0xFFA5ABB7),
+                        //       ),
                         onChanged: (v) {
                           if (v != null) {
                             setState(() => controller.text = v.id);
@@ -3614,10 +3614,10 @@ class _CreateCommissioningReportScreenState
                   value: _selectedWarranty,
                   hintText: 'commissioning_select_period'.tr(),
                   itemAsString: (val) => val.tr(),
-                  icon: const Icon(
-                    Icons.keyboard_arrow_down,
-                    color: Color(0xFFA5ABB7),
-                  ),
+                  // icon: const Icon(
+                  //   Icons.keyboard_arrow_down,
+                  //   color: Color(0xFFA5ABB7),
+                  // ),
                   onChanged: (val) {
                     setState(() {
                       _selectedWarranty = val;
