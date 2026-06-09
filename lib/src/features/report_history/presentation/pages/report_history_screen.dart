@@ -222,21 +222,21 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Reports History Header ──────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-              child: Row(
-                children: [
-                  Text(
-                    'reports_title'.tr(),
-                    style: AppFont.style(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0D121F),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+            //   child: Row(
+            //     children: [
+            //       Text(
+            //         'reports_title'.tr(),
+            //         style: AppFont.style(
+            //           fontSize: 18,
+            //           fontWeight: FontWeight.w800,
+            //           color: const Color(0xFF0D121F),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
 
             // ── Segmented Tab Control ───────────────────────────────────────────
             Padding(
@@ -270,7 +270,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
             // ── Filter Section ──────────────────────────────────────────────────
-            _buildFilterSection(),
+            _buildFilterSection("Report History"),
 
             // ── Reports List ────────────────────────────────────────────────────
             Expanded(
@@ -539,7 +539,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     }
   }
 
-  Widget _buildSegmentTab(int index, String label) {
+  Widget _buildSegmentTab(int index, String label,) {
     bool isSelected = _selectedTab == index;
     return GestureDetector(
       onTap: () {
@@ -581,313 +581,345 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     );
   }
 
-  Widget _buildFilterSection() {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
-      ),
-      child: Column(
-        children: [
-          // Filter Row 1
-          Row(
+  Widget _buildFilterSection(String title) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+          child: Row(
             children: [
-              Expanded(
-                child: BlocBuilder<CustomerBloc, CustomerState>(
-                  bloc: _customerBloc,
-                  builder: (context, state) {
-                    final customers = <Customer>[];
-                    if (state is CustomerSuccessState) {
-                      customers.addAll(state.data.data);
-                    }
-                    return SearchableDropdown<Customer>(
-                      items: customers,
-                      value: _selectedCustomerId != null
-                          ? customers
-                                    .where((c) => c.id == _selectedCustomerId)
-                                    .isEmpty
-                                ? null
-                                : customers.firstWhere(
-                                    (c) => c.id == _selectedCustomerId,
-                                  )
-                          : null,
-                      hintText: 'reports_filter_select_customer'.tr(),
-                      itemAsString: (c) => c.name,
-                      isLoading: state is CustomerLoadingState,
-                      isFilter: true,
-                      filterFn: (item, filter) => true,
-                      onSearchChanged: (v) {
-                        _customerBloc.add(
-                          CustomerGetEvent(search: v, page: 1, pageSize: 10),
-                        );
-                      },
-                      onLoadMore: (lastSearch) {
-                        _customerBloc.add(
-                          CustomerGetEvent(
-                            search: lastSearch,
-                            page: 2,
-                            pageSize: 10,
-                          ),
-                        );
-                      },
-                      // icon: const Icon(
-                      //   Icons.person_outline,
-                      //   color: Color(0xFFA5ABB7),
-                      //   size: 18,
-                      // ),
-                      onChanged: (customer) {
-                        setState(() {
-                          _selectedCustomerName = customer?.name;
-                          _selectedCustomerId = customer?.id;
-                          _selectedSiteName = null;
-                          _selectedSiteId = null;
-                        });
-                        if (customer != null) {
-                          _sitesBloc.add(
-                            SitesGetEvent(customer_id: customer.id),
-                          );
-                        }
-                        _fetchReportHistory();
-                      },
-                    );
-                  },
+              Text(
+                title.tr(),
+                style: AppFont.style(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF0D121F),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: BlocBuilder<SitesBloc, SitesState>(
-                  bloc: _sitesBloc,
-                  builder: (context, state) {
-                    final sites = <Site>[];
-                    if (state is SitesSuccessState) {
-                      sites.addAll(state.data.data);
-                    }
-
-                    Site? initialValue;
-                    if (_selectedSiteId != null) {
-                      final matches = sites.where(
-                        (s) => s.id == _selectedSiteId,
-                      );
-                      if (matches.isNotEmpty) {
-                        initialValue = matches.first;
-                      } else if (_selectedSiteName != null) {
-                        // If it's selected but not in the current paginated list, manually add it
-                        final s = Site(
-                          id: _selectedSiteId!,
-                          name: _selectedSiteName!,
-                        );
-                        sites.add(s);
-                        initialValue = s;
-                      }
-                    }
-
-                    return SearchableDropdown<Site>(
-                      items: sites,
-                      value: initialValue,
-                      hintText: 'reports_filter_select_site'.tr(),
-                      itemAsString: (s) => s.name,
-                      isLoading: state is SitesLoadingState,
-                      isFilter: true,
-                      filterFn: (item, filter) => true,
-                      // icon: const Icon(
-                      //   Icons.location_on_outlined,
-                      //   color: Color(0xFFA5ABB7),
-                      //   size: 18,
-                      // ),
-                      onSearchChanged: _selectedCustomerId != null
-                          ? (v) => _sitesBloc.add(
-                              SitesGetEvent(
-                                customer_id: _selectedCustomerId!,
-                                search: v,
-                                page: 1,
-                                pageSize: 10,
-                              ),
-                            )
-                          : null,
-                      onLoadMore: _selectedCustomerId != null
-                          ? (lastSearch) => _sitesBloc.add(
-                              SitesGetEvent(
-                                customer_id: _selectedCustomerId!,
+            ],
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFFF1F2F6)),
+          ),
+          child: Column(
+            children: [
+              // Filter Row 1
+              Row(
+                children: [
+                  Expanded(
+                    child: BlocBuilder<CustomerBloc, CustomerState>(
+                      bloc: _customerBloc,
+                      builder: (context, state) {
+                        final customers = <Customer>[];
+                        if (state is CustomerSuccessState) {
+                          customers.addAll(state.data.data);
+                        }
+                        return SearchableDropdown<Customer>(
+                          items: customers,
+                          value: _selectedCustomerId != null
+                              ? customers
+                                        .where((c) => c.id == _selectedCustomerId)
+                                        .isEmpty
+                                    ? null
+                                    : customers.firstWhere(
+                                        (c) => c.id == _selectedCustomerId,
+                                      )
+                              : null,
+                          hintText: 'reports_filter_select_customer'.tr(),
+                          itemAsString: (c) => c.name,
+                          isLoading: state is CustomerLoadingState,
+                          isFilter: true,
+                          filterFn: (item, filter) => true,
+                          onSearchChanged: (v) {
+                            _customerBloc.add(
+                              CustomerGetEvent(search: v, page: 1, pageSize: 10),
+                            );
+                          },
+                          onLoadMore: (lastSearch) {
+                            _customerBloc.add(
+                              CustomerGetEvent(
                                 search: lastSearch,
                                 page: 2,
                                 pageSize: 10,
                               ),
-                            )
-                          : null,
-                      onChanged: (site) {
-                        setState(() {
-                          _selectedSiteName = site?.name;
-                          _selectedSiteId = site?.id;
-                        });
-                        _fetchReportHistory();
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          // Complaint Number — only for Service tab
-          if (_selectedTab == 1) ...[
-            _buildFilterInputFull(
-              'reports_filter_complaint_hint'.tr(),
-              Icons.assignment_outlined,
-            ),
-            const SizedBox(height: 12),
-          ],
-          // Filter Row 2
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () async {
-                    final picked = await showDatePicker(
-                      context: context,
-                      initialDate: _selectedDate ?? DateTime.now(),
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime(2030),
-                      builder: (context, child) {
-                        return Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: const ColorScheme.light(
-                              primary: Color(0xFF1565C0),
-                              onPrimary: Colors.white,
-                              onSurface: Color(0xFF0D121F),
-                            ),
-                          ),
-                          child: child!,
+                            );
+                          },
+                          // icon: const Icon(
+                          //   Icons.person_outline,
+                          //   color: Color(0xFFA5ABB7),
+                          //   size: 18,
+                          // ),
+                          onChanged: (customer) {
+                            setState(() {
+                              _selectedCustomerName = customer?.name;
+                              _selectedCustomerId = customer?.id;
+                              _selectedSiteName = null;
+                              _selectedSiteId = null;
+                            });
+                            if (customer != null) {
+                              _sitesBloc.add(
+                                SitesGetEvent(customer_id: customer.id),
+                              );
+                            }
+                            _fetchReportHistory();
+                          },
                         );
                       },
-                    );
-                    if (picked != null) {
-                      setState(() => _selectedDate = picked);
-                      _fetchReportHistory();
-                    }
-                  },
-                  child: Container(
-                    height: 44,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFE5E7EB)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.calendar_today_outlined, color: Color(0xFFA5ABB7), size: 18),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            _selectedDate != null
-                                ? '${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}'
-                                : 'reports_filter_date_hint'.tr(),
-                            style: AppFont.style(
-                              fontSize: 14,
-                              color: _selectedDate != null
-                                  ? const Color(0xFF0D121F)
-                                  : const Color(0xFFA5ABB7),
-                              fontWeight: FontWeight.w500,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (_selectedDate != null)
-                          GestureDetector(
-                            onTap: () {
-                              setState(() => _selectedDate = null);
-                              _fetchReportHistory();
-                            },
-                            child: const Icon(Icons.close, color: Color(0xFFA5ABB7), size: 16),
-                          ),
-                      ],
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: BlocBuilder<TechnicianBloc, TechnicianState>(
-                  bloc: _technicianBloc,
-                  builder: (context, state) {
-                    final technicians = <Technician>[];
-                    if (state is TechnicianSuccessState) {
-                      technicians.addAll(state.data.data);
-                    }
-                    return SearchableDropdown<Technician>(
-                      items: technicians,
-                      value: _selectedTechnicianId != null
-                          ? technicians
-                                    .where((t) => t.id == _selectedTechnicianId)
-                                    .isEmpty
-                                ? null
-                                : technicians.firstWhere(
-                                    (t) => t.id == _selectedTechnicianId,
-                                  )
-                          : null,
-                      hintText: 'reports_filter_select_technician'.tr(),
-                      itemAsString: (t) => t.name,
-                      isLoading: state is TechnicianLoadingState,
-                      isFilter: true,
-                      // icon: const Icon(
-                      //   Icons.person_outline,
-                      //   color: Color(0xFFA5ABB7),
-                      //   size: 18,
-                      // ),
-                      onChanged: (tech) {
-                        setState(() {
-                          _selectedTechnicianName = tech?.name;
-                          _selectedTechnicianId = tech?.id;
-                        });
-                        _fetchReportHistory();
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: BlocBuilder<SitesBloc, SitesState>(
+                      bloc: _sitesBloc,
+                      builder: (context, state) {
+                        final sites = <Site>[];
+                        if (state is SitesSuccessState) {
+                          sites.addAll(state.data.data);
+                        }
+
+                        Site? initialValue;
+                        if (_selectedSiteId != null) {
+                          final matches = sites.where(
+                            (s) => s.id == _selectedSiteId,
+                          );
+                          if (matches.isNotEmpty) {
+                            initialValue = matches.first;
+                          } else if (_selectedSiteName != null) {
+                            // If it's selected but not in the current paginated list, manually add it
+                            final s = Site(
+                              id: _selectedSiteId!,
+                              name: _selectedSiteName!,
+                            );
+                            sites.add(s);
+                            initialValue = s;
+                          }
+                        }
+
+                        Widget siteDropdown = SearchableDropdown<Site>(
+                          items: sites,
+                          value: initialValue,
+                          hintText: 'reports_filter_select_site'.tr(),
+                          itemAsString: (s) => s.name,
+                          isLoading: state is SitesLoadingState,
+                          isFilter: true,
+                          filterFn: (item, filter) => true,
+                          onSearchChanged: _selectedCustomerId != null
+                              ? (v) => _sitesBloc.add(
+                                  SitesGetEvent(
+                                    customer_id: _selectedCustomerId!,
+                                    search: v,
+                                    page: 1,
+                                    pageSize: 10,
+                                  ),
+                                )
+                              : null,
+                          onLoadMore: _selectedCustomerId != null
+                              ? (lastSearch) => _sitesBloc.add(
+                                  SitesGetEvent(
+                                    customer_id: _selectedCustomerId!,
+                                    search: lastSearch,
+                                    page: 2,
+                                    pageSize: 10,
+                                  ),
+                                )
+                              : null,
+                          onChanged: (site) {
+                            setState(() {
+                              _selectedSiteName = site?.name;
+                              _selectedSiteId = site?.id;
+                            });
+                            _fetchReportHistory();
+                          },
+                        );
+
+                        if (_selectedCustomerId == null) {
+                          return IgnorePointer(
+                            child: Opacity(
+                              opacity: 0.5,
+                              child: siteDropdown,
+                            ),
+                          );
+                        }
+
+                        return siteDropdown;
                       },
-                    );
-                  },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              // Complaint Number — only for Service tab
+              if (_selectedTab == 1) ...[
+                _buildFilterInputFull(
+                  'reports_filter_complaint_hint'.tr(),
+                  Icons.assignment_outlined,
+                ),
+                const SizedBox(height: 12),
+              ],
+              // Filter Row 2
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: _selectedDate ?? DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2030),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: const ColorScheme.light(
+                                  primary: Color(0xFF1565C0),
+                                  onPrimary: Colors.white,
+                                  onSurface: Color(0xFF0D121F),
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (picked != null) {
+                          setState(() => _selectedDate = picked);
+                          _fetchReportHistory();
+                        }
+                      },
+                      child: Container(
+                        height: 44,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                        ),
+                        child: Row(
+                          children: [
+                            // const Icon(Icons.calendar_today_outlined, color: Color(0xFFA5ABB7), size: 18),
+                            // const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _selectedDate != null
+                                    ? '${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}'
+                                    : 'reports_filter_date_hint'.tr(),
+                                style: AppFont.style(
+                                  fontSize: 14,
+                                  color: _selectedDate != null
+                                      ? const Color(0xFF0D121F)
+                                      : const Color(0xFFA5ABB7),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (_selectedDate != null)
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() => _selectedDate = null);
+                                  _fetchReportHistory();
+                                },
+                                child: const Icon(Icons.close, color: Color(0xFFA5ABB7), size: 16),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: BlocBuilder<TechnicianBloc, TechnicianState>(
+                      bloc: _technicianBloc,
+                      builder: (context, state) {
+                        final technicians = <Technician>[];
+                        if (state is TechnicianSuccessState) {
+                          technicians.addAll(state.data.data);
+                        }
+                        return SearchableDropdown<Technician>(
+                          items: technicians,
+                          value: _selectedTechnicianId != null
+                              ? technicians
+                                        .where((t) => t.id == _selectedTechnicianId)
+                                        .isEmpty
+                                    ? null
+                                    : technicians.firstWhere(
+                                        (t) => t.id == _selectedTechnicianId,
+                                      )
+                              : null,
+                          hintText: 'reports_filter_select_technician'.tr(),
+                          itemAsString: (t) => t.name,
+                          isLoading: state is TechnicianLoadingState,
+                          isFilter: true,
+                          // icon: const Icon(
+                          //   Icons.person_outline,
+                          //   color: Color(0xFFA5ABB7),
+                          //   size: 18,
+                          // ),
+                          onChanged: (tech) {
+                            setState(() {
+                              _selectedTechnicianName = tech?.name;
+                              _selectedTechnicianId = tech?.id;
+                            });
+                            _fetchReportHistory();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Clear Filters
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedCustomerName = null;
+                    _selectedCustomerId = null;
+                    _selectedSiteName = null;
+                    _selectedSiteId = null;
+                    _selectedTechnicianName = null;
+                    _selectedTechnicianId = null;
+                    _selectedDate = null;
+                  });
+                  _fetchReportHistory();
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF3F8FF),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.refresh,
+                        color: Color(0xFF1565C0),
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'reports_clear_filters'.tr(),
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF1565C0),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          // Clear Filters
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedCustomerName = null;
-                _selectedCustomerId = null;
-                _selectedSiteName = null;
-                _selectedSiteId = null;
-                _selectedTechnicianName = null;
-                _selectedTechnicianId = null;
-                _selectedDate = null;
-              });
-              _fetchReportHistory();
-            },
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
-              ),
-              child: Center(
-                child: Text(
-                  'reports_clear_filters'.tr(),
-                  style: AppFont.style(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    color: const Color(0xFFA5ABB7),
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -979,8 +1011,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       ),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFFA5ABB7), size: 18),
-          const SizedBox(width: 8),
+          // Icon(icon, color: const Color(0xFFA5ABB7), size: 18),
+          // const SizedBox(width: 8),
           Expanded(
             child: Text(
               label,
@@ -1116,44 +1148,60 @@ class _ReportCard extends StatelessWidget {
                 ),
               ],
             ),
-            // if (complaintNo != null) ...[
-            //   const SizedBox(height: 16),
-            //   // Complaint Row
-            //   Container(
-            //     width: double.infinity,
-            //     padding: const EdgeInsets.symmetric(
-            //       horizontal: 12,
-            //       vertical: 12,
-            //     ),
-            //     decoration: BoxDecoration(
-            //       color: const Color(0xFFFFFBF2),
-            //       borderRadius: BorderRadius.circular(10),
-            //     ),
-            //     child: Row(
-            //       children: [
-            //         Text(
-            //           complaintNo!,
-            //           style: AppFont.style(
-            //             fontSize: 13,
-            //             fontWeight: FontWeight.w900,
-            //             color: const Color(0xFFE65100),
-            //           ),
-            //         ),
-            //         const Spacer(),
-            //         Text(
-            //           'reports_view_complaint'.tr(),
-            //           style: AppFont.style(
-            //             fontSize: 11,
-            //             fontWeight: FontWeight.w900,
-            //             color: const Color(0xFFE65100),
-            //             letterSpacing: 0.5,
-            //             decoration: TextDecoration.underline,
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            // ],
+            if (complaintNo != null) ...[
+              const SizedBox(height: 16),
+              // Complaint Row
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFFBF2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      complaintNo!,
+                      style: AppFont.style(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFFE65100),
+                      ),
+                    ),
+                    const Spacer(),
+                    SizedBox(
+                      height: 44,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // TODO: add your view complaint report action here
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFFE0B2), // soft orange background
+                          foregroundColor: const Color(0xFFE65100), // text/icon color
+                          elevation: 2,                             // subtle shadow
+                          minimumSize: Size.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          'reports_view_complaint'.tr(),
+                          style: AppFont.style(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFFE65100),
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
             const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
             const SizedBox(height: 16),
@@ -1255,23 +1303,23 @@ class _ReportCard extends StatelessWidget {
           Row(
             children: [
               // Eye / View icon button
-              Expanded(
-                child: _buildIconActionButton(
-                  icon: Icons.download,
-                  iconColor: const Color(0xFF6B7280),
-                  onTap: () {
-                    if (reportId != null) {
-                      if ((type == ReportType.commissioning || type == ReportType.service) &&
-                          onDownloadPdfTap != null) {
-                        onDownloadPdfTap!(reportId!);
-                      } else {
-                        onViewTap?.call(reportId!);
-                      }
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(width: 10),
+              // Expanded(
+              //   child: _buildIconActionButton(
+              //     icon: Icons.download,
+              //     iconColor: const Color(0xFF6B7280),
+              //     onTap: () {
+              //       if (reportId != null) {
+              //         if ((type == ReportType.commissioning || type == ReportType.service) &&
+              //             onDownloadPdfTap != null) {
+              //           onDownloadPdfTap!(reportId!);
+              //         } else {
+              //           onViewTap?.call(reportId!);
+              //         }
+              //       }
+              //     },
+              //   ),
+              // ),
+              // const SizedBox(width: 10),
               // QR Code icon button or Checkmark
               Expanded(
                 child: feedbackSubmitted
@@ -1434,6 +1482,7 @@ class _ReportCard extends StatelessWidget {
                     onPressed: () => Navigator.of(context).pop(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF1565C0),
+                      minimumSize: Size.zero,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

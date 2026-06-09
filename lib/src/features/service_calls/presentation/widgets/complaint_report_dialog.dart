@@ -49,90 +49,110 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
             // Header
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1F8FF),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(
-                    Icons.shield_outlined,
-                    color: Color(0xFF1565C0),
-                    size: 20,
-                  ),
+                const Icon(
+                  Icons.description_outlined,
+                  color: Color(0xFF1565C0),
+                  size: 20,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Text(
                   'complaint_report_title'.tr(),
                   style: AppFont.style(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF0D121F),
                   ),
                 ),
                 const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.close, color: Color(0xFFA5ABB7)),
-                  onPressed: () => Navigator.pop(context),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: const Icon(Icons.close, color: Color(0xFFA5ABB7), size: 20),
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+            const SizedBox(height: 24),
             
-            BlocBuilder<ServiceCallDetailsBloc, ServiceCallDetailsState>(
-              bloc: _bloc,
-              builder: (context, state) {
-                if (state is ServiceCallDetailsLoadingState || state is ServiceCallDetailsInitialState) {
-                  return _buildShimmer();
-                } else if (state is ServiceCallDetailsFailureState) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 32),
-                      child: Text(
-                        state.message,
-                        style: AppFont.style(color: Colors.red),
-                        textAlign: TextAlign.center,
+            Flexible(
+              child: BlocBuilder<ServiceCallDetailsBloc, ServiceCallDetailsState>(
+                bloc: _bloc,
+                builder: (context, state) {
+                  if (state is ServiceCallDetailsLoadingState || state is ServiceCallDetailsInitialState) {
+                    return SingleChildScrollView(child: _buildShimmer());
+                  } else if (state is ServiceCallDetailsFailureState) {
+                    return SingleChildScrollView(
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 32),
+                          child: Text(
+                            state.message,
+                            style: AppFont.style(color: Colors.red),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ),
-                    ),
-                  );
-                } else if (state is ServiceCallDetailsSuccessState) {
-                  final data = state.data.data;
-                  final dateStr = data.createdAt.isNotEmpty
-                      ? DateFormat('dd MMM yyyy').format(DateTime.parse(data.createdAt).toLocal())
-                      : '-';
+                    );
+                  } else if (state is ServiceCallDetailsSuccessState) {
+                    final data = state.data.data;
+                    final dateStr = data.createdAt.isNotEmpty
+                        ? DateFormat('M/d/yyyy, h:mm:ss a').format(DateTime.parse(data.createdAt).toLocal())
+                        : '-';
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    return SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Info Grid
+                      // Complaint Number
+                      _buildInfoItem('complaint_report_no_label'.tr(), data.complaintNumber, isLarge: true),
+                      const SizedBox(height: 16),
+                      const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                      const SizedBox(height: 16),
+                      // Grid
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: _buildInfoItem(
-                              'complaint_report_no_label'.tr(),
-                              data.complaintNumber,
-                            ),
+                            child: _buildInfoItem('complaint_report_client_label'.tr(), data.customerName),
                           ),
                           Expanded(
-                            child: _buildInfoItem(
-                              'complaint_report_received_label'.tr(),
-                              dateStr,
-                            ),
+                            child: _buildInfoItem('complaint_report_received_label'.tr(), dateStr),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: _buildInfoItem('complaint_report_site_label'.tr(), data.siteName),
+                          ),
+                          Expanded(
+                            child: _buildInfoItem('Contact Person', data.name),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: _buildInfoItem('Equipment Model', data.equipmentModelName),
+                          ),
+                          Expanded(
+                            child: _buildInfoItem('Contact Number', data.contactNumber),
                           ),
                         ],
                       ),
                       const SizedBox(height: 24),
-                      _buildInfoItem('complaint_report_client_label'.tr(), data.customerName),
-                      const SizedBox(height: 24),
-                      _buildInfoItem('complaint_report_site_label'.tr(), data.siteName),
-                      const SizedBox(height: 32),
                       // Issue Details
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF8F9FB),
-                          borderRadius: BorderRadius.circular(16),
+                          color: const Color(0xFFFAFBFD),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFFF1F2F6)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,61 +169,65 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                             Text(
                               data.complaintDetails.isNotEmpty ? data.complaintDetails : '-',
                               style: AppFont.style(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w800,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
                                 color: const Color(0xFF424B5C),
-                              ),
+                                height: 1.5,
+                              ).copyWith(fontStyle: FontStyle.italic),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 32),
-                      // Download Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0D47A1),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // const Icon(Icons.file_download_outlined, size: 20),
-                              // const SizedBox(width: 10),
-                              Text(
-                                'complaint_report_btn_download'.tr(),
-                                style: AppFont.style(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
+                      if (data.attachments.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Attachments',
+                          style: AppFont.style(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFFA5ABB7),
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 12),
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 1.5,
+                          ),
+                          itemCount: data.attachments.length,
+                          itemBuilder: (context, index) {
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                data.attachments[index].toString(),
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(color: Colors.grey[300]),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ],
-                  );
-                }
+                  ),
+                );
+              }
                 return const SizedBox();
               },
             ),
+          ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoItem(String label, String value) {
+  Widget _buildInfoItem(String label, String value, {bool isLarge = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -219,7 +243,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
         Text(
           value,
           style: AppFont.style(
-            fontSize: 16,
+            fontSize: isLarge ? 22 : 13,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF0D121F),
           ),

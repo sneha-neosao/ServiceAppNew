@@ -58,6 +58,192 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
     super.dispose();
   }
 
+  void _showMultiSelectTechnicianBottomSheet(List<Technician> allTechnicians) {
+    List<Technician> tempSelectedTechs = List.from(_selectedTechnicians);
+    String searchQuery = '';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final filteredList = allTechnicians.where((t) {
+              return t.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
+                     t.code.toLowerCase().contains(searchQuery.toLowerCase()) ||
+                     t.id.toLowerCase().contains(searchQuery.toLowerCase());
+            }).toList();
+
+            return SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                ),
+                child: Container(
+                  height: MediaQuery.of(ctx).size.height * 0.6,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  child: Column(
+                    children: [
+                      // Search Field
+                      TextField(
+                        onChanged: (val) {
+                          setModalState(() {
+                            searchQuery = val;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Search here...',
+                          prefixIcon: const Icon(Icons.search, color: Color(0xFFA5ABB7), size: 20),
+                          hintStyle: AppFont.style(
+                            fontSize: 14,
+                            color: const Color(0xFFA5ABB7),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFF1565C0)),
+                          ),
+                        ),
+                        style: AppFont.style(
+                          fontSize: 14,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // List View
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: filteredList.length,
+                          itemBuilder: (context, index) {
+                            final item = filteredList[index];
+                            final isSelected = tempSelectedTechs.any((tech) => tech.id == item.id);
+
+                            return InkWell(
+                              onTap: () {
+                                setModalState(() {
+                                  if (isSelected) {
+                                    tempSelectedTechs.removeWhere((tech) => tech.id == item.id);
+                                  } else {
+                                    tempSelectedTechs.add(item);
+                                  }
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: isSelected ? const Border(
+                                    left: BorderSide(color: Color(0xFF1565C0), width: 4),
+                                  ) : null,
+                                  color: isSelected ? const Color(0xFFF8F9FB) : Colors.white,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 12,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            item.name,
+                                            style: AppFont.style(
+                                              fontSize: 16,
+                                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                                              color: isSelected ? const Color(0xFF1565C0) : const Color(0xFF0D121F),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'TECH ID: ${item.code.isNotEmpty ? item.code : item.id}',
+                                            style: AppFont.style(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w700,
+                                              color: const Color(0xFFA5ABB7),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // Checkbox
+                                    Container(
+                                      width: 24,
+                                      height: 24,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                          color: isSelected ? const Color(0xFF1565C0) : const Color(0xFFE5E7EB),
+                                        ),
+                                        color: isSelected ? const Color(0xFF1565C0) : Colors.white,
+                                      ),
+                                      child: isSelected
+                                          ? const Icon(Icons.check, size: 16, color: Colors.white)
+                                          : null,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            setState(() {
+                              _selectedTechnicians = List.from(tempSelectedTechs);
+                            });
+                            Navigator.pop(ctx);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1565C0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            minimumSize: const Size(0, 36),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          ),
+                          child: Text(
+                            'DONE',
+                            style: AppFont.style(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -175,60 +361,43 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                         technicians = state.data.data;
                       }
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (_selectedTechnicians.isNotEmpty) ...[
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: _selectedTechnicians.map((tech) {
-                                return Chip(
-                                  label: Text(
-                                    tech.name,
-                                    style: AppFont.style(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  backgroundColor: const Color(0xFF1565C0),
-                                  deleteIcon: const Icon(
-                                    Icons.close,
-                                    size: 16,
-                                    color: Colors.white,
-                                  ),
-                                  deleteIconColor: Colors.white,
-                                  onDeleted: () {
-                                    setState(() {
-                                      _selectedTechnicians.remove(tech);
-                                    });
-                                  },
-                                );
-                              }).toList(),
-                            ),
-                            const SizedBox(height: 12),
-                          ],
-                          SearchableDropdown<Technician>(
-                            items: technicians
-                                .where(
-                                  (tech) => !_selectedTechnicians.any(
-                                    (selected) => selected.id == tech.id,
-                                  ),
-                                )
-                                .toList(),
-                            value: null,
-                            hintText: 'assign_tech_dialog_choose_hint'.tr(),
-                            itemAsString: (tech) => tech.name,
-                            onChanged: (tech) {
-                              if (tech != null) {
-                                setState(() {
-                                  _selectedTechnicians.add(tech);
-                                });
-                              }
-                            },
+                      int selectedCount = _selectedTechnicians.length;
+
+                      return GestureDetector(
+                        onTap: () {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          _showMultiSelectTechnicianBottomSheet(technicians);
+                        },
+                        child: Container(
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFE5E7EB)),
                           ),
-                        ],
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  selectedCount == 0
+                                      ? 'select_technician'.tr()
+                                      : '$selectedCount Selected',
+                                  style: AppFont.style(
+                                    fontSize: 16,
+                                    fontWeight: selectedCount == 0
+                                        ? FontWeight.w700
+                                        : FontWeight.w900,
+                                    color: selectedCount == 0
+                                        ? const Color(0xFFA5ABB7)
+                                        : const Color(0xFF0D121F),
+                                  ),
+                                ),
+                              ),
+                              const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7), size: 18),
+                            ],
+                          ),
+                        ),
                       );
                     },
                   ),

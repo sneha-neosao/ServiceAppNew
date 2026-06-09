@@ -308,7 +308,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                             }
                           }
 
-                          return SearchableDropdown<Site>(
+                          Widget siteDropdown = SearchableDropdown<Site>(
                             items: sites,
                             value: initialValue,
                             hintText: 'service_calls_filter_select_site'.tr(),
@@ -316,11 +316,6 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                             isLoading: state is SitesLoadingState,
                             isFilter: true,
                             filterFn: (item, filter) => true,
-                            // icon: const Icon(
-                            //   Icons.location_on_outlined,
-                            //   color: Color(0xFFA5ABB7),
-                            //   size: 18,
-                            // ),
                             onSearchChanged: _selectedCustomerId != null
                                 ? (v) => _sitesBloc.add(
                                     SitesGetEvent(
@@ -349,6 +344,17 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                               _fetchServiceCalls(isRefresh: true);
                             },
                           );
+
+                          if (_selectedCustomerId == null) {
+                            return IgnorePointer(
+                              child: Opacity(
+                                opacity: 0.5,
+                                child: siteDropdown,
+                              ),
+                            );
+                          }
+
+                          return siteDropdown;
                         },
                       ),
                     ),
@@ -381,23 +387,27 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: const Color(0xFFE5E7EB),
-                        width: 1,
-                      ),
+                      color: const Color(0xFFF3F8FF),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Center(
-                      child: Text(
-                        'service_calls_clear_filters'.tr(),
-                        style: AppFont.style(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          color: const Color(0xFFA5ABB7),
-                          letterSpacing: 0.5,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.refresh,
+                          color: Color(0xFF1565C0),
+                          size: 20,
                         ),
-                      ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'service_calls_clear_filters'.tr(),
+                          style: AppFont.style(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF1565C0),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -575,12 +585,12 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
       ),
       child: Row(
         children: [
-          const Icon(
-            Icons.assignment_outlined,
-            color: Color(0xFFA5ABB7),
-            size: 18,
-          ),
-          const SizedBox(width: 8),
+          // const Icon(
+          //   Icons.assignment_outlined,
+          //   color: Color(0xFFA5ABB7),
+          //   size: 18,
+          // ),
+          // const SizedBox(width: 8),
           Expanded(
             child: TextField(
               controller: _complaintController,
@@ -634,12 +644,12 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
         ),
         child: Row(
           children: [
-            const Icon(
-              Icons.calendar_today_outlined,
-              color: Color(0xFFA5ABB7),
-              size: 18,
-            ),
-            const SizedBox(width: 8),
+            // const Icon(
+            //   Icons.calendar_today_outlined,
+            //   color: Color(0xFFA5ABB7),
+            //   size: 18,
+            // ),
+            // const SizedBox(width: 8),
             Expanded(
               child: Text(
                 _selectedDate != null

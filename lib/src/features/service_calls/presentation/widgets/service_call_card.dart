@@ -144,10 +144,12 @@ class ServiceCallCard extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.person_outline,
+                    Icon(
+                      assignedTo != null && assignedTo!.contains(',')
+                          ? Icons.people_outline   // multiple technicians
+                          : Icons.person_outline,  // single technician
                       size: 16,
-                      color: Color(0xFF1565C0),
+                      color: const Color(0xFF1565C0),
                     ),
                     const SizedBox(width: 8),
                     Expanded(

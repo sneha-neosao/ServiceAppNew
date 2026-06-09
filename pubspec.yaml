@@ -64,6 +64,7 @@ dependencies:
   package_info_plus: ^8.3.0
   signature: ^6.3.0
   speech_to_text: ^7.4.0
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

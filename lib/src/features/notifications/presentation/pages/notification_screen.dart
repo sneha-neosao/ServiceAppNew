@@ -2,9 +2,43 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 
-class NotificationScreen extends StatelessWidget {
+
+class NotificationScreen extends StatefulWidget {
   final VoidCallback onBack;
   const NotificationScreen({super.key, required this.onBack});
+
+  @override
+  State<NotificationScreen> createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends State<NotificationScreen> {
+  DateTime? _selectedDate;
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFF1565C0), // header background color
+              onPrimary: Colors.white, // header text color
+              onSurface: Colors.black, // body text color
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +73,7 @@ class NotificationScreen extends StatelessWidget {
                         size: 20,
                         color: Color(0xFF5C616E),
                       ),
-                      onPressed: onBack,
+                      onPressed: widget.onBack,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -100,8 +134,11 @@ class NotificationScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   _buildFilterField(
-                    'notif_filter_date'.tr(),
+                    _selectedDate == null 
+                        ? 'notif_filter_date'.tr() 
+                        : DateFormat('dd MMM yyyy').format(_selectedDate!),
                     Icons.calendar_today_outlined,
+                    onTap: () => _selectDate(context),
                   ),
                 ],
               ),
@@ -176,8 +213,8 @@ class NotificationScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: const Color(0xFFA5ABB7)),
-          const SizedBox(width: 12),
+          // Icon(icon, size: 20, color: const Color(0xFFA5ABB7)),
+          // const SizedBox(width: 12),
           Expanded(
             child: Text(
               label,
@@ -194,28 +231,36 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFilterField(String label, IconData icon) {
-    return Container(
-      height: 48,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FB),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: const Color(0xFFA5ABB7)),
-          const SizedBox(width: 12),
-          Text(
-            label,
-            style: AppFont.style(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFFA5ABB7),
+  Widget _buildFilterField(String label, IconData icon, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8F9FB),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFF1F2F6)),
+        ),
+        child: Row(
+          children: [
+            // Icon(icon, size: 20, color: const Color(0xFFA5ABB7)),
+            // const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: AppFont.style(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: _selectedDate == null 
+                      ? const Color(0xFFA5ABB7)
+                      : const Color(0xFF424B5C),
+                ),
+              ),
             ),
-          ),
-        ],
+            const Icon(Icons.calendar_month_outlined, color: Color(0xFFA5ABB7)),
+          ],
+        ),
       ),
     );
   }
