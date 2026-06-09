@@ -110,9 +110,9 @@ class DeleteJobDialog extends StatelessWidget {
               child: TextButton(
                 onPressed: () => Navigator.pop(context),
                 style: TextButton.styleFrom(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: Color(0xFFEF0F0F0),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
                 child: Text(
