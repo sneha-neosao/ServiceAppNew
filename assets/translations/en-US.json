@@ -223,8 +223,8 @@
   "commissioning_add": "Add",
   "commissioning_select_warranty_period_label": "Select Warranty Period",
   "commissioning_select_period": "Select Period",
-  "commissioning_agenda_title": "Agenda / Purpose of Visit :",
-  "commissioning_agenda_hint": "Enter the main purpose of this visit...",
+  "commissioning_agenda_title": "Agenda / Purpose Of Visit :",
+  "commissioning_agenda_hint": "Enter Agenda / Purpose Of Visit ",
   "1_year": "1 Year",
   "2_year": "2 Year",
   "3_year": "3 Year",
@@ -350,5 +350,6 @@
   "commissioning_step_4": "Step 4: Assign Technicians",
   "select_technician": "Select Technician",
   "no_technician_assigned": "No technicians assigned",
-  "name_of_equipment": "Equipment: "
+  "name_of_equipment": "Equipment: ",
+  "add": "Add"
 }

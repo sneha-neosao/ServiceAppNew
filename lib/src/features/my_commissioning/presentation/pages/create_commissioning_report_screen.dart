@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:signature/signature.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_step1_bloc/commissioning_step1_bloc.dart';
 import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
@@ -188,8 +190,11 @@ class _CreateCommissioningReportScreenState
   final _technicianRemarksController = TextEditingController();
   final _customerRemarksController = TextEditingController();
   final _customerRepNameController = TextEditingController();
+  final _technicianNameController = TextEditingController();
   String? _selectedTechnicianRepId;
   String? _autofilledTechRepName;
+  String? _loggedInTechnicianId;
+  String? _loggedInTechnicianName;
   List<AssignedTechnician> _assignedTechniciansList = [];
   List<service_tech_model.AssignedTechnician>
   _assignedServiceCallTechniciansList = [];
@@ -311,21 +316,13 @@ class _CreateCommissioningReportScreenState
     }
 
     if (source != 'LPM')
-      _pumpFlowLPMController.text = lpm
-          .toStringAsFixed(2)
-          .replaceAll(RegExp(r'\.00$'), '');
+      _pumpFlowLPMController.text = lpm.round().toString();
     if (source != 'LPS')
-      _pumpFlowLPSController.text = lps
-          .toStringAsFixed(2)
-          .replaceAll(RegExp(r'\.00$'), '');
+      _pumpFlowLPSController.text = lps.round().toString();
     if (source != 'M3HR')
-      _pumpFlowM3HRController.text = m3hr
-          .toStringAsFixed(2)
-          .replaceAll(RegExp(r'\.00$'), '');
+      _pumpFlowM3HRController.text = m3hr.round().toString();
     if (source != 'USGPM')
-      _pumpFlowUSGPMController.text = usgpm
-          .toStringAsFixed(2)
-          .replaceAll(RegExp(r'\.00$'), '');
+      _pumpFlowUSGPMController.text = usgpm.round().toString();
 
     _isAutoCalculatingFlow = false;
   }
@@ -354,24 +351,34 @@ class _CreateCommissioningReportScreenState
       kw = value;
       hp = kw / 0.746;
       if (source != 'HP')
-        _ratingHPController.text = hp
-            .toStringAsFixed(2)
-            .replaceAll(RegExp(r'\.00$'), '');
+        _ratingHPController.text = hp.round().toString();
     } else {
       hp = value;
       kw = hp * 0.746;
       if (source != 'KW')
-        _ratingKWController.text = kw
-            .toStringAsFixed(2)
-            .replaceAll(RegExp(r'\.00$'), '');
+        _ratingKWController.text = kw.round().toString();
     }
 
     _isAutoCalculatingRating = false;
   }
 
+  Future<void> _fetchLoggedInTechnician() async {
+    final session = await SessionManager.getUserSession();
+    if (session?.technician != null) {
+      if (mounted) {
+        setState(() {
+          _loggedInTechnicianId = session!.technician!.id;
+          _loggedInTechnicianName = session!.technician!.name;
+          _technicianNameController.text = session!.technician!.name;
+        });
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _fetchLoggedInTechnician();
     _setupAutoCalculateListeners();
     _submitStep1Bloc = getIt<CommissioningStep1Bloc>();
     _submitStep2Bloc = getIt<CommissioningStep2Bloc>();
@@ -451,6 +458,7 @@ class _CreateCommissioningReportScreenState
     _technicianRemarksController.dispose();
     _customerRemarksController.dispose();
     _customerRepNameController.dispose();
+    _technicianNameController.dispose();
     _agendaController.dispose();
     _pumpMakeController.dispose();
     _pumpModelController.dispose();
@@ -584,112 +592,112 @@ class _CreateCommissioningReportScreenState
               controlPanelMake: _controlPanelMakeController.text,
               panelSerialModel: _panelSerialModelController.text,
             );
-      if (!_isTechnicalDetailsNA) {
-        if (_pumpMakeController.text.trim().isEmpty) {
-          appSnackBar(
-            context,
-            const Color(0xFFF44336),
-            'val_enter_pump_make'.tr(),
-          );
-          return;
-        }
-        if (_pumpModelController.text.trim().isEmpty) {
-          appSnackBar(
-            context,
-            const Color(0xFFF44336),
-            'val_enter_pump_model'.tr(),
-          );
-          return;
-        }
-        if (_pumpSerialNumberController.text.trim().isEmpty) {
-          appSnackBar(
-            context,
-            const Color(0xFFF44336),
-            'val_enter_pump_serial'.tr(),
-          );
-          return;
-        }
-        if (_pumpFlowLPMController.text.trim().isEmpty) {
-          appSnackBar(
-            context,
-            const Color(0xFFF44336),
-            'val_enter_flow_lpm'.tr(),
-          );
-          return;
-        }
-        if (_pumpFlowM3HRController.text.trim().isEmpty) {
-          appSnackBar(
-            context,
-            const Color(0xFFF44336),
-            'val_enter_flow_m3hr'.tr(),
-          );
-          return;
-        }
-        if (_pumpFlowLPSController.text.trim().isEmpty) {
-          appSnackBar(
-            context,
-            const Color(0xFFF44336),
-            'val_enter_flow_lps'.tr(),
-          );
-          return;
-        }
-        if (_pumpFlowUSGPMController.text.trim().isEmpty) {
-          appSnackBar(
-            context,
-            const Color(0xFFF44336),
-            'val_enter_flow_usgpm'.tr(),
-          );
-          return;
-        }
-        if (_pumpHeadMTRController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_head'.tr());
-          return;
-        }
-        if (_driverMakeController.text.trim().isEmpty) {
-          appSnackBar(
-            context,
-            const Color(0xFFF44336),
-            'val_enter_driver_make'.tr(),
-          );
-          return;
-        }
-        if (_driverSerialNumberController.text.trim().isEmpty) {
-          appSnackBar(
-            context,
-            const Color(0xFFF44336),
-            'val_enter_driver_serial'.tr(),
-          );
-          return;
-        }
-        if (_ratingKWController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_kw'.tr());
-          return;
-        }
-        if (_ratingHPController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_hp'.tr());
-          return;
-        }
-        if (_rpmController.text.trim().isEmpty) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_enter_rpm'.tr());
-          return;
-        }
-        if (_controlPanelMakeController.text.trim().isEmpty) {
-          appSnackBar(
-            context,
-            const Color(0xFFF44336),
-            'val_enter_panel_make'.tr(),
-          );
-          return;
-        }
-        if (_panelSerialModelController.text.trim().isEmpty) {
-          appSnackBar(
-            context,
-            const Color(0xFFF44336),
-            'val_enter_panel_serial'.tr(),
-          );
-          return;
-        }
-      }
+      // if (!_isTechnicalDetailsNA) {
+      //   if (_pumpMakeController.text.trim().isEmpty) {
+      //     appSnackBar(
+      //       context,
+      //       const Color(0xFFF44336),
+      //       'val_enter_pump_make'.tr(),
+      //     );
+      //     return;
+      //   }
+      //   if (_pumpModelController.text.trim().isEmpty) {
+      //     appSnackBar(
+      //       context,
+      //       const Color(0xFFF44336),
+      //       'val_enter_pump_model'.tr(),
+      //     );
+      //     return;
+      //   }
+      //   if (_pumpSerialNumberController.text.trim().isEmpty) {
+      //     appSnackBar(
+      //       context,
+      //       const Color(0xFFF44336),
+      //       'val_enter_pump_serial'.tr(),
+      //     );
+      //     return;
+      //   }
+      //   if (_pumpFlowLPMController.text.trim().isEmpty) {
+      //     appSnackBar(
+      //       context,
+      //       const Color(0xFFF44336),
+      //       'val_enter_flow_lpm'.tr(),
+      //     );
+      //     return;
+      //   }
+      //   if (_pumpFlowM3HRController.text.trim().isEmpty) {
+      //     appSnackBar(
+      //       context,
+      //       const Color(0xFFF44336),
+      //       'val_enter_flow_m3hr'.tr(),
+      //     );
+      //     return;
+      //   }
+      //   if (_pumpFlowLPSController.text.trim().isEmpty) {
+      //     appSnackBar(
+      //       context,
+      //       const Color(0xFFF44336),
+      //       'val_enter_flow_lps'.tr(),
+      //     );
+      //     return;
+      //   }
+      //   if (_pumpFlowUSGPMController.text.trim().isEmpty) {
+      //     appSnackBar(
+      //       context,
+      //       const Color(0xFFF44336),
+      //       'val_enter_flow_usgpm'.tr(),
+      //     );
+      //     return;
+      //   }
+      //   if (_pumpHeadMTRController.text.trim().isEmpty) {
+      //     appSnackBar(context, const Color(0xFFF44336), 'val_enter_head'.tr());
+      //     return;
+      //   }
+      //   if (_driverMakeController.text.trim().isEmpty) {
+      //     appSnackBar(
+      //       context,
+      //       const Color(0xFFF44336),
+      //       'val_enter_driver_make'.tr(),
+      //     );
+      //     return;
+      //   }
+      //   if (_driverSerialNumberController.text.trim().isEmpty) {
+      //     appSnackBar(
+      //       context,
+      //       const Color(0xFFF44336),
+      //       'val_enter_driver_serial'.tr(),
+      //     );
+      //     return;
+      //   }
+      //   if (_ratingKWController.text.trim().isEmpty) {
+      //     appSnackBar(context, const Color(0xFFF44336), 'val_enter_kw'.tr());
+      //     return;
+      //   }
+      //   if (_ratingHPController.text.trim().isEmpty) {
+      //     appSnackBar(context, const Color(0xFFF44336), 'val_enter_hp'.tr());
+      //     return;
+      //   }
+      //   if (_rpmController.text.trim().isEmpty) {
+      //     appSnackBar(context, const Color(0xFFF44336), 'val_enter_rpm'.tr());
+      //     return;
+      //   }
+      //   if (_controlPanelMakeController.text.trim().isEmpty) {
+      //     appSnackBar(
+      //       context,
+      //       const Color(0xFFF44336),
+      //       'val_enter_panel_make'.tr(),
+      //     );
+      //     return;
+      //   }
+      //   if (_panelSerialModelController.text.trim().isEmpty) {
+      //     appSnackBar(
+      //       context,
+      //       const Color(0xFFF44336),
+      //       'val_enter_panel_serial'.tr(),
+      //     );
+      //     return;
+      //   }
+      // }
       if (widget.isServiceReport) {
         if (_submitServiceCallStep3Bloc.state
             is ServiceCallReportStep3LoadingState)
@@ -1170,7 +1178,7 @@ class _CreateCommissioningReportScreenState
             reportId: _commissioningReportId ?? widget.commissioningWorkId,
             technicianRemarks: _technicianRemarksController.text.trim(),
             customerRemarks: _customerRemarksController.text.trim(),
-            technicianRepresentative: _selectedTechnicianRepId ?? '',
+            technicianRepresentative: _loggedInTechnicianId ?? '',
             customerRepresentativeName: _customerRepNameController.text.trim(),
             technicianSignaturePath: techSignaturePath,
             customerSignaturePath: custSignaturePath,
@@ -1179,8 +1187,8 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         // Validation for commissioning flow
-        if (_selectedTechnicianRepId == null ||
-            _selectedTechnicianRepId!.isEmpty) {
+        if (_loggedInTechnicianId == null ||
+            _loggedInTechnicianId!.isEmpty) {
           appSnackBar(
             context,
             const Color(0xFFF44336),
@@ -1231,7 +1239,7 @@ class _CreateCommissioningReportScreenState
                 _commissioningReportId ?? widget.commissioningWorkId,
             technicianRemarks: _technicianRemarksController.text.trim(),
             customerRemarks: _customerRemarksController.text.trim(),
-            technicianRepresentative: _selectedTechnicianRepId ?? '',
+            technicianRepresentative: _loggedInTechnicianId ?? '',
             customerRepresentativeName: _customerRepNameController.text.trim(),
             technicianSignaturePath: _technicianSignatureFile?.path,
             customerSignaturePath: _customerSignatureFile?.path,
@@ -2512,265 +2520,264 @@ class _CreateCommissioningReportScreenState
                                                                                                                               serviceCallStep2State,
                                                                                                                             ) {
                                                                                                                               return BlocBuilder<
-                                                                                                                                ServiceCallReportStep3Bloc,
-                                                                                                                                ServiceCallReportStep3State
+                                                                                                                                  ServiceCallReportStep3Bloc,
+                                                                                                                                  ServiceCallReportStep3State
                                                                                                                               >(
-                                                                                                                                bloc: _submitServiceCallStep3Bloc,
-                                                                                                                                builder:
-                                                                                                                                    (
+                                                                                                                                  bloc: _submitServiceCallStep3Bloc,
+                                                                                                                                  builder:
+                                                                                                                                      (
                                                                                                                                       context,
-                                                                                                                                      serviceCallStep3State,
-                                                                                                                                    ) {
-                                                                                                                                      return BlocBuilder<
+                                                                                                                                      serviceCallStep3State,) {
+                                                                                                                                    return BlocBuilder<
                                                                                                                                         ServiceCallReportStep4Bloc,
                                                                                                                                         ServiceCallReportStep4State
-                                                                                                                                      >(
+                                                                                                                                    >(
                                                                                                                                         bloc: _submitServiceCallStep4Bloc,
                                                                                                                                         builder:
                                                                                                                                             (
-                                                                                                                                              context,
-                                                                                                                                              serviceCallStep4State,
-                                                                                                                                            ) {
+                                                                                                                                            context,
+                                                                                                                                            serviceCallStep4State,) {
+                                                                                                                                          return BlocBuilder<
+                                                                                                                                              ServiceCallReportStep5Bloc,
+                                                                                                                                              ServiceCallReportStep5State
+                                                                                                                                          >(
+                                                                                                                                            bloc: _submitServiceCallStep5Bloc,
+                                                                                                                                            builder:
+                                                                                                                                                (
+                                                                                                                                                context,
+                                                                                                                                                serviceCallStep5State,) {
                                                                                                                                               return BlocBuilder<
-                                                                                                                                                ServiceCallReportStep5Bloc,
-                                                                                                                                                ServiceCallReportStep5State
+                                                                                                                                                  CommissioningStep2Bloc,
+                                                                                                                                                  CommissioningStep2State
                                                                                                                                               >(
-                                                                                                                                                bloc: _submitServiceCallStep5Bloc,
+                                                                                                                                                bloc: _submitStep2Bloc,
                                                                                                                                                 builder:
                                                                                                                                                     (
-                                                                                                                                                      context,
-                                                                                                                                                      serviceCallStep5State,
-                                                                                                                                                    ) {
+                                                                                                                                                    context,
+                                                                                                                                                    submitStep2State,) {
+                                                                                                                                                  return BlocBuilder<
+                                                                                                                                                      CommissioningStep1Bloc,
+                                                                                                                                                      CommissioningStep1State
+                                                                                                                                                  >(
+                                                                                                                                                    bloc: _submitStep1Bloc,
+                                                                                                                                                    builder:
+                                                                                                                                                        (
+                                                                                                                                                        context,
+                                                                                                                                                        submitState,) {
                                                                                                                                                       return BlocBuilder<
-                                                                                                                                                        CommissioningStep2Bloc,
-                                                                                                                                                        CommissioningStep2State
+                                                                                                                                                          CommissioningStep3Bloc,
+                                                                                                                                                          CommissioningStep3State
                                                                                                                                                       >(
-                                                                                                                                                        bloc: _submitStep2Bloc,
+                                                                                                                                                        bloc: _submitStep3Bloc,
                                                                                                                                                         builder:
                                                                                                                                                             (
-                                                                                                                                                              context,
-                                                                                                                                                              submitStep2State,
-                                                                                                                                                            ) {
+                                                                                                                                                            context,
+                                                                                                                                                            submitStep3State,) {
+                                                                                                                                                          return BlocBuilder<
+                                                                                                                                                              CommissioningStep4Bloc,
+                                                                                                                                                              CommissioningStep4State
+                                                                                                                                                          >(
+                                                                                                                                                            bloc: _submitStep4Bloc,
+                                                                                                                                                            builder:
+                                                                                                                                                                (
+                                                                                                                                                                context,
+                                                                                                                                                                submitStep4State,) {
                                                                                                                                                               return BlocBuilder<
-                                                                                                                                                                CommissioningStep1Bloc,
-                                                                                                                                                                CommissioningStep1State
+                                                                                                                                                                  CommissioningStep5Bloc,
+                                                                                                                                                                  CommissioningStep5State
                                                                                                                                                               >(
-                                                                                                                                                                bloc: _submitStep1Bloc,
+                                                                                                                                                                bloc: _submitStep5Bloc,
                                                                                                                                                                 builder:
                                                                                                                                                                     (
-                                                                                                                                                                      context,
-                                                                                                                                                                      submitState,
-                                                                                                                                                                    ) {
+                                                                                                                                                                    context,
+                                                                                                                                                                    submitStep5State,) {
+                                                                                                                                                                  return BlocBuilder<
+                                                                                                                                                                      CommissioningStep6Bloc,
+                                                                                                                                                                      CommissioningStep6State
+                                                                                                                                                                  >(
+                                                                                                                                                                    bloc: _submitStep6Bloc,
+                                                                                                                                                                    builder:
+                                                                                                                                                                        (
+                                                                                                                                                                        context,
+                                                                                                                                                                        submitStep6State,) {
                                                                                                                                                                       return BlocBuilder<
-                                                                                                                                                                        CommissioningStep3Bloc,
-                                                                                                                                                                        CommissioningStep3State
+                                                                                                                                                                          ServiceCallReportStep6AutoFillBloc,
+                                                                                                                                                                          ServiceCallReportStep6AutoFillState
                                                                                                                                                                       >(
-                                                                                                                                                                        bloc: _submitStep3Bloc,
+                                                                                                                                                                        bloc: _serviceCallStep6AutoFillBloc,
                                                                                                                                                                         builder:
                                                                                                                                                                             (
-                                                                                                                                                                              context,
-                                                                                                                                                                              submitStep3State,
-                                                                                                                                                                            ) {
-                                                                                                                                                                              return BlocBuilder<
-                                                                                                                                                                                CommissioningStep4Bloc,
-                                                                                                                                                                                CommissioningStep4State
-                                                                                                                                                                              >(
-                                                                                                                                                                                bloc: _submitStep4Bloc,
-                                                                                                                                                                                builder:
-                                                                                                                                                                                    (
-                                                                                                                                                                                      context,
-                                                                                                                                                                                      submitStep4State,
-                                                                                                                                                                                    ) {
-                                                                                                                                                                                      return BlocBuilder<
-                                                                                                                                                                                        CommissioningStep5Bloc,
-                                                                                                                                                                                        CommissioningStep5State
-                                                                                                                                                                                      >(
-                                                                                                                                                                                        bloc: _submitStep5Bloc,
-                                                                                                                                                                                        builder:
-                                                                                                                                                                                            (
-                                                                                                                                                                                              context,
-                                                                                                                                                                                              submitStep5State,
-                                                                                                                                                                                            ) {
-                                                                                                                                                                                              return BlocBuilder<
-                                                                                                                                                                                                CommissioningStep6Bloc,
-                                                                                                                                                                                                CommissioningStep6State
-                                                                                                                                                                                              >(
-                                                                                                                                                                                                bloc: _submitStep6Bloc,
-                                                                                                                                                                                                builder:
-                                                                                                                                                                                                    (
-                                                                                                                                                                                                      context,
-                                                                                                                                                                                                      submitStep6State,
-                                                                                                                                                                                                    ) {
-                                                                                                                                                                                                      return BlocBuilder<
-                                                                                                                                                                                                        ServiceCallReportStep6AutoFillBloc,
-                                                                                                                                                                                                        ServiceCallReportStep6AutoFillState
-                                                                                                                                                                                                      >(
-                                                                                                                                                                                                        bloc: _serviceCallStep6AutoFillBloc,
-                                                                                                                                                                                                        builder:
-                                                                                                                                                                                                            (
-                                                                                                                                                                                                              context,
-                                                                                                                                                                                                              serviceCallStep6AutoFillState,
-                                                                                                                                                                                                            ) {
-                                                                                                                                                                                                              bool isSubmitting =
-                                                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                                                          1 &&
-                                                                                                                                                                                                                      submitState
-                                                                                                                                                                                                                          is CommissioningStep1LoadingState) ||
-                                                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                                                          1 &&
-                                                                                                                                                                                                                      serviceCallStep1State
-                                                                                                                                                                                                                          is ServiceCallReportStep1LoadingState) ||
-                                                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                                                          2 &&
-                                                                                                                                                                                                                      submitStep2State
-                                                                                                                                                                                                                          is CommissioningStep2LoadingState) ||
-                                                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                                                          2 &&
-                                                                                                                                                                                                                      serviceCallStep2State
-                                                                                                                                                                                                                          is ServiceCallReportStep2LoadingState) ||
-                                                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                                                          3 &&
-                                                                                                                                                                                                                      submitStep3State
-                                                                                                                                                                                                                          is CommissioningStep3LoadingState) ||
-                                                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                                                          3 &&
-                                                                                                                                                                                                                      serviceCallStep3State
-                                                                                                                                                                                                                          is ServiceCallReportStep3LoadingState) ||
-                                                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                                                          4 &&
-                                                                                                                                                                                                                      submitStep4State
-                                                                                                                                                                                                                          is CommissioningStep4LoadingState) ||
-                                                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                                                          4 &&
-                                                                                                                                                                                                                      serviceCallStep4State
-                                                                                                                                                                                                                          is ServiceCallReportStep4LoadingState) ||
-                                                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                                                          5 &&
-                                                                                                                                                                                                                      submitStep5State
-                                                                                                                                                                                                                          is CommissioningStep5LoadingState) ||
-                                                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                                                          5 &&
-                                                                                                                                                                                                                      serviceCallStep5State
-                                                                                                                                                                                                                          is ServiceCallReportStep5LoadingState) ||
-                                                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                                                          6 &&
-                                                                                                                                                                                                                      submitStep6State
-                                                                                                                                                                                                                          is CommissioningStep6LoadingState) ||
-                                                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                                                          6 &&
-                                                                                                                                                                                                                      serviceCallStep6AutoFillState
-                                                                                                                                                                                                                          is ServiceCallReportStep6AutoFillLoadingState);
-                                                                                                                                                                                                              return Container(
-                                                                                                                                                                                                                height: 56,
-                                                                                                                                                                                                                padding: const EdgeInsets.symmetric(
-                                                                                                                                                                                                                  horizontal: 32,
-                                                                                                                                                                                                                ),
-                                                                                                                                                                                                                decoration: BoxDecoration(
-                                                                                                                                                                                                                  color: const Color(
-                                                                                                                                                                                                                    0xFF1565C0,
-                                                                                                                                                                                                                  ),
-                                                                                                                                                                                                                  borderRadius: BorderRadius.circular(
-                                                                                                                                                                                                                    16,
-                                                                                                                                                                                                                  ),
-                                                                                                                                                                                                                  boxShadow: [
-                                                                                                                                                                                                                    BoxShadow(
-                                                                                                                                                                                                                      color:
-                                                                                                                                                                                                                          const Color(
-                                                                                                                                                                                                                            0xFF1565C0,
-                                                                                                                                                                                                                          ).withValues(
-                                                                                                                                                                                                                            alpha: 0.2,
-                                                                                                                                                                                                                          ),
-                                                                                                                                                                                                                      blurRadius: 15,
-                                                                                                                                                                                                                      offset: const Offset(
-                                                                                                                                                                                                                        0,
-                                                                                                                                                                                                                        8,
-                                                                                                                                                                                                                      ),
-                                                                                                                                                                                                                    ),
-                                                                                                                                                                                                                  ],
-                                                                                                                                                                                                                ),
-                                                                                                                                                                                                                child: Row(
-                                                                                                                                                                                                                  mainAxisSize: MainAxisSize.min,
-                                                                                                                                                                                                                  children: [
-                                                                                                                                                                                                                    if (_currentStep ==
-                                                                                                                                                                                                                            6 &&
-                                                                                                                                                                                                                        !isSubmitting)
-                                                                                                                                                                                                                      const Icon(
-                                                                                                                                                                                                                        Icons.check_box_outlined,
-                                                                                                                                                                                                                        size: 20,
-                                                                                                                                                                                                                        color: Colors.white,
-                                                                                                                                                                                                                      )
-                                                                                                                                                                                                                    else
-                                                                                                                                                                                                                      const SizedBox.shrink(),
-                                                                                                                                                                                                                    if (_currentStep ==
-                                                                                                                                                                                                                            6 &&
-                                                                                                                                                                                                                        !isSubmitting)
-                                                                                                                                                                                                                      const SizedBox(
-                                                                                                                                                                                                                        width: 12,
-                                                                                                                                                                                                                      )
-                                                                                                                                                                                                                    else
-                                                                                                                                                                                                                      const SizedBox.shrink(),
-                                                                                                                                                                                                                    if (isSubmitting)
-                                                                                                                                                                                                                      const SizedBox(
-                                                                                                                                                                                                                        width: 20,
-                                                                                                                                                                                                                        height: 20,
-                                                                                                                                                                                                                        child: CircularProgressIndicator(
-                                                                                                                                                                                                                          color: Colors.white,
-                                                                                                                                                                                                                          strokeWidth: 2.5,
-                                                                                                                                                                                                                        ),
-                                                                                                                                                                                                                      )
-                                                                                                                                                                                                                    else
-                                                                                                                                                                                                                      Text(
-                                                                                                                                                                                                                        _currentStep ==
-                                                                                                                                                                                                                                6
-                                                                                                                                                                                                                            ? 'commissioning_submit_report'.tr()
-                                                                                                                                                                                                                            : 'create_report_btn_next'.tr().toUpperCase(),
-                                                                                                                                                                                                                        style: AppFont.style(
-                                                                                                                                                                                                                          fontSize: 14,
-                                                                                                                                                                                                                          fontWeight: FontWeight.w800,
-                                                                                                                                                                                                                          color: Colors.white,
-                                                                                                                                                                                                                        ),
-                                                                                                                                                                                                                      ),
-                                                                                                                                                                                                                    if (_currentStep <
-                                                                                                                                                                                                                            6 &&
-                                                                                                                                                                                                                        !isSubmitting) ...[
-                                                                                                                                                                                                                      const SizedBox(
-                                                                                                                                                                                                                        width: 12,
-                                                                                                                                                                                                                      ),
-                                                                                                                                                                                                                      const Icon(
-                                                                                                                                                                                                                        Icons.arrow_forward,
-                                                                                                                                                                                                                        size: 18,
-                                                                                                                                                                                                                        color: Colors.white,
-                                                                                                                                                                                                                      ),
-                                                                                                                                                                                                                    ],
-                                                                                                                                                                                                                  ],
-                                                                                                                                                                                                                ),
-                                                                                                                                                                                                              );
-                                                                                                                                                                                                            },
-                                                                                                                                                                                                      );
-                                                                                                                                                                                                    },
-                                                                                                                                                                                              );
-                                                                                                                                                                                            },
-                                                                                                                                                                                      );
-                                                                                                                                                                                    },
-                                                                                                                                                                              );
-                                                                                                                                                                            },
+                                                                                                                                                                            context,
+                                                                                                                                                                            serviceCallStep6AutoFillState,) {
+                                                                                                                                                                          bool isSubmitting =
+                                                                                                                                                                              (_currentStep ==
+                                                                                                                                                                                  1 &&
+                                                                                                                                                                                  submitState
+                                                                                                                                                                                  is CommissioningStep1LoadingState) ||
+                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                      1 &&
+                                                                                                                                                                                      serviceCallStep1State
+                                                                                                                                                                                      is ServiceCallReportStep1LoadingState) ||
+                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                      2 &&
+                                                                                                                                                                                      submitStep2State
+                                                                                                                                                                                      is CommissioningStep2LoadingState) ||
+                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                      2 &&
+                                                                                                                                                                                      serviceCallStep2State
+                                                                                                                                                                                      is ServiceCallReportStep2LoadingState) ||
+                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                      3 &&
+                                                                                                                                                                                      submitStep3State
+                                                                                                                                                                                      is CommissioningStep3LoadingState) ||
+                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                      3 &&
+                                                                                                                                                                                      serviceCallStep3State
+                                                                                                                                                                                      is ServiceCallReportStep3LoadingState) ||
+                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                      4 &&
+                                                                                                                                                                                      submitStep4State
+                                                                                                                                                                                      is CommissioningStep4LoadingState) ||
+                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                      4 &&
+                                                                                                                                                                                      serviceCallStep4State
+                                                                                                                                                                                      is ServiceCallReportStep4LoadingState) ||
+                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                      5 &&
+                                                                                                                                                                                      submitStep5State
+                                                                                                                                                                                      is CommissioningStep5LoadingState) ||
+                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                      5 &&
+                                                                                                                                                                                      serviceCallStep5State
+                                                                                                                                                                                      is ServiceCallReportStep5LoadingState) ||
+                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                      6 &&
+                                                                                                                                                                                      submitStep6State
+                                                                                                                                                                                      is CommissioningStep6LoadingState) ||
+                                                                                                                                                                                  (_currentStep ==
+                                                                                                                                                                                      6 &&
+                                                                                                                                                                                      serviceCallStep6AutoFillState
+                                                                                                                                                                                      is ServiceCallReportStep6AutoFillLoadingState);
+                                                                                                                                                                          return Container(
+                                                                                                                                                                            height: 56,
+                                                                                                                                                                            padding: const EdgeInsets
+                                                                                                                                                                                .symmetric(
+                                                                                                                                                                              horizontal: 32,
+                                                                                                                                                                            ),
+                                                                                                                                                                            decoration: BoxDecoration(
+                                                                                                                                                                              color: const Color(
+                                                                                                                                                                                0xFF1565C0,
+                                                                                                                                                                              ),
+                                                                                                                                                                              borderRadius: BorderRadius
+                                                                                                                                                                                  .circular(
+                                                                                                                                                                                16,
+                                                                                                                                                                              ),
+                                                                                                                                                                              boxShadow: [
+                                                                                                                                                                                BoxShadow(
+                                                                                                                                                                                  color:
+                                                                                                                                                                                  const Color(
+                                                                                                                                                                                    0xFF1565C0,
+                                                                                                                                                                                  )
+                                                                                                                                                                                      .withValues(
+                                                                                                                                                                                    alpha: 0.2,
+                                                                                                                                                                                  ),
+                                                                                                                                                                                  blurRadius: 15,
+                                                                                                                                                                                  offset: const Offset(
+                                                                                                                                                                                    0,
+                                                                                                                                                                                    8,
+                                                                                                                                                                                  ),
+                                                                                                                                                                                ),
+                                                                                                                                                                              ],
+                                                                                                                                                                            ),
+                                                                                                                                                                            child: Row(
+                                                                                                                                                                              mainAxisSize: MainAxisSize
+                                                                                                                                                                                  .min,
+                                                                                                                                                                              children: [
+                                                                                                                                                                                if (_currentStep ==
+                                                                                                                                                                                    6 &&
+                                                                                                                                                                                    !isSubmitting)
+                                                                                                                                                                                  const Icon(
+                                                                                                                                                                                    Icons
+                                                                                                                                                                                        .check_box_outlined,
+                                                                                                                                                                                    size: 20,
+                                                                                                                                                                                    color: Colors
+                                                                                                                                                                                        .white,
+                                                                                                                                                                                  )
+                                                                                                                                                                                else
+                                                                                                                                                                                  const SizedBox
+                                                                                                                                                                                      .shrink(),
+                                                                                                                                                                                if (_currentStep ==
+                                                                                                                                                                                    6 &&
+                                                                                                                                                                                    !isSubmitting)
+                                                                                                                                                                                  const SizedBox(
+                                                                                                                                                                                    width: 12,
+                                                                                                                                                                                  )
+                                                                                                                                                                                else
+                                                                                                                                                                                  const SizedBox
+                                                                                                                                                                                      .shrink(),
+                                                                                                                                                                                if (isSubmitting)
+                                                                                                                                                                                  const SizedBox(
+                                                                                                                                                                                    width: 20,
+                                                                                                                                                                                    height: 20,
+                                                                                                                                                                                    child: CircularProgressIndicator(
+                                                                                                                                                                                      color: Colors
+                                                                                                                                                                                          .white,
+                                                                                                                                                                                      strokeWidth: 2.5,
+                                                                                                                                                                                    ),
+                                                                                                                                                                                  )
+                                                                                                                                                                                else
+                                                                                                                                                                                  Text(
+                                                                                                                                                                                    _currentStep ==
+                                                                                                                                                                                        6
+                                                                                                                                                                                        ? 'commissioning_submit_report'
+                                                                                                                                                                                        .tr()
+                                                                                                                                                                                        : 'create_report_btn_next'
+                                                                                                                                                                                        .tr(),
+                                                                                                                                                                                    style: AppFont
+                                                                                                                                                                                        .style(
+                                                                                                                                                                                      fontSize: 14,
+                                                                                                                                                                                      fontWeight: FontWeight
+                                                                                                                                                                                          .w800,
+                                                                                                                                                                                      color: Colors
+                                                                                                                                                                                          .white,
+                                                                                                                                                                                    ),
+                                                                                                                                                                                  ),
+                                                                                                                                                                                if (_currentStep <
+                                                                                                                                                                                    6 &&
+                                                                                                                                                                                    !isSubmitting) ...[
+                                                                                                                                                                                  const SizedBox(
+                                                                                                                                                                                    width: 12,
+                                                                                                                                                                                  ),
+                                                                                                                                                                                  const Icon(
+                                                                                                                                                                                    Icons
+                                                                                                                                                                                        .arrow_forward,
+                                                                                                                                                                                    size: 18,
+                                                                                                                                                                                    color: Colors
+                                                                                                                                                                                        .white,
+                                                                                                                                                                                  ),
+                                                                                                                                                                                ],
+                                                                                                                                                                              ],
+                                                                                                                                                                            ),
+                                                                                                                                                                          );
+                                                                                                                                                                        },
                                                                                                                                                                       );
                                                                                                                                                                     },
+                                                                                                                                                                  );
+                                                                                                                                                                },
                                                                                                                                                               );
                                                                                                                                                             },
+                                                                                                                                                          );
+                                                                                                                                                        },
                                                                                                                                                       );
                                                                                                                                                     },
-                                                                                                                                              );
+                                                                                                                                                  );
+                                                                                                                                                },
+                                                                                                                                              ); // BlocBuilder 2
                                                                                                                                             },
-                                                                                                                                      );
-                                                                                                                                    },
-                                                                                                                              );
-                                                                                                                            },
-                                                                                                                      ); // BlocBuilder 2
-                                                                                                                    },
-                                                                                                              ), // BlocBuilder 1
-                                                                                                        ), // GestureDetector
-                                                                                                      ], // Row children
+                                                                                                                                          ); // BlocBuilder 1
+                                                                                                                                        });
+                                                                                                                                  }); // GestureDetector
+                                                                                                                            });}))], // Row children
                                                                                                     ), // Row
                                                                                                   ), // Container
                                                                                                 ], // Column children
@@ -3042,20 +3049,21 @@ class _CreateCommissioningReportScreenState
                   print(
                     "👤 Service Call Assigned technicians loaded: ${_assignedServiceCallTechniciansList.map((t) => '${t.name} (assignId: ${t.assignId}, technicianId: ${t.technicianId})').toList()}",
                   );
-                  if (_autofilledTechRepName != null &&
-                      _assignedServiceCallTechniciansList.isNotEmpty) {
-                    final matched = _assignedServiceCallTechniciansList
-                        .firstWhere(
-                          (t) =>
-                              t.name.toLowerCase() ==
-                              _autofilledTechRepName!.toLowerCase(),
-                          orElse: () =>
-                              _assignedServiceCallTechniciansList.first,
-                        );
-                    _selectedTechnicianRepId = matched.assignId;
-                    print(
-                      "🎯 _selectedTechnicianRepId set via _autofilledTechRepName to: $_selectedTechnicianRepId",
-                    );
+                  if (_assignedServiceCallTechniciansList.isNotEmpty) {
+                    final matchedSession = _loggedInTechnicianId != null ? _assignedServiceCallTechniciansList.where((t) => t.technicianId == _loggedInTechnicianId).firstOrNull : null;
+                    if (matchedSession != null) {
+                      _selectedTechnicianRepId = matchedSession.assignId;
+                    } else if (_autofilledTechRepName != null) {
+                      final matched = _assignedServiceCallTechniciansList
+                          .firstWhere(
+                            (t) =>
+                                t.name.toLowerCase() ==
+                                _autofilledTechRepName!.toLowerCase(),
+                            orElse: () =>
+                                _assignedServiceCallTechniciansList.first,
+                          );
+                      _selectedTechnicianRepId = matched.assignId;
+                    }
                   }
                 });
               }
@@ -3173,7 +3181,7 @@ class _CreateCommissioningReportScreenState
             borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 width: 48,
@@ -3585,7 +3593,7 @@ class _CreateCommissioningReportScreenState
                         style: AppFont.style(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF8E9BAE),
+                          color: const Color(0xFF5C6672),
                         ),
                       ),
                       const TextSpan(
@@ -3829,14 +3837,14 @@ class _CreateCommissioningReportScreenState
                     color: const Color(0xFF3A4152),
                   ),
                 ),
-                const TextSpan(
-                  text: ' *',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.red,
-                  ),
-                ),
+                // const TextSpan(
+                //   text: ' *',
+                //   style: TextStyle(
+                //     fontSize: 14,
+                //     fontWeight: FontWeight.w900,
+                //     color: Colors.red,
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -3885,14 +3893,14 @@ class _CreateCommissioningReportScreenState
                     color: const Color(0xFF3A4152),
                   ),
                 ),
-                const TextSpan(
-                  text: ' *',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.red,
-                  ),
-                ),
+                // const TextSpan(
+                //   text: ' *',
+                //   style: TextStyle(
+                //     fontSize: 14,
+                //     fontWeight: FontWeight.w900,
+                //     color: Colors.red,
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -4043,7 +4051,7 @@ class _CreateCommissioningReportScreenState
                 children: [
                   TextField(
                     controller: controller,
-                    maxLines: 3,
+                    maxLines: 2,
                     style: AppFont.style(
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
@@ -4065,15 +4073,15 @@ class _CreateCommissioningReportScreenState
                     right: 16,
                     child: SpeechToTextMicButton(controller: controller),
                   ),
-                  const Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: Icon(
-                      Icons.signal_cellular_4_bar,
-                      size: 12,
-                      color: Color(0xFFA5ABB7),
-                    ),
-                  ),
+                  // const Positioned(
+                  //   bottom: 8,
+                  //   right: 8,
+                  //   child: Icon(
+                  //     Icons.signal_cellular_4_bar,
+                  //     size: 12,
+                  //     color: Color(0xFFA5ABB7),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -4541,30 +4549,33 @@ class _CreateCommissioningReportScreenState
             const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
             const SizedBox(width: 8),
             Expanded(
-              child: SearchableDropdown<dynamic>(
-                items: widget.isServiceReport
-                    ? _assignedServiceCallTechniciansList
-                    : _assignedTechniciansList,
-                value: _selectedTechnicianRepId != null
-                    ? (widget.isServiceReport
-                          ? _assignedServiceCallTechniciansList
-                                .where(
-                                  (e) => e.assignId == _selectedTechnicianRepId,
-                                )
-                                .firstOrNull
-                          : _assignedTechniciansList
-                                .where(
-                                  (e) => e.assignId == _selectedTechnicianRepId,
-                                )
-                                .firstOrNull)
-                    : null,
-                hintText: 'commissioning_select_technician'.tr(),
-                itemAsString: (item) => item.name,
-                onChanged: (item) {
-                  setState(() {
-                    _selectedTechnicianRepId = item?.assignId;
-                  });
-                },
+              child: TextField(
+                controller: _technicianNameController,
+                readOnly: true,
+                style: AppFont.style(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF0D121F),
+                ),
+                decoration: InputDecoration(
+                  hintText: 'commissioning_select_technician'.tr(),
+                  hintStyle: AppFont.style(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFFA5ABB7),
+                  ),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFFD8DCE6)),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Color(0xFFD8DCE6),
+                      width: 1.5,
+                    ),
+                  ),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                ),
               ),
             ),
           ],
@@ -4809,44 +4820,73 @@ class _CreateCommissioningReportScreenState
                 ],
               );
             }),
-            // Add Photo tile
+            // Upload Photo tile
             GestureDetector(
-              onTap: () {
-                _showImagePickerOption(context, (file) {
+              onTap: () async {
+                final ImagePicker picker = ImagePicker();
+                final XFile? file = await picker.pickImage(source: ImageSource.gallery);
+                if (file != null) {
                   setState(() {
-                    _workPhotos.add(file);
+                    _workPhotos.add(File(file.path));
                   });
-                });
+                }
               },
-              child: Container(
-                width: 110,
-                height: 110,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: const Color(0xFFCDD0D8),
-                    width: 1.5,
-                    style: BorderStyle.solid,
+              child: CustomPaint(
+                painter: _DashedBorderPainter(color: const Color(0xFFCDD0D8)),
+                child: Container(
+                  width: 110,
+                  height: 110,
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.add, size: 28, color: Color(0xFFA5ABB7)),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Upload',
+                        style: AppFont.style(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFFA5ABB7),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.camera_alt_outlined,
-                      size: 28,
-                      color: Color(0xFFA5ABB7),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'commissioning_add_caps'.tr(),
-                      style: AppFont.style(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFFA5ABB7),
+              ),
+            ),
+            // Capture Photo tile
+            GestureDetector(
+              onTap: () async {
+                final ImagePicker picker = ImagePicker();
+                final XFile? file = await picker.pickImage(source: ImageSource.camera);
+                if (file != null) {
+                  setState(() {
+                    _workPhotos.add(File(file.path));
+                  });
+                }
+              },
+              child: CustomPaint(
+                painter: _DashedBorderPainter(color: const Color(0xFFCDD0D8)),
+                child: Container(
+                  width: 110,
+                  height: 110,
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.camera_alt_outlined, size: 28, color: Color(0xFFA5ABB7)),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Capture',
+                        style: AppFont.style(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFFA5ABB7),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -5297,4 +5337,38 @@ class _CreateCommissioningReportScreenState
       ),
     );
   }
+}
+
+class _DashedBorderPainter extends CustomPainter {
+  final Color color;
+  _DashedBorderPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+      
+    Path path = Path()
+      ..addRRect(RRect.fromRectAndRadius(Rect.fromLTWH(0, 0, size.width, size.height), const Radius.circular(10)));
+      
+    Path dashPath = Path();
+    double dashWidth = 6.0;
+    double dashSpace = 4.0;
+    for (PathMetric pathMetric in path.computeMetrics()) {
+      double distance = 0.0;
+      while (distance < pathMetric.length) {
+        dashPath.addPath(
+          pathMetric.extractPath(distance, distance + dashWidth),
+          Offset.zero,
+        );
+        distance += dashWidth + dashSpace;
+      }
+    }
+    canvas.drawPath(dashPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
