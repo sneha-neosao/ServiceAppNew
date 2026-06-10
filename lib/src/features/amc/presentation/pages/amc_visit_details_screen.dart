@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/features/amc/bloc/amc_visit_reports_bloc/amc_visit_reports_bloc.dart';
 import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
@@ -59,8 +60,31 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
         int reportsCount = widget.reportsCreated;
         bool isLoading = state is AmcVisitReportsLoadingState;
         
+        String visitStatus = 'amc_details_status_progress'.tr();
+        Color badgeBorderColor = const Color(0xFF1565C0);
+        Color badgeTextColor = const Color(0xFF1565C0);
+        Color badgeBgColor = const Color(0xFFC2E2FE);
+
         if (state is AmcVisitReportsSuccessState) {
           reportsCount = state.data.data.reports.length;
+          final statusString = state.data.data.visit.status.toLowerCase();
+          
+          if (statusString == 'pending') {
+            visitStatus = 'Pending';
+            badgeBorderColor = const Color(0xFFE65100);
+            badgeTextColor = const Color(0xFFE65100);
+            badgeBgColor = const Color(0xFFFFE0B2);
+          } else if (statusString == 'completed') {
+            visitStatus = 'Completed';
+            badgeBorderColor = const Color(0xFF1B5E20);
+            badgeTextColor = const Color(0xFF1B5E20);
+            badgeBgColor = const Color(0xFFC8E6C9);
+          } else {
+            visitStatus = state.data.data.visit.status;
+            if (visitStatus.isNotEmpty) {
+              visitStatus = visitStatus[0].toUpperCase() + visitStatus.substring(1);
+            }
+          }
         }
     return Column(
       children: [
@@ -161,10 +185,10 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                         Row(
                           children: [
                             _OutlineBadge(
-                              label: 'amc_details_status_progress'.tr(),
-                              borderColor: const Color(0xFF1565C0),
-                              textColor: const Color(0xFF1565C0),
-                              bgColor: Color(0xFFC2E2FE),
+                              label: visitStatus,
+                              borderColor: badgeBorderColor,
+                              textColor: badgeTextColor,
+                              bgColor: badgeBgColor,
                             ),
                             const SizedBox(width: 10),
                             _OutlineBadge(
@@ -265,6 +289,21 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                   const SizedBox(height: 16),
 
                   ...List.generate(reportsCount, (index) {
+                    bool isSubmitted = false;
+                    String? submittedDateStr;
+                    if (state is AmcVisitReportsSuccessState) {
+                      final report = state.data.data.reports[index];
+                      isSubmitted = report.status.toLowerCase() == 'submitted';
+                      if (report.submittedAt != null && report.submittedAt!.isNotEmpty) {
+                        try {
+                          final dt = DateTime.parse(report.submittedAt!).toLocal();
+                          submittedDateStr = DateFormat('d MMM yyyy').format(dt);
+                        } catch (e) {
+                          submittedDateStr = report.submittedAt;
+                        }
+                      }
+                    }
+
                     return Container(
                       margin: const EdgeInsets.only(
                         left: 20,
@@ -289,12 +328,12 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFE8F5E9), // Light green
+                              color: isSubmitted ? const Color(0xFFE8F5E9) : const Color(0xFFFFF3E0),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Icon(
-                              Icons.check_circle_outline,
-                              color: Color(0xFF00A76F),
+                            child: Icon(
+                              isSubmitted ? Icons.check_circle_outline : Icons.info_outline,
+                              color: isSubmitted ? const Color(0xFF00A76F) : const Color(0xFFFF9800),
                               size: 24,
                             ),
                           ),
@@ -303,28 +342,67 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'amc_details_report_label'.tr(args: ['${index + 1}']),
+                                      style: AppFont.style(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w900,
+                                        color: const Color(0xFF0D121F),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: isSubmitted ? const Color(0xFFE8F5E9) : const Color(0xFFFFE0B2),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        isSubmitted ? 'SUBMITTED' : 'DRAFT',
+                                        style: AppFont.style(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w800,
+                                          color: isSubmitted ? const Color(0xFF00A76F) : const Color(0xFFE65100),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
                                 Text(
-                                  'amc_details_report_label'.tr(args: ['${index + 1}']),
+                                  isSubmitted && submittedDateStr != null
+                                      ? 'Submitted on $submittedDateStr'
+                                      : 'Not submitted',
                                   style: AppFont.style(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w900,
-                                    color: const Color(0xFF0D121F),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFFA5ABB7),
                                   ),
                                 ),
-                                if (state is AmcVisitReportsSuccessState) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    state.data.data.reports[index].customerName,
-                                    style: AppFont.style(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: const Color(0xFFA5ABB7),
-                                    ),
-                                  ),
-                                ],
                               ],
                             ),
                           ),
+                          if (!isSubmitted) ...[
+                            IconButton(
+                              icon: const Icon(Icons.edit_outlined, color: Color(0xFF1565C0), size: 20),
+                              onPressed: () {
+                                // TODO: Edit action
+                              },
+                              constraints: const BoxConstraints(),
+                              padding: const EdgeInsets.all(4),
+                            ),
+                            const SizedBox(width: 8),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, color: Color(0xFFF44336), size: 20),
+                              onPressed: () {
+                                // TODO: Delete action
+                              },
+                              constraints: const BoxConstraints(),
+                              padding: const EdgeInsets.all(4),
+                            ),
+                          ],
                         ],
                       ),
                     );
@@ -337,19 +415,15 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: const Color(0xFFF3F8FF),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: const Color(0xFFE5E7EB),
-                          width: 1.5,
-                        ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Icon(
                             Icons.add,
-                            color: Color(0xFFA5ABB7),
+                            color: Color(0xFF1565C0),
                             size: 18,
                           ),
                           const SizedBox(width: 8),
@@ -358,7 +432,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                             style: AppFont.style(
                               fontSize: 14,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFFA5ABB7),
+                              color: const Color(0xFF1565C0),
                             ),
                           ),
                         ],

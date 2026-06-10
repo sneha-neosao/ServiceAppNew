@@ -280,12 +280,11 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            if (widget.isFilter)
-              const Icon(
-                Icons.keyboard_arrow_down,
-                color: Color(0xFFA5ABB7),
-                size: 18,
-              ),
+            const Icon(
+              Icons.keyboard_arrow_down,
+              color: Color(0xFFA5ABB7),
+              size: 18,
+            ),
           ],
         ),
       ),
