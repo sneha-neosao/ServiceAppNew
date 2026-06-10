@@ -70,15 +70,15 @@ class AmcVisitData {
 
   factory AmcVisitData.fromJson(Map<String, dynamic> json) {
     return AmcVisitData(
-      id: json['id'] ?? '',
-      amcVisitId: json['amc_visit_id'] ?? '',
+      id: json['id'] ?? json['visit_id'] ?? '',
+      amcVisitId: json['amc_visit_id'] ?? json['visit_id'] ?? '',
       visitNumber: json['visit_number'] ?? 0,
       customerName: json['customer_name'] ?? '',
       siteName: json['site_name'] ?? '',
       dealerName: json['dealer_name'] ?? '',
       customerRepresentativeName: json['customer_representative_name'],
       technicianRepresentativeName: json['technician_representative_name'],
-      status: json['status'] ?? '',
+      status: json['status'] ?? json['visit_status'] ?? '',
       submittedAt: json['submitted_at'],
       feedbackSubmitted: json['feedback_submitted'] ?? false,
       qrCodeUrl: json['qr_code_url'],

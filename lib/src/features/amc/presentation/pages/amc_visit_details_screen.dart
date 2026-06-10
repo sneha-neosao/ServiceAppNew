@@ -345,7 +345,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                 Row(
                                   children: [
                                     Text(
-                                      'amc_details_report_label'.tr(args: ['${index + 1}']),
+                                      'Report ${index + 1}',
                                       style: AppFont.style(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w900,
@@ -368,6 +368,25 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                         ),
                                       ),
                                     ),
+                                    if (!isSubmitted) ...[
+                                      const Spacer(),
+                                      IconButton(
+                                        icon: const Icon(Icons.edit_outlined, color: Color(0xFF1565C0), size: 20),
+                                        onPressed: () {
+                                          // TODO: Edit action
+                                        },
+                                        constraints: const BoxConstraints(),
+                                        padding: const EdgeInsets.only(left: 8, right: 4),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete_outline, color: Color(0xFFF44336), size: 20),
+                                        onPressed: () {
+                                          // TODO: Delete action
+                                        },
+                                        constraints: const BoxConstraints(),
+                                        padding: const EdgeInsets.only(left: 4),
+                                      ),
+                                    ],
                                   ],
                                 ),
                                 const SizedBox(height: 4),
@@ -381,31 +400,12 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                     color: const Color(0xFFA5ABB7),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                          if (!isSubmitted) ...[
-                            IconButton(
-                              icon: const Icon(Icons.edit_outlined, color: Color(0xFF1565C0), size: 20),
-                              onPressed: () {
-                                // TODO: Edit action
-                              },
-                              constraints: const BoxConstraints(),
-                              padding: const EdgeInsets.all(4),
-                            ),
-                            const SizedBox(width: 8),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline, color: Color(0xFFF44336), size: 20),
-                              onPressed: () {
-                                // TODO: Delete action
-                              },
-                              constraints: const BoxConstraints(),
-                              padding: const EdgeInsets.all(4),
+                                ],
+                              ),
                             ),
                           ],
-                        ],
-                      ),
-                    );
+                        ),
+                      );
                   }),
 
                   // + Create Another Report (dashed)

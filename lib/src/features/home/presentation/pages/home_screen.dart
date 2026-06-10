@@ -422,7 +422,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 UpcomingAmcCard(
                   upcomingAmcBloc: _upcomingAmcBloc,
                   onScheduleTap: () {
-                    String initialFilter = 'Month';
+                    String initialFilter = 'Today';
                     if (_upcomingAmcBloc.state is UpcomingAmcSuccessState) {
                       final f = (_upcomingAmcBloc.state as UpcomingAmcSuccessState).data.data?.filter;
                       if (f != null && f.isNotEmpty) {

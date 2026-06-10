@@ -314,7 +314,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                               ? DateFormat('d MMM yyyy').format(DateTime.parse(visit.fromDate!).toLocal())
                               : '-',
                           onTap: () => widget.onItemTap(
-                            visit.amcVisitId,
+                            visit.id,
                             visit.customerName,
                             visit.siteName,
                             'Visit ${visit.visitNumber}',
