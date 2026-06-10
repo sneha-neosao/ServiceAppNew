@@ -270,7 +270,13 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
             // ── Filter Section ──────────────────────────────────────────────────
-            _buildFilterSection("Report History"),
+            _buildFilterSection(
+              _selectedTab == 0
+                  ? 'Commissioning Report History'
+                  : _selectedTab == 1
+                      ? 'Service Report History'
+                      : 'AMC Report History',
+            ),
 
             // ── Reports List ────────────────────────────────────────────────────
             Expanded(
@@ -1173,7 +1179,7 @@ class _ReportCard extends StatelessWidget {
                     ),
                     const Spacer(),
                     SizedBox(
-                      height: 44,
+                      height: 32,
                       child: ElevatedButton(
                         onPressed: () {
                           // TODO: add your view complaint report action here
@@ -1183,14 +1189,15 @@ class _ReportCard extends StatelessWidget {
                           foregroundColor: const Color(0xFFE65100), // text/icon color
                           elevation: 2,                             // subtle shadow
                           minimumSize: Size.zero,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         child: Text(
                           'reports_view_complaint'.tr(),
                           style: AppFont.style(
-                            fontSize: 13,
+                            fontSize: 11,
                             fontWeight: FontWeight.w900,
                             color: const Color(0xFFE65100),
                             letterSpacing: 0.5,
