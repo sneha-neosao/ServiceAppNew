@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/customer_usecase.dart';
 import 'package:service_app/src/features/home/domain/usecase/upcoming_amc_usecase.dart';
@@ -890,13 +891,22 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     CommissioningStep6Params params,
   ) async {
     try {
+      final session = await SessionManager.getUserSession();
       final Map<String, dynamic> map = {
         "id": params.id,
         "technician_remarks": params.technicianRemarks,
         "customer_remarks": params.customerRemarks,
         "technician_representative": params.technicianRepresentative,
         "customer_representative_name": params.customerRepresentativeName,
+        "technician_id": session?.technician?.id ?? session?.dealer?.id ?? "",
       };
+
+      print("=== Step 6 API Payload ===");
+      print("Parameters: $map");
+      print("Technician Signature Path: ${params.technicianSignaturePath}");
+      print("Customer Signature Path: ${params.customerSignaturePath}");
+      print("Work Photos Paths: ${params.workPhotosPaths}");
+      print("==========================");
 
       if (params.technicianSignaturePath != null &&
           params.technicianSignaturePath!.isNotEmpty) {
@@ -1665,13 +1675,22 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     String token,
   ) async {
     try {
+      final session = await SessionManager.getUserSession();
       final Map<String, dynamic> map = {
         "id": params.id,
         "technician_remarks": params.technicianRemarks,
         "customer_remarks": params.customerRemarks,
         "technician_representative": params.technicianRepresentative,
         "customer_representative_name": params.customerRepresentativeName,
+        "technician_id": session?.technician?.id ?? session?.dealer?.id ?? "",
       };
+
+      print("=== Service Call Step 6 API Payload ===");
+      print("Parameters: $map");
+      print("Technician Signature Path: ${params.technicianSignaturePath}");
+      print("Customer Signature Path: ${params.customerSignaturePath}");
+      print("Work Photos Paths: ${params.workPhotosPaths}");
+      print("==========================");
 
       if (params.technicianSignaturePath != null &&
           params.technicianSignaturePath!.isNotEmpty) {

@@ -372,6 +372,14 @@ class _CreateCommissioningReportScreenState
           _technicianNameController.text = session!.technician!.name;
         });
       }
+    } else if (session?.dealer != null) {
+      if (mounted) {
+        setState(() {
+          _loggedInTechnicianId = session!.dealer!.id;
+          _loggedInTechnicianName = session!.dealer!.name;
+          _technicianNameController.text = session!.dealer!.name;
+        });
+      }
     }
   }
 
@@ -1178,7 +1186,7 @@ class _CreateCommissioningReportScreenState
             reportId: _commissioningReportId ?? widget.commissioningWorkId,
             technicianRemarks: _technicianRemarksController.text.trim(),
             customerRemarks: _customerRemarksController.text.trim(),
-            technicianRepresentative: _loggedInTechnicianId ?? '',
+            technicianRepresentative: _selectedTechnicianRepId ?? '',
             customerRepresentativeName: _customerRepNameController.text.trim(),
             technicianSignaturePath: techSignaturePath,
             customerSignaturePath: custSignaturePath,
@@ -1187,8 +1195,8 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         // Validation for commissioning flow
-        if (_loggedInTechnicianId == null ||
-            _loggedInTechnicianId!.isEmpty) {
+        if (_selectedTechnicianRepId == null ||
+            _selectedTechnicianRepId!.isEmpty) {
           appSnackBar(
             context,
             const Color(0xFFF44336),
@@ -1239,7 +1247,7 @@ class _CreateCommissioningReportScreenState
                 _commissioningReportId ?? widget.commissioningWorkId,
             technicianRemarks: _technicianRemarksController.text.trim(),
             customerRemarks: _customerRemarksController.text.trim(),
-            technicianRepresentative: _loggedInTechnicianId ?? '',
+            technicianRepresentative: _selectedTechnicianRepId ?? '',
             customerRepresentativeName: _customerRepNameController.text.trim(),
             technicianSignaturePath: _technicianSignatureFile?.path,
             customerSignaturePath: _customerSignatureFile?.path,
@@ -1356,7 +1364,11 @@ class _CreateCommissioningReportScreenState
                   children: [
                     IconButton(
                       icon: const Icon(Icons.close, color: Color(0xFFA5ABB7)),
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: ()
+                      {
+                        Navigator.of(context).pop();
+                        widget.onBack();
+                      },
                     ),
                   ],
                 ),
@@ -1374,7 +1386,8 @@ class _CreateCommissioningReportScreenState
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'create_report_success_title'.tr(),
+                  widget.isServiceReport ? 'Service Call Report Feedback' : 'Commissioning Work Report Feedback',
+                  textAlign: TextAlign.center,
                   style: AppFont.style(
                     fontSize: 22,
                     fontWeight: FontWeight.w900,
@@ -1382,15 +1395,15 @@ class _CreateCommissioningReportScreenState
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'create_report_success_subtitle'.tr(),
-                  style: AppFont.style(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                // Text(
+                //   'create_report_success_subtitle'.tr(),
+                //   style: AppFont.style(
+                //     fontSize: 14,
+                //     fontWeight: FontWeight.w800,
+                //     color: const Color(0xFFA5ABB7),
+                //   ),
+                // ),
+                // const SizedBox(height: 16),
                 const Divider(
                   height: 1,
                   thickness: 1,
@@ -1419,39 +1432,40 @@ class _CreateCommissioningReportScreenState
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'create_report_scan_feedback'.tr(),
+                  'Scan for Customer Feedback',
+                  textAlign: TextAlign.center,
                   style: AppFont.style(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFFA5ABB7),
                   ),
                 ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      widget.onBack();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1565C0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'create_report_btn_done'.tr(),
-                      style: AppFont.style(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
+                // const SizedBox(height: 32),
+                // SizedBox(
+                //   width: double.infinity,
+                //   height: 56,
+                //   child: ElevatedButton(
+                //     onPressed: () {
+                //       Navigator.of(context).pop();
+                //       widget.onBack();
+                //     },
+                //     style: ElevatedButton.styleFrom(
+                //       backgroundColor: const Color(0xFF1565C0),
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(16),
+                //       ),
+                //       elevation: 0,
+                //     ),
+                //     child: Text(
+                //       'create_report_btn_done'.tr(),
+                //       style: AppFont.style(
+                //         fontSize: 16,
+                //         fontWeight: FontWeight.w800,
+                //         color: Colors.white,
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -3092,18 +3106,22 @@ class _CreateCommissioningReportScreenState
                   print(
                     "👤 Assigned technicians loaded: ${_assignedTechniciansList.map((t) => '${t.name} (assignId: ${t.assignId}, technicianId: ${t.technicianId})').toList()}",
                   );
-                  if (_autofilledTechRepName != null &&
-                      _assignedTechniciansList.isNotEmpty) {
-                    final matched = _assignedTechniciansList.firstWhere(
-                      (t) =>
-                          t.name.toLowerCase() ==
-                          _autofilledTechRepName!.toLowerCase(),
-                      orElse: () => _assignedTechniciansList.first,
-                    );
-                    _selectedTechnicianRepId = matched.assignId;
-                    print(
-                      "🎯 _selectedTechnicianRepId set via _autofilledTechRepName to: $_selectedTechnicianRepId",
-                    );
+                  if (_assignedTechniciansList.isNotEmpty) {
+                    final matchedSession = _loggedInTechnicianId != null ? _assignedTechniciansList.where((t) => t.technicianId == _loggedInTechnicianId).firstOrNull : null;
+                    if (matchedSession != null) {
+                      _selectedTechnicianRepId = matchedSession.assignId;
+                    } else if (_autofilledTechRepName != null) {
+                      final matched = _assignedTechniciansList.firstWhere(
+                        (t) =>
+                            t.name.toLowerCase() ==
+                            _autofilledTechRepName!.toLowerCase(),
+                        orElse: () => _assignedTechniciansList.first,
+                      );
+                      _selectedTechnicianRepId = matched.assignId;
+                      print(
+                        "🎯 _selectedTechnicianRepId set via _autofilledTechRepName to: $_selectedTechnicianRepId",
+                      );
+                    }
                   }
                 });
               }
@@ -4552,34 +4570,33 @@ class _CreateCommissioningReportScreenState
             const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
             const SizedBox(width: 8),
             Expanded(
-              child: TextField(
-                controller: _technicianNameController,
-                readOnly: true,
-                style: AppFont.style(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: const Color(0xFF0D121F),
-                ),
-                decoration: InputDecoration(
-                  hintText: 'commissioning_select_technician'.tr(),
-                  hintStyle: AppFont.style(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFFA5ABB7),
-                  ),
-                  enabledBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFD8DCE6)),
-                  ),
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Color(0xFFD8DCE6),
-                      width: 1.5,
+              child: widget.isServiceReport
+                  ? SearchableDropdown<service_tech_model.AssignedTechnician>(
+                      items: _assignedServiceCallTechniciansList,
+                      itemAsString: (t) => t.name,
+                      value: _assignedServiceCallTechniciansList
+                          .where((t) => t.assignId == _selectedTechnicianRepId)
+                          .firstOrNull,
+                      onChanged: (val) {
+                        setState(() {
+                          _selectedTechnicianRepId = val?.assignId;
+                        });
+                      },
+                      hintText: 'commissioning_select_technician'.tr(),
+                    )
+                  : SearchableDropdown<AssignedTechnician>(
+                      items: _assignedTechniciansList,
+                      itemAsString: (t) => t.name,
+                      value: _assignedTechniciansList
+                          .where((t) => t.assignId == _selectedTechnicianRepId)
+                          .firstOrNull,
+                      onChanged: (val) {
+                        setState(() {
+                          _selectedTechnicianRepId = val?.assignId;
+                        });
+                      },
+                      hintText: 'commissioning_select_technician'.tr(),
                     ),
-                  ),
-                  isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                ),
-              ),
             ),
           ],
         ),
