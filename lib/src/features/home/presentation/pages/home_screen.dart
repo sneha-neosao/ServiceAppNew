@@ -323,108 +323,119 @@ class _HomeScreenState extends State<HomeScreen> {
     return child;
   }
 
-  
+
 
   Widget _buildHomeBody() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 8),
-          BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
-            bloc: _profileDetailsBloc,
-            builder: (context, state) {
-              if (state is ProfileDetailsLoadingState ||
-                  state is ProfileDetailsInitialState) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(
-                        width: 200,
-                        height: 37,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(
-                        width: 250,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenHeight = constraints.maxHeight;
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
+                  bloc: _profileDetailsBloc,
+                  builder: (context, state) {
+                    if (state is ProfileDetailsLoadingState ||
+                        state is ProfileDetailsInitialState) {
+                      return Column(
+                        crossAxisAlignment:
+                        CrossAxisAlignment.center,
+                        children: [
+                          Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(
+                              width: 200,
+                              height: 37,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(
+                              width: 250,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
 
-              String name = 'home_greeting_name'.tr();
-              String dealerName = '';
-              if (state is ProfileDetailsSuccessState) {
-                final data = state.data.data;
-                if (data.name.isNotEmpty) {
-                  name = data.name;
-                }
-                if (data.dealer.name.isNotEmpty) {
-                  dealerName = data.dealer.name;
-                }
-              }
+                    String name = 'home_greeting_name'.tr();
+                    String dealerName = '';
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    name,
-                    style: AppFont.style(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1A1A1A),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'home_greeting_message'.tr(args: [dealerName]),
-                    style: AppFont.style(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 36),
-          // AMC Card – centered
-          Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 480),
-              child: UpcomingAmcCard(
-                upcomingAmcBloc: _upcomingAmcBloc,
-                onScheduleTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AmcWorkflowScreen(),
-                    ),
-                  );
-                },
-              ),
+                    if (state is ProfileDetailsSuccessState) {
+                      final data = state.data.data;
+                      if (data.name.isNotEmpty) {
+                        name = data.name;
+                      }
+                      if (data.dealer.name.isNotEmpty) {
+                        dealerName = data.dealer.name;
+                      }
+                    }
+
+                    return Column(
+                      crossAxisAlignment:
+                      CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          name,
+                          style: AppFont.style(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF1A1A1A),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'home_greeting_message'
+                              .tr(args: [dealerName]),
+                          style: AppFont.style(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                SizedBox(height: screenHeight / 5),
+
+                // AMC Card
+                UpcomingAmcCard(
+                  upcomingAmcBloc: _upcomingAmcBloc,
+                  onScheduleTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                        const AmcWorkflowScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
