@@ -47,6 +47,8 @@ class AmcVisitData {
   final bool feedbackSubmitted;
   final String? qrCodeUrl;
   final String? qrCodeImage;
+  final String? fromDate;
+  final String? toDate;
 
   AmcVisitData({
     required this.id,
@@ -62,6 +64,8 @@ class AmcVisitData {
     required this.feedbackSubmitted,
     this.qrCodeUrl,
     this.qrCodeImage,
+    this.fromDate,
+    this.toDate,
   });
 
   factory AmcVisitData.fromJson(Map<String, dynamic> json) {
@@ -79,6 +83,8 @@ class AmcVisitData {
       feedbackSubmitted: json['feedback_submitted'] ?? false,
       qrCodeUrl: json['qr_code_url'],
       qrCodeImage: json['qr_code_image'],
+      fromDate: json['visit_from_date'],
+      toDate: json['visit_to_date'],
     );
   }
 
@@ -97,6 +103,8 @@ class AmcVisitData {
       'feedback_submitted': feedbackSubmitted,
       'qr_code_url': qrCodeUrl,
       'qr_code_image': qrCodeImage,
+      'from_date': fromDate,
+      'to_date': toDate,
     };
   }
 }

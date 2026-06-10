@@ -6,7 +6,8 @@ import 'package:service_app/src/features/amc/presentation/pages/create_amc_repor
 enum AmcViewState { schedule, details, createReport }
 
 class AmcWorkflowScreen extends StatefulWidget {
-  const AmcWorkflowScreen({super.key});
+  final String initialFilter;
+  const AmcWorkflowScreen({super.key, this.initialFilter = 'Month'});
 
   @override
   State<AmcWorkflowScreen> createState() => _AmcWorkflowScreenState();
@@ -49,6 +50,7 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
     switch (_viewState) {
       case AmcViewState.schedule:
         return AmcScheduleScreen(
+          initialFilter: widget.initialFilter,
           onBack: () => Navigator.pop(context),
           onItemTap: (visitId, title, location, visitInfo, window) {
             setState(() {

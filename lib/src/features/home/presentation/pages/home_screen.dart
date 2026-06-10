@@ -422,11 +422,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 UpcomingAmcCard(
                   upcomingAmcBloc: _upcomingAmcBloc,
                   onScheduleTap: () {
+                    String initialFilter = 'Month';
+                    if (_upcomingAmcBloc.state is UpcomingAmcSuccessState) {
+                      final f = (_upcomingAmcBloc.state as UpcomingAmcSuccessState).data.data?.filter;
+                      if (f != null && f.isNotEmpty) {
+                        initialFilter = f[0].toUpperCase() + f.substring(1).toLowerCase();
+                      }
+                    }
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) =>
-                        const AmcWorkflowScreen(),
+                        builder: (_) => AmcWorkflowScreen(initialFilter: initialFilter),
                       ),
                     );
                   },

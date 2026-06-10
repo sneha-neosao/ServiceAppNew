@@ -61,7 +61,7 @@ class UpcomingAmcCard extends StatelessWidget {
                   ),
                 ),
               ),
-              _DropdownPill(
+              UpcomingAmcDropdownPill(
                 label: 'home_amc_card_dropdown'.tr(),
                 onChanged: (val) {
                   upcomingAmcBloc.add(UpcomingAmcGetEvent(val));
@@ -159,15 +159,15 @@ class UpcomingAmcCard extends StatelessWidget {
   }
 }
 
-class _DropdownPill extends StatefulWidget {
+class UpcomingAmcDropdownPill extends StatefulWidget {
   final String label;
   final ValueChanged<String>? onChanged;
-  const _DropdownPill({required this.label, this.onChanged});
+  const UpcomingAmcDropdownPill({required this.label, this.onChanged, super.key});
   @override
-  State<_DropdownPill> createState() => _DropdownPillState();
+  State<UpcomingAmcDropdownPill> createState() => _UpcomingAmcDropdownPillState();
 }
 
-class _DropdownPillState extends State<_DropdownPill> {
+class _UpcomingAmcDropdownPillState extends State<UpcomingAmcDropdownPill> {
   late String _selectedLabel;
   final List<String> _options = ['Today', 'Tomorrow', 'Week', 'Month'];
   

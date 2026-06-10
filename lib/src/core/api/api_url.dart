@@ -13,7 +13,7 @@ class ApiUrl {
 
   static const login = "technician/login";
 
-  static const upcomingAmcVisits = "dashboard/upcoming-amc-visits";
+  static const upcomingAmcVisits = "technician/dashboard/upcoming-amc-visits";
 
   static const technicianAmcs = "technician/amcs";
 

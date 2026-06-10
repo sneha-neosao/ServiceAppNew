@@ -14,6 +14,7 @@ class SearchableDropdown<T> extends StatefulWidget {
   final bool isLoading;
   // final Widget? icon;
   final bool isFilter;
+  final bool isSearchable;
 
   const SearchableDropdown({
     super.key,
@@ -28,6 +29,7 @@ class SearchableDropdown<T> extends StatefulWidget {
     this.isLoading = false,
     // this.icon,
     this.isFilter = false,
+    this.isSearchable = true,
   });
 
   @override
@@ -98,42 +100,44 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
               child: Column(
               children: [
                 // Search Field
-                TextField(
-                  controller: searchController,
-                  autofocus: true,
-                  onChanged: (val) {
-                    _lastSearch = val;
-                    widget.onSearchChanged?.call(val);
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Search...',
-                    hintStyle: AppFont.style(
+                if (widget.isSearchable) ...[
+                  TextField(
+                    controller: searchController,
+                    autofocus: true,
+                    onChanged: (val) {
+                      _lastSearch = val;
+                      widget.onSearchChanged?.call(val);
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      hintStyle: AppFont.style(
+                        fontSize: 14,
+                        color: const Color(0xFFA5ABB7),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xFF1565C0)),
+                      ),
+                    ),
+                    style: AppFont.style(
                       fontSize: 14,
-                      color: const Color(0xFFA5ABB7),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF1565C0)),
+                      color: const Color(0xFF0D121F),
                     ),
                   ),
-                  style: AppFont.style(
-                    fontSize: 14,
-                    color: const Color(0xFF0D121F),
-                  ),
-                ),
-                const SizedBox(height: 12),
+                  const SizedBox(height: 12),
+                ],
 
                 // List View
                 Expanded(

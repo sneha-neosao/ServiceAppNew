@@ -8,16 +8,20 @@ import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
 import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
-import 'package:service_app/src/features/amc/bloc/amc_visits_list_bloc/amc_visits_list_bloc.dart';
+import 'package:service_app/src/features/home/bloc/upcoming_amc_bloc/upcoming_amc_bloc.dart';
+import 'package:service_app/src/features/home/presentation/widgets/upcoming_amc_card.dart';
 import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
 import 'package:service_app/src/remote/models/amc_visit_model/amc_visit_list_response.dart';
+import 'package:intl/intl.dart';
 class AmcScheduleScreen extends StatefulWidget {
   final VoidCallback onBack;
+  final String initialFilter;
   final Function(String visitId, String title, String location, String visitInfo, String window)
   onItemTap;
   const AmcScheduleScreen({
     super.key,
     required this.onBack,
+    this.initialFilter = 'Today',
     required this.onItemTap,
   });
 
@@ -33,27 +37,29 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
 
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
-  late AmcVisitsListBloc _amcVisitsListBloc;
+  late UpcomingAmcBloc _upcomingAmcBloc;
 
   @override
   void initState() {
     super.initState();
+    _selectedFilter = widget.initialFilter;
     _customerBloc = getIt<CustomerBloc>()..add(const CustomerGetEvent());
     _sitesBloc = getIt<SitesBloc>();
-    _amcVisitsListBloc = getIt<AmcVisitsListBloc>()..add(const AmcVisitsListGetEvent());
+    _upcomingAmcBloc = getIt<UpcomingAmcBloc>()..add(UpcomingAmcGetEvent(widget.initialFilter));
   }
 
   @override
   void dispose() {
     _customerBloc.close();
     _sitesBloc.close();
-    _amcVisitsListBloc.close();
+    _upcomingAmcBloc.close();
     super.dispose();
   }
 
   // ── State ──────────────────────────────────────────────────────────────────
   Customer? _selectedCustomer;
   Site? _selectedSite;
+  late String _selectedFilter;
 
   @override
   Widget build(BuildContext context) {
@@ -119,6 +125,30 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
             children: [
+              SearchableDropdown<String>(
+                items: const ['Today', 'Tomorrow', 'Week', 'Month'],
+                value: _selectedFilter,
+                hintText: 'Select Filter',
+                itemAsString: (item) {
+                  switch (item) {
+                    case 'Today': return 'filter_today'.tr();
+                    case 'Tomorrow': return 'filter_tomorrow'.tr();
+                    case 'Week': return 'filter_week'.tr();
+                    case 'Month': return 'filter_month'.tr();
+                    default: return item;
+                  }
+                },
+                isSearchable: false,
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() {
+                      _selectedFilter = val;
+                    });
+                    _upcomingAmcBloc.add(UpcomingAmcGetEvent(val));
+                  }
+                },
+              ),
+              const SizedBox(height: 12),
               // ── Customer dropdown ────────────────────────────────────────
               BlocBuilder<CustomerBloc, CustomerState>(
                 bloc: _customerBloc,
@@ -220,10 +250,10 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
               const SizedBox(height: 20),
 
               // ── Schedule cards ───────────────────────────────────────────
-              BlocBuilder<AmcVisitsListBloc, AmcVisitsListState>(
-                bloc: _amcVisitsListBloc,
+              BlocBuilder<UpcomingAmcBloc, UpcomingAmcState>(
+                bloc: _upcomingAmcBloc,
                 builder: (context, state) {
-                  if (state is AmcVisitsListLoadingState) {
+                  if (state is UpcomingAmcLoadingState) {
                     return ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -237,9 +267,11 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                     );
                   }
 
-                  if (state is AmcVisitsListSuccessState) {
+                  if (state is UpcomingAmcSuccessState) {
                     _amcVisits.clear();
-                    _amcVisits.addAll(state.data.data);
+                    if (state.data.data?.visits != null) {
+                      _amcVisits.addAll(state.data.data!.visits!);
+                    }
                   }
 
                   // Filter logic
@@ -251,7 +283,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                     filteredVisits = filteredVisits.where((e) => e.siteName == _selectedSite!.name).toList();
                   }
 
-                  if (filteredVisits.isEmpty && state is AmcVisitsListSuccessState) {
+                  if (filteredVisits.isEmpty && state is UpcomingAmcSuccessState) {
                     return Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 40),
@@ -278,7 +310,9 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                           title: visit.customerName,
                           location: visit.siteName,
                           visitInfo: 'Visit ${visit.visitNumber}',
-                          window: visit.status,
+                          date: visit.fromDate != null
+                              ? DateFormat('d MMM yyyy').format(DateTime.parse(visit.fromDate!).toLocal())
+                              : '-',
                           onTap: () => widget.onItemTap(
                             visit.amcVisitId,
                             visit.customerName,
@@ -307,14 +341,14 @@ class _AmcScheduleCard extends StatelessWidget {
   final String title;
   final String location;
   final String visitInfo;
-  final String window;
+  final String date;
   final VoidCallback onTap;
 
   const _AmcScheduleCard({
     required this.title,
     required this.location,
     required this.visitInfo,
-    required this.window,
+    required this.date,
     required this.onTap,
   });
 
@@ -372,24 +406,6 @@ class _AmcScheduleCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5E9),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      'amc_schedule_status_active'.tr(),
-                      style: AppFont.style(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF2E7D32),
-                      ),
-                    ),
-                  ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -427,7 +443,7 @@ class _AmcScheduleCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'amc_schedule_window'.tr(),
+                          'Date',
                           style: AppFont.style(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
@@ -436,7 +452,7 @@ class _AmcScheduleCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          window,
+                          date,
                           style: AppFont.style(
                             fontSize: 14,
                             fontWeight: FontWeight.w800,

@@ -1,3 +1,5 @@
+import 'package:service_app/src/remote/models/amc_visit_model/amc_visit_list_response.dart';
+
 class UpcomingAmcVisitsResponse {
   final int? status;
   final bool? success;
@@ -37,7 +39,7 @@ class UpcomingAmcVisitsData {
   final String? rangeStart;
   final String? rangeEnd;
   final int? total;
-  final List<AmcVisit>? visits;
+  final List<AmcVisitData>? visits;
 
   UpcomingAmcVisitsData({
     this.filter,
@@ -55,7 +57,7 @@ class UpcomingAmcVisitsData {
       total: json['total'],
       visits:
           (json['visits'] as List<dynamic>?)
-              ?.map((e) => AmcVisit.fromJson(e))
+              ?.map((e) => AmcVisitData.fromJson(e))
               .toList() ??
           [],
     );
@@ -65,21 +67,9 @@ class UpcomingAmcVisitsData {
     return {
       'filter': filter,
       'range_start': rangeStart,
-      'range_end': rangeEnd,
+      'rangeEnd': rangeEnd,
       'total': total,
       'visits': visits?.map((e) => e.toJson()).toList(),
     };
-  }
-}
-
-class AmcVisit {
-  AmcVisit();
-
-  factory AmcVisit.fromJson(Map<String, dynamic> json) {
-    return AmcVisit();
-  }
-
-  Map<String, dynamic> toJson() {
-    return {};
   }
 }
