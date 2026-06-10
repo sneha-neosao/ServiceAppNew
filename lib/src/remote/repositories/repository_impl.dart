@@ -1,4 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:service_app/src/remote/models/amc_report_model/amc_report_step1_response.dart';
+import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step1_usecase.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:service_app/src/core/usecases/usecase.dart';
@@ -273,6 +275,14 @@ abstract class Repository {
 
   Future<Either<Failure, ServiceCallDetailsResponse>> serviceCallDetails(
     String id,
+  );
+
+  Future<Either<Failure, AmcReportStep1Response>> amcReportStep1(
+    PostAmcReportStep1Params params,
+  );
+
+  Future<Either<Failure, AmcReportStep1Response>> amcReportStep1AutoFill(
+    String reportId,
   );
 }
 
@@ -2097,6 +2107,68 @@ class AuthRepositoryImpl implements Repository {
             return Left(CredentialFailure(respData.message));
           }
 
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, AmcReportStep1Response>> amcReportStep1(
+    PostAmcReportStep1Params params,
+  ) async {
+    return _networkInfo.check<AmcReportStep1Response>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          if (token.isEmpty) throw AuthException();
+
+          final respData = await _remoteDataSource.amcReportStep1(params, token);
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, AmcReportStep1Response>> amcReportStep1AutoFill(
+    String reportId,
+  ) async {
+    return _networkInfo.check<AmcReportStep1Response>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          if (token.isEmpty) throw AuthException();
+
+          final respData = await _remoteDataSource.amcReportStep1AutoFill(reportId, token);
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));

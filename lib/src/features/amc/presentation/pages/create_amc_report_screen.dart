@@ -2,15 +2,28 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
+import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step1_usecase.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_bloc/amc_report_step1_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_bloc/amc_report_step1_event.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_bloc/amc_report_step1_state.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_event.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_state.dart';
+import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
 class CreateAmcReportScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSubmit;
+  final String visitId;
+  final String? reportId;
 
   const CreateAmcReportScreen({
     super.key,
     required this.onBack,
     required this.onSubmit,
+    required this.visitId,
+    this.reportId,
   });
 
   @override
@@ -19,10 +32,82 @@ class CreateAmcReportScreen extends StatefulWidget {
 
 class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
   int _currentStep = 1;
+  bool _isLoading = false;
+  bool _isAutofillLoading = false;
+
+  String _dealerName = '';
+  String _customerName = '';
+  String _siteName = '';
+
+  late final AmcReportStep1Bloc _step1Bloc;
+  late final AmcReportStep1AutofillBloc _step1AutofillBloc;
+  final TextEditingController _memberPresentsController = TextEditingController();
+  final TextEditingController _agendaController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _step1Bloc = getIt<AmcReportStep1Bloc>();
+    _step1AutofillBloc = getIt<AmcReportStep1AutofillBloc>();
+
+    _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
+  }
+
+  @override
+  void dispose() {
+    _memberPresentsController.dispose();
+    _agendaController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AmcReportStep1Bloc, AmcReportStep1State>(
+          bloc: _step1Bloc,
+          listener: (context, state) {
+            if (state is AmcReportStep1LoadingState) {
+              setState(() => _isLoading = true);
+            } else {
+              setState(() => _isLoading = false);
+            }
+
+            if (state is AmcReportStep1SuccessState) {
+              setState(() => _currentStep++);
+            } else if (state is AmcReportStep1FailureState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+            }
+          },
+        ),
+        BlocListener<AmcReportStep1AutofillBloc, AmcReportStep1AutofillState>(
+          bloc: _step1AutofillBloc,
+          listener: (context, state) {
+            if (state is AmcReportStep1AutofillLoadingState) {
+              setState(() => _isAutofillLoading = true);
+            } else {
+              setState(() => _isAutofillLoading = false);
+            }
+
+            if (state is AmcReportStep1AutofillSuccessState) {
+              setState(() {
+                _dealerName = state.data.data.dealerName;
+                _customerName = state.data.data.customerName;
+                _siteName = state.data.data.siteName;
+              });
+              _memberPresentsController.text = state.data.data.memberPresentsCustomerSide;
+              _agendaController.text = state.data.data.agenda;
+            } else if (state is AmcReportStep1AutofillFailureState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+            }
+          },
+        ),
+      ],
+      child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // ── Header ────────────────────────────────────────────────────────
@@ -46,6 +131,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         // ── Bottom Navigation ─────────────────────────────────────────────
         _buildBottomNav(),
       ],
+    ),
     );
   }
 
@@ -134,12 +220,19 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
   }
 
   Widget _buildStep1() {
+    if (_isAutofillLoading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24.0),
+        child: ListCardShimmer(),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // ── Header Row ────────────────────────────────────────────────────
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
               width: 44,
@@ -156,27 +249,29 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Flowmax Pumps',
-                    style: AppFont.style(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      color: const Color(0xFF0D121F),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Main Road, Suite 402, Business District,\nPune - 411045',
-                    style: AppFont.style(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF7A8699),
-                    ),
-                  ),
-                ],
+              child: BlocBuilder<AmcReportStep1AutofillBloc, AmcReportStep1AutofillState>(
+                bloc: _step1AutofillBloc,
+                builder: (context, state) {
+                  String currentDealer = 'Dealer Name';
+                  if (state is AmcReportStep1AutofillSuccessState && state.data.data.dealerName.isNotEmpty) {
+                    currentDealer = state.data.data.dealerName;
+                  }
+                  
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        currentDealer,
+                        style: AppFont.style(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
             Column(
@@ -203,18 +298,6 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           ],
         ),
 
-        const SizedBox(height: 32),
-
-        _buildSectionTitle('amc_report_service_provider'.tr()),
-        const SizedBox(height: 12),
-        Text(
-          'Flowmax Pumps Corporation',
-          style: AppFont.style(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-            color: const Color(0xFF0D121F),
-          ),
-        ),
 
         const SizedBox(height: 32),
 
@@ -232,9 +315,26 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         const SizedBox(height: 32),
 
         // ── Customer Info Rows ─────────────────────────────────────────────
-        _buildInfoRow('amc_report_customer_name'.tr(), 'Infosys Campus'),
-        const SizedBox(height: 24),
-        _buildInfoRow('amc_report_site_name'.tr(), 'Data Center B'),
+        BlocBuilder<AmcReportStep1AutofillBloc, AmcReportStep1AutofillState>(
+          bloc: _step1AutofillBloc,
+          builder: (context, state) {
+            String currentCustomer = 'Customer Name';
+            String currentSite = 'Site Name';
+            
+            if (state is AmcReportStep1AutofillSuccessState) {
+              if (state.data.data.customerName.isNotEmpty) currentCustomer = state.data.data.customerName;
+              if (state.data.data.siteName.isNotEmpty) currentSite = state.data.data.siteName;
+            }
+            
+            return Column(
+              children: [
+                _buildInfoRow('amc_report_customer_name'.tr(), currentCustomer),
+                const SizedBox(height: 24),
+                _buildInfoRow('amc_report_site_name'.tr(), currentSite),
+              ],
+            );
+          },
+        ),
 
         const SizedBox(height: 32),
 
@@ -247,14 +347,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           ],
         ),
         const SizedBox(height: 12),
-        _buildInputField('Mr. Sandeep Patil', showMic: true),
+        _buildInputField('Mr. Sandeep Patil', showMic: true, controller: _memberPresentsController),
 
         const SizedBox(height: 32),
 
         // ── Agenda / Purpose ──────────────────────────────────────────────
         _buildSectionTitle('amc_report_agenda'.tr()),
         const SizedBox(height: 12),
-        _buildTextArea('amc_report_agenda_hint'.tr()),
+        _buildTextArea('amc_report_agenda_hint'.tr(), controller: _agendaController),
 
         const SizedBox(height: 40),
       ],
@@ -838,14 +938,23 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             ),
           ),
           ElevatedButton(
-            onPressed: () {
-              if (_currentStep < 3) {
-                setState(() => _currentStep++);
-              } else {
-                // Submit action
-                _showSuccessDialog();
-              }
-            },
+            onPressed: _isLoading
+                ? null
+                : () {
+                    if (_currentStep == 1) {
+                      _step1Bloc.add(PostAmcReportStep1Event(PostAmcReportStep1Params(
+                        amcVisitId: widget.visitId,
+                        technicianIds: const [], // TODO: Provide selected technicians
+                        memberPresentsCustomerSide: _memberPresentsController.text,
+                        agenda: _agendaController.text,
+                      )));
+                    } else if (_currentStep < 3) {
+                      setState(() => _currentStep++);
+                    } else {
+                      // Submit action
+                      _showSuccessDialog();
+                    }
+                  },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF1565C0),
               foregroundColor: Colors.white,
@@ -859,8 +968,15 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  _currentStep < 3 ? 'amc_report_btn_next'.tr() : 'amc_report_btn_submit'.tr(),
+                if (_isLoading)
+                  const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  )
+                else
+                  Text(
+                    _currentStep < 3 ? 'amc_report_btn_next'.tr() : 'amc_report_btn_submit'.tr(),
                   style: AppFont.style(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,

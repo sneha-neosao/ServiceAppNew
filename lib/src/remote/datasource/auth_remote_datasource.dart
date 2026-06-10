@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:service_app/src/remote/models/amc_report_model/amc_report_step1_response.dart';
+import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step1_usecase.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/customer_usecase.dart';
@@ -182,6 +184,16 @@ sealed class RemoteDataSource {
 
   Future<CommissioningWorkDetailsResponse> commissioningWorkDetails(
     String workId,
+    String token,
+  );
+
+  Future<AmcReportStep1Response> amcReportStep1(
+    PostAmcReportStep1Params params,
+    String token,
+  );
+
+  Future<AmcReportStep1Response> amcReportStep1AutoFill(
+    String reportId,
     String token,
   );
 
@@ -1015,6 +1027,64 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       }
       if (e is ApiException) {
         throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+
+
+  @override
+  Future<AmcReportStep1Response> amcReportStep1(
+    PostAmcReportStep1Params params,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.post,
+        url: ApiUrl.amcReportStep1,
+        data: params.toJson(),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = AmcReportStep1Response.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<AmcReportStep1Response> amcReportStep1AutoFill(
+    String reportId,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: '${ApiUrl.amcReportStep1AutoFill}$reportId',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = AmcReportStep1Response.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
       }
       throw ServerException();
     }

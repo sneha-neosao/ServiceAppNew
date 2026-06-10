@@ -1,4 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_bloc/amc_report_step1_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_bloc.dart';
+import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step1_usecase.dart';
+import 'package:service_app/src/domain/usecases/amc_report/get_amc_report_step1_autofill_usecase.dart';
 import 'package:get_it/get_it.dart';
 import 'package:service_app/src/features/common/domain/usecase/customer_usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
@@ -601,6 +605,22 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => ServiceCallDetailsUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => AmcReportStep1Bloc(getIt<PostAmcReportStep1Usecase>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => PostAmcReportStep1Usecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => AmcReportStep1AutofillBloc(getIt<GetAmcReportStep1AutofillUsecase>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => GetAmcReportStep1AutofillUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper

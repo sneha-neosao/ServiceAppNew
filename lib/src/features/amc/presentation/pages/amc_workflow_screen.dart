@@ -7,7 +7,7 @@ enum AmcViewState { schedule, details, createReport }
 
 class AmcWorkflowScreen extends StatefulWidget {
   final String initialFilter;
-  const AmcWorkflowScreen({super.key, this.initialFilter = 'Month'});
+  const AmcWorkflowScreen({super.key, this.initialFilter = 'Today'});
 
   @override
   State<AmcWorkflowScreen> createState() => _AmcWorkflowScreenState();
@@ -22,6 +22,7 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
   String? _selectedAmcVisitInfo;
   String? _selectedAmcWindow;
   String? _selectedAmcVisitId;
+  String? _selectedReportId;
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +61,7 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
               _selectedAmcVisitInfo = visitInfo;
               _selectedAmcWindow = window;
               _amcReportsCreated = 0;
+              _selectedReportId = null;
               _viewState = AmcViewState.details;
             });
           },
@@ -73,13 +75,22 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
           window: _selectedAmcWindow ?? '',
           reportsCreated: _amcReportsCreated,
           onBack: () => setState(() => _viewState = AmcViewState.schedule),
-          onSubmit: () => setState(() => _viewState = AmcViewState.createReport),
+          onSubmit: () => setState(() {
+            _selectedReportId = null;
+            _viewState = AmcViewState.createReport;
+          }),
+          onEditReport: (String reportId) => setState(() {
+            _selectedReportId = reportId;
+            _viewState = AmcViewState.createReport;
+          }),
           onCompleteAmcWork: () {
             Navigator.pop(context);
           },
         );
       case AmcViewState.createReport:
         return CreateAmcReportScreen(
+          visitId: _selectedAmcVisitId ?? '',
+          reportId: _selectedReportId,
           onBack: () => setState(() => _viewState = AmcViewState.details),
           onSubmit: () => setState(() {
             _amcReportsCreated++;

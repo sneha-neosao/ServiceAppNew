@@ -11,6 +11,7 @@ import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
 class AmcVisitDetailsScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSubmit;
+  final Function(String) onEditReport;
   final VoidCallback? onCompleteAmcWork;
   final String visitId;
   final String title;
@@ -23,6 +24,7 @@ class AmcVisitDetailsScreen extends StatefulWidget {
     super.key,
     required this.onBack,
     required this.onSubmit,
+    required this.onEditReport,
     this.onCompleteAmcWork,
     required this.visitId,
     required this.title,
@@ -291,8 +293,10 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                   ...List.generate(reportsCount, (index) {
                     bool isSubmitted = false;
                     String? submittedDateStr;
+                    String? reportId;
                     if (state is AmcVisitReportsSuccessState) {
                       final report = state.data.data.reports[index];
+                      reportId = report.id;
                       isSubmitted = report.status.toLowerCase() == 'submitted';
                       if (report.submittedAt != null && report.submittedAt!.isNotEmpty) {
                         try {
@@ -373,7 +377,9 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                       IconButton(
                                         icon: const Icon(Icons.edit_outlined, color: Color(0xFF1565C0), size: 20),
                                         onPressed: () {
-                                          // TODO: Edit action
+                                          if (reportId != null) {
+                                            widget.onEditReport(reportId);
+                                          }
                                         },
                                         constraints: const BoxConstraints(),
                                         padding: const EdgeInsets.only(left: 8, right: 4),
