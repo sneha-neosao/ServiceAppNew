@@ -13,10 +13,10 @@ class SearchableDropdown<T> extends StatefulWidget {
   final bool Function(T, String)? filterFn;
   final void Function()? onClear;
   final bool isLoading;
-  // final Widget? icon;
   final bool isFilter;
   final bool isSearchable;
   final bool showArrow;
+  final bool readOnly;
 
   const SearchableDropdown({
     super.key,
@@ -34,6 +34,7 @@ class SearchableDropdown<T> extends StatefulWidget {
     this.isFilter = false,
     this.isSearchable = true,
     this.showArrow = true,
+    this.readOnly = false,
   });
 
   @override
@@ -250,7 +251,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
     _hasRenderedOnce = true;
 
     return GestureDetector(
-      onTap: _showBottomSheet,
+      onTap: widget.readOnly ? null : _showBottomSheet,
       child: Container(
         height: widget.isFilter ? 44 : 56,
         decoration: BoxDecoration(
@@ -302,7 +303,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                   ),
                 ),
               )
-            else if (widget.showArrow)
+            else if (widget.showArrow && !widget.readOnly)
               const Icon(
                 Icons.keyboard_arrow_down,
                 color: Color(0xFFA5ABB7),

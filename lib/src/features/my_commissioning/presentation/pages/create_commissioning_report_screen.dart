@@ -4583,6 +4583,7 @@ class _CreateCommissioningReportScreenState
                         });
                       },
                       hintText: 'commissioning_select_technician'.tr(),
+                      readOnly: true,
                     )
                   : SearchableDropdown<AssignedTechnician>(
                       items: _assignedTechniciansList,
@@ -4596,6 +4597,7 @@ class _CreateCommissioningReportScreenState
                         });
                       },
                       hintText: 'commissioning_select_technician'.tr(),
+                      readOnly: true,
                     ),
             ),
           ],

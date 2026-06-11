@@ -189,7 +189,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'NAME',
+                      'Customer Name',
                       style: AppFont.style(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
@@ -208,7 +208,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                         color: const Color(0xFF0D121F),
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Type here...',
+                        hintText: 'Enter Customer Name',
                         hintStyle: AppFont.style(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -424,7 +424,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'NAME',
+                      'Site Name',
                       style: AppFont.style(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
@@ -443,7 +443,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                         color: const Color(0xFF0D121F),
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Type here...',
+                        hintText: 'Enter Site Name',
                         hintStyle: AppFont.style(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,

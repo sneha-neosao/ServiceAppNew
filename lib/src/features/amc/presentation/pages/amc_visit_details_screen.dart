@@ -106,11 +106,25 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
         Color badgeBorderColor = const Color(0xFF1565C0);
         Color badgeTextColor = const Color(0xFF1565C0);
         Color badgeBgColor = const Color(0xFFC2E2FE);
+        String visitRangeStr = widget.window;
 
         if (state is AmcVisitReportsSuccessState) {
           reportsCount = state.data.data.reports.length;
           hasDraftReport = state.data.data.reports.any((report) => report.status.toLowerCase() == 'draft');
           final statusString = state.data.data.visit.status.toLowerCase();
+          
+          try {
+            final fDate = state.data.data.visit.fromDate;
+            final tDate = state.data.data.visit.toDate;
+            if (fDate.isNotEmpty && tDate.isNotEmpty) {
+              final fDt = DateTime.parse(fDate).toLocal();
+              final tDt = DateTime.parse(tDate).toLocal();
+              visitRangeStr = '${DateFormat('d MMM yyyy').format(fDt)} to ${DateFormat('d MMM yyyy').format(tDt)}';
+            } else if (fDate.isNotEmpty) {
+              final fDt = DateTime.parse(fDate).toLocal();
+              visitRangeStr = DateFormat('d MMM yyyy').format(fDt);
+            }
+          } catch (_) {}
           
           if (statusString == 'pending') {
             visitStatus = 'Pending';
@@ -258,7 +272,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                 ),
                               ),
                               TextSpan(
-                                text: widget.window,
+                                text: visitRangeStr,
                                 style: AppFont.style(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w800,
@@ -271,33 +285,40 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                         if (reportsCount == 0) ...[
                           const SizedBox(height: 20),
                           // ── Submit button ───────────────────────────────────
-                          SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: ElevatedButton(
-                              onPressed: widget.onSubmit,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF1565C0),
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
+                          GestureDetector(
+                            onTap: widget.onSubmit,
+                            child: Container(
+                              width: double.infinity,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1565C0),
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.add, size: 20),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'amc_details_submit_btn'.tr(),
-                                    style: AppFont.style(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w700,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.check_box_outlined,
+                                      size: 20,
                                       color: Colors.white,
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(width: 8),
+                                    Flexible(
+                                      child: Text(
+                                        'amc_details_submit_btn'.tr(),
+                                        style: AppFont.style(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w800,
+                                          color: Colors.white,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -685,12 +706,12 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
           color: const Color(0xFFF8F8F8),
           padding: const EdgeInsets.fromLTRB(22, 12, 22, 24),
           child: GestureDetector(
-            onTap: reportsCount > 0 ? widget.onCompleteAmcWork : null,
+            onTap: (reportsCount > 0 && !hasDraftReport) ? () => _showCompleteAmcAlert(context) : null,
             child: Container(
               width: double.infinity,
               height: 44,
               decoration: BoxDecoration(
-                color: reportsCount > 0
+                color: (reportsCount > 0 && !hasDraftReport)
                     ? const Color(0xFF1565C0)
                     : const Color(0xFFECEFF1),
                 borderRadius: BorderRadius.circular(10),
@@ -703,7 +724,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                   Icon(
                     Icons.check_circle_outline,
                     size: 18,
-                    color: reportsCount > 0
+                    color: (reportsCount > 0 && !hasDraftReport)
                         ? Colors.white
                         : Colors.grey.shade400,
                   ),
@@ -714,7 +735,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                     style: AppFont.style(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: reportsCount > 0
+                      color: (reportsCount > 0 && !hasDraftReport)
                           ? Colors.white
                           : Colors.grey.shade400,
                       ),
@@ -733,6 +754,109 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
       },
     ),
       ),
+    );
+  }
+
+  void _showCompleteAmcAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFF8E1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.error_outline,
+                      color: Color(0xFFFF9800),
+                      size: 32,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Finish AMC Work?',
+                  style: AppFont.style(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF0D121F),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Have you serviced all pumps covered under this AMC at this site?',
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  style: AppFont.style(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF6B7280),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(dialogContext).pop();
+                      widget.onCompleteAmcWork?.call();
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1565C0),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Yes, Complete',
+                          style: AppFont.style(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: () => Navigator.of(dialogContext).pop(),
+                  child: Container(
+                    height: 44,
+                    color: Colors.transparent,
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Cancel',
+                      style: AppFont.style(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFA5ABB7),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

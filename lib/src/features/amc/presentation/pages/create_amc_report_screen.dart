@@ -388,26 +388,23 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             ),
           ),
           const SizedBox(width: 16),
-          // Container(
-          //   padding: const EdgeInsets.all(8),
-          //   decoration: BoxDecoration(
-          //     color: const Color(0xFFF1F8FF),
-          //     borderRadius: BorderRadius.circular(8),
-          //     border: Border.all(color: const Color(0xFFE5E7EB)),
-          //   ),
-          //   child: const Icon(
-          //     Icons.verified_user_outlined,
-          //     color: Color(0xFF1565C0),
-          //     size: 20,
-          //   ),
-          // ),
-          // const SizedBox(width: 12),
-          Text(
-            'amc_report_title'.tr(),
-            style: AppFont.style(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              color: const Color(0xFF0D121F),
+          Container(
+            width: 4,
+            height: 24,
+            decoration: BoxDecoration(
+              color: const Color(0xFF0B68B9),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'amc_report_title'.tr(),
+              style: AppFont.style(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                color: const Color(0xFF0D121F),
+              ),
             ),
           ),
         ],
@@ -2228,29 +2225,38 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 ],
               ),
               child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (_isLoading)
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                  )
-                else
-                  Text(
-                    _currentStep < 3 ? 'amc_report_btn_next'.tr() : 'amc_report_btn_submit'.tr(),
-                  style: AppFont.style(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                  ),
-                ),
-                if (_currentStep < 3) ...[
-                  const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward, size: 16, color: Colors.white),
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_isLoading)
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                    )
+                  else ...[
+                    if (_currentStep == 3) ...[
+                      const Icon(
+                        Icons.check_box_outlined,
+                        size: 20,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 12),
+                    ],
+                    Text(
+                      _currentStep < 3 ? 'amc_report_btn_next'.tr() : 'amc_report_btn_submit'.tr(),
+                      style: AppFont.style(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                  if (_currentStep < 3) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.arrow_forward, size: 16, color: Colors.white),
+                  ],
                 ],
-              ],
-            ),
+              ),
             ),
           ),
         ],

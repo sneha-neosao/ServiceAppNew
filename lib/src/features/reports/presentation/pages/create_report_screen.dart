@@ -2037,7 +2037,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
         // Technician Rep
         Text(
-          'TECHNICIAN REP',
+          'commissioning_tech_rep'.tr(),
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w900,
@@ -2054,7 +2054,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
         // Customer Rep
         Text(
-          'CUSTOMER REP',
+          'commissioning_customer_rep'.tr(),
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w900,
