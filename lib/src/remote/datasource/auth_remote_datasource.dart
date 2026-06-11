@@ -350,6 +350,11 @@ sealed class RemoteDataSource {
     String token,
   );
 
+  Future<FeedbackResponse> getAmcCheckFeedback(
+    String amcVisitId,
+    String token,
+  );
+
   Future<FeedbackResponse> getServiceCallReportFeedback(
     String reportId,
     String token,
@@ -2370,6 +2375,27 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       if (e is ApiException) {
         throw e;
       }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<FeedbackResponse> getAmcCheckFeedback(
+    String amcVisitId,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: 'technician/amc-visit/$amcVisitId/check-feedback',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return FeedbackResponse.fromJson(response);
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      if (e.toString() == noElement) throw AuthException();
+      if (e is ApiException) throw e;
       throw ServerException();
     }
   }

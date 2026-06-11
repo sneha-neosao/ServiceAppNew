@@ -539,7 +539,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
 
                                 return _ReportCard(
                                   id: item.id,
-                                  reportId: item.id,
+                                  reportId: item.amcVisitId,
                                   type: ReportType.amc,
                                   companyName: item.customerName,
                                   location: item.siteName,
@@ -1397,8 +1397,8 @@ class _ReportCard extends StatelessWidget {
             ),
           ),
         ),
-        // Extra action buttons — for commissioning and service types
-        if (type == ReportType.commissioning || type == ReportType.service) ...[
+        // Extra action buttons — for commissioning, service, and amc types
+        if (type == ReportType.commissioning || type == ReportType.service || type == ReportType.amc) ...[
           const SizedBox(height: 12),
           Row(
             children: [
@@ -1434,9 +1434,12 @@ class _ReportCard extends StatelessWidget {
                                 builder: (context) => FeedbackDetailsScreen(
                                   reportId: reportId!,
                                   isServiceCall: type == ReportType.service,
+                                  isAmc: type == ReportType.amc,
                                   title: type == ReportType.service
                                       ? 'Service Call Feedback Details'
-                                      : 'Commissioning Feedback Details',
+                                      : type == ReportType.amc
+                                          ? 'AMC Feedback Details'
+                                          : 'Commissioning Feedback Details',
                                   onBack: () => Navigator.pop(context),
                                 ),
                               ),

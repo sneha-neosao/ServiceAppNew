@@ -8,12 +8,16 @@ import 'package:service_app/src/features/my_commissioning/bloc/check_feedback_bl
 import 'package:service_app/src/features/service_calls/bloc/service_call_check_feedback_bloc/service_call_check_feedback_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_check_feedback_bloc/service_call_check_feedback_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_check_feedback_bloc/service_call_check_feedback_state.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_event.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_state.dart';
 import 'package:service_app/src/remote/models/feedback_model/feedback_response.dart';
 
 class FeedbackDetailsScreen extends StatelessWidget {
   final String reportId;
   final String title;
   final bool isServiceCall;
+  final bool isAmc;
   final VoidCallback onBack;
 
   const FeedbackDetailsScreen({
@@ -21,24 +25,31 @@ class FeedbackDetailsScreen extends StatelessWidget {
     required this.reportId,
     this.title = 'Commissioning Feedback Details',
     this.isServiceCall = false,
+    this.isAmc = false,
     required this.onBack,
   });
 
   @override
   Widget build(BuildContext context) {
-    return isServiceCall
-        ? BlocProvider(
-            create: (_) =>
-                getIt<ServiceCallCheckFeedbackBloc>()
-                  ..add(FetchServiceCallCheckFeedbackEvent(reportId: reportId)),
-            child: _buildScreen(context),
-          )
-        : BlocProvider(
-            create: (_) =>
-                getIt<CheckFeedbackBloc>()
-                  ..add(FetchCheckFeedbackEvent(reportId: reportId)),
-            child: _buildScreen(context),
-          );
+    if (isServiceCall) {
+      return BlocProvider(
+        create: (_) => getIt<ServiceCallCheckFeedbackBloc>()
+          ..add(FetchServiceCallCheckFeedbackEvent(reportId: reportId)),
+        child: _buildScreen(context),
+      );
+    } else if (isAmc) {
+      return BlocProvider(
+        create: (_) => getIt<AmcCheckFeedbackBloc>()
+          ..add(FetchAmcCheckFeedbackEvent(amcVisitId: reportId)),
+        child: _buildScreen(context),
+      );
+    } else {
+      return BlocProvider(
+        create: (_) => getIt<CheckFeedbackBloc>()
+          ..add(FetchCheckFeedbackEvent(reportId: reportId)),
+        child: _buildScreen(context),
+      );
+    }
   }
 
   Widget _buildScreen(BuildContext context) {
@@ -96,36 +107,19 @@ class FeedbackDetailsScreen extends StatelessWidget {
             // ── Content ───────────────────────────────────────────────────────
             Expanded(
               child: isServiceCall
-                  ? BlocBuilder<
-                      ServiceCallCheckFeedbackBloc,
-                      ServiceCallCheckFeedbackState
-                    >(
+                  ? BlocBuilder<ServiceCallCheckFeedbackBloc, ServiceCallCheckFeedbackState>(
                       builder: (context, state) {
                         if (state is ServiceCallCheckFeedbackLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
+                          return const Center(child: CircularProgressIndicator());
                         } else if (state is ServiceCallCheckFeedbackError) {
                           return Center(
-                            child: Text(
-                              state.message,
-                              style: AppFont.style(
-                                fontSize: 14,
-                                color: Colors.red,
-                              ),
-                            ),
+                            child: Text(state.message, style: AppFont.style(fontSize: 14, color: Colors.red)),
                           );
                         } else if (state is ServiceCallCheckFeedbackLoaded) {
                           final data = state.response.data?.feedback;
                           if (data == null) {
                             return Center(
-                              child: Text(
-                                'No feedback found',
-                                style: AppFont.style(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
+                              child: Text('No feedback found', style: AppFont.style(fontSize: 14, color: Colors.grey)),
                             );
                           }
                           return _buildFeedbackContent(data);
@@ -133,40 +127,47 @@ class FeedbackDetailsScreen extends StatelessWidget {
                         return const SizedBox.shrink();
                       },
                     )
-                  : BlocBuilder<CheckFeedbackBloc, CheckFeedbackState>(
-                      builder: (context, state) {
-                        if (state is CheckFeedbackLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else if (state is CheckFeedbackError) {
-                          return Center(
-                            child: Text(
-                              state.message,
-                              style: AppFont.style(
-                                fontSize: 14,
-                                color: Colors.red,
-                              ),
-                            ),
-                          );
-                        } else if (state is CheckFeedbackLoaded) {
-                          final data = state.response.data?.feedback;
-                          if (data == null) {
-                            return Center(
-                              child: Text(
-                                'No feedback found',
-                                style: AppFont.style(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            );
-                          }
-                          return _buildFeedbackContent(data);
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
+                  : isAmc
+                      ? BlocBuilder<AmcCheckFeedbackBloc, AmcCheckFeedbackState>(
+                          builder: (context, state) {
+                            if (state is AmcCheckFeedbackLoading) {
+                              return const Center(child: CircularProgressIndicator());
+                            } else if (state is AmcCheckFeedbackError) {
+                              return Center(
+                                child: Text(state.message, style: AppFont.style(fontSize: 14, color: Colors.red)),
+                              );
+                            } else if (state is AmcCheckFeedbackLoaded) {
+                              final data = state.response.data?.feedback;
+                              if (data == null) {
+                                return Center(
+                                  child: Text('No feedback found', style: AppFont.style(fontSize: 14, color: Colors.grey)),
+                                );
+                              }
+                              return _buildFeedbackContent(data);
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        )
+                      : BlocBuilder<CheckFeedbackBloc, CheckFeedbackState>(
+                          builder: (context, state) {
+                            if (state is CheckFeedbackLoading) {
+                              return const Center(child: CircularProgressIndicator());
+                            } else if (state is CheckFeedbackError) {
+                              return Center(
+                                child: Text(state.message, style: AppFont.style(fontSize: 14, color: Colors.red)),
+                              );
+                            } else if (state is CheckFeedbackLoaded) {
+                              final data = state.response.data?.feedback;
+                              if (data == null) {
+                                return Center(
+                                  child: Text('No feedback found', style: AppFont.style(fontSize: 14, color: Colors.grey)),
+                                );
+                              }
+                              return _buildFeedbackContent(data);
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
             ),
           ],
         ),

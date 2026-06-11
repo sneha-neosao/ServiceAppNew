@@ -83,7 +83,7 @@
   "reports_view_complaint": "View Complaint Report",
   "reports_btn_view_service": "View Service Report",
   "reports_btn_view_commissioning": "View Commissioning Report",
-  "reports_btn_view_amc": "View All AMC Report",
+  "reports_btn_view_amc": "View All AMC Reports",
   "reports_qr_not_available": "QR Code not available",
   "reports_downloading": "Downloading report",
   "reports_download_success": "Downloaded successfully to {}",
