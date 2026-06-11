@@ -118,6 +118,8 @@ import '../../features/amc/domain/usecase/amc_visits_list_usecase.dart';
 import '../../features/amc/bloc/amc_visits_list_bloc/amc_visits_list_bloc.dart';
 import '../../features/amc/domain/usecase/amc_visit_reports_usecase.dart';
 import '../../features/amc/bloc/amc_visit_reports_bloc/amc_visit_reports_bloc.dart';
+import '../../domain/usecases/amc_report/delete_amc_report_usecase.dart';
+import '../../features/amc/presentation/bloc/delete_amc_report_bloc/delete_amc_report_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -701,6 +703,14 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => PostAmcVisitCompleteUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => DeleteAmcReportBloc(getIt<DeleteAmcReportUsecase>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => DeleteAmcReportUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper

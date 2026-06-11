@@ -100,6 +100,7 @@ import '../models/amc_visit_model/amc_visit_list_response.dart';
 import '../models/amc_visit_model/amc_visit_reports_response.dart';
 
 import '../models/amc_visit_model/amc_visit_list_response.dart';
+import '../models/amc_report_model/delete_amc_report_response.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -322,6 +323,10 @@ abstract class Repository {
 
   Future<Either<Failure, AmcVisitCompleteResponse>> postAmcVisitComplete(
     String visitId,
+  );
+
+  Future<Either<Failure, DeleteAmcReportResponse>> deleteAmcReport(
+    String reportId,
   );
 }
 
@@ -2444,6 +2449,36 @@ class AuthRepositoryImpl implements Repository {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           final respData = await _remoteDataSource.postAmcVisitComplete(visitId, token);
+          if (respData.status != 200) {
+            return Left(CredentialFailure(respData.message ?? 'Unknown error'));
+          }
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, DeleteAmcReportResponse>> deleteAmcReport(String reportId) {
+    return _networkInfo.check<DeleteAmcReportResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.deleteAmcReport(reportId, token);
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message ?? 'Unknown error'));
           }
