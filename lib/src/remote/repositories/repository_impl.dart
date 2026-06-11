@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_step1_response.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_step2_response.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_step3_response.dart';
+import 'package:service_app/src/remote/models/amc_report_model/amc_report_pdf_response.dart';
 import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step3_usecase.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_assigned_technicians_response.dart';
 import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step1_usecase.dart';
@@ -307,6 +308,10 @@ abstract class Repository {
   );
 
   Future<Either<Failure, AmcAssignedTechniciansResponse>> amcReportAssignedTechnicians(
+    String reportId,
+  );
+
+  Future<Either<Failure, AmcReportPdfResponse>> getAmcReportPdf(
     String reportId,
   );
 }
@@ -2344,6 +2349,37 @@ class AuthRepositoryImpl implements Repository {
           if (token.isEmpty) throw AuthException();
 
           final respData = await _remoteDataSource.amcReportAssignedTechnicians(reportId, token);
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, AmcReportPdfResponse>> getAmcReportPdf(String reportId) {
+    return _networkInfo.check<AmcReportPdfResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.getAmcReportPdf(reportId, token);
+
+          if (respData.status != 200) {
+            return Left(CredentialFailure(respData.message));
+          }
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));

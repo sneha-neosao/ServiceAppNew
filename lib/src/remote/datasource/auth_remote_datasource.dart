@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_history_response.dart';
+import 'package:service_app/src/remote/models/amc_report_model/amc_report_pdf_response.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_step1_response.dart';
 import 'package:service_app/src/domain/usecases/amc_report/get_amc_report_step1_autofill_usecase.dart';
 import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step2_usecase.dart';
@@ -340,6 +341,11 @@ sealed class RemoteDataSource {
   );
 
   Future<CommissioningReportPdfResponse> getCommissioningReportPdf(
+    String reportId,
+    String token,
+  );
+
+  Future<AmcReportPdfResponse> getAmcReportPdf(
     String reportId,
     String token,
   );
@@ -2325,6 +2331,34 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = ServiceCallDetailsResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<AmcReportPdfResponse> getAmcReportPdf(
+    String reportId,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: '${ApiUrl.amcReportDetails}/$reportId/pdf',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = AmcReportPdfResponse.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

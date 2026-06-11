@@ -23,6 +23,7 @@ import 'package:service_app/src/features/my_commissioning/bloc/commissioning_rep
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_history_bloc/service_call_report_history_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_history_bloc/service_call_report_history_event.dart';
+import 'package:service_app/src/features/amc/presentation/pages/amc_workflow_screen.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_history_bloc/service_call_report_history_state.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_pdf_bloc/commissioning_report_pdf_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_pdf_bloc/commissioning_report_pdf_event.dart';
@@ -547,6 +548,20 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   technicianId: item.dealerName,
                                   feedbackSubmitted: item.feedbackSubmitted,
                                   qrCodeImage: item.qrCodeImage,
+                                  onViewTap: (_) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AmcWorkflowScreen(
+                                          isFromHistory: true,
+                                          initialVisitId: item.amcVisitId,
+                                          initialTitle: item.customerName,
+                                          initialLocation: item.siteName,
+                                          initialVisitInfo: 'Visit ${item.visitNumber}',
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 );
                               },
                             );

@@ -7,7 +7,21 @@ enum AmcViewState { schedule, details, createReport }
 
 class AmcWorkflowScreen extends StatefulWidget {
   final String initialFilter;
-  const AmcWorkflowScreen({super.key, this.initialFilter = 'Today'});
+  final String? initialVisitId;
+  final String? initialTitle;
+  final String? initialLocation;
+  final String? initialVisitInfo;
+  final bool isFromHistory;
+
+  const AmcWorkflowScreen({
+    super.key, 
+    this.initialFilter = 'Today',
+    this.initialVisitId,
+    this.initialTitle,
+    this.initialLocation,
+    this.initialVisitInfo,
+    this.isFromHistory = false,
+  });
 
   @override
   State<AmcWorkflowScreen> createState() => _AmcWorkflowScreenState();
@@ -25,16 +39,33 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
   String? _selectedReportId;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.initialVisitId != null) {
+      _viewState = AmcViewState.details;
+      _selectedAmcVisitId = widget.initialVisitId;
+      _selectedAmcTitle = widget.initialTitle;
+      _selectedAmcLocation = widget.initialLocation;
+      _selectedAmcVisitInfo = widget.initialVisitInfo;
+      _selectedAmcWindow = '-';
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: _viewState == AmcViewState.schedule,
+      canPop: _viewState == AmcViewState.schedule || (widget.isFromHistory && _viewState == AmcViewState.details),
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         setState(() {
           if (_viewState == AmcViewState.createReport) {
             _viewState = AmcViewState.details;
           } else if (_viewState == AmcViewState.details) {
-            _viewState = AmcViewState.schedule;
+            if (widget.isFromHistory) {
+              Navigator.pop(context);
+            } else {
+              _viewState = AmcViewState.schedule;
+            }
           }
         });
       },
@@ -74,7 +105,14 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
           visitInfo: _selectedAmcVisitInfo ?? '',
           window: _selectedAmcWindow ?? '',
           reportsCreated: _amcReportsCreated,
-          onBack: () => setState(() => _viewState = AmcViewState.schedule),
+          isFromHistory: widget.isFromHistory,
+          onBack: () {
+            if (widget.isFromHistory) {
+              Navigator.pop(context);
+            } else {
+              setState(() => _viewState = AmcViewState.schedule);
+            }
+          },
           onSubmit: () => setState(() {
             _selectedReportId = null;
             _viewState = AmcViewState.createReport;

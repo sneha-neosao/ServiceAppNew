@@ -6,7 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/features/amc/bloc/amc_visit_reports_bloc/amc_visit_reports_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_pdf_bloc/amc_report_pdf_bloc.dart';
 import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
+import 'package:service_app/src/features/widgets/snackbar_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AmcVisitDetailsScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -19,6 +22,7 @@ class AmcVisitDetailsScreen extends StatefulWidget {
   final String visitInfo;
   final String window;
   final int reportsCreated;
+  final bool isFromHistory;
 
   const AmcVisitDetailsScreen({
     super.key,
@@ -32,6 +36,7 @@ class AmcVisitDetailsScreen extends StatefulWidget {
     required this.visitInfo,
     required this.window,
     this.reportsCreated = 0,
+    this.isFromHistory = false,
   });
 
   @override
@@ -40,12 +45,14 @@ class AmcVisitDetailsScreen extends StatefulWidget {
 
 class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
   late AmcVisitReportsBloc _reportsBloc;
+  late AmcReportPdfBloc _pdfBloc;
 
   @override
   void initState() {
     super.initState();
-    _reportsBloc = getIt<AmcVisitReportsBloc>()
-      ..add(AmcVisitReportsGetEvent(visitId: widget.visitId));
+    _reportsBloc = getIt<AmcVisitReportsBloc>();
+    _pdfBloc = getIt<AmcReportPdfBloc>();
+    _reportsBloc.add(AmcVisitReportsGetEvent(visitId: widget.visitId));
   }
 
   @override
@@ -56,11 +63,44 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AmcVisitReportsBloc, AmcVisitReportsState>(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _reportsBloc),
+        BlocProvider.value(value: _pdfBloc),
+      ],
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<AmcReportPdfBloc, AmcReportPdfState>(
+            listener: (context, state) {
+              if (state is AmcReportPdfLoading) {
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_) => const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                  ),
+                );
+              } else if (state is AmcReportPdfFailure) {
+                Navigator.pop(context);
+                appSnackBar(context, const Color(0xFFF44336), state.error);
+              } else if (state is AmcReportPdfSuccess) {
+                Navigator.pop(context);
+                final url = state.pdfUrl;
+                if (url.isNotEmpty) {
+                  launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                } else {
+                  appSnackBar(context, const Color(0xFFF44336), 'PDF URL is empty');
+                }
+              }
+            },
+          ),
+        ],
+        child: BlocBuilder<AmcVisitReportsBloc, AmcVisitReportsState>(
       bloc: _reportsBloc,
       builder: (context, state) {
         int reportsCount = widget.reportsCreated;
         bool isLoading = state is AmcVisitReportsLoadingState;
+        bool hasDraftReport = false;
         
         String visitStatus = 'amc_details_status_progress'.tr();
         Color badgeBorderColor = const Color(0xFF1565C0);
@@ -69,6 +109,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
 
         if (state is AmcVisitReportsSuccessState) {
           reportsCount = state.data.data.reports.length;
+          hasDraftReport = state.data.data.reports.any((report) => report.status.toLowerCase() == 'draft');
           final statusString = state.data.data.visit.status.toLowerCase();
           
           if (statusString == 'pending') {
@@ -90,78 +131,79 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
         }
     return Column(
       children: [
+        // ── Header ────────────────────────────────────────────────
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    size: 20,
+                    color: Color(0xFF5C616E),
+                  ),
+                  onPressed: widget.onBack,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.title,
+                    style: AppFont.style(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0D121F),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 14,
+                        color: Color(0xFF1565C0),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        widget.location,
+                        style: AppFont.style(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFFA5ABB7),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
         // ── Scrollable body ──────────────────────────────────────────────────
         Expanded(
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Header ────────────────────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            size: 20,
-                            color: Color(0xFF5C616E),
-                          ),
-                          onPressed: widget.onBack,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.title,
-                            style: AppFont.style(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFF0D121F),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.location_on_outlined,
-                                size: 14,
-                                color: Color(0xFF1565C0),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                widget.location,
-                                style: AppFont.style(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFFA5ABB7),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
                 // ── Visit Info Card ────────────────────────────────────────
-                Padding(
+                if (!widget.isFromHistory)
+                  Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 8,
@@ -265,10 +307,12 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                if (!widget.isFromHistory)
+                  const SizedBox(height: 20),
 
                 // ── Reports Created label ──────────────────────────────────
-                Center(
+                if (!widget.isFromHistory)
+                  Center(
                   child: Text(
                     reportsCount > 0
                         ? '${'amc_details_reports_created'.tr()} ($reportsCount)'
@@ -306,6 +350,181 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                           submittedDateStr = report.submittedAt;
                         }
                       }
+                    }
+
+                    if (widget.isFromHistory) {
+                      final report = state is AmcVisitReportsSuccessState
+                          ? state.data.data.reports[index]
+                          : null;
+                      return Container(
+                        margin: const EdgeInsets.only(
+                          left: 20,
+                          right: 20,
+                          bottom: 16,
+                        ),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.04),
+                              blurRadius: 15,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Title & Date Row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Report ${reportsCount - index}',
+                                  style: AppFont.style(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w800,
+                                    color: const Color(0xFF0D121F),
+                                  ),
+                                ),
+                                Text(
+                                  submittedDateStr ?? 'Not submitted',
+                                  style: AppFont.style(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                    color: const Color(0xFFA5ABB7),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            // Location Row
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.location_on_outlined,
+                                  size: 16,
+                                  color: Color(0xFFA5ABB7),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    report?.siteName ?? widget.location,
+                                    style: AppFont.style(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800,
+                                      color: const Color(0xFF7A8699),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                            const SizedBox(height: 16),
+                            // Technician Row
+                            Row(
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFF9FAFB),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.person_outline,
+                                    size: 20,
+                                    color: Color(0xFFCDD0D8),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        report?.technicianRepresentativeName ?? 'Unknown Technician',
+                                        style: AppFont.style(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w800,
+                                          color: const Color(0xFF0D121F),
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        report?.dealerName ?? '',
+                                        style: AppFont.style(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w800,
+                                          color: const Color(0xFFA5ABB7),
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: isSubmitted ? const Color(0xFFE8F5E9) : const Color(0xFFFFE0B2),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    isSubmitted ? 'SUBMITTED' : 'DRAFT',
+                                    style: AppFont.style(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w800,
+                                      color: isSubmitted ? const Color(0xFF00A76F) : const Color(0xFFE65100),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 44,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (reportId != null) {
+                                    _pdfBloc.add(FetchAmcReportPdfEvent(reportId: reportId));
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF1565C0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'View Report ${reportsCount - index}',
+                                      style: AppFont.style(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w900,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Icon(Icons.chevron_right, color: Colors.white, size: 16),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
                     }
 
                     return Container(
@@ -349,7 +568,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                 Row(
                                   children: [
                                     Text(
-                                      'Report ${index + 1}',
+                                      'Report ${reportsCount - index}',
                                       style: AppFont.style(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w900,
@@ -387,7 +606,9 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                       IconButton(
                                         icon: const Icon(Icons.delete_outline, color: Color(0xFFF44336), size: 20),
                                         onPressed: () {
-                                          // TODO: Delete action
+                                          if (reportId != null) {
+                                            _showDeleteDialog(context, reportId);
+                                          }
                                         },
                                         constraints: const BoxConstraints(),
                                         padding: const EdgeInsets.only(left: 4),
@@ -415,21 +636,22 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                   }),
 
                   // + Create Another Report (dashed)
-                  GestureDetector(
-                    onTap: widget.onSubmit,
+                  if (!widget.isFromHistory)
+                    GestureDetector(
+                    onTap: hasDraftReport ? null : widget.onSubmit,
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF3F8FF),
+                        color: hasDraftReport ? const Color(0xFFE5E7EB) : const Color(0xFFF3F8FF),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.add,
-                            color: Color(0xFF1565C0),
+                            color: hasDraftReport ? const Color(0xFFA5ABB7) : const Color(0xFF1565C0),
                             size: 18,
                           ),
                           const SizedBox(width: 8),
@@ -438,7 +660,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                             style: AppFont.style(
                               fontSize: 14,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF1565C0),
+                              color: hasDraftReport ? const Color(0xFFA5ABB7) : const Color(0xFF1565C0),
                             ),
                           ),
                         ],
@@ -453,7 +675,8 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
         ),
 
         // ── Bottom "Complete AMC Work" bar ───────────────────────────────────
-        Container(
+        if (!widget.isFromHistory)
+          Container(
           color: const Color(0xFFF8F8F8),
           padding: const EdgeInsets.fromLTRB(22, 12, 22, 24),
           child: GestureDetector(
@@ -495,6 +718,129 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
         ),
       ],
     );
+      },
+    ),
+      ),
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, String reportId) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.of(dialogContext).pop(),
+                      child: const Icon(
+                        Icons.close,
+                        color: Color(0xFFC4C4C4),
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFF0F0),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.error_outline,
+                      color: Color(0xFFF44336),
+                      size: 32,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Delete Draft Report',
+                  style: AppFont.style(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF0D121F),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Are you sure you want to delete this draft report? This action cannot be undone.',
+                  style: AppFont.style(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF6B7280),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFF3F4F6),
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          'Cancel',
+                          style: AppFont.style(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF374151),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // TODO: implement actual delete logic if available in bloc
+                          Navigator.of(dialogContext).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFE50000),
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          'Delete',
+                          style: AppFont.style(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
       },
     );
   }
