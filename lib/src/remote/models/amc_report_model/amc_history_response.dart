@@ -1,0 +1,124 @@
+import 'package:equatable/equatable.dart';
+
+class AmcHistoryResponse extends Equatable {
+  final int status;
+  final bool success;
+  final List<AmcHistoryData> data;
+  final String message;
+
+  const AmcHistoryResponse({
+    required this.status,
+    required this.success,
+    required this.data,
+    required this.message,
+  });
+
+  factory AmcHistoryResponse.fromJson(Map<String, dynamic> json) {
+    return AmcHistoryResponse(
+      status: json['status'] ?? 0,
+      success: json['success'] ?? false,
+      data: (json['data'] as List<dynamic>?)
+              ?.map((e) => AmcHistoryData.fromJson(e))
+              .toList() ??
+          [],
+      message: json['message'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'status': status,
+      'success': success,
+      'data': data.map((e) => e.toJson()).toList(),
+      'message': message,
+    };
+  }
+
+  @override
+  List<Object?> get props => [status, success, data, message];
+}
+
+class AmcHistoryData extends Equatable {
+  final String id;
+  final String amcVisitId;
+  final int visitNumber;
+  final String customerName;
+  final String siteName;
+  final String dealerName;
+  final String customerRepresentativeName;
+  final String technicianRepresentativeName;
+  final String status;
+  final String submittedAt;
+  final bool feedbackSubmitted;
+  final String? qrCodeUrl;
+  final String? qrCodeImage;
+
+  const AmcHistoryData({
+    required this.id,
+    required this.amcVisitId,
+    required this.visitNumber,
+    required this.customerName,
+    required this.siteName,
+    required this.dealerName,
+    required this.customerRepresentativeName,
+    required this.technicianRepresentativeName,
+    required this.status,
+    required this.submittedAt,
+    required this.feedbackSubmitted,
+    this.qrCodeUrl,
+    this.qrCodeImage,
+  });
+
+  factory AmcHistoryData.fromJson(Map<String, dynamic> json) {
+    return AmcHistoryData(
+      id: json['id'] ?? '',
+      amcVisitId: json['amc_visit_id'] ?? '',
+      visitNumber: json['visit_number'] ?? 0,
+      customerName: json['customer_name'] ?? '',
+      siteName: json['site_name'] ?? '',
+      dealerName: json['dealer_name'] ?? '',
+      customerRepresentativeName: json['customer_representative_name'] ?? '',
+      technicianRepresentativeName: json['technician_representative_name'] ?? '',
+      status: json['status'] ?? '',
+      submittedAt: json['submitted_at'] ?? '',
+      feedbackSubmitted: json['feedback_submitted'] ?? false,
+      qrCodeUrl: json['qr_code_url'],
+      qrCodeImage: json['qr_code_image'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'amc_visit_id': amcVisitId,
+      'visit_number': visitNumber,
+      'customer_name': customerName,
+      'site_name': siteName,
+      'dealer_name': dealerName,
+      'customer_representative_name': customerRepresentativeName,
+      'technician_representative_name': technicianRepresentativeName,
+      'status': status,
+      'submitted_at': submittedAt,
+      'feedback_submitted': feedbackSubmitted,
+      'qr_code_url': qrCodeUrl,
+      'qr_code_image': qrCodeImage,
+    };
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        amcVisitId,
+        visitNumber,
+        customerName,
+        siteName,
+        dealerName,
+        customerRepresentativeName,
+        technicianRepresentativeName,
+        status,
+        submittedAt,
+        feedbackSubmitted,
+        qrCodeUrl,
+        qrCodeImage,
+      ];
+}

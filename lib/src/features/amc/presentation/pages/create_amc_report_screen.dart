@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
@@ -317,8 +318,8 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             }
 
             if (state is AmcReportStep3SuccessState) {
-              if (state.data.data.qrCodeImage != null && state.data.data.qrCodeImage!.isNotEmpty) {
-                 _showSuccessDialog(qrCodeImage: state.data.data.qrCodeImage);
+              if (state.data.data.qrCodeBase64 != null && state.data.data.qrCodeBase64!.isNotEmpty) {
+                 _showSuccessDialog(qrCodeBase64: state.data.data.qrCodeBase64);
               } else {
                  _showSuccessDialog();
               }
@@ -387,20 +388,20 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             ),
           ),
           const SizedBox(width: 16),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F8FF),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-            ),
-            child: const Icon(
-              Icons.verified_user_outlined,
-              color: Color(0xFF1565C0),
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 12),
+          // Container(
+          //   padding: const EdgeInsets.all(8),
+          //   decoration: BoxDecoration(
+          //     color: const Color(0xFFF1F8FF),
+          //     borderRadius: BorderRadius.circular(8),
+          //     border: Border.all(color: const Color(0xFFE5E7EB)),
+          //   ),
+          //   child: const Icon(
+          //     Icons.verified_user_outlined,
+          //     color: Color(0xFF1565C0),
+          //     size: 20,
+          //   ),
+          // ),
+          // const SizedBox(width: 12),
           Text(
             'amc_report_title'.tr(),
             style: AppFont.style(
@@ -2241,7 +2242,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     );
   }
 
-  void _showSuccessDialog({String? qrCodeImage}) {
+  void _showSuccessDialog({String? qrCodeBase64}) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -2303,9 +2304,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: const Color(0xFFF1F2F6)),
                   ),
-                  child: qrCodeImage != null && qrCodeImage.isNotEmpty
-                      ? Image.network(
-                          qrCodeImage,
+                  child: qrCodeBase64 != null && qrCodeBase64.isNotEmpty
+                      ? Image.memory(
+                          base64Decode(qrCodeBase64),
                           width: 180,
                           height: 180,
                           fit: BoxFit.contain,

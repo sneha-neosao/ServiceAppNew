@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:service_app/src/remote/models/amc_report_model/amc_history_response.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_step1_response.dart';
 import 'package:service_app/src/domain/usecases/amc_report/get_amc_report_step1_autofill_usecase.dart';
 import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step2_usecase.dart';
@@ -205,6 +206,10 @@ sealed class RemoteDataSource {
 
   Future<AmcReportStep3Response> amcReportStep3(
     PostAmcReportStep3Params params,
+    String token,
+  );
+
+  Future<AmcHistoryResponse> amcReportsHistory(
     String token,
   );
 
@@ -1162,6 +1167,30 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = AmcReportStep3Response.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e is ServerException) {
+        rethrow;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<AmcHistoryResponse> amcReportsHistory(String token) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: ApiUrl.amcReportsHistory,
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      final respData = AmcHistoryResponse.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

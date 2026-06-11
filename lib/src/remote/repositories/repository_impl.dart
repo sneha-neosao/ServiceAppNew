@@ -42,6 +42,7 @@ import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
 import 'package:service_app/src/remote/models/commissioning_report_step1_model/commissioning_report_step1_response.dart';
 import 'package:service_app/src/remote/models/commissioning_report_step2_autofill_model/commissioning_report_step2_response.dart';
 import 'package:service_app/src/remote/models/commissioning_work_model/commissioning_work_list_response.dart';
+import 'package:service_app/src/remote/models/amc_report_model/amc_history_response.dart';
 import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
 import 'package:service_app/src/remote/models/profile_details_model/profile_details_model.dart';
 import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_step1_autofill_usecase.dart';
@@ -294,6 +295,8 @@ abstract class Repository {
   Future<Either<Failure, AmcReportStep3Response>> amcReportStep3(
     PostAmcReportStep3Params params,
   );
+
+  Future<Either<Failure, AmcHistoryResponse>> amcReportsHistory();
 
   Future<Either<Failure, AmcReportStep1Response>> amcReportStep1AutoFill(
     String reportId,
@@ -2219,6 +2222,35 @@ class AuthRepositoryImpl implements Repository {
           if (token.isEmpty) throw AuthException();
 
           final respData = await _remoteDataSource.amcReportStep3(params, token);
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, AmcHistoryResponse>> amcReportsHistory() async {
+    return _networkInfo.check<AmcHistoryResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          if (token.isEmpty) throw AuthException();
+
+          final respData = await _remoteDataSource.amcReportsHistory(token);
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));

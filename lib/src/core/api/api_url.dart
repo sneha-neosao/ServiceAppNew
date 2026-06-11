@@ -83,6 +83,8 @@ class ApiUrl {
       'technician/amc-report/step3';
   static const String amcReportAssignedTechnicians =
       'technician/amc-report/';
+  static const String amcReportsHistory =
+      'technician/amc-reports/history';
 
   static const serviceCallsPending = "/api/v1/technician/service-calls/pending";
 

@@ -45,7 +45,7 @@ class AmcReportStep3Data extends Equatable {
   final List<String> savedWorkPhotos;
   final String technicianRepresentativeName;
   final String? qrCodeUrl;
-  final String? qrCodeImage;
+  final String? qrCodeBase64;
 
   const AmcReportStep3Data({
     required this.id,
@@ -57,7 +57,7 @@ class AmcReportStep3Data extends Equatable {
     required this.savedWorkPhotos,
     required this.technicianRepresentativeName,
     this.qrCodeUrl,
-    this.qrCodeImage,
+    this.qrCodeBase64,
   });
 
   factory AmcReportStep3Data.fromJson(Map<String, dynamic> json) {
@@ -71,7 +71,7 @@ class AmcReportStep3Data extends Equatable {
       savedWorkPhotos: (json['saved_work_photos'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       technicianRepresentativeName: json['technician_representative_name']?.toString() ?? '',
       qrCodeUrl: json['qr_code_url']?.toString(),
-      qrCodeImage: json['qr_code_image']?.toString(),
+      qrCodeBase64: json['qr_code_base64']?.toString(),
     );
   }
 
@@ -86,7 +86,7 @@ class AmcReportStep3Data extends Equatable {
       'saved_work_photos': savedWorkPhotos,
       'technician_representative_name': technicianRepresentativeName,
       'qr_code_url': qrCodeUrl,
-      'qr_code_image': qrCodeImage,
+      'qr_code_base64': qrCodeBase64,
     };
   }
 
@@ -101,6 +101,6 @@ class AmcReportStep3Data extends Equatable {
         savedWorkPhotos,
         technicianRepresentativeName,
         qrCodeUrl,
-        qrCodeImage,
+        qrCodeBase64,
       ];
 }

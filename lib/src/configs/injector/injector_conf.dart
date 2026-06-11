@@ -11,6 +11,8 @@ import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step3
 import 'package:service_app/src/domain/usecases/amc_report/get_amc_report_step1_autofill_usecase.dart';
 import 'package:service_app/src/domain/usecases/amc_report/get_amc_report_step2_autofill_usecase.dart';
 import 'package:service_app/src/domain/usecases/amc_report/get_amc_assigned_technicians_usecase.dart';
+import 'package:service_app/src/domain/usecases/amc_report/get_amc_reports_history_usecase.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_reports_history_bloc/amc_reports_history_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:service_app/src/features/common/domain/usecase/customer_usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
@@ -605,6 +607,12 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => AmcVisitReportsUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(() => AmcReportsHistoryBloc(getIt<GetAmcReportsHistoryUseCase>()));
+
+  getIt.registerLazySingleton(
+    () => GetAmcReportsHistoryUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(

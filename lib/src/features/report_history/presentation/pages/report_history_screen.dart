@@ -8,6 +8,9 @@ import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_history_bloc/commissioning_report_history_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_history_bloc/commissioning_report_history_event.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_history_bloc/commissioning_report_history_state.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_reports_history_bloc/amc_reports_history_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_reports_history_bloc/amc_reports_history_event.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_reports_history_bloc/amc_reports_history_state.dart';
 import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
@@ -45,6 +48,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   int _selectedTab = 0; // Default to 'Commissioning'
   late CommissioningReportHistoryBloc _historyBloc;
   late ServiceCallReportHistoryBloc _serviceCallHistoryBloc;
+  late AmcReportsHistoryBloc _amcReportsHistoryBloc;
   late CommissioningReportDetailsBloc _detailsBloc;
   late CommissioningReportPdfBloc _pdfBloc;
   late ServiceCallReportPdfBloc _serviceCallPdfBloc;
@@ -80,16 +84,22 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     _serviceCallHistoryBloc.add(FetchServiceCallReportHistory());
   }
 
+  void _fetchAmcHistory() {
+    _amcReportsHistoryBloc.add(GetAmcReportsHistoryEvent());
+  }
+
   @override
   void initState() {
     super.initState();
     _historyBloc = getIt<CommissioningReportHistoryBloc>();
     _serviceCallHistoryBloc = getIt<ServiceCallReportHistoryBloc>();
+    _amcReportsHistoryBloc = getIt<AmcReportsHistoryBloc>();
     _detailsBloc = getIt<CommissioningReportDetailsBloc>();
     _pdfBloc = getIt<CommissioningReportPdfBloc>();
     _serviceCallPdfBloc = getIt<ServiceCallReportPdfBloc>();
     _fetchReportHistory();
     _fetchServiceCallHistory();
+    _fetchAmcHistory();
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
     _sitesBloc = getIt<SitesBloc>();
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
@@ -99,6 +109,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   void dispose() {
     _historyBloc.close();
     _serviceCallHistoryBloc.close();
+    _amcReportsHistoryBloc.close();
     _detailsBloc.close();
     _pdfBloc.close();
     _serviceCallPdfBloc.close();
@@ -474,9 +485,74 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           return const SizedBox();
                         },
                       )
-                    : ListView(
-                        padding: const EdgeInsets.all(16),
-                        children: _buildReportList(),
+                    : BlocBuilder<AmcReportsHistoryBloc, AmcReportsHistoryState>(
+                        bloc: _amcReportsHistoryBloc,
+                        builder: (context, state) {
+                          if (state is AmcReportsHistoryLoadingState ||
+                              state is AmcReportsHistoryInitial) {
+                            return ListView.separated(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: 3,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 16),
+                              itemBuilder: (context, index) =>
+                                  const ListCardShimmer(),
+                            );
+                          } else if (state is AmcReportsHistoryErrorState) {
+                            return Center(
+                              child: Text(
+                                state.errorMessage,
+                                style: AppFont.style(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            );
+                          } else if (state is AmcReportsHistorySuccessState) {
+                            final items = state.response.data;
+                            if (items.isEmpty) {
+                              return Center(
+                                child: Text(
+                                  'reports_empty_amc'.tr(),
+                                  style: AppFont.style(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFFA5ABB7),
+                                  ),
+                                ),
+                              );
+                            }
+                            return ListView.separated(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: items.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 16),
+                              itemBuilder: (context, index) {
+                                final item = items[index];
+                                String formattedDate = item.submittedAt;
+                                try {
+                                  final dt = DateTime.parse(item.submittedAt);
+                                  formattedDate = DateFormat('dd MMM yyyy').format(dt);
+                                } catch (_) {}
+
+                                return _ReportCard(
+                                  id: item.id,
+                                  reportId: item.id,
+                                  type: ReportType.amc,
+                                  companyName: item.customerName,
+                                  location: item.siteName,
+                                  date: formattedDate,
+                                  technician: item.technicianRepresentativeName,
+                                  technicianId: item.dealerName,
+                                  feedbackSubmitted: item.feedbackSubmitted,
+                                  qrCodeImage: item.qrCodeImage,
+                                );
+                              },
+                            );
+                          }
+                          return const SizedBox();
+                        },
                       ),
               ),
             ),
@@ -554,6 +630,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           _fetchReportHistory();
         } else if (index == 1) {
           _fetchServiceCallHistory();
+        } else if (index == 2) {
+          _fetchAmcHistory();
         }
       },
       child: Container(
