@@ -7,29 +7,36 @@ import 'package:service_app/src/remote/models/amc_report_model/amc_report_step1_
 
 class PostAmcReportStep1Params extends Equatable {
   final String amcVisitId;
+  final String? amcReportId;
   final List<String> technicianIds;
   final String memberPresentsCustomerSide;
   final String agenda;
 
   const PostAmcReportStep1Params({
     required this.amcVisitId,
+    this.amcReportId,
     required this.technicianIds,
     required this.memberPresentsCustomerSide,
     required this.agenda,
   });
 
   Map<String, dynamic> toJson() {
-    return {
+    final Map<String, dynamic> data = {
       "amc_visit_id": amcVisitId,
       "technician_ids": technicianIds,
       "member_presents_customer_side": memberPresentsCustomerSide,
       "agenda": agenda,
     };
+    if (amcReportId != null && amcReportId!.isNotEmpty) {
+      data["amc_report_id"] = amcReportId;
+    }
+    return data;
   }
 
   @override
   List<Object?> get props => [
         amcVisitId,
+        amcReportId,
         technicianIds,
         memberPresentsCustomerSide,
         agenda,

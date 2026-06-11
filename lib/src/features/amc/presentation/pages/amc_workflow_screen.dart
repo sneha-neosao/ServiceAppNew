@@ -91,6 +91,8 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
         return CreateAmcReportScreen(
           visitId: _selectedAmcVisitId ?? '',
           reportId: _selectedReportId,
+          customerName: _selectedAmcTitle ?? '',
+          siteName: _selectedAmcLocation ?? '',
           onBack: () => setState(() => _viewState = AmcViewState.details),
           onSubmit: () => setState(() {
             _amcReportsCreated++;

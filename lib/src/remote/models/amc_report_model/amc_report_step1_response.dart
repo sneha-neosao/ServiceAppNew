@@ -57,13 +57,22 @@ class AmcReportStep1Data extends Equatable {
   });
 
   factory AmcReportStep1Data.fromJson(Map<String, dynamic> json) {
+    String parseStringOrList(dynamic value) {
+      if (value == null) return '';
+      if (value is String) return value;
+      if (value is List) {
+        return value.map((e) => e.toString()).join(', ');
+      }
+      return value.toString();
+    }
+
     return AmcReportStep1Data(
-      id: json['id'] ?? '',
-      memberPresentsCustomerSide: json['member_presents_customer_side'] ?? '',
-      agenda: json['agenda'] ?? '',
-      dealerName: json['dealer_name'] ?? '',
-      customerName: json['customer_name'] ?? '',
-      siteName: json['site_name'] ?? '',
+      id: json['id']?.toString() ?? '',
+      memberPresentsCustomerSide: parseStringOrList(json['member_presents_customer_side']),
+      agenda: json['agenda']?.toString() ?? '',
+      dealerName: json['dealer_name']?.toString() ?? '',
+      customerName: json['customer_name']?.toString() ?? '',
+      siteName: json['site_name']?.toString() ?? '',
       assignedTechnicians: (json['assigned_technicians'] as List? ?? [])
           .map((e) => AssignedTechnician.fromJson(e))
           .toList(),

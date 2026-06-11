@@ -1,5 +1,11 @@
+import 'dart:io';
+import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:signature/signature.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,12 +17,25 @@ import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_bloc.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_event.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_state.dart';
+import 'dart:convert';
+import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
 import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
+import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
+import 'package:service_app/src/features/widgets/snackbar_widget.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_bloc/amc_report_step2_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_bloc/amc_report_step2_event.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_bloc/amc_report_step2_state.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_event.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_state.dart';
+import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step2_usecase.dart';
 class CreateAmcReportScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSubmit;
   final String visitId;
   final String? reportId;
+  final String customerName;
+  final String siteName;
 
   const CreateAmcReportScreen({
     super.key,
@@ -24,6 +43,8 @@ class CreateAmcReportScreen extends StatefulWidget {
     required this.onSubmit,
     required this.visitId,
     this.reportId,
+    this.customerName = '',
+    this.siteName = '',
   });
 
   @override
@@ -34,6 +55,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
   int _currentStep = 1;
   bool _isLoading = false;
   bool _isAutofillLoading = false;
+  bool _hasFetchedStep2Autofill = false;
 
   String _dealerName = '';
   String _customerName = '';
@@ -41,23 +63,93 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
   late final AmcReportStep1Bloc _step1Bloc;
   late final AmcReportStep1AutofillBloc _step1AutofillBloc;
-  final TextEditingController _memberPresentsController = TextEditingController();
+  late final AmcReportStep2Bloc _step2Bloc;
+  late final AmcReportStep2AutofillBloc _step2AutofillBloc;
+  late final TechnicianBloc _technicianBloc;
+
+  String? _currentReportId;
+
+  // Step 2 variables
+  bool _mechNA = false;
+  bool _pipeNA = false;
+  bool _elecNA = false;
+  bool _operationNA = false;
+  List<String> _mechanicalSelected = [];
+  List<String> _pipelineSelected = [];
+  List<String> _electricalSelected = [];
+  List<String> _operationSelected = [];
+  String? _vibrationSelected;
+
+  final List<TextEditingController> _technicians = [TextEditingController()];
+  final List<TextEditingController> _memberPresentsControllers = [TextEditingController()];
   final TextEditingController _agendaController = TextEditingController();
+
+  // Step 3 variables
+  final _technicianRemarksController = TextEditingController();
+  final _customerRemarksController = TextEditingController();
+  final _customerRepNameController = TextEditingController();
+  String? _selectedTechnicianRepId;
+  String? _loggedInTechnicianId;
+  File? _technicianSignatureFile;
+  File? _customerSignatureFile;
+  String? _existingTechnicianSignatureUrl;
+  String? _existingCustomerSignatureUrl;
+  final List<File> _workPhotos = [];
+  List<String> _existingWorkPhotosUrls = [];
 
   @override
   void initState() {
     super.initState();
+    _loadSession();
+    _currentReportId = widget.reportId;
     _step1Bloc = getIt<AmcReportStep1Bloc>();
     _step1AutofillBloc = getIt<AmcReportStep1AutofillBloc>();
+    _step2Bloc = getIt<AmcReportStep2Bloc>();
+    _step2AutofillBloc = getIt<AmcReportStep2AutofillBloc>();
+    _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
 
-    _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
+    if (widget.reportId != null) {
+      _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
+    }
   }
 
   @override
   void dispose() {
-    _memberPresentsController.dispose();
+    for (var c in _memberPresentsControllers) {
+      c.dispose();
+    }
     _agendaController.dispose();
+    _technicianRemarksController.dispose();
+    _customerRemarksController.dispose();
+    _customerRepNameController.dispose();
+    _technicianBloc.close();
+    _step1Bloc.close();
+    _step1AutofillBloc.close();
+    _step2AutofillBloc.close();
+    _step2Bloc.close();
+    for (var c in _technicians) {
+      c.dispose();
+    }
     super.dispose();
+  }
+
+  Future<void> _loadSession() async {
+    final session = await SessionManager.getUserSession();
+    if (session?.technician != null) {
+      if (mounted) {
+        setState(() {
+          _loggedInTechnicianId = session!.technician!.id;
+          _selectedTechnicianRepId ??= _loggedInTechnicianId;
+        });
+      }
+    } else if (session?.dealer != null) {
+      if (mounted) {
+        setState(() {
+          _loggedInTechnicianId = session!.dealer!.id;
+          _selectedTechnicianRepId ??= _loggedInTechnicianId;
+        });
+      }
+    }
   }
 
   @override
@@ -74,7 +166,12 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             }
 
             if (state is AmcReportStep1SuccessState) {
+              _currentReportId = state.data.data.id;
               setState(() => _currentStep++);
+              if (widget.reportId != null && !_hasFetchedStep2Autofill) {
+                _hasFetchedStep2Autofill = true;
+                _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
+              }
             } else if (state is AmcReportStep1FailureState) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
@@ -97,9 +194,97 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 _customerName = state.data.data.customerName;
                 _siteName = state.data.data.siteName;
               });
-              _memberPresentsController.text = state.data.data.memberPresentsCustomerSide;
+              if (state.data.data.memberPresentsCustomerSide.isNotEmpty) {
+                _memberPresentsControllers.clear();
+                for (var name in state.data.data.memberPresentsCustomerSide.split(',')) {
+                  if (name.trim().isNotEmpty) {
+                    _memberPresentsControllers.add(TextEditingController(text: name.trim()));
+                  }
+                }
+                if (_memberPresentsControllers.isEmpty) {
+                  _memberPresentsControllers.add(TextEditingController());
+                }
+              } else {
+                _memberPresentsControllers.first.text = '';
+              }
               _agendaController.text = state.data.data.agenda;
+              if (state.data.data.assignedTechnicians.isNotEmpty) {
+                _technicians.clear();
+                for (var tech in state.data.data.assignedTechnicians) {
+                  _technicians.add(TextEditingController(text: tech.id));
+                }
+              }
             } else if (state is AmcReportStep1AutofillFailureState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+            }
+          },
+        ),
+        BlocListener<AmcReportStep2Bloc, AmcReportStep2State>(
+          bloc: _step2Bloc,
+          listener: (context, state) {
+            if (state is AmcReportStep2LoadingState) {
+              setState(() => _isLoading = true);
+            } else {
+              setState(() => _isLoading = false);
+            }
+
+            if (state is AmcReportStep2SuccessState) {
+              setState(() => _currentStep++);
+            } else if (state is AmcReportStep2ErrorState) {
+              appSnackBar(context, const Color(0xFFF44336), state.message);
+            }
+          },
+        ),
+        BlocListener<AmcReportStep2AutofillBloc, AmcReportStep2AutofillState>(
+          bloc: _step2AutofillBloc,
+          listener: (context, state) {
+            if (state is AmcReportStep2AutofillLoadingState) {
+              setState(() => _isAutofillLoading = true);
+            } else {
+              setState(() => _isAutofillLoading = false);
+            }
+
+            if (state is AmcReportStep2AutofillSuccessState) {
+              setState(() {
+                _mechNA = state.data.data.isMechanicalChecklistNa;
+                _pipeNA = state.data.data.isPipelineHydraulicChecklistNa;
+                _elecNA = state.data.data.isElectricalChecklistNa;
+                _operationNA = state.data.data.operationChecklistNa;
+
+                List<String> decodeMapToList(String s) {
+                  if (s.isEmpty) return [];
+                  try {
+                    Map<String, dynamic> map = jsonDecode(s);
+                    List<String> list = [];
+                    map.forEach((key, value) {
+                      if (key == 'Vibration Checked') return; // Handled separately
+                      if (value == 'ok') {
+                        list.add('$key :');
+                      }
+                    });
+                    return list;
+                  } catch (_) {
+                    return [];
+                  }
+                }
+
+                try {
+                  if (state.data.data.mechanicalChecklist.isNotEmpty) {
+                    Map<String, dynamic> map = jsonDecode(state.data.data.mechanicalChecklist);
+                    if (map.containsKey('Vibration Checked')) {
+                      _vibrationSelected = map['Vibration Checked'].toString().toUpperCase();
+                    }
+                  }
+                } catch (_) {}
+                _mechanicalSelected = decodeMapToList(state.data.data.mechanicalChecklist);
+
+                _pipelineSelected = decodeMapToList(state.data.data.pipelineHydraulicChecklist);
+                _electricalSelected = decodeMapToList(state.data.data.electricalChecklist);
+                _operationSelected = decodeMapToList(state.data.data.operationChecklist);
+              });
+            } else if (state is AmcReportStep2AutofillFailureState) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
@@ -252,7 +437,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               child: BlocBuilder<AmcReportStep1AutofillBloc, AmcReportStep1AutofillState>(
                 bloc: _step1AutofillBloc,
                 builder: (context, state) {
-                  String currentDealer = 'Dealer Name';
+                  String currentDealer = '';
                   if (state is AmcReportStep1AutofillSuccessState && state.data.data.dealerName.isNotEmpty) {
                     currentDealer = state.data.data.dealerName;
                   }
@@ -261,14 +446,15 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        currentDealer,
-                        style: AppFont.style(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          color: const Color(0xFF0D121F),
+                      if (currentDealer.isNotEmpty)
+                        Text(
+                          currentDealer,
+                          style: AppFont.style(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF0D121F),
+                          ),
                         ),
-                      ),
                     ],
                   );
                 },
@@ -305,12 +491,100 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildSectionTitle('amc_report_technician_names'.tr()),
-            _buildAddButton(),
+            _buildSectionTitle('amc_report_technician_names'.tr(), isMandatory: true),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _technicians.add(TextEditingController());
+                });
+              },
+              child: _buildAddButton(),
+            ),
           ],
         ),
-        const SizedBox(height: 12),
-        _buildInputField('Pravin Patil', showMic: false),
+        const SizedBox(height: 16),
+        ..._technicians.asMap().entries.map((entry) {
+          int idx = entry.key;
+          TextEditingController controller = entry.value;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: BlocBuilder<TechnicianBloc, TechnicianState>(
+                    bloc: _technicianBloc,
+                    builder: (context, state) {
+                      bool isLoading = state is TechnicianLoadingState;
+                      List<dynamic> validItems = [];
+                      if (state is TechnicianSuccessState) {
+                        validItems = List.from(state.data.data);
+                      }
+                      final otherSelected = _technicians
+                          .where((c) => c != controller && c.text.isNotEmpty)
+                          .map((c) => c.text)
+                          .toSet();
+                      validItems.removeWhere(
+                        (item) => otherSelected.contains(item.id),
+                      );
+                      if (controller.text.isNotEmpty &&
+                          !validItems.any((e) => e.id == controller.text)) {
+                        if (state is TechnicianSuccessState) {
+                          try {
+                            final match = state.data.data.firstWhere(
+                              (e) => e.id == controller.text,
+                            );
+                            validItems.add(match);
+                          } catch (_) {}
+                        }
+                      }
+                      return SearchableDropdown<dynamic>(
+                        items: validItems,
+                        value: controller.text.isNotEmpty
+                            ? validItems.firstWhere(
+                                (e) => e.id == controller.text,
+                                orElse: () => null,
+                              )
+                            : null,
+                        hintText: 'commissioning_select_technician'.tr(),
+                        itemAsString: (item) => item.name,
+                        isLoading: isLoading,
+                        onChanged: (v) {
+                          if (v != null) {
+                            setState(() => controller.text = v.id);
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+                if (_technicians.length > 1) ...[
+                  const SizedBox(width: 12),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        var removed = _technicians.removeAt(idx);
+                        removed.dispose();
+                      });
+                    },
+                    child: Container(
+                      width: 54,
+                      height: 54,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF0F0),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.delete_outline,
+                        color: Color(0xFFFF5252),
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        }),
 
         const SizedBox(height: 32),
 
@@ -318,8 +592,8 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         BlocBuilder<AmcReportStep1AutofillBloc, AmcReportStep1AutofillState>(
           bloc: _step1AutofillBloc,
           builder: (context, state) {
-            String currentCustomer = 'Customer Name';
-            String currentSite = 'Site Name';
+            String currentCustomer = widget.customerName;
+            String currentSite = widget.siteName;
             
             if (state is AmcReportStep1AutofillSuccessState) {
               if (state.data.data.customerName.isNotEmpty) currentCustomer = state.data.data.customerName;
@@ -328,9 +602,12 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             
             return Column(
               children: [
-                _buildInfoRow('amc_report_customer_name'.tr(), currentCustomer),
-                const SizedBox(height: 24),
-                _buildInfoRow('amc_report_site_name'.tr(), currentSite),
+                if (currentCustomer.isNotEmpty) ...[
+                  _buildInfoRow('amc_report_customer_name'.tr(), currentCustomer),
+                  const SizedBox(height: 24),
+                ],
+                if (currentSite.isNotEmpty)
+                  _buildInfoRow('amc_report_site_name'.tr(), currentSite),
               ],
             );
           },
@@ -343,11 +620,59 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildSectionTitle('amc_report_member_presents'.tr()),
-            _buildAddButton(),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _memberPresentsControllers.add(TextEditingController());
+                });
+              },
+              child: _buildAddButton(),
+            ),
           ],
         ),
         const SizedBox(height: 12),
-        _buildInputField('Mr. Sandeep Patil', showMic: true, controller: _memberPresentsController),
+        ..._memberPresentsControllers.asMap().entries.map((entry) {
+          int idx = entry.key;
+          TextEditingController controller = entry.value;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildInputField(
+                    'amc_report_member_presents_hint'.tr(),
+                    showMic: true,
+                    controller: controller,
+                    prefixIcon: Icons.person_outline,
+                  ),
+                ),
+                if (_memberPresentsControllers.length > 1) ...[
+                  const SizedBox(width: 12),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        var removed = _memberPresentsControllers.removeAt(idx);
+                        removed.dispose();
+                      });
+                    },
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      color: Colors.transparent,
+                      child: const Center(
+                        child: Icon(
+                          Icons.remove,
+                          color: Color(0xFFFF5252),
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        }),
 
         const SizedBox(height: 32),
 
@@ -362,6 +687,13 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
   }
 
   Widget _buildStep2() {
+    if (_isAutofillLoading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24.0),
+        child: ListCardShimmer(),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -375,135 +707,166 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         ),
         const SizedBox(height: 24),
 
-        _buildChecklistCard('checklist_mech_title'.tr(), [
-          _buildChecklistItem('Pump Foundation Bolts Tight:'),
-          _buildChecklistItem('Coupling / Alignment Checked:'),
-          _buildChecklistItem('Bearing Noise Checked:'),
-          _buildChecklistItem('Abnormal Sound Checked:'),
-          _buildChecklistItem('Mechanical Seal / Gland Leakage Checked:'),
+        _buildChecklistCard('checklist_mech_title'.tr(), Icons.settings_outlined, [
+          _buildChecklistItem('Pump Foundation Bolts Tight :', _mechanicalSelected),
+          _buildChecklistItem('Coupling / Alignment Checked :', _mechanicalSelected),
+          _buildChecklistItem('Bearing Noise Checked :', _mechanicalSelected),
+          _buildChecklistItem('Abnormal Sound Checked :', _mechanicalSelected),
+          _buildChecklistItem('Mechanical Seal / Gland Leakage Checked :', _mechanicalSelected),
           _buildVibrationItem(),
-          _buildChecklistItem('Pump Cleaned:'),
-          _buildChecklistItem('Pump Not Running Dry:'),
-        ]),
-        const SizedBox(height: 24),
+          _buildChecklistItem('Pump Cleaned :', _mechanicalSelected),
+          _buildChecklistItem('Pump Not Running Dry :', _mechanicalSelected, isLast: true),
+        ], _mechNA, () => setState(() => _mechNA = !_mechNA)),
+        const SizedBox(height: 32),
 
-        _buildChecklistCard('checklist_pipe_title'.tr(), [
-          _buildChecklistItem('Suction Line (Air & Water) Leakage Checked:'),
-          _buildChecklistItem('Delivery Line (Air & Water) Leakage Checked:'),
-          _buildChecklistItem(
-            'NRV / Butterfly Valve / Gate Valve Working Checked:',
-          ),
-          _buildChecklistItem('Strainer / Foot Valve Cleaned:'),
-          _buildChecklistItem(
-            'Suction / Delivery Valve Condition & Operation Checked:',
-          ),
-        ]),
-        const SizedBox(height: 24),
+        _buildChecklistCard('checklist_pipe_title'.tr(), Icons.water_drop_outlined, [
+          _buildChecklistItem('Suction Line (Air & Water) Leakage Checked :', _pipelineSelected),
+          _buildChecklistItem('Delivery Line (Air & Water) Leakage Checked :', _pipelineSelected),
+          _buildChecklistItem('NRV / Butterfly Valve / Gate Valve Working Checked :', _pipelineSelected),
+          _buildChecklistItem('Strainer / Foot Valve Cleaned :', _pipelineSelected),
+          _buildChecklistItem('Suction / Delivery Valve Condition & Operation Checked :', _pipelineSelected),
+          _buildChecklistItem('Pressure Switch / Pressure Transmitter Checked :', _pipelineSelected, isLast: true),
+        ], _pipeNA, () => setState(() => _pipeNA = !_pipeNA)),
+        const SizedBox(height: 32),
 
-        _buildChecklistCard('checklist_elec_title'.tr(), [
-          _buildChecklistItem('Panel Cleaned:'),
-          _buildChecklistItem('Contactor / Relay Condition Checked:'),
-          _buildChecklistItem('Overload Setting Checked:'),
-          _buildChecklistItem('Loose Wiring / Terminal Tightening Done:'),
-          _buildChecklistItem('Phase / Voltage / Current Checked:'),
-          _buildChecklistItem('Earthing Checked:'),
-        ]),
-        const SizedBox(height: 24),
+        _buildChecklistCard('checklist_elec_title'.tr(), Icons.bolt_outlined, [
+          _buildChecklistItem('Panel Cleaned :', _electricalSelected),
+          _buildChecklistItem('Contactor / Relay Condition Checked :', _electricalSelected),
+          _buildChecklistItem('Overload Setting Checked :', _electricalSelected),
+          _buildChecklistItem('Loose Wiring / Terminal Tightening Done :', _electricalSelected),
+          _buildChecklistItem('Phase / Voltage / Current Checked :', _electricalSelected),
+          _buildChecklistItem('Earthing Checked :', _electricalSelected, isLast: true),
+        ], _elecNA, () => setState(() => _elecNA = !_elecNA)),
+        const SizedBox(height: 32),
 
-        _buildChecklistCard('checklist_pump_title'.tr(), [
-          _buildChecklistItem('Pump Started In Manual Mode:'),
-          _buildChecklistItem('Auto Operation Checked:'),
-          _buildChecklistItem('Water Flow & Pressure Checked:'),
-          _buildChecklistItem('Direction of Rotation Checked:'),
-        ]),
+        _buildChecklistCard('checklist_pump_title'.tr(), Icons.monitor_heart_outlined, [
+          _buildChecklistItem('Pump Started in Manual Mode :', _operationSelected),
+          _buildChecklistItem('Auto Operation Checked :', _operationSelected),
+          _buildChecklistItem('Water Flow & Pressure Checked :', _operationSelected),
+          _buildChecklistItem('Direction of Rotation Checked :', _operationSelected, isLast: true),
+        ], _operationNA, () => setState(() => _operationNA = !_operationNA)),
       ],
     );
   }
 
-  Widget _buildChecklistCard(String title, List<Widget> items) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
+  Widget _buildChecklistCard(String title, IconData icon, List<Widget> items, bool isNA, VoidCallback onNATap) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: const Color(0xFF0D121F), size: 20),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                title,
+                style: AppFont.style(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFF0D121F),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: onNATap,
+              child: Row(
+                children: [
+                  Container(
+                    width: 22,
+                    height: 22,
+                    decoration: BoxDecoration(
+                      color: isNA ? const Color(0xFF1565C0) : Colors.white,
+                      border: Border.all(
+                        color: isNA ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: isNA ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'NA',
                     style: AppFont.style(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      color: const Color(0xFF1565C0),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF7A8699),
                     ),
                   ),
-                ),
-                Container(
-                  width: 16,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '(NA)',
-                  style: AppFont.style(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF7A8699),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+          ],
+        ),
+        const SizedBox(height: 24),
+        IgnorePointer(
+          ignoring: isNA,
+          child: Opacity(
+            opacity: isNA ? 0.5 : 1.0,
             child: Column(children: items),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildChecklistItem(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Text(
-              text,
-              style: AppFont.style(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF5C6672),
+  Widget _buildChecklistItem(String text, List<String> selectedList, {bool isLast = false}) {
+    bool isSelected = selectedList.contains(text);
+    return Container(
+      padding: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            if (isSelected) {
+              selectedList.remove(text);
+            } else {
+              selectedList.add(text);
+            }
+          });
+        },
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text(
+                text,
+                style: AppFont.style(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF5C6672),
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 16),
-          const Icon(Icons.circle_outlined, color: Color(0xFFE5E7EB), size: 20),
-        ],
+            const SizedBox(width: 16),
+            Container(
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                color: isSelected ? const Color(0xFF1565C0) : Colors.white,
+                border: Border.all(
+                  color: isSelected ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
+                  width: 1.5,
+                ),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: isSelected ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildVibrationItem() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
+    return Container(
+      padding: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       child: Row(
         children: [
           Expanded(
             child: Text(
-              'checklist_vibration'.tr(),
+              'checklist_vibration'.tr() + " :",
               style: AppFont.style(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
@@ -513,33 +876,63 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           ),
           Row(
             children: [
-              const Icon(
-                Icons.circle_outlined,
-                color: Color(0xFFE5E7EB),
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Normal',
-                style: AppFont.style(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF5C6672),
+              GestureDetector(
+                onTap: () => setState(() => _vibrationSelected = 'NORMAL'),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 22,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        color: _vibrationSelected == 'NORMAL' ? const Color(0xFF1565C0) : Colors.white,
+                        border: Border.all(
+                          color: _vibrationSelected == 'NORMAL' ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: _vibrationSelected == 'NORMAL' ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'NORMAL',
+                      style: AppFont.style(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF5C6672),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(width: 24),
-              const Icon(
-                Icons.circle_outlined,
-                color: Color(0xFFE5E7EB),
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'High',
-                style: AppFont.style(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF5C6672),
+              GestureDetector(
+                onTap: () => setState(() => _vibrationSelected = 'HIGH'),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 22,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        color: _vibrationSelected == 'HIGH' ? const Color(0xFF1565C0) : Colors.white,
+                        border: Border.all(
+                          color: _vibrationSelected == 'HIGH' ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: _vibrationSelected == 'HIGH' ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'HIGH',
+                      style: AppFont.style(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF5C6672),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -553,177 +946,764 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle('amc_report_remarks_tech'.tr()),
-        const SizedBox(height: 12),
-        _buildTextArea('amc_report_remarks_tech_hint'.tr()),
-        const SizedBox(height: 32),
-
-        _buildSectionTitle('amc_report_remarks_customer'.tr()),
-        const SizedBox(height: 12),
-        _buildTextArea('amc_report_remarks_customer_hint'.tr()),
-        const SizedBox(height: 32),
-
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
-          ),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'amc_report_recorded_by'.tr(),
-                style: AppFont.style(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
-                  color: const Color(0xFF0D121F),
-                ),
-              ),
-              const SizedBox(height: 24),
-              _buildRepSection(
-                'amc_report_technician_rep'.tr(),
-                'Pravin Patil',
-                'amc_report_digitally_signed'.tr(),
-              ),
-              const SizedBox(height: 24),
-              const Divider(color: Color(0xFFE5E7EB)),
-              const SizedBox(height: 24),
-              _buildRepSection(
-                'CUSTOMER REP',
-                'Enter Name',
-                'Signature Area',
-                isInput: true,
-              ),
-            ],
+        // ── Remarks (Technician Side) ─────────────────────────────────
+        Text(
+          'amc_report_remarks_tech'.tr(),
+          style: AppFont.style(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF6B7280),
           ),
         ),
-        const SizedBox(height: 32),
-
+        const SizedBox(height: 10),
+        _buildRemarksBox(
+          'amc_report_remarks_tech_hint'.tr(),
+          _technicianRemarksController,
+        ),
+        const SizedBox(height: 28),
+        // ── Remarks (Customer Side) ──────────────────────────────────
+        Text(
+          'amc_report_remarks_customer'.tr(),
+          style: AppFont.style(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF6B7180),
+          ),
+        ),
+        const SizedBox(height: 10),
+        _buildRemarksBox(
+          'amc_report_remarks_customer_hint'.tr(),
+          _customerRemarksController,
+        ),
+        const SizedBox(height: 36),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 28),
+        // ── Recorded By ────────────────────────────────────────────
+        Text(
+          'amc_report_recorded_by'.tr(),
+          style: AppFont.style(
+            fontSize: 16,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFF0D121F),
+          ),
+        ),
+        const SizedBox(height: 24),
+        // Technician Rep
+        Text(
+          'amc_report_technician_rep'.tr(),
+          style: AppFont.style(
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFFA5ABB7),
+            letterSpacing: 0.8,
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 16),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.camera_alt_outlined,
-              color: Color(0xFF1565C0),
-              size: 18,
+            SizedBox(
+              width: 80,
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Name',
+                      style: AppFont.style(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF8E9BAE),
+                      ),
+                    ),
+                    const TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(width: 8),
-            Text(
-              'amc_report_upload_photos'.tr(),
-              style: AppFont.style(
-                fontSize: 13,
-                fontWeight: FontWeight.w900,
-                color: const Color(0xFF0D121F),
+            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+            const SizedBox(width: 8),
+            Expanded(
+              child: BlocBuilder<TechnicianBloc, TechnicianState>(
+                bloc: _technicianBloc,
+                builder: (context, state) {
+                  bool isLoading = state is TechnicianLoadingState;
+                  List<dynamic> validItems = [];
+                  if (state is TechnicianSuccessState) {
+                    validItems = List.from(state.data.data);
+                    // Ensure the logged-in technician is auto-selected if possible
+                    if (_selectedTechnicianRepId == null && _loggedInTechnicianId != null) {
+                      final matched = validItems.where((e) => e.id == _loggedInTechnicianId).firstOrNull;
+                      if (matched != null) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (mounted) {
+                            setState(() {
+                              _selectedTechnicianRepId = matched.id;
+                            });
+                          }
+                        });
+                      }
+                    }
+                  }
+                  return SearchableDropdown<dynamic>(
+                    items: validItems,
+                    value: _selectedTechnicianRepId != null
+                        ? validItems.firstWhere(
+                            (e) => e.id == _selectedTechnicianRepId,
+                            orElse: () => null,
+                          )
+                        : null,
+                    hintText: 'commissioning_select_technician'.tr(),
+                    itemAsString: (item) => item.name,
+                    isLoading: isLoading,
+                    onChanged: (v) {
+                      if (v != null) {
+                        setState(() => _selectedTechnicianRepId = v.id);
+                      }
+                    },
+                  );
+                },
               ),
             ),
           ],
         ),
         const SizedBox(height: 16),
-        Container(
-          height: 160,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+        _buildSignatureBox(
+          label: 'Sign *',
+          placeholder: 'commissioning_tap_sign'.tr(),
+          signatureFile: _technicianSignatureFile,
+          existingUrl: _existingTechnicianSignatureUrl,
+          onTap: () {
+            _showSignatureDrawingPad(context, (file) {
+              setState(() {
+                _technicianSignatureFile = file;
+              });
+            });
+          },
+          onClear: () {
+            setState(() {
+              _technicianSignatureFile = null;
+              _existingTechnicianSignatureUrl = null;
+            });
+          },
+        ),
+        const SizedBox(height: 36),
+        // Customer Rep
+        Text(
+          'CUSTOMER REP',
+          style: AppFont.style(
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFFA5ABB7),
+            letterSpacing: 0.8,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.add, color: Color(0xFFA5ABB7), size: 24),
-              const SizedBox(height: 8),
-              Text(
-                'amc_report_add_photo'.tr(),
+        ),
+        const SizedBox(height: 16),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 16),
+        // Editable name field
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 80,
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Name',
+                      style: AppFont.style(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF8E9BAE),
+                      ),
+                    ),
+                    const TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+            const SizedBox(width: 8),
+            Expanded(
+              child: TextField(
+                controller: _customerRepNameController,
                 style: AppFont.style(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFFA5ABB7),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF0D121F),
+                ),
+                decoration: InputDecoration(
+                  hintText: 'commissioning_enter_name'.tr(),
+                  hintStyle: AppFont.style(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFFA5ABB7),
+                  ),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFFD8DCE6)),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Color(0xFF1565C0),
+                      width: 1.5,
+                    ),
+                  ),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _buildSignatureBox(
+          label: 'Sign *',
+          placeholder: 'commissioning_tap_sign'.tr(),
+          signatureFile: _customerSignatureFile,
+          existingUrl: _existingCustomerSignatureUrl,
+          onTap: () {
+            _showSignatureDrawingPad(context, (file) {
+              setState(() {
+                _customerSignatureFile = file;
+              });
+            });
+          },
+          onClear: () {
+            setState(() {
+              _customerSignatureFile = null;
+              _existingCustomerSignatureUrl = null;
+            });
+          },
+        ),
+        const SizedBox(height: 36),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 28),
+        // ── Upload / Capture Work Photos ──────────────────────────────
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'amc_report_upload_photos'.tr(),
+                style: AppFont.style(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFF0D121F),
+                ),
+              ),
+              const TextSpan(
+                text: ' *',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.red,
                 ),
               ),
             ],
           ),
+        ),
+        const SizedBox(height: 16),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            ..._existingWorkPhotosUrls.map((url) {
+              return Stack(
+                children: [
+                  Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        url,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Center(
+                            child: Icon(Icons.broken_image, color: Colors.grey),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _existingWorkPhotosUrls.remove(url);
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
+            ..._workPhotos.map((file) {
+              return Stack(
+                children: [
+                  Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(file, fit: BoxFit.cover),
+                    ),
+                  ),
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _workPhotos.remove(file);
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
+            GestureDetector(
+              onTap: () async {
+                final ImagePicker picker = ImagePicker();
+                final XFile? file = await picker.pickImage(source: ImageSource.gallery);
+                if (file != null) {
+                  setState(() {
+                    _workPhotos.add(File(file.path));
+                  });
+                }
+              },
+              child: CustomPaint(
+                painter: _DashedBorderPainter(color: const Color(0xFFCDD0D8)),
+                child: Container(
+                  width: 110,
+                  height: 110,
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.add, size: 28, color: Color(0xFFA5ABB7)),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Upload',
+                        style: AppFont.style(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFFA5ABB7),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () async {
+                final ImagePicker picker = ImagePicker();
+                final XFile? file = await picker.pickImage(source: ImageSource.camera);
+                if (file != null) {
+                  setState(() {
+                    _workPhotos.add(File(file.path));
+                  });
+                }
+              },
+              child: CustomPaint(
+                painter: _DashedBorderPainter(color: const Color(0xFFCDD0D8)),
+                child: Container(
+                  width: 110,
+                  height: 110,
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.camera_alt_outlined, size: 28, color: Color(0xFFA5ABB7)),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Capture',
+                        style: AppFont.style(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFFA5ABB7),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 40),
       ],
     );
   }
 
-  Widget _buildRepSection(
-    String repType,
-    String name,
-    String signatureHint, {
-    bool isInput = false,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          repType,
-          style: AppFont.style(
-            fontSize: 11,
-            fontWeight: FontWeight.w900,
-            color: const Color(0xFFA5ABB7),
-            letterSpacing: 1.2,
+  Future<void> _showSignatureDrawingPad(
+    BuildContext context,
+    Function(File) onSignatureDrawn,
+  ) async {
+    final SignatureController signatureController = SignatureController(
+      penStrokeWidth: 4,
+      penColor: const Color(0xFF0D121F),
+      exportBackgroundColor: Colors.white,
+    );
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Text(
-              'Name : ',
-              style: AppFont.style(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF5C6672),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'commissioning_draw_signature'.tr(),
+                        style: AppFont.style(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF9FAFB),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Signature(
+                        controller: signatureController,
+                        height: 200,
+                        backgroundColor: const Color(0xFFF9FAFB),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            signatureController.clear();
+                          },
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Color(0xFFCDD0D8)),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            'commissioning_clear'.tr(),
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF6B7280),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (signatureController.isEmpty) {
+                              return;
+                            }
+                            final bytes = await signatureController
+                                .toPngBytes();
+                            if (bytes != null) {
+                              final tempDir = await getTemporaryDirectory();
+                              final file = File(
+                                '${tempDir.path}/signature_${DateTime.now().millisecondsSinceEpoch}.png',
+                              );
+                              await file.writeAsBytes(bytes);
+                              onSignatureDrawn(file);
+                              Navigator.pop(context);
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1565C0),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            'commissioning_done'.tr(),
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            if (isInput)
-              Expanded(
-                child: Text(
-                  name,
+          ),
+        );
+      },
+    ).then((_) => signatureController.dispose());
+  }
+
+  Widget _buildRemarksBox(
+    String placeholder,
+    TextEditingController controller,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9FAFB),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Stack(
+        children: [
+          TextField(
+            controller: controller,
+            maxLines: 4,
+            style: AppFont.style(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFF0D121F),
+            ),
+            decoration: InputDecoration(
+              hintText: placeholder,
+              hintStyle: AppFont.style(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFFA5ABB7),
+              ),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.all(16),
+            ),
+          ),
+          Positioned(
+            top: 16,
+            right: 16,
+            child: SpeechToTextMicButton(controller: controller),
+          ),
+          const Positioned(
+            bottom: 8,
+            right: 8,
+            child: Icon(
+              Icons.signal_cellular_4_bar,
+              size: 12,
+              color: Color(0xFFA5ABB7),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSignatureBox({
+    required String label,
+    required String placeholder,
+    required File? signatureFile,
+    required String? existingUrl,
+    required VoidCallback onTap,
+    required VoidCallback onClear,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 80,
+          child: label.contains('*')
+              ? RichText(
+                  text: TextSpan(
+                    text: label.replaceAll('*', '').trimRight(),
+                    style: AppFont.style(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF8E9BAE),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: ' *',
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Text(
+                  label,
                   style: AppFont.style(
                     fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFFA5ABB7),
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF8E9BAE),
                   ),
                 ),
-              )
-            else
-              Text(
-                name,
-                style: AppFont.style(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
-                  color: const Color(0xFF0D121F),
-                ),
+        ),
+        const SizedBox(width: 8),
+        const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+        const SizedBox(width: 8),
+        Expanded(
+          child: GestureDetector(
+            onTap:
+                (signatureFile == null &&
+                    (existingUrl == null || existingUrl.isEmpty))
+                ? onTap
+                : null,
+            child: Container(
+              height: 120,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF9FAFB),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFE5E7EB)),
               ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Sign :',
-          style: AppFont.style(
-            fontSize: 13,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFF5C6672),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          height: 100,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF9FAFB),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            signatureHint,
-            style: AppFont.style(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFFCDD0D8),
+              child: Stack(
+                children: [
+                  if (signatureFile != null)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.file(signatureFile, fit: BoxFit.contain),
+                      ),
+                    )
+                  else if (existingUrl != null && existingUrl.isNotEmpty)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.network(
+                          existingUrl,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(
+                              child: Icon(
+                                Icons.broken_image,
+                                color: Colors.grey,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    )
+                  else
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.edit_outlined,
+                            color: Color(0xFFA5ABB7),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            placeholder,
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFFCDD0D8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (signatureFile != null ||
+                      (existingUrl != null && existingUrl.isNotEmpty))
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: GestureDetector(
+                        onTap: onClear,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            size: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -731,32 +1711,61 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: AppFont.style(
-        fontSize: 13,
-        fontWeight: FontWeight.w800,
-        color: const Color(0xFF5C6672),
+  Widget _buildSectionTitle(String title, {bool isMandatory = false}) {
+    if (!isMandatory) {
+      return Text(
+        title,
+        style: AppFont.style(
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+          color: const Color(0xFF5C6672),
+        ),
+      );
+    }
+    
+    return RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: title,
+            style: AppFont.style(
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF5C6672),
+            ),
+          ),
+          const TextSpan(
+            text: ' *',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              color: Colors.red,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildAddButton() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 8,
+      ),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F8FF),
-        borderRadius: BorderRadius.circular(20),
+        color: const Color(0xFFF8F9FB),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFF1F2F6)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.add, size: 14, color: Color(0xFF1565C0)),
+          const Icon(Icons.add, size: 16, color: Color(0xFF1565C0)),
           const SizedBox(width: 4),
           Text(
             'Add',
             style: AppFont.style(
-              fontSize: 12,
+              fontSize: 13,
               fontWeight: FontWeight.w800,
               color: const Color(0xFF1565C0),
             ),
@@ -807,6 +1816,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     String hint, {
     bool showMic = false,
     TextEditingController? controller,
+    IconData? prefixIcon,
   }) {
     return Container(
       height: 48,
@@ -818,6 +1828,10 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
       ),
       child: Row(
         children: [
+          if (prefixIcon != null) ...[
+            Icon(prefixIcon, color: const Color(0xFF5C616E), size: 20),
+            const SizedBox(width: 12),
+          ],
           Expanded(
             child: TextField(
               controller: controller,
@@ -826,8 +1840,8 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 border: InputBorder.none,
                 hintStyle: AppFont.style(
                   fontSize: 15,
-                  fontWeight: FontWeight.w900,
-                  color: const Color(0xFF0D121F),
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFFA5ABB7),
                 ),
               ),
               style: AppFont.style(
@@ -942,11 +1956,53 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 ? null
                 : () {
                     if (_currentStep == 1) {
+                      final selectedTechs = _technicians.map((c) => c.text).where((id) => id.isNotEmpty).toList();
+                      if (selectedTechs.isEmpty) {
+                        appSnackBar(
+                          context,
+                          const Color(0xFFF44336),
+                          'Please select at least one technician',
+                        );
+                        return;
+                      }
+
                       _step1Bloc.add(PostAmcReportStep1Event(PostAmcReportStep1Params(
                         amcVisitId: widget.visitId,
-                        technicianIds: const [], // TODO: Provide selected technicians
-                        memberPresentsCustomerSide: _memberPresentsController.text,
+                        amcReportId: widget.reportId,
+                        technicianIds: selectedTechs,
+                        memberPresentsCustomerSide: _memberPresentsControllers.map((c) => c.text.trim()).where((t) => t.isNotEmpty).join(", "),
                         agenda: _agendaController.text,
+                      )));
+                    } else if (_currentStep == 2) {
+                      if (_currentReportId == null) {
+                        appSnackBar(context, const Color(0xFFF44336), 'Report ID is missing. Please create step 1 first.');
+                        return;
+                      }
+
+                      Map<String, String> listToMap(List<String> list) {
+                        Map<String, String> map = {};
+                        for (var item in list) {
+                          String key = item.replaceAll(' :', '');
+                          map[key] = 'ok';
+                        }
+                        return map;
+                      }
+
+                      Map<String, String> mechMap = _mechNA ? {} : listToMap(_mechanicalSelected);
+                      if (!_mechNA && _vibrationSelected != null) {
+                        mechMap['Vibration Checked'] = _vibrationSelected!.toLowerCase();
+                      }
+
+                      _step2Bloc.add(PostAmcReportStep2Event(PostAmcReportStep2Params(
+                        id: _currentReportId!,
+                        isMechanicalChecklistNa: _mechNA,
+                        isPipelineHydraulicChecklistNa: _pipeNA,
+                        isElectricalChecklistNa: _elecNA,
+                        operationChecklistNa: _operationNA,
+                        mechanicalChecklist: jsonEncode(mechMap),
+                        pipelineHydraulicChecklist: jsonEncode(_pipeNA ? {} : listToMap(_pipelineSelected)),
+                        electricalChecklist: jsonEncode(_elecNA ? {} : listToMap(_electricalSelected)),
+                        operationChecklist: jsonEncode(_operationNA ? {} : listToMap(_operationSelected)),
                       )));
                     } else if (_currentStep < 3) {
                       setState(() => _currentStep++);
@@ -1087,4 +2143,38 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
       },
     );
   }
+}
+
+class _DashedBorderPainter extends CustomPainter {
+  final Color color;
+  _DashedBorderPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+      
+    Path path = Path()
+      ..addRRect(RRect.fromRectAndRadius(Rect.fromLTWH(0, 0, size.width, size.height), const Radius.circular(10)));
+      
+    Path dashPath = Path();
+    double dashWidth = 6.0;
+    double dashSpace = 4.0;
+    for (PathMetric pathMetric in path.computeMetrics()) {
+      double distance = 0.0;
+      while (distance < pathMetric.length) {
+        dashPath.addPath(
+          pathMetric.extractPath(distance, distance + dashWidth),
+          Offset.zero,
+        );
+        distance += dashWidth + dashSpace;
+      }
+    }
+    canvas.drawPath(dashPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

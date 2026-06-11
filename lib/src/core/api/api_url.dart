@@ -75,6 +75,10 @@ class ApiUrl {
       'technician/amc-report/step1';
   static const String amcReportStep1AutoFill =
       'technician/amc-report/step1/';
+  static const String amcReportStep2 =
+      'technician/amc-report/step2';
+  static const String amcReportStep2AutoFill =
+      'technician/amc-report/step2/';
 
   static const serviceCallsPending = "/api/v1/technician/service-calls/pending";
 

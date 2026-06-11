@@ -116,7 +116,7 @@
   "amc_report_site_name": "Project / Site Name",
   "amc_report_member_presents": "Member Presents (Customer Side) :",
   "amc_report_agenda": "Agenda / Purpose of Visit :",
-  "amc_report_agenda_hint": "Enter the main purpose of this visit...",
+  "amc_report_agenda_hint": "Enter Agenda / Purpose of Visit",
   "amc_report_checklist_title": "Inspection Checklist (Check & Tick If Found OK)",
   "amc_report_date_label": "Date",
   "amc_report_recorded_by": "Recorded By:",
@@ -347,5 +347,6 @@
   "no_technician_assigned": "No technicians assigned",
   "name_of_equipment": "Equipment: ",
   "add": "Add",
-  "create_report_date": "Date"
+  "create_report_date": "Date",
+  "amc_report_member_presents_hint": "Enter Customer Representative Name"
 }
