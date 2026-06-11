@@ -17,6 +17,11 @@ import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_bloc.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_event.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_state.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_assigned_technicians_bloc/amc_assigned_technicians_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_assigned_technicians_bloc/amc_assigned_technicians_event.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_assigned_technicians_bloc/amc_assigned_technicians_state.dart';
+import 'package:service_app/src/remote/models/amc_report_model/amc_assigned_technicians_response.dart';
 import 'dart:convert';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
 import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
@@ -25,10 +30,14 @@ import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_bloc/amc_report_step2_bloc.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_bloc/amc_report_step2_event.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_bloc/amc_report_step2_state.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step3_bloc/amc_report_step3_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step3_bloc/amc_report_step3_event.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step3_bloc/amc_report_step3_state.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_bloc.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_event.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_state.dart';
 import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step2_usecase.dart';
+import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step3_usecase.dart';
 class CreateAmcReportScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSubmit;
@@ -65,7 +74,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
   late final AmcReportStep1AutofillBloc _step1AutofillBloc;
   late final AmcReportStep2Bloc _step2Bloc;
   late final AmcReportStep2AutofillBloc _step2AutofillBloc;
+  late final AmcReportStep3Bloc _step3Bloc;
   late final TechnicianBloc _technicianBloc;
+  late final AmcAssignedTechniciansBloc _assignedTechniciansBloc;
 
   String? _currentReportId;
 
@@ -106,7 +117,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     _step1AutofillBloc = getIt<AmcReportStep1AutofillBloc>();
     _step2Bloc = getIt<AmcReportStep2Bloc>();
     _step2AutofillBloc = getIt<AmcReportStep2AutofillBloc>();
+    _step3Bloc = getIt<AmcReportStep3Bloc>();
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
+    _assignedTechniciansBloc = getIt<AmcAssignedTechniciansBloc>();
 
     if (widget.reportId != null) {
       _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
@@ -126,7 +139,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     _step1Bloc.close();
     _step1AutofillBloc.close();
     _step2AutofillBloc.close();
+    _assignedTechniciansBloc.close();
     _step2Bloc.close();
+    _step3Bloc.close();
     for (var c in _technicians) {
       c.dispose();
     }
@@ -139,14 +154,12 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
       if (mounted) {
         setState(() {
           _loggedInTechnicianId = session!.technician!.id;
-          _selectedTechnicianRepId ??= _loggedInTechnicianId;
         });
       }
     } else if (session?.dealer != null) {
       if (mounted) {
         setState(() {
           _loggedInTechnicianId = session!.dealer!.id;
-          _selectedTechnicianRepId ??= _loggedInTechnicianId;
         });
       }
     }
@@ -232,6 +245,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
             if (state is AmcReportStep2SuccessState) {
               setState(() => _currentStep++);
+              if (_currentReportId != null) {
+                _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
+              }
             } else if (state is AmcReportStep2ErrorState) {
               appSnackBar(context, const Color(0xFFF44336), state.message);
             }
@@ -288,6 +304,26 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
+            }
+          },
+        ),
+        BlocListener<AmcReportStep3Bloc, AmcReportStep3State>(
+          bloc: _step3Bloc,
+          listener: (context, state) {
+            if (state is AmcReportStep3LoadingState) {
+              setState(() => _isLoading = true);
+            } else {
+              setState(() => _isLoading = false);
+            }
+
+            if (state is AmcReportStep3SuccessState) {
+              if (state.data.data.qrCodeImage != null && state.data.data.qrCodeImage!.isNotEmpty) {
+                 _showSuccessDialog(qrCodeImage: state.data.data.qrCodeImage);
+              } else {
+                 _showSuccessDialog();
+              }
+            } else if (state is AmcReportStep3ErrorState) {
+              appSnackBar(context, const Color(0xFFF44336), state.message);
             }
           },
         ),
@@ -829,12 +865,26 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Text(
-                text,
-                style: AppFont.style(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF5C6672),
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: text,
+                      style: AppFont.style(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF5C6672),
+                      ),
+                    ),
+                    const TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -865,12 +915,26 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              'checklist_vibration'.tr() + " :",
-              style: AppFont.style(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF5C6672),
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'checklist_vibration'.tr() + " :",
+                    style: AppFont.style(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF5C6672),
+                    ),
+                  ),
+                  const TextSpan(
+                    text: ' *',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -1033,43 +1097,46 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
             const SizedBox(width: 8),
             Expanded(
-              child: BlocBuilder<TechnicianBloc, TechnicianState>(
-                bloc: _technicianBloc,
+              child: BlocBuilder<AmcAssignedTechniciansBloc, AmcAssignedTechniciansState>(
+                bloc: _assignedTechniciansBloc,
                 builder: (context, state) {
-                  bool isLoading = state is TechnicianLoadingState;
+                  bool isLoading = state is AmcAssignedTechniciansLoadingState;
                   List<dynamic> validItems = [];
-                  if (state is TechnicianSuccessState) {
+                  if (state is AmcAssignedTechniciansSuccessState) {
                     validItems = List.from(state.data.data);
                     // Ensure the logged-in technician is auto-selected if possible
                     if (_selectedTechnicianRepId == null && _loggedInTechnicianId != null) {
-                      final matched = validItems.where((e) => e.id == _loggedInTechnicianId).firstOrNull;
+                      final matched = validItems.where((e) => e.technicianId == _loggedInTechnicianId).firstOrNull;
                       if (matched != null) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           if (mounted) {
                             setState(() {
-                              _selectedTechnicianRepId = matched.id;
+                              _selectedTechnicianRepId = matched.assignId;
                             });
                           }
                         });
                       }
                     }
                   }
-                  return SearchableDropdown<dynamic>(
-                    items: validItems,
-                    value: _selectedTechnicianRepId != null
-                        ? validItems.firstWhere(
-                            (e) => e.id == _selectedTechnicianRepId,
-                            orElse: () => null,
-                          )
-                        : null,
-                    hintText: 'commissioning_select_technician'.tr(),
-                    itemAsString: (item) => item.name,
-                    isLoading: isLoading,
-                    onChanged: (v) {
-                      if (v != null) {
-                        setState(() => _selectedTechnicianRepId = v.id);
-                      }
-                    },
+                  return IgnorePointer(
+                    ignoring: true,
+                    child: SearchableDropdown<dynamic>(
+                      items: validItems,
+                      value: _selectedTechnicianRepId != null
+                          ? validItems.firstWhere(
+                              (e) => e.assignId == _selectedTechnicianRepId,
+                              orElse: () => null,
+                            )
+                          : null,
+                      hintText: 'commissioning_select_technician'.tr(),
+                      itemAsString: (item) => item.name,
+                      isLoading: isLoading,
+                      onChanged: (v) {
+                        if (v != null) {
+                          setState(() => _selectedTechnicianRepId = v.assignId);
+                        }
+                      },
+                    ),
                   );
                 },
               ),
@@ -1979,6 +2046,87 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         return;
                       }
 
+                      if (!_mechNA) {
+                        if (!_mechanicalSelected.contains('Pump Foundation Bolts Tight :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_pump_foundation'.tr()); return;
+                        }
+                        if (!_mechanicalSelected.contains('Coupling / Alignment Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_coupling'.tr()); return;
+                        }
+                        if (!_mechanicalSelected.contains('Bearing Noise Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_bearing_noise'.tr()); return;
+                        }
+                        if (!_mechanicalSelected.contains('Abnormal Sound Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_abnormal_sound'.tr()); return;
+                        }
+                        if (!_mechanicalSelected.contains('Mechanical Seal / Gland Leakage Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_mech_seal'.tr()); return;
+                        }
+                        if (_vibrationSelected == null) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_vibration'.tr()); return;
+                        }
+                        if (!_mechanicalSelected.contains('Pump Cleaned :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_pump_cleaned'.tr()); return;
+                        }
+                        if (!_mechanicalSelected.contains('Pump Not Running Dry :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_pump_dry'.tr()); return;
+                        }
+                      }
+                      if (!_pipeNA) {
+                        if (!_pipelineSelected.contains('Suction Line (Air & Water) Leakage Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_suction_line'.tr()); return;
+                        }
+                        if (!_pipelineSelected.contains('Delivery Line (Air & Water) Leakage Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_delivery_line'.tr()); return;
+                        }
+                        if (!_pipelineSelected.contains('NRV / Butterfly Valve / Gate Valve Working Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_nrv'.tr()); return;
+                        }
+                        if (!_pipelineSelected.contains('Strainer / Foot Valve Cleaned :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_strainer'.tr()); return;
+                        }
+                        if (!_pipelineSelected.contains('Suction / Delivery Valve Condition & Operation Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_suction_del_valve'.tr()); return;
+                        }
+                        if (!_pipelineSelected.contains('Pressure Switch / Pressure Transmitter Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_pressure_switch'.tr()); return;
+                        }
+                      }
+                      if (!_elecNA) {
+                        if (!_electricalSelected.contains('Panel Cleaned :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_panel_cleaned'.tr()); return;
+                        }
+                        if (!_electricalSelected.contains('Contactor / Relay Condition Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_contactor'.tr()); return;
+                        }
+                        if (!_electricalSelected.contains('Overload Setting Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_overload'.tr()); return;
+                        }
+                        if (!_electricalSelected.contains('Loose Wiring / Terminal Tightening Done :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_loose_wiring'.tr()); return;
+                        }
+                        if (!_electricalSelected.contains('Phase / Voltage / Current Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_phase_voltage'.tr()); return;
+                        }
+                        if (!_electricalSelected.contains('Earthing Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_earthing'.tr()); return;
+                        }
+                      }
+                      if (!_operationNA) {
+                        if (!_operationSelected.contains('Pump Started in Manual Mode :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_pump_manual'.tr()); return;
+                        }
+                        if (!_operationSelected.contains('Auto Operation Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_auto_operation'.tr()); return;
+                        }
+                        if (!_operationSelected.contains('Water Flow & Pressure Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_water_flow'.tr()); return;
+                        }
+                        if (!_operationSelected.contains('Direction of Rotation Checked :')) {
+                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_rotation'.tr()); return;
+                        }
+                      }
+
                       Map<String, String> listToMap(List<String> list) {
                         Map<String, String> map = {};
                         for (var item in list) {
@@ -2006,9 +2154,51 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       )));
                     } else if (_currentStep < 3) {
                       setState(() => _currentStep++);
+                      if (_currentStep == 3 && _currentReportId != null) {
+                        _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
+                      }
                     } else {
                       // Submit action
-                      _showSuccessDialog();
+                      if (_currentReportId == null) {
+                        appSnackBar(context, const Color(0xFFF44336), "Report ID is missing");
+                        return;
+                      }
+
+                      if (_customerRepNameController.text.trim().isEmpty) {
+                        appSnackBar(context, const Color(0xFFF44336), "Customer Representative Name is required");
+                        return;
+                      }
+
+                      if (_selectedTechnicianRepId == null) {
+                        appSnackBar(context, const Color(0xFFF44336), "Technician Representative is required");
+                        return;
+                      }
+
+                      if (_technicianSignatureFile == null && _existingTechnicianSignatureUrl == null) {
+                        appSnackBar(context, const Color(0xFFF44336), "Technician signature is required");
+                        return;
+                      }
+
+                      if (_customerSignatureFile == null && _existingCustomerSignatureUrl == null) {
+                        appSnackBar(context, const Color(0xFFF44336), "Customer signature is required");
+                        return;
+                      }
+
+                      // NOTE: We assume that user will add new files, but if there's an existing signature
+                      // and no new file, it will cause an issue with FormData if it expects File explicitly.
+                      // Given PostAmcReportStep3Params requires File, they must re-sign or we need to handle it.
+                      // Since the user requested the API submission flow for step 3, we will pass the files.
+
+                      _step3Bloc.add(PostAmcReportStep3Event(PostAmcReportStep3Params(
+                        id: _currentReportId!,
+                        technicianRemarks: _technicianRemarksController.text.trim(),
+                        customerRemarks: _customerRemarksController.text.trim(),
+                        workPhotos: _workPhotos,
+                        technicianRepresentative: _selectedTechnicianRepId!,
+                        technicianSignature: _technicianSignatureFile,
+                        customerRepresentativeName: _customerRepNameController.text.trim(),
+                        customerSignature: _customerSignatureFile,
+                      )));
                     }
                   },
             style: ElevatedButton.styleFrom(

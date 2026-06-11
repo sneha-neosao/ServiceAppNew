@@ -2,11 +2,15 @@ import 'package:dio/dio.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_bloc/amc_report_step1_bloc.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_bloc.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_assigned_technicians_bloc/amc_assigned_technicians_bloc.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_bloc/amc_report_step2_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step3_bloc/amc_report_step3_bloc.dart';
 import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step1_usecase.dart';
 import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step2_usecase.dart';
+import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step3_usecase.dart';
 import 'package:service_app/src/domain/usecases/amc_report/get_amc_report_step1_autofill_usecase.dart';
 import 'package:service_app/src/domain/usecases/amc_report/get_amc_report_step2_autofill_usecase.dart';
+import 'package:service_app/src/domain/usecases/amc_report/get_amc_assigned_technicians_usecase.dart';
 import 'package:get_it/get_it.dart';
 import 'package:service_app/src/features/common/domain/usecase/customer_usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
@@ -636,11 +640,27 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
+    () => AmcAssignedTechniciansBloc(getIt<GetAmcAssignedTechniciansUsecase>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => GetAmcAssignedTechniciansUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
     () => AmcReportStep2Bloc(getIt<PostAmcReportStep2Usecase>()),
   );
 
   getIt.registerLazySingleton(
     () => PostAmcReportStep2Usecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => AmcReportStep3Bloc(getIt<PostAmcReportStep3UseCase>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => PostAmcReportStep3UseCase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper

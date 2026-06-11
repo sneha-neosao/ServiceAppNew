@@ -1,5 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_step1_response.dart';
+import 'package:service_app/src/remote/models/amc_report_model/amc_report_step2_response.dart';
+import 'package:service_app/src/remote/models/amc_report_model/amc_report_step3_response.dart';
+import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step3_usecase.dart';
+import 'package:service_app/src/remote/models/amc_report_model/amc_assigned_technicians_response.dart';
 import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step1_usecase.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
@@ -287,11 +291,19 @@ abstract class Repository {
     PostAmcReportStep2Params params,
   );
 
+  Future<Either<Failure, AmcReportStep3Response>> amcReportStep3(
+    PostAmcReportStep3Params params,
+  );
+
   Future<Either<Failure, AmcReportStep1Response>> amcReportStep1AutoFill(
     String reportId,
   );
 
   Future<Either<Failure, AmcReportStep2Response>> amcReportStep2AutoFill(
+    String reportId,
+  );
+
+  Future<Either<Failure, AmcAssignedTechniciansResponse>> amcReportAssignedTechnicians(
     String reportId,
   );
 }
@@ -2197,6 +2209,37 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
+  Future<Either<Failure, AmcReportStep3Response>> amcReportStep3(
+    PostAmcReportStep3Params params,
+  ) async {
+    return _networkInfo.check<AmcReportStep3Response>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          if (token.isEmpty) throw AuthException();
+
+          final respData = await _remoteDataSource.amcReportStep3(params, token);
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
   Future<Either<Failure, AmcReportStep1Response>> amcReportStep1AutoFill(
     String reportId,
   ) async {
@@ -2238,6 +2281,37 @@ class AuthRepositoryImpl implements Repository {
           if (token.isEmpty) throw AuthException();
 
           final respData = await _remoteDataSource.amcReportStep2AutoFill(reportId, token);
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, AmcAssignedTechniciansResponse>> amcReportAssignedTechnicians(
+    String reportId,
+  ) async {
+    return _networkInfo.check<AmcAssignedTechniciansResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          if (token.isEmpty) throw AuthException();
+
+          final respData = await _remoteDataSource.amcReportAssignedTechnicians(reportId, token);
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
