@@ -13,6 +13,8 @@ import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step2
 import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step3_usecase.dart';
 import 'package:service_app/src/domain/usecases/amc_report/get_amc_report_pdf_usecase.dart';
 import 'package:service_app/src/domain/usecases/amc_report/get_amc_check_feedback_usecase.dart';
+import 'package:service_app/src/domain/usecases/amc_report/post_amc_visit_complete_usecase.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_visit_complete_bloc/amc_visit_complete_bloc.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_bloc.dart';
 import 'package:service_app/src/domain/usecases/amc_report/get_amc_report_step1_autofill_usecase.dart';
 import 'package:service_app/src/domain/usecases/amc_report/get_amc_report_step2_autofill_usecase.dart';
@@ -691,6 +693,14 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => GetAmcCheckFeedbackUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => AmcVisitCompleteBloc(getIt<PostAmcVisitCompleteUseCase>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => PostAmcVisitCompleteUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper

@@ -19,6 +19,7 @@ import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
 import 'package:service_app/src/remote/models/technician_model/technician_response.dart';
 import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_report_history_usecase.dart';
 import 'package:service_app/src/features/report_history/presentation/pages/feedback_details_screen.dart';
+import 'package:service_app/src/features/service_calls/presentation/widgets/complaint_report_dialog.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_history_bloc/service_call_report_history_bloc.dart';
@@ -1402,24 +1403,29 @@ class _ReportCard extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              // Eye / View icon button
-              // Expanded(
-              //   child: _buildIconActionButton(
-              //     icon: Icons.download,
-              //     iconColor: const Color(0xFF6B7280),
-              //     onTap: () {
-              //       if (reportId != null) {
-              //         if ((type == ReportType.commissioning || type == ReportType.service) &&
-              //             onDownloadPdfTap != null) {
-              //           onDownloadPdfTap!(reportId!);
-              //         } else {
-              //           onViewTap?.call(reportId!);
-              //         }
-              //       }
-              //     },
-              //   ),
-              // ),
-              // const SizedBox(width: 10),
+              // Eye / View icon button (Service Calls only)
+              if (type == ReportType.service) ...[
+                Expanded(
+                  child: _buildIconActionButton(
+                    icon: Icons.remove_red_eye_outlined,
+                    iconColor: const Color(0xFF6B7280),
+                    onTap: () {
+                      if (reportId != null) {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) {
+                            return ComplaintReportDialog(
+                              complaintId: reportId!,
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(width: 10),
+              ],
               // QR Code icon button or Checkmark
               Expanded(
                 child: feedbackSubmitted

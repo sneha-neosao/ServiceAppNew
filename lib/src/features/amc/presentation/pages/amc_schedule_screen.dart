@@ -187,6 +187,13 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                         _sitesBloc.add(SitesGetEvent(customer_id: v.id, page: 1, pageSize: 10));
                       }
                     },
+                    onClear: () {
+                      setState(() {
+                        _selectedCustomer = null;
+                        _selectedSite = null;
+                        _sites.clear();
+                      });
+                    },
                   );
                 },
               ),
@@ -230,6 +237,11 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                     onChanged: (v) {
                       setState(() {
                         _selectedSite = v;
+                      });
+                    },
+                    onClear: () {
+                      setState(() {
+                        _selectedSite = null;
                       });
                     },
                   );

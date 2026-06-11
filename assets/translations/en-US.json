@@ -28,7 +28,7 @@
   "home_greeting_message": "Good Morning from {}..!!",
   "home_amc_card_title": "Upcoming AMC Visits",
   "home_amc_card_dropdown": "Today",
-  "home_amc_total_label": "Total AMC Visits",
+  "home_amc_total_label": "Total Pending Visits",
   "home_nav_home": "Home",
   "home_nav_commissioning": "Commissioning",
   "home_nav_service_calls": "Service Calls",

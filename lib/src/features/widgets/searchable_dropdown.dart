@@ -11,6 +11,7 @@ class SearchableDropdown<T> extends StatefulWidget {
   final void Function(String)? onSearchChanged;
   final void Function(String)? onLoadMore;
   final bool Function(T, String)? filterFn;
+  final void Function()? onClear;
   final bool isLoading;
   // final Widget? icon;
   final bool isFilter;
@@ -26,6 +27,7 @@ class SearchableDropdown<T> extends StatefulWidget {
     this.onSearchChanged,
     this.onLoadMore,
     this.filterFn,
+    this.onClear,
     this.isLoading = false,
     // this.icon,
     this.isFilter = false,
@@ -284,11 +286,26 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            const Icon(
-              Icons.keyboard_arrow_down,
-              color: Color(0xFFA5ABB7),
-              size: 18,
-            ),
+            if (widget.onClear != null && widget.value != null)
+              GestureDetector(
+                onTap: () {
+                  widget.onClear?.call();
+                },
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.0),
+                  child: Icon(
+                    Icons.close,
+                    color: Color(0xFFA5ABB7),
+                    size: 18,
+                  ),
+                ),
+              )
+            else
+              const Icon(
+                Icons.keyboard_arrow_down,
+                color: Color(0xFFA5ABB7),
+                size: 18,
+              ),
           ],
         ),
       ),

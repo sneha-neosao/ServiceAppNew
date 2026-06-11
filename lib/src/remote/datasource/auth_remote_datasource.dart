@@ -3,6 +3,7 @@ import 'package:service_app/src/remote/models/amc_report_model/amc_history_respo
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_pdf_response.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_step1_response.dart';
 import 'package:service_app/src/domain/usecases/amc_report/get_amc_report_step1_autofill_usecase.dart';
+import 'package:service_app/src/remote/models/amc_report_model/amc_visit_complete_response.dart';
 import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step2_usecase.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_step2_response.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_step3_response.dart';
@@ -373,6 +374,11 @@ sealed class RemoteDataSource {
 
   Future<ServiceCallDetailsResponse> serviceCallDetails(
     String id,
+    String token,
+  );
+
+  Future<AmcVisitCompleteResponse> postAmcVisitComplete(
+    String visitId,
     String token,
   );
 }
@@ -2391,6 +2397,27 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       return FeedbackResponse.fromJson(response);
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      if (e.toString() == noElement) throw AuthException();
+      if (e is ApiException) throw e;
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<AmcVisitCompleteResponse> postAmcVisitComplete(
+    String visitId,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.post,
+        url: 'technician/amcs/visit/$visitId/complete',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return AmcVisitCompleteResponse.fromJson(response);
     } on EmptyException {
       throw AuthException();
     } catch (e) {

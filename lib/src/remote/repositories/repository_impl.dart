@@ -3,6 +3,7 @@ import 'package:service_app/src/remote/models/amc_report_model/amc_report_step1_
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_step2_response.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_step3_response.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_pdf_response.dart';
+import 'package:service_app/src/remote/models/amc_report_model/amc_visit_complete_response.dart';
 import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step3_usecase.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_assigned_technicians_response.dart';
 import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step1_usecase.dart';
@@ -317,6 +318,10 @@ abstract class Repository {
 
   Future<Either<Failure, FeedbackResponse>> getAmcCheckFeedback(
     String amcVisitId,
+  );
+
+  Future<Either<Failure, AmcVisitCompleteResponse>> postAmcVisitComplete(
+    String visitId,
   );
 }
 
@@ -2419,6 +2424,37 @@ class AuthRepositoryImpl implements Repository {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         } catch (e) {
           if (e is ApiException) return Left(ApiFailure(e.message));
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, AmcVisitCompleteResponse>> postAmcVisitComplete(
+    String visitId,
+  ) async {
+    return executeCall(
+      connected: () async {
+        try {
+          String token = sessionManager.getToken() ?? "";
+          final response = await _remoteDataSource.postAmcVisitComplete(
+            visitId,
+            token,
+          );
+          return Right(response);
+        } on AuthException catch (e) {
+          return Left(AuthFailure(e.toString()));
+        } on ApiException catch (e) {
+          return Left(ApiFailure(e.toString()));
+        } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
       },

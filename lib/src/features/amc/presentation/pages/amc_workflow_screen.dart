@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:service_app/src/features/amc/presentation/pages/amc_schedule_screen.dart';
 import 'package:service_app/src/features/amc/presentation/pages/amc_visit_details_screen.dart';
 import 'package:service_app/src/features/amc/presentation/pages/create_amc_report_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:service_app/src/configs/injector/injector_conf.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_visit_complete_bloc/amc_visit_complete_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_visit_complete_bloc/amc_visit_complete_event.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_visit_complete_bloc/amc_visit_complete_state.dart';
+import 'package:service_app/src/core/utils/snackbar.dart';
 
 enum AmcViewState { schedule, details, createReport }
 
@@ -37,10 +43,12 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
   String? _selectedAmcWindow;
   String? _selectedAmcVisitId;
   String? _selectedReportId;
+  late AmcVisitCompleteBloc _amcVisitCompleteBloc;
 
   @override
   void initState() {
     super.initState();
+    _amcVisitCompleteBloc = getIt<AmcVisitCompleteBloc>();
     if (widget.initialVisitId != null) {
       _viewState = AmcViewState.details;
       _selectedAmcVisitId = widget.initialVisitId;
@@ -49,6 +57,12 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
       _selectedAmcVisitInfo = widget.initialVisitInfo;
       _selectedAmcWindow = '-';
     }
+  }
+
+  @override
+  void dispose() {
+    _amcVisitCompleteBloc.close();
+    super.dispose();
   }
 
   @override
@@ -69,10 +83,39 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
           }
         });
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: _buildCurrentView(),
+      child: BlocProvider(
+        create: (_) => _amcVisitCompleteBloc,
+        child: BlocListener<AmcVisitCompleteBloc, AmcVisitCompleteState>(
+          listener: (context, state) {
+            if (state is AmcVisitCompleteLoadingState) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            } else if (state is AmcVisitCompleteSuccessState) {
+              Navigator.pop(context); // pop loader
+              appSnackBar(context, Colors.green, state.data.message ?? 'Success');
+              if (widget.isFromHistory) {
+                Navigator.pop(context);
+              } else {
+                setState(() {
+                  _viewState = AmcViewState.schedule;
+                });
+              }
+            } else if (state is AmcVisitCompleteFailureState) {
+              Navigator.pop(context); // pop loader
+              appSnackBar(context, Colors.red, state.message);
+            }
+          },
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(
+              child: _buildCurrentView(),
+            ),
+          ),
         ),
       ),
     );
@@ -122,7 +165,9 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
             _viewState = AmcViewState.createReport;
           }),
           onCompleteAmcWork: () {
-            Navigator.pop(context);
+            if (_selectedAmcVisitId != null) {
+              _amcVisitCompleteBloc.add(SubmitAmcVisitCompleteEvent(visitId: _selectedAmcVisitId!));
+            }
           },
         );
       case AmcViewState.createReport:
