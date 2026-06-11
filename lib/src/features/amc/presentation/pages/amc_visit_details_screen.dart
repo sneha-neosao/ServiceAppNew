@@ -641,10 +641,11 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                     onTap: hasDraftReport ? null : widget.onSubmit,
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      height: 44,
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       decoration: BoxDecoration(
                         color: hasDraftReport ? const Color(0xFFE5E7EB) : const Color(0xFFF3F8FF),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -655,12 +656,16 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                             size: 18,
                           ),
                           const SizedBox(width: 8),
-                          Text(
-                            'Create Another Report',
-                            style: AppFont.style(
-                              fontSize: 14,
+                          Flexible(
+                            child: Text(
+                              'Create Another Report',
+                              style: AppFont.style(
+                                fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: hasDraftReport ? const Color(0xFFA5ABB7) : const Color(0xFF1565C0),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -683,32 +688,38 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
             onTap: reportsCount > 0 ? widget.onCompleteAmcWork : null,
             child: Container(
               width: double.infinity,
-              height: 56,
+              height: 44,
               decoration: BoxDecoration(
                 color: reportsCount > 0
                     ? const Color(0xFF1565C0)
                     : const Color(0xFFECEFF1),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.check_circle_outline,
-                    size: 20,
+                    size: 18,
                     color: reportsCount > 0
                         ? Colors.white
                         : Colors.grey.shade400,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    'amc_details_complete_btn'.tr(),
+                  Flexible(
+                    child: Text(
+                      'amc_details_complete_btn'.tr(),
                     style: AppFont.style(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
                       color: reportsCount > 0
                           ? Colors.white
                           : Colors.grey.shade400,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
@@ -716,6 +727,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
             ),
           ),
         ),
+      ),
       ],
     );
       },
@@ -880,3 +892,7 @@ class _OutlineBadge extends StatelessWidget {
     );
   }
 }
+
+
+
+

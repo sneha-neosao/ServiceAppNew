@@ -152,27 +152,35 @@ class CommissioningCard extends StatelessWidget {
             const SizedBox(height: 14),
 
             // ── Submit button ─────────────────────────────────────────────
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton.icon(
-                onPressed: onSubmit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1565C0),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+            GestureDetector(
+              onTap: onSubmit,
+              child: Container(
+                height: 44,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1565C0),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                icon: const Icon(Icons.check_circle_outline_rounded, size: 20),
-                label: Text(
-                  'commissioning_submit_btn'.tr(),
-                  style: AppFont.style(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    letterSpacing: 0.6,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.check_circle_outline, size: 18, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          'commissioning_submit_btn'.tr(),
+                          style: AppFont.style(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

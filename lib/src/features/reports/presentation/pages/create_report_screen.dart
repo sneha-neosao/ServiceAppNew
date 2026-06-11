@@ -643,11 +643,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   GestureDetector(
                     onTap: _nextStep,
                     child: Container(
-                      height: 56,
+                      height: 44,
                       padding: const EdgeInsets.symmetric(horizontal: 32),
                       decoration: BoxDecoration(
                         color: const Color(0xFF1565C0),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
                             color: const Color(
@@ -678,7 +678,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                 ? 'create_report_btn_submit'.tr()
                                 : 'create_report_btn_next'.tr(),
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
                             ),

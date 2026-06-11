@@ -2673,7 +2673,7 @@ class _CreateCommissioningReportScreenState
                                                                                                                                                                                       serviceCallStep6AutoFillState
                                                                                                                                                                                       is ServiceCallReportStep6AutoFillLoadingState);
                                                                                                                                                                           return Container(
-                                                                                                                                                                            height: 56,
+                                                                                                                                                                            height: 44,
                                                                                                                                                                             padding: const EdgeInsets
                                                                                                                                                                                 .symmetric(
                                                                                                                                                                               horizontal: 32,
@@ -2684,7 +2684,7 @@ class _CreateCommissioningReportScreenState
                                                                                                                                                                               ),
                                                                                                                                                                               borderRadius: BorderRadius
                                                                                                                                                                                   .circular(
-                                                                                                                                                                                16,
+                                                                                                                                                                                10,
                                                                                                                                                                               ),
                                                                                                                                                                               boxShadow: [
                                                                                                                                                                                 BoxShadow(
@@ -2752,7 +2752,7 @@ class _CreateCommissioningReportScreenState
                                                                                                                                                                                         .tr(),
                                                                                                                                                                                     style: AppFont
                                                                                                                                                                                         .style(
-                                                                                                                                                                                      fontSize: 14,
+                                                                                                                                                                                      fontSize: 12,
                                                                                                                                                                                       fontWeight: FontWeight
                                                                                                                                                                                           .w800,
                                                                                                                                                                                       color: Colors
@@ -5031,31 +5031,34 @@ class _CreateCommissioningReportScreenState
                   Row(
                     children: [
                       Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {
+                        child: GestureDetector(
+                          onTap: () {
                             signatureController.clear();
                           },
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Color(0xFFCDD0D8)),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
+                          child: Container(
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: const Color(0xFFCDD0D8)),
                             ),
-                          ),
-                          child: Text(
-                            'commissioning_clear'.tr(),
-                            style: AppFont.style(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFF6B7280),
+                            child: Center(
+                              child: Text(
+                                'commissioning_clear'.tr(),
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF6B7280),
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: ElevatedButton(
-                          onPressed: () async {
+                        child: GestureDetector(
+                          onTap: () async {
                             if (signatureController.isEmpty) {
                               return;
                             }
@@ -5071,19 +5074,21 @@ class _CreateCommissioningReportScreenState
                               Navigator.pop(context);
                             }
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1565C0),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
+                          child: Container(
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1565C0),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                          ),
-                          child: Text(
-                            'commissioning_done'.tr(),
-                            style: AppFont.style(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
+                            child: Center(
+                              child: Text(
+                                'commissioning_done'.tr(),
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
                         ),

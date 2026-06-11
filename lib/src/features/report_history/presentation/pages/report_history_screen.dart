@@ -1276,7 +1276,15 @@ class _ReportCard extends StatelessWidget {
                       height: 32,
                       child: ElevatedButton(
                         onPressed: () {
-                          // TODO: add your view complaint report action here
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) {
+                              return ComplaintReportDialog(
+                                complaintId: reportId ?? '',
+                              );
+                            },
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFFFE0B2), // soft orange background

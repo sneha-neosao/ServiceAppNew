@@ -321,7 +321,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                         child: _AmcScheduleCard(
                           title: visit.customerName,
                           location: visit.siteName,
-                          visitInfo: 'Visit ${visit.visitNumber}',
+                          visitInfo: 'Visit ${visit.visitNumber}/${visit.totalVisits}',
                           date: visit.fromDate != null
                               ? DateFormat('d MMM yyyy').format(DateTime.parse(visit.fromDate!).toLocal())
                               : '-',
@@ -329,7 +329,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                             visit.id,
                             visit.customerName,
                             visit.siteName,
-                            'Visit ${visit.visitNumber}',
+                            'Visit ${visit.visitNumber}/${visit.totalVisits}',
                             visit.status,
                           ),
                         ),

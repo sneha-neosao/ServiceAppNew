@@ -1122,6 +1122,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   return IgnorePointer(
                     ignoring: true,
                     child: SearchableDropdown<dynamic>(
+                      showArrow: false,
                       items: validItems,
                       value: _selectedTechnicianRepId != null
                           ? validItems.firstWhere(
@@ -1523,31 +1524,34 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {
+                        child: GestureDetector(
+                          onTap: () {
                             signatureController.clear();
                           },
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Color(0xFFCDD0D8)),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
+                          child: Container(
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: const Color(0xFFCDD0D8)),
                             ),
-                          ),
-                          child: Text(
-                            'commissioning_clear'.tr(),
-                            style: AppFont.style(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFF6B7280),
+                            child: Center(
+                              child: Text(
+                                'commissioning_clear'.tr(),
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF6B7280),
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: ElevatedButton(
-                          onPressed: () async {
+                        child: GestureDetector(
+                          onTap: () async {
                             if (signatureController.isEmpty) {
                               return;
                             }
@@ -1563,19 +1567,21 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                               Navigator.pop(context);
                             }
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1565C0),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
+                          child: Container(
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1565C0),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                          ),
-                          child: Text(
-                            'commissioning_done'.tr(),
-                            style: AppFont.style(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
+                            child: Center(
+                              child: Text(
+                                'commissioning_done'.tr(),
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -2019,8 +2025,8 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               ],
             ),
           ),
-          ElevatedButton(
-            onPressed: _isLoading
+          GestureDetector(
+            onTap: _isLoading
                 ? null
                 : () {
                     if (_currentStep == 1) {
@@ -2185,6 +2191,11 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         return;
                       }
 
+                      if (_workPhotos.isEmpty && _existingWorkPhotosUrls.isEmpty) {
+                        appSnackBar(context, const Color(0xFFF44336), "Work photos are required");
+                        return;
+                      }
+
                       // NOTE: We assume that user will add new files, but if there's an existing signature
                       // and no new file, it will cause an issue with FormData if it expects File explicitly.
                       // Given PostAmcReportStep3Params requires File, they must re-sign or we need to handle it.
@@ -2202,17 +2213,21 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       )));
                     }
                   },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1565C0),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              minimumSize: Size.zero,
-              shape: RoundedRectangleBorder(
+            child: Container(
+              height: 44,
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1565C0),
                 borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF1565C0).withValues(alpha: 0.2),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
-              elevation: 0,
-            ),
-            child: Row(
+              child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (_isLoading)
@@ -2225,16 +2240,17 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   Text(
                     _currentStep < 3 ? 'amc_report_btn_next'.tr() : 'amc_report_btn_submit'.tr(),
                   style: AppFont.style(
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
                   ),
                 ),
                 if (_currentStep < 3) ...[
                   const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward, size: 16),
+                  const Icon(Icons.arrow_forward, size: 16, color: Colors.white),
                 ],
               ],
+            ),
             ),
           ),
         ],
@@ -2325,6 +2341,33 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFFA5ABB7),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      widget.onSubmit();
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1565C0),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'amc_report_btn_done'.tr(),
+                          style: AppFont.style(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],

@@ -16,6 +16,7 @@ class SearchableDropdown<T> extends StatefulWidget {
   // final Widget? icon;
   final bool isFilter;
   final bool isSearchable;
+  final bool showArrow;
 
   const SearchableDropdown({
     super.key,
@@ -32,6 +33,7 @@ class SearchableDropdown<T> extends StatefulWidget {
     // this.icon,
     this.isFilter = false,
     this.isSearchable = true,
+    this.showArrow = true,
   });
 
   @override
@@ -300,7 +302,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                   ),
                 ),
               )
-            else
+            else if (widget.showArrow)
               const Icon(
                 Icons.keyboard_arrow_down,
                 color: Color(0xFFA5ABB7),

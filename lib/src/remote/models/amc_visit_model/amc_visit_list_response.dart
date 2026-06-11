@@ -37,6 +37,7 @@ class AmcVisitData {
   final String id;
   final String amcVisitId;
   final int visitNumber;
+  final int totalVisits;
   final String customerName;
   final String siteName;
   final String dealerName;
@@ -54,6 +55,7 @@ class AmcVisitData {
     required this.id,
     required this.amcVisitId,
     required this.visitNumber,
+    this.totalVisits = 0,
     required this.customerName,
     required this.siteName,
     required this.dealerName,
@@ -73,6 +75,7 @@ class AmcVisitData {
       id: json['id'] ?? json['visit_id'] ?? '',
       amcVisitId: json['amc_visit_id'] ?? json['visit_id'] ?? '',
       visitNumber: json['visit_number'] ?? 0,
+      totalVisits: json['total_visits'] ?? 0,
       customerName: json['customer_name'] ?? '',
       siteName: json['site_name'] ?? '',
       dealerName: json['dealer_name'] ?? '',
@@ -93,6 +96,7 @@ class AmcVisitData {
       'id': id,
       'amc_visit_id': amcVisitId,
       'visit_number': visitNumber,
+      'total_visits': totalVisits,
       'customer_name': customerName,
       'site_name': siteName,
       'dealer_name': dealerName,

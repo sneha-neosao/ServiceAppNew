@@ -9,6 +9,7 @@ import 'package:service_app/src/features/service_calls/bloc/service_call_check_f
 import 'package:service_app/src/features/service_calls/bloc/service_call_check_feedback_bloc/service_call_check_feedback_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_check_feedback_bloc/service_call_check_feedback_state.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_state.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_event.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_state.dart';
 import 'package:service_app/src/remote/models/feedback_model/feedback_response.dart';
@@ -40,7 +41,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
     } else if (isAmc) {
       return BlocProvider(
         create: (_) => getIt<AmcCheckFeedbackBloc>()
-          ..add(FetchAmcCheckFeedbackEvent(amcVisitId: reportId)),
+          ..add(CheckAmcFeedbackEvent(amcVisitId: reportId)),
         child: _buildScreen(context),
       );
     } else {
@@ -130,14 +131,14 @@ class FeedbackDetailsScreen extends StatelessWidget {
                   : isAmc
                       ? BlocBuilder<AmcCheckFeedbackBloc, AmcCheckFeedbackState>(
                           builder: (context, state) {
-                            if (state is AmcCheckFeedbackLoading) {
+                            if (state is AmcCheckFeedbackLoadingState) {
                               return const Center(child: CircularProgressIndicator());
-                            } else if (state is AmcCheckFeedbackError) {
+                            } else if (state is AmcCheckFeedbackFailureState) {
                               return Center(
                                 child: Text(state.message, style: AppFont.style(fontSize: 14, color: Colors.red)),
                               );
-                            } else if (state is AmcCheckFeedbackLoaded) {
-                              final data = state.response.data?.feedback;
+                            } else if (state is AmcCheckFeedbackSuccessState) {
+                              final data = state.data.data?.feedback;
                               if (data == null) {
                                 return Center(
                                   child: Text('No feedback found', style: AppFont.style(fontSize: 14, color: Colors.grey)),

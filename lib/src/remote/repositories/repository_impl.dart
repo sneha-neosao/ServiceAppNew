@@ -2438,23 +2438,22 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, AmcVisitCompleteResponse>> postAmcVisitComplete(
-    String visitId,
-  ) async {
-    return executeCall(
+  Future<Either<Failure, AmcVisitCompleteResponse>> postAmcVisitComplete(String visitId) {
+    return _networkInfo.check<AmcVisitCompleteResponse>(
       connected: () async {
         try {
-          String token = sessionManager.getToken() ?? "";
-          final response = await _remoteDataSource.postAmcVisitComplete(
-            visitId,
-            token,
-          );
-          return Right(response);
-        } on AuthException catch (e) {
-          return Left(AuthFailure(e.toString()));
-        } on ApiException catch (e) {
-          return Left(ApiFailure(e.toString()));
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.postAmcVisitComplete(visitId, token);
+          if (respData.status != 200) {
+            return Left(CredentialFailure(respData.message ?? 'Unknown error'));
+          }
+          return Right(respData);
         } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
       },

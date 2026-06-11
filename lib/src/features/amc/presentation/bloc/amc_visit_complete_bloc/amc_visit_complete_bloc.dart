@@ -11,7 +11,7 @@ class AmcVisitCompleteBloc extends Bloc<AmcVisitCompleteEvent, AmcVisitCompleteS
       emit(AmcVisitCompleteLoadingState());
       final result = await _useCase(event.visitId);
       result.fold(
-        (failure) => emit(AmcVisitCompleteFailureState(failure.message)),
+        (failure) => emit(AmcVisitCompleteFailureState((failure as dynamic).message)),
         (data) => emit(AmcVisitCompleteSuccessState(data)),
       );
     });

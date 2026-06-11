@@ -1,5 +1,5 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:service_app/src/core/error/failures.dart';
+import 'package:service_app/src/core/errors/failures.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_visit_complete_response.dart';
 import 'package:service_app/src/remote/repositories/repository_impl.dart';
 

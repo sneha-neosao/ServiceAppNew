@@ -7,7 +7,7 @@ import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_visit_complete_bloc/amc_visit_complete_bloc.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_visit_complete_bloc/amc_visit_complete_event.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_visit_complete_bloc/amc_visit_complete_state.dart';
-import 'package:service_app/src/core/utils/snackbar.dart';
+import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 
 enum AmcViewState { schedule, details, createReport }
 
