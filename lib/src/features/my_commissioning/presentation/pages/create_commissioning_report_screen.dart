@@ -3309,7 +3309,7 @@ class _CreateCommissioningReportScreenState
                     const Icon(Icons.add, size: 16, color: Color(0xFF1565C0)),
                     const SizedBox(width: 4),
                     Text(
-                      'commissioning_add_paren'.tr(),
+                      'Add',
                       style: AppFont.style(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,

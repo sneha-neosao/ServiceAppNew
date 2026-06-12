@@ -606,10 +606,11 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       decoration: BoxDecoration(
                         color: const Color(0xFFFFF0F0),
                         borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFFFD6D6)),
                       ),
                       child: const Icon(
                         Icons.delete_outline,
-                        color: Color(0xFFFF5252),
+                        color: Color(0xFFE53935),
                         size: 24,
                       ),
                     ),
@@ -690,15 +691,17 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       });
                     },
                     child: Container(
-                      width: 48,
-                      height: 48,
-                      color: Colors.transparent,
-                      child: const Center(
-                        child: Icon(
-                          Icons.remove,
-                          color: Color(0xFFFF5252),
-                          size: 20,
-                        ),
+                      width: 54,
+                      height: 54,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF0F0),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFFFD6D6)),
+                      ),
+                      child: const Icon(
+                        Icons.delete_outline,
+                        color: Color(0xFFE53935),
+                        size: 24,
                       ),
                     ),
                   ),

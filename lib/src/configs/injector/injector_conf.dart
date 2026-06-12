@@ -120,6 +120,10 @@ import '../../features/amc/domain/usecase/amc_visit_reports_usecase.dart';
 import '../../features/amc/bloc/amc_visit_reports_bloc/amc_visit_reports_bloc.dart';
 import '../../domain/usecases/amc_report/delete_amc_report_usecase.dart';
 import '../../features/amc/presentation/bloc/delete_amc_report_bloc/delete_amc_report_bloc.dart';
+import '../../features/reports/domain/usecases/service_work_report_step1_usecase.dart';
+import '../../features/reports/bloc/service_work_report_step1_bloc/service_work_report_step1_bloc.dart';
+import '../../features/reports/domain/usecases/service_work_report_step1_autofill_usecase.dart';
+import '../../features/reports/bloc/service_work_report_step1_autofill_bloc/service_work_report_step1_autofill_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -471,6 +475,26 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => ServiceCallReportStep1Usecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => ServiceWorkReportStep1Bloc(
+      usecase: getIt<ServiceWorkReportStep1Usecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => ServiceWorkReportStep1Usecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => ServiceWorkReportStep1AutofillBloc(
+      getIt<ServiceWorkReportStep1AutoFillUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => ServiceWorkReportStep1AutoFillUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(

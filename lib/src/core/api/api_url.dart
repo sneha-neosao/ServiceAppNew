@@ -1,8 +1,8 @@
 class ApiUrl {
   const ApiUrl._();
 
-  // static const baseUrl = "http://192.168.1.35:8001/api/v1/"; // TEST
-  static const baseUrl = "https://backend.inorotech.in/api/v1/"; // LIVE
+  static const baseUrl = "http://192.168.1.35:8001/api/v1/"; // TEST
+  // static const baseUrl = "https://backend.inorotech.in/api/v1/"; // LIVE
 
   static const privacy_url = "https://theperpetuity.com/privacy-policy";
 
@@ -45,6 +45,10 @@ class ApiUrl {
       'technician/service-calls/assign-technicians';
   static const String closeOverCall =
       'technician/service-calls/close-over-call';
+  static const String serviceWorkReportStep1 =
+      'technician/service-work-report-step1';
+  static const String serviceWorkReportStep1AutoFill =
+      'technician/service-work-report-step1/';
   static const String serviceCallReportStep1 =
       'technician/service-call-report-step1';
   static const String serviceCallReportStep1AutoFill =
