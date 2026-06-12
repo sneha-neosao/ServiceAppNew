@@ -465,7 +465,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   technicianId: item.dealerName,
                                   feedbackSubmitted: item.feedbackSubmitted,
                                   qrCodeImage: item.qrCodeImage,
-                                  status: item.status,
+                                  status: item.reportType.isNotEmpty ? item.reportType : item.status,
                                   onViewPdfTap: (id) {
                                     _serviceCallPdfBloc.add(
                                       FetchServiceCallReportPdfEvent(
@@ -1542,11 +1542,25 @@ class _ReportCard extends StatelessWidget {
       borderColor = const Color(0xFF9C27B0); // Purple
       bgColor = const Color(0xFFF3E5F5);
       textColor = const Color(0xFF7B1FA2);
+    } else if (lowerStatus == 'service work' || lowerStatus == 'service_work') {
+      borderColor = const Color(0xFF00ACC1); // Cyan
+      bgColor = const Color(0xFFE0F7FA);
+      textColor = const Color(0xFF00838F);
+    } else if (lowerStatus == 'service call' || lowerStatus == 'service_call') {
+      borderColor = const Color(0xFFD81B60); // Pink
+      bgColor = const Color(0xFFFCE4EC);
+      textColor = const Color(0xFFAD1457);
     } else {
       borderColor = const Color(0xFF9E9E9E); // Grey
       bgColor = const Color(0xFFF5F5F5);
       textColor = const Color(0xFF616161);
     }
+
+    String displayStatus = statusStr.replaceAll('_', ' ');
+    displayStatus = displayStatus.split(' ').map((word) {
+      if (word.isEmpty) return word;
+      return '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}';
+    }).join(' ');
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -1556,7 +1570,7 @@ class _ReportCard extends StatelessWidget {
         border: Border.all(color: borderColor, width: 1),
       ),
       child: Text(
-        statusStr,
+        displayStatus,
         style: AppFont.style(
           fontSize: 12,
           fontWeight: FontWeight.w800,

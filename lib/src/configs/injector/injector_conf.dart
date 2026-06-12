@@ -130,6 +130,12 @@ import '../../features/reports/domain/usecases/service_work_report_step2_autofil
 import '../../features/reports/bloc/service_work_report_step2_autofill_bloc/service_work_report_step2_autofill_bloc.dart';
 import '../../features/reports/domain/usecases/service_work_report_step3_usecase.dart';
 import '../../features/reports/bloc/service_work_report_step3_bloc/service_work_report_step3_bloc.dart';
+import '../../features/reports/domain/usecases/service_work_report_step4_usecase.dart';
+import '../../features/reports/bloc/service_work_report_step4_bloc/service_work_report_step4_bloc.dart';
+import '../../features/reports/domain/usecases/service_work_report_step4_autofill_usecase.dart';
+import '../../features/reports/bloc/service_work_report_step4_autofill_bloc/service_work_report_step4_autofill_bloc.dart';
+import '../../features/reports/domain/usecases/service_work_report_technicians_usecase.dart';
+import '../../features/reports/bloc/service_work_report_technicians_bloc/service_work_report_technicians_bloc.dart';
 import '../../features/reports/domain/usecases/service_work_report_step3_autofill_usecase.dart';
 import '../../features/reports/bloc/service_work_report_step3_autofill_bloc/service_work_report_step3_autofill_bloc.dart';
 import 'injector.dart';
@@ -533,6 +539,36 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => ServiceWorkReportStep3Usecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => ServiceWorkReportStep4Bloc(
+      usecase: getIt<ServiceWorkReportStep4Usecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => ServiceWorkReportStep4Usecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => ServiceWorkReportStep4AutofillBloc(
+      getIt<ServiceWorkReportStep4AutoFillUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => ServiceWorkReportStep4AutoFillUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => ServiceWorkReportTechniciansBloc(
+      getIt<ServiceWorkReportTechniciansUsecase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => ServiceWorkReportTechniciansUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(

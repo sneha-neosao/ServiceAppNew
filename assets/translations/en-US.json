@@ -376,5 +376,7 @@
   "val_amc_pump_manual": "Please check pump started in manual mode.",
   "val_amc_auto_operation": "Please check auto operation.",
   "val_amc_water_flow": "Please check water flow & pressure.",
-  "val_amc_rotation": "Please check direction of rotation."
+  "val_amc_rotation": "Please check direction of rotation.",
+  "create_report_btn_submit": "Submit Service / Work Report",
+  "commissioning_save": "Done"
 }

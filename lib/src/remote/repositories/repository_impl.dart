@@ -16,10 +16,15 @@ import 'package:service_app/src/features/home/domain/usecase/upcoming_amc_usecas
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
 import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_work_update_usecase.dart';
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step1_usecase.dart';
-import 'package:service_app/src/remote/models/service_work_report_step2_model/service_work_report_step2_response.dart';
+import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step1_autofill_usecase.dart';
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step2_usecase.dart';
-import 'package:service_app/src/remote/models/service_work_report_step3_model/service_work_report_step3_response.dart';
+import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step2_autofill_usecase.dart';
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step3_usecase.dart';
+import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step3_autofill_usecase.dart';
+import 'package:service_app/src/remote/models/service_work_report_step4_model/service_work_report_step4_response.dart';
+import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step4_usecase.dart';
+import 'package:service_app/src/remote/models/service_work_report_step2_model/service_work_report_step2_response.dart';
+import 'package:service_app/src/remote/models/service_work_report_step3_model/service_work_report_step3_response.dart';
 import 'package:service_app/src/remote/models/service_work_report_step1_model/service_work_report_step1_response.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/assigned_service_calls_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/pending_service_calls_usecase.dart';
@@ -225,8 +230,19 @@ abstract class Repository {
     ServiceWorkReportStep3Params params,
   );
 
+  Future<Either<Failure, ServiceWorkReportStep4Response>> serviceWorkReportStep4(
+    ServiceWorkReportStep4Params params,
+  );
+
+  Future<Either<Failure, AssignedTechnicianResponse>> serviceWorkReportTechnicians(
+    String reportId,
+  );
+
   Future<Either<Failure, ServiceWorkReportStep3Response>>
   serviceWorkReportStep3AutoFill(String reportId);
+
+  Future<Either<Failure, ServiceWorkReportStep4Response>>
+  serviceWorkReportStep4AutoFill(String reportId);
 
   Future<Either<Failure, ServiceWorkReportStep1Response>>
   serviceWorkReportStep1AutoFill(String complaintId);
@@ -1593,6 +1609,71 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
+  Future<Either<Failure, AssignedTechnicianResponse>> serviceWorkReportTechnicians(
+    String reportId,
+  ) {
+    return _networkInfo.check<AssignedTechnicianResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.serviceWorkReportTechnicians(
+            reportId,
+            token,
+          );
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(""));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, ServiceWorkReportStep4Response>> serviceWorkReportStep4(
+    ServiceWorkReportStep4Params params,
+  ) {
+    return _networkInfo.check<ServiceWorkReportStep4Response>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.serviceWorkReportStep4(
+            params,
+            token,
+          );
+
+          if (response.status != 200) {
+            return Left(CredentialFailure(response.message));
+          }
+
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
   Future<Either<Failure, ServiceWorkReportStep3Response>> serviceWorkReportStep3AutoFill(
     String reportId,
   ) {
@@ -1622,6 +1703,36 @@ class AuthRepositoryImpl implements Repository {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, ServiceWorkReportStep4Response>> serviceWorkReportStep4AutoFill(
+    String reportId,
+  ) {
+    return _networkInfo.check<ServiceWorkReportStep4Response>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.serviceWorkReportStep4AutoFill(
+            reportId,
+            token,
+          );
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(""));
         }
       },
     );

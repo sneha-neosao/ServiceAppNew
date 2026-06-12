@@ -71,6 +71,7 @@ class ServiceCallReport {
   final bool feedbackSubmitted;
   final String qrCodeUrl;
   final String qrCodeImage;
+  final String reportType;
 
   ServiceCallReport({
     required this.id,
@@ -86,6 +87,7 @@ class ServiceCallReport {
     required this.feedbackSubmitted,
     required this.qrCodeUrl,
     required this.qrCodeImage,
+    required this.reportType,
   });
 
   factory ServiceCallReport.fromJson(Map<String, dynamic> json) {
@@ -103,6 +105,7 @@ class ServiceCallReport {
       feedbackSubmitted: json['feedback_submitted'] ?? false,
       qrCodeUrl: json['qr_code_url'] ?? '',
       qrCodeImage: json['qr_code_image'] ?? '',
+      reportType: json['report_type'] ?? '',
     );
   }
 
@@ -121,6 +124,7 @@ class ServiceCallReport {
       'feedback_submitted': feedbackSubmitted,
       'qr_code_url': qrCodeUrl,
       'qr_code_image': qrCodeImage,
+      'report_type': reportType,
     };
   }
 }

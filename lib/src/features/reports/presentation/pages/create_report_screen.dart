@@ -30,13 +30,27 @@ import 'package:service_app/src/features/reports/domain/usecases/service_work_re
 import 'package:service_app/src/features/reports/bloc/service_work_report_step3_bloc/service_work_report_step3_bloc.dart';
 import 'package:service_app/src/features/reports/bloc/service_work_report_step3_bloc/service_work_report_step3_event.dart';
 import 'package:service_app/src/features/reports/bloc/service_work_report_step3_bloc/service_work_report_step3_state.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step4_bloc/service_work_report_step4_bloc.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step4_bloc/service_work_report_step4_event.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step4_bloc/service_work_report_step4_state.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step4_autofill_bloc/service_work_report_step4_autofill_bloc.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step4_autofill_bloc/service_work_report_step4_autofill_event.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step4_autofill_bloc/service_work_report_step4_autofill_state.dart';
+import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step4_usecase.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_technicians_bloc/service_work_report_technicians_bloc.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_technicians_bloc/service_work_report_technicians_event.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_technicians_bloc/service_work_report_technicians_state.dart';
 import 'package:service_app/src/remote/models/service_work_report_step3_model/service_work_report_step3_response.dart';
 import 'dart:convert';
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step1_usecase.dart';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:service_app/src/features/widgets/step_shimmer.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:service_app/src/core/session/session_manager.dart';
+import 'package:signature/signature.dart';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:path_provider/path_provider.dart';
 
 class CreateReportScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -206,10 +220,41 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   late ServiceWorkReportStep2AutofillBloc _serviceWorkReportStep2AutofillBloc;
   late ServiceWorkReportStep3Bloc _serviceWorkReportStep3Bloc;
   late ServiceWorkReportStep3AutofillBloc _serviceWorkReportStep3AutofillBloc;
+  late ServiceWorkReportStep4Bloc _serviceWorkReportStep4Bloc;
+  late ServiceWorkReportStep4AutofillBloc _serviceWorkReportStep4AutofillBloc;
+  late ServiceWorkReportTechniciansBloc _serviceWorkReportTechniciansBloc;
+
+  String? _loggedInTechnicianAssignId;
+
+  String _loggedInTechnicianId = '';
+  String _loggedInTechnicianName = '';
+  final TextEditingController _technicianNameController = TextEditingController();
+
+  Future<void> _fetchLoggedInTechnician() async {
+    final session = await SessionManager.getUserSession();
+    if (session?.technician != null) {
+      if (mounted) {
+        setState(() {
+          _loggedInTechnicianId = session!.technician!.id;
+          _loggedInTechnicianName = session!.technician!.name;
+          _technicianNameController.text = session!.technician!.name;
+        });
+      }
+    } else if (session?.dealer != null) {
+      if (mounted) {
+        setState(() {
+          _loggedInTechnicianId = session!.dealer!.id;
+          _loggedInTechnicianName = session!.dealer!.name;
+          _technicianNameController.text = session!.dealer!.name;
+        });
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _fetchLoggedInTechnician();
     if (widget.complaintId != null) {
       _complaintId = widget.complaintId;
     }
@@ -223,6 +268,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _serviceWorkReportStep2AutofillBloc = getIt<ServiceWorkReportStep2AutofillBloc>();
     _serviceWorkReportStep3Bloc = getIt<ServiceWorkReportStep3Bloc>();
     _serviceWorkReportStep3AutofillBloc = getIt<ServiceWorkReportStep3AutofillBloc>();
+    _serviceWorkReportStep4Bloc = getIt<ServiceWorkReportStep4Bloc>();
+    _serviceWorkReportStep4AutofillBloc = getIt<ServiceWorkReportStep4AutofillBloc>();
+    _serviceWorkReportTechniciansBloc = getIt<ServiceWorkReportTechniciansBloc>();
 
     if (_complaintId != null) {
       _serviceWorkReportStep1AutofillBloc.add(GetServiceWorkReportStep1AutofillEvent(_complaintId!));
@@ -280,6 +328,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _serviceWorkReportStep2AutofillBloc.close();
     _serviceWorkReportStep3Bloc.close();
     _serviceWorkReportStep3AutofillBloc.close();
+    _serviceWorkReportStep4Bloc.close();
+    _serviceWorkReportTechniciansBloc.close();
     _technicianBloc.close();
     for (final c in _technicians) c.dispose();
     _customerBloc.close();
@@ -309,6 +359,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _remarksTechCtrl.dispose();
     _remarksCustomerCtrl.dispose();
     _customerRepNameCtrl.dispose();
+    _technicianNameController.dispose();
     super.dispose();
   }
 
@@ -344,7 +395,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   final TextEditingController _remarksCustomerCtrl = TextEditingController();
   final TextEditingController _customerRepNameCtrl = TextEditingController();
   final List<XFile> _pickedPhotos = [];
+  List<String> _existingWorkPhotosUrls = [];
   final ImagePicker _imagePicker = ImagePicker();
+
+  File? _technicianSignatureFile;
+  String? _existingTechnicianSignatureUrl;
+
+  File? _customerSignatureFile;
+  String? _existingCustomerSignatureUrl;
 
   Future<void> _pickPhoto() async {
     final XFile? file = await _imagePicker.pickImage(
@@ -497,12 +555,45 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ),
         ),
       );
+    } else if (_currentStep == 4) {
+      if (_reportId == null) {
+        appSnackBar(context, const Color(0xFFF44336), "Missing report ID.");
+        return;
+      }
+      if (_customerRepNameCtrl.text.trim().isEmpty) {
+        appSnackBar(context, const Color(0xFFF44336), "Customer Representative name is required");
+        return;
+      }
+      if (_customerSignatureFile == null && (_existingCustomerSignatureUrl == null || _existingCustomerSignatureUrl!.isEmpty)) {
+        appSnackBar(context, const Color(0xFFF44336), "Customer Signature is required");
+        return;
+      }
+      if (_technicianSignatureFile == null && (_existingTechnicianSignatureUrl == null || _existingTechnicianSignatureUrl!.isEmpty)) {
+        appSnackBar(context, const Color(0xFFF44336), "Technician Signature is required");
+        return;
+      }
+
+      List<String> allWorkPhotos = _pickedPhotos.map((e) => e.path).toList();
+      allWorkPhotos.addAll(_existingWorkPhotosUrls);
+
+      _serviceWorkReportStep4Bloc.add(
+        PostServiceWorkReportStep4Event(
+          params: ServiceWorkReportStep4Params(
+            id: _reportId!,
+            customerRepresentativeName: _customerRepNameCtrl.text.trim(),
+            customerRemarks: _remarksCustomerCtrl.text.trim(),
+            technicianRemarks: _remarksTechCtrl.text.trim(),
+            technicianRepresentative: _loggedInTechnicianAssignId ?? _loggedInTechnicianId,
+            workPhotosPaths: allWorkPhotos,
+            customerSignaturePath: _customerSignatureFile?.path ?? _existingCustomerSignatureUrl,
+            technicianSignaturePath: _technicianSignatureFile?.path ?? _existingTechnicianSignatureUrl,
+          ),
+        ),
+      );
     } else if (_currentStep < 4) {
       setState(() {
         _currentStep++;
       });
-    } else {
-      _showSuccessDialog();
     }
   }
 
@@ -525,185 +616,93 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     }
   }
 
-  void _showSuccessDialog() {
+  void _showSuccessDialog({String qrCodeUrl = ""}) {
     showDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colors.black.withValues(alpha: 0.55),
-      builder: (BuildContext ctx) {
+      builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(24),
           ),
-          insetPadding: const EdgeInsets.symmetric(
-            horizontal: 28,
-            vertical: 40,
-          ),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              // ── Card body ─────────────────────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 36, 24, 28),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // Green success icon
-                    Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFFE8F5E9),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(
-                              0xFF4CAF50,
-                            ).withValues(alpha: 0.20),
-                            blurRadius: 20,
-                            spreadRadius: 4,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.check_circle_outline_rounded,
-                        color: Color(0xFF4CAF50),
-                        size: 36,
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Title
-                    Text(
-                      'Service Report Submitted',
-                      textAlign: TextAlign.center,
-                      style: AppFont.style(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF0D121F),
-                      ),
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    // Subtitle
-                    Text(
-                      'Scan for customer feedback',
-                      textAlign: TextAlign.center,
-                      style: AppFont.style(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFFA5ABB7),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-                    const Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: Color(0xFFF1F2F6),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // QR code box
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF8F9FB),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.06),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.qr_code_2_rounded,
-                            size: 160,
-                            color: Color(0xFF0D121F),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Hint
-                    Text(
-                      'Scan To Provide Feedback',
-                      style: AppFont.style(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFFA5ABB7),
-                      ),
-                    ),
-
-                    const SizedBox(height: 28),
-
-                    // Complete button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(ctx).pop();
-                          widget.onBack();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1565C0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: Text(
-                          'Complete Service Report',
-                          style: AppFont.style(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Color(0xFFA5ABB7)),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        widget.onBack();
+                      },
                     ),
                   ],
                 ),
-              ),
-
-              // ── ✕ close button ────────────────────────────────────────────
-              Positioned(
-                top: 14,
-                right: 14,
-                child: GestureDetector(
-                  onTap: () => Navigator.of(ctx).pop(),
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFFF1F2F6),
-                    ),
-                    child: const Icon(
-                      Icons.close,
-                      size: 16,
-                      color: Color(0xFF6B7280),
-                    ),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFE8F5E9),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_circle,
+                    color: Color(0xFF4CAF50),
+                    size: 40,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 24),
+                Text(
+                  'Service Call Report Feedback',
+                  textAlign: TextAlign.center,
+                  style: AppFont.style(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF0D121F),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Color(0xFFF1F2F6),
+                ),
+                const SizedBox(height: 32),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8F9FB),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFF1F2F6)),
+                  ),
+                  child: qrCodeUrl.isNotEmpty
+                      ? Image.network(
+                          qrCodeUrl,
+                          width: 180,
+                          height: 180,
+                          fit: BoxFit.contain,
+                        )
+                      : const Icon(
+                          Icons.qr_code_2,
+                          size: 180,
+                          color: Color(0xFF0D121F),
+                        ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Scan for Customer Feedback',
+                  textAlign: TextAlign.center,
+                  style: AppFont.style(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFA5ABB7),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -796,8 +795,23 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               setState(() {
                 _currentStep++;
               });
+              if (_reportId != null) {
+                _serviceWorkReportTechniciansBloc.add(FetchServiceWorkReportTechniciansEvent(_reportId!));
+                _serviceWorkReportStep4AutofillBloc.add(GetServiceWorkReportStep4AutofillEvent(_reportId!));
+              }
             } else if (state is ServiceWorkReportStep3Failure) {
               appSnackBar(context, const Color(0xFFF44336), state.error);
+            }
+          },
+        ),
+        BlocListener<ServiceWorkReportStep4Bloc, ServiceWorkReportStep4State>(
+          bloc: _serviceWorkReportStep4Bloc,
+          listener: (context, state) {
+            if (state is ServiceWorkReportStep4Loaded) {
+              appSnackBar(context, const Color(0xFF4CAF50), state.response.message ?? 'Report submitted successfully');
+              _showSuccessDialog(qrCodeUrl: state.response.data.qrCodeImage);
+            } else if (state is ServiceWorkReportStep4Error) {
+              appSnackBar(context, const Color(0xFFF44336), state.message);
             }
           },
         ),
@@ -810,6 +824,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 _mechNA = data.isMechanicalChecklistNa;
                 _pipeNA = data.isPipelineChecklistNa;
                 _elecNA = data.isElectricalChecklistNa;
+
+                if (_reportId != null) {
+                  _serviceWorkReportTechniciansBloc.add(FetchServiceWorkReportTechniciansEvent(_reportId!));
+                }
 
                 for (var item in data.savedChecklists) {
                   if (item.checkType == "mechanical") {
@@ -836,10 +854,51 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             }
           },
         ),
+        BlocListener<ServiceWorkReportStep4AutofillBloc, ServiceWorkReportStep4AutofillState>(
+          bloc: _serviceWorkReportStep4AutofillBloc,
+          listener: (context, state) {
+            if (state is ServiceWorkReportStep4AutofillSuccess) {
+              final data = state.data.data;
+              setState(() {
+                _remarksTechCtrl.text = data.technicianRemarks;
+                _remarksCustomerCtrl.text = data.customerRemarks;
+                _customerRepNameCtrl.text = data.customerRepresentativeName;
+
+                if (data.technicianSignature.isNotEmpty) {
+                  _existingTechnicianSignatureUrl = data.technicianSignature;
+                }
+                if (data.customerSignature.isNotEmpty) {
+                  _existingCustomerSignatureUrl = data.customerSignature;
+                }
+                if (data.savedWorkPhotos.isNotEmpty) {
+                  _existingWorkPhotosUrls = data.savedWorkPhotos;
+                }
+              });
+            }
+          },
+        ),
+        BlocListener<ServiceWorkReportTechniciansBloc, ServiceWorkReportTechniciansState>(
+          bloc: _serviceWorkReportTechniciansBloc,
+          listener: (context, state) {
+            if (state is ServiceWorkReportTechniciansLoaded) {
+              try {
+                final match = state.response.data.firstWhere(
+                  (tech) => tech.technicianId == _loggedInTechnicianId,
+                );
+                _loggedInTechnicianAssignId = match.assignId;
+              } catch (_) {
+                // If not found, ignore
+              }
+            }
+          },
+        ),
       ],
-      child: BlocBuilder<ServiceWorkReportStep3Bloc, ServiceWorkReportStep3State>(
-        bloc: _serviceWorkReportStep3Bloc,
-        builder: (context, step3State) {
+      child: BlocBuilder<ServiceWorkReportStep4Bloc, ServiceWorkReportStep4State>(
+        bloc: _serviceWorkReportStep4Bloc,
+        builder: (context, step4State) {
+          return BlocBuilder<ServiceWorkReportStep3Bloc, ServiceWorkReportStep3State>(
+            bloc: _serviceWorkReportStep3Bloc,
+            builder: (context, step3State) {
           return BlocBuilder<ServiceWorkReportStep2Bloc, ServiceWorkReportStep2State>(
             bloc: _serviceWorkReportStep2Bloc,
             builder: (context, step2State) {
@@ -974,6 +1033,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       if (state is ServiceWorkReportStep1Loading) return;
                       if (step2State is ServiceWorkReportStep2Loading) return;
                       if (step3State is ServiceWorkReportStep3Loading) return;
+                      if (step4State is ServiceWorkReportStep4Loading) return;
                       _nextStep();
                     },
                     child: Container(
@@ -1009,7 +1069,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                             const SizedBox.shrink(),
                           if (_currentStep == 1 && state is ServiceWorkReportStep1Loading ||
                               _currentStep == 2 && step2State is ServiceWorkReportStep2Loading ||
-                              _currentStep == 3 && step3State is ServiceWorkReportStep3Loading)
+                              _currentStep == 3 && step3State is ServiceWorkReportStep3Loading ||
+                              _currentStep == 4 && step4State is ServiceWorkReportStep4Loading)
                             const SizedBox(
                               width: 20,
                               height: 20,
@@ -1055,6 +1116,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         },
       );
         },
+      );
+        },
       ),
     );
   }
@@ -1084,7 +1147,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           },
         );
       case 4:
-        return _buildStep4();
+        return BlocBuilder<ServiceWorkReportStep4AutofillBloc, ServiceWorkReportStep4AutofillState>(
+          bloc: _serviceWorkReportStep4AutofillBloc,
+          builder: (context, autofillState) {
+            if (autofillState is ServiceWorkReportStep4AutofillLoading) {
+              return const StepShimmer(step: 1);
+            }
+            return _buildStep4();
+          },
+        );
       default:
         return Center(
           child: Padding(
@@ -2446,27 +2517,220 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 28),
 
-        // ── Photos ────────────────────────────────────────────────
+        // ── Recorded By ────────────────────────────────────────────
+        Text(
+          'Recorded By:',
+          style: AppFont.style(
+            fontSize: 16,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFF0D121F),
+          ),
+        ),
+        const SizedBox(height: 24),
+
+        // Technician Rep
+        Text(
+          'commissioning_tech_rep'.tr(),
+          style: AppFont.style(
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFFA5ABB7),
+            letterSpacing: 0.8,
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 16),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.camera_alt_outlined,
-              size: 20,
-              color: Color(0xFF0D121F),
+            SizedBox(
+              width: 80,
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'commissioning_name'.tr(),
+                      style: AppFont.style(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF8E9BAE),
+                      ),
+                    ),
+                    const TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(width: 8),
-            Text(
-              'Photos',
-              style: AppFont.style(
-                fontSize: 15,
-                fontWeight: FontWeight.w900,
-                color: const Color(0xFF0D121F),
+            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+            const SizedBox(width: 8),
+            Expanded(
+              child: SearchableDropdown<String>(
+                items: _technicianNameController.text.isNotEmpty ? [_technicianNameController.text] : [],
+                itemAsString: (t) => t,
+                value: _technicianNameController.text.isNotEmpty ? _technicianNameController.text : null,
+                onChanged: (val) {},
+                hintText: 'commissioning_select_technician'.tr(),
+                readOnly: true,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 16),
+        _buildSignatureBox(
+          label: 'commissioning_sign_star'.tr(),
+          placeholder: 'commissioning_tap_sign'.tr(),
+          signatureFile: _technicianSignatureFile,
+          existingUrl: _existingTechnicianSignatureUrl,
+          onTap: () {
+            _showSignatureDrawingPad(context, (file) {
+              setState(() {
+                _technicianSignatureFile = file;
+              });
+            });
+          },
+          onClear: () {
+            setState(() {
+              _technicianSignatureFile = null;
+              _existingTechnicianSignatureUrl = null;
+            });
+          },
+        ),
+
+        const SizedBox(height: 36),
+
+        // Customer Rep
+        Text(
+          'commissioning_customer_rep'.tr(),
+          style: AppFont.style(
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            color: const Color(0xFFA5ABB7),
+            letterSpacing: 0.8,
+          ),
+        ),
+        const SizedBox(height: 16),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 16),
+        // Editable name field
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 80,
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'commissioning_name'.tr(),
+                      style: AppFont.style(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF8E9BAE),
+                      ),
+                    ),
+                    const TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+            const SizedBox(width: 8),
+            Expanded(
+              child: TextField(
+                controller: _customerRepNameCtrl,
+                style: AppFont.style(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF0D121F),
+                ),
+                decoration: InputDecoration(
+                  hintText: 'commissioning_enter_name'.tr(),
+                  hintStyle: AppFont.style(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFFA5ABB7),
+                  ),
+                  enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFFD8DCE6)),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Color(0xFF1565C0),
+                      width: 1.5,
+                    ),
+                  ),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _buildSignatureBox(
+          label: 'commissioning_sign_star'.tr(),
+          placeholder: 'commissioning_tap_sign'.tr(),
+          signatureFile: _customerSignatureFile,
+          existingUrl: _existingCustomerSignatureUrl,
+          onTap: () {
+            _showSignatureDrawingPad(context, (file) {
+              setState(() {
+                _customerSignatureFile = file;
+              });
+            });
+          },
+          onClear: () {
+            setState(() {
+              _customerSignatureFile = null;
+              _existingCustomerSignatureUrl = null;
+            });
+          },
+        ),
+
+        const SizedBox(height: 36),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const SizedBox(height: 28),
+
+        // ── Upload / Capture Work Photos ──────────────────────────────
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'commissioning_upload_work_photos'.tr(),
+                style: AppFont.style(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFF0D121F),
+                ),
+              ),
+              const TextSpan(
+                text: ' *',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.red,
+                ),
+              ),
+            ],
+          ),
+        ),
         const SizedBox(height: 16),
 
         // Photo grid: thumbnails + Add Photo tile
@@ -2474,6 +2738,44 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           spacing: 12,
           runSpacing: 12,
           children: [
+            // Render existing network photos
+            ..._existingWorkPhotosUrls.map((url) {
+              return Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.network(
+                      url,
+                      width: 110,
+                      height: 110,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _existingWorkPhotosUrls.remove(url);
+                        });
+                      },
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.black54,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
             // Existing photo thumbnails
             ..._pickedPhotos.asMap().entries.map((entry) {
               final index = entry.key;
@@ -2549,108 +2851,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ],
         ),
 
-        const SizedBox(height: 36),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-        const SizedBox(height: 28),
-
-        // ── Recorded By ────────────────────────────────────────────
-        Text(
-          'Recorded By:',
-          style: AppFont.style(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-            color: const Color(0xFF0D121F),
-          ),
-        ),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-        const SizedBox(height: 24),
-
-        // Technician Rep
-        Text(
-          'commissioning_tech_rep'.tr(),
-          style: AppFont.style(
-            fontSize: 11,
-            fontWeight: FontWeight.w900,
-            color: const Color(0xFFA5ABB7),
-            letterSpacing: 0.8,
-          ),
-        ),
-        const SizedBox(height: 16),
-        _buildSignatureRow('Name', 'Mr. Rahul Mane', isBold: true),
-        const SizedBox(height: 16),
-        _buildSignatureBox('Sign', 'create_report_digitally_signed'.tr()),
-
-        const SizedBox(height: 36),
-
-        // Customer Rep
-        Text(
-          'commissioning_customer_rep'.tr(),
-          style: AppFont.style(
-            fontSize: 11,
-            fontWeight: FontWeight.w900,
-            color: const Color(0xFFA5ABB7),
-            letterSpacing: 0.8,
-          ),
-        ),
-        const SizedBox(height: 16),
-        // Editable name field
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 60,
-              child: Text(
-                'Name',
-                style: AppFont.style(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF8E9BAE),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
-            const SizedBox(width: 8),
-            Expanded(
-              child: TextField(
-                controller: _customerRepNameCtrl,
-                style: AppFont.style(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: const Color(0xFF0D121F),
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Enter name',
-                  hintStyle: AppFont.style(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFFA5ABB7),
-                  ),
-                  enabledBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFD8DCE6)),
-                  ),
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Color(0xFF1565C0),
-                      width: 1.5,
-                    ),
-                  ),
-                  isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 6),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        _buildSignatureBox('Sign', 'create_report_signature_area'.tr()),
-
         const SizedBox(height: 60),
       ],
     );
   }
 
-  // ── Remarks text area with toggle mic ────────────────────────────────
   Widget _buildRemarksBox({
     required TextEditingController controller,
     required String hint,
@@ -2693,284 +2898,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       ),
     );
   }
-
-  Widget _buildStep5() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Remarks Tech
-        _buildLabel('create_report_remarks_tech'.tr()),
-        const SizedBox(height: 16),
-        Container(
-          height: 120,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFF1F2F6)),
-          ),
-          child: const Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: SizedBox()),
-              Icon(Icons.mic_none, color: Color(0xFFA5ABB7)),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 32),
-
-        // Remarks Customer
-        _buildLabel('create_report_remarks_customer'.tr()),
-        const SizedBox(height: 16),
-        Container(
-          height: 120,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFF1F2F6)),
-          ),
-          child: const Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: SizedBox()),
-              Icon(Icons.mic_none, color: Color(0xFFA5ABB7)),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 48),
-
-        // Photos Section
-        _buildLabel('create_report_upload_photos'.tr()),
-        const SizedBox(height: 20),
-        Container(
-          width: 120,
-          height: 120,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFF1F2F6), width: 1),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.camera_alt_outlined,
-                size: 32,
-                color: Color(0xFFA5ABB7),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'create_report_add_photo'.tr(),
-                style: AppFont.style(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFFA5ABB7),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 60),
-      ],
-    );
-  }
-
-  Widget _buildStep6() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'create_report_recorded_by'.tr(),
-          style: AppFont.style(
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            color: const Color(0xFF0D121F),
-          ),
-        ),
-        const SizedBox(height: 8),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-        const SizedBox(height: 40),
-
-        // Technician Rep
-        _buildLabel('create_report_tech_rep'.tr()),
-        const SizedBox(height: 24),
-        _buildSignatureRow(
-          'create_report_name'.tr(),
-          'Mr. Rahul Mane',
-          isBold: true,
-        ),
-        const SizedBox(height: 24),
-        _buildSignatureBox(
-          'create_report_sign'.tr(),
-          'create_report_digitally_signed'.tr(),
-        ),
-
-        const SizedBox(height: 60),
-
-        // Customer Rep
-        _buildLabel('create_report_customer_rep'.tr()),
-        const SizedBox(height: 24),
-        _buildSignatureRow(
-          'create_report_name'.tr(),
-          'Enter name',
-          isPlaceholder: true,
-        ),
-        const SizedBox(height: 24),
-        _buildSignatureBox(
-          'create_report_sign'.tr(),
-          'create_report_signature_area'.tr(),
-        ),
-
-        const SizedBox(height: 60),
-      ],
-    );
-  }
-
-  Widget _buildSignatureRow(
-    String label,
-    String value, {
-    bool isBold = false,
-    bool isPlaceholder = false,
-  }) {
-    return Row(
-      children: [
-        SizedBox(
-          width: 80,
-          child: Text(
-            label,
-            style: AppFont.style(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF8E9BAE),
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        const Text(':', style: TextStyle(color: Color(0xFFF1F2F6))),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                value,
-                style: AppFont.style(
-                  fontSize: 16,
-                  fontWeight: isBold ? FontWeight.w900 : FontWeight.w800,
-                  color: isPlaceholder
-                      ? const Color(0xFFA5ABB7)
-                      : const Color(0xFF0D121F),
-                ),
-              ),
-              if (isPlaceholder) ...[
-                const SizedBox(height: 4),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Color(0xFFF1F2F6),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSignatureBox(String label, String hint) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 80,
-          child: Text(
-            label,
-            style: AppFont.style(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF8E9BAE),
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        const Text(':', style: TextStyle(color: Color(0xFFF1F2F6))),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Container(
-            height: 140,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8F9FB),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFF1F2F6)),
-            ),
-            child: Center(
-              child: Text(
-                hint.tr(),
-                style: AppFont.style(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFFCFD8DC),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildWorkRow(int number) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '$number.',
-            style: AppFont.style(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFFA5ABB7),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Container(
-              height: 64,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8F9FB),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFF1F2F6)),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      '...',
-                      style: AppFont.style(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFFA5ABB7),
-                      ),
-                    ),
-                  ),
-                  const Icon(
-                    Icons.mic_none,
-                    size: 18,
-                    color: Color(0xFFA5ABB7),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  Widget _buildLabel(String text, {bool isMandatory = false}) {
+    return _buildSectionTitle(text, isMandatory: isMandatory);
   }
 
   Widget _buildSectionTitle(String title, {bool isMandatory = false}) {
@@ -2995,35 +2924,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ),
       ],
     );
-  }
-
-  Widget _buildInlineField(String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 4,
-            child: Text(
-              label,
-              style: AppFont.style(
-                fontSize: 14,
-                fontWeight: FontWeight.w900,
-                color: const Color(0xFF0D121F),
-              ),
-            ),
-          ),
-          const Expanded(
-            flex: 6,
-            child: Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLabel(String text, {bool isMandatory = false}) {
-    return _buildSectionTitle(text, isMandatory: isMandatory);
   }
 
   Widget _buildAddNewButton(String text) {
@@ -3112,95 +3012,284 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     );
   }
 
-  Widget _buildDropdownField(
-    String value,
-    bool isOpen, {
-    bool isLoading = false,
+  Widget _buildSignatureBox({
+    required String label,
+    required String placeholder,
+    File? signatureFile,
+    String? existingUrl,
+    required VoidCallback onTap,
+    required VoidCallback onClear,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isOpen ? const Color(0xFF1565C0) : const Color(0xFFF1F2F6),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            value,
-            style: AppFont.style(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              color: const Color(0xFF0D121F),
-            ),
-          ),
-          isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    color: Color(0xFF1565C0),
-                    strokeWidth: 2,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 80,
+          child: label.contains('*')
+              ? RichText(
+                  text: TextSpan(
+                    text: label.replaceAll('*', '').trimRight(),
+                    style: AppFont.style(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF8E9BAE),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: ' *',
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
                   ),
                 )
-              : const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
-        ],
-      ),
+              : Text(
+                  label,
+                  style: AppFont.style(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF8E9BAE),
+                  ),
+                ),
+        ),
+        const SizedBox(width: 8),
+        const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+        const SizedBox(width: 8),
+        Expanded(
+          child: GestureDetector(
+            onTap: (signatureFile == null &&
+                    (existingUrl == null || existingUrl.isEmpty))
+                ? onTap
+                : null,
+            child: Container(
+              height: 120,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF9FAFB),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFE5E7EB)),
+              ),
+              child: Stack(
+                children: [
+                  if (signatureFile != null)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.file(signatureFile, fit: BoxFit.contain),
+                      ),
+                    )
+                  else if (existingUrl != null && existingUrl.isNotEmpty)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.network(
+                          existingUrl,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(
+                              child: Icon(
+                                Icons.broken_image,
+                                color: Colors.grey,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    )
+                  else
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.edit_outlined,
+                            color: Color(0xFFA5ABB7),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            placeholder,
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFFCDD0D8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (signatureFile != null ||
+                      (existingUrl != null && existingUrl.isNotEmpty))
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: GestureDetector(
+                        onTap: onClear,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            size: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildDropdownList({
-    required String title,
-    required List<String> items,
-    required ValueChanged<String> onSelect,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFF757575), width: 1),
+  Future<void> _showSignatureDrawingPad(
+    BuildContext context,
+    Function(File) onSignatureDrawn,
+  ) async {
+    final SignatureController signatureController = SignatureController(
+      penStrokeWidth: 4,
+      penColor: const Color(0xFF0D121F),
+      exportBackgroundColor: Colors.white,
+    );
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Header item
-          Container(
-            color: const Color(0xFF757575),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Text(
-              title,
-              style: AppFont.style(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Colors.white,
-              ),
-            ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          // List items
-          ...items.map(
-            (item) => GestureDetector(
-              onTap: () => onSelect(item),
-              child: Container(
-                color: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Text(
-                  item,
-                  style: AppFont.style(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFF0D121F),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'commissioning_draw_signature'.tr(),
+                        style: AppFont.style(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF9FAFB),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Signature(
+                        controller: signatureController,
+                        height: 200,
+                        backgroundColor: const Color(0xFFF9FAFB),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            signatureController.clear();
+                          },
+                          child: Container(
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: const Color(0xFFCDD0D8)),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'commissioning_clear'.tr(),
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF6B7280),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            if (signatureController.isEmpty) {
+                              appSnackBar(
+                                  context,
+                                  const Color(0xFFF44336),
+                                  'commissioning_please_draw_signature'.tr());
+                              return;
+                            }
+                            final bytes = await signatureController.toPngBytes();
+                            if (bytes != null) {
+                              final tempDir = await getTemporaryDirectory();
+                              final file = File(
+                                '${tempDir.path}/signature_${DateTime.now().millisecondsSinceEpoch}.png',
+                              );
+                              await file.writeAsBytes(bytes);
+                              onSignatureDrawn(file);
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                              }
+                            }
+                          },
+                          child: Container(
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1565C0),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'commissioning_done'.tr(),
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

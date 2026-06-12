@@ -51,6 +51,8 @@ import 'package:service_app/src/remote/models/service_work_report_step2_model/se
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step2_usecase.dart';
 import 'package:service_app/src/remote/models/service_work_report_step3_model/service_work_report_step3_response.dart';
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step3_usecase.dart';
+import 'package:service_app/src/remote/models/service_work_report_step4_model/service_work_report_step4_response.dart';
+import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step4_usecase.dart';
 import '../../configs/injector/injector.dart';
 import '../../core/api/api_exception.dart';
 import '../../core/api/api_helper.dart';
@@ -288,7 +290,22 @@ sealed class RemoteDataSource {
     String token,
   );
 
+  Future<ServiceWorkReportStep4Response> serviceWorkReportStep4(
+    ServiceWorkReportStep4Params params,
+    String token,
+  );
+
+  Future<AssignedTechnicianResponse> serviceWorkReportTechnicians(
+    String reportId,
+    String token,
+  );
+
   Future<ServiceWorkReportStep3Response> serviceWorkReportStep3AutoFill(
+    String reportId,
+    String token,
+  );
+
+  Future<ServiceWorkReportStep4Response> serviceWorkReportStep4AutoFill(
     String reportId,
     String token,
   );
@@ -1844,6 +1861,114 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
+  Future<AssignedTechnicianResponse> serviceWorkReportTechnicians(
+      String reportId, String token) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: '${ApiUrl.serviceWorkReportTechnicians}$reportId/technicians',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      final respData = AssignedTechnicianResponse.fromJson(response);
+
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<ServiceWorkReportStep4Response> serviceWorkReportStep4(
+    ServiceWorkReportStep4Params params,
+    String token,
+  ) async {
+    try {
+      final Map<String, dynamic> map = {
+        "id": params.id,
+        "customer_representative_name": params.customerRepresentativeName,
+        "customer_remarks": params.customerRemarks,
+        "technician_remarks": params.technicianRemarks,
+        "technician_representative": params.technicianRepresentative,
+        if (params.qrCodeUrl.isNotEmpty) "qr_code_url": params.qrCodeUrl,
+      };
+
+      if (params.technicianSignaturePath != null &&
+          params.technicianSignaturePath!.isNotEmpty) {
+        if (params.technicianSignaturePath!.startsWith('http')) {
+          map["technician_signature"] = params.technicianSignaturePath!;
+        } else {
+          map["technician_signature"] = await MultipartFile.fromFile(
+            params.technicianSignaturePath!,
+            filename: params.technicianSignaturePath!.split('/').last,
+          );
+        }
+      }
+
+      if (params.customerSignaturePath != null &&
+          params.customerSignaturePath!.isNotEmpty) {
+        if (params.customerSignaturePath!.startsWith('http')) {
+          map["customer_signature"] = params.customerSignaturePath!;
+        } else {
+          map["customer_signature"] = await MultipartFile.fromFile(
+            params.customerSignaturePath!,
+            filename: params.customerSignaturePath!.split('/').last,
+          );
+        }
+      }
+
+      if (params.workPhotosPaths.isNotEmpty) {
+        final List<dynamic> files = [];
+        for (final path in params.workPhotosPaths) {
+          if (path.isNotEmpty) {
+            if (path.startsWith('http')) {
+              files.add(path);
+            } else {
+              files.add(
+                await MultipartFile.fromFile(
+                  path,
+                  filename: path.split('/').last,
+                ),
+              );
+            }
+          }
+        }
+        map["work_photos"] = files;
+      }
+
+      final formData = FormData.fromMap(map);
+
+      final response = await _helper.execute(
+        url: ApiUrl.serviceWorkReportStep4,
+        method: Method.post,
+        data: formData,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = ServiceWorkReportStep4Response.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
   Future<ServiceWorkReportStep3Response> serviceWorkReportStep3AutoFill(
     String reportId,
     String token,
@@ -1866,6 +1991,34 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       }
       if (e is ApiException) {
         throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<ServiceWorkReportStep4Response> serviceWorkReportStep4AutoFill(
+    String reportId,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: '${ApiUrl.serviceWorkReportStep4AutoFill}$reportId',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = ServiceWorkReportStep4Response.fromJson(response);
+
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
       }
       throw ServerException();
     }
