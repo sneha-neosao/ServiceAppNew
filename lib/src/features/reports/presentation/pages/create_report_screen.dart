@@ -16,6 +16,14 @@ import 'package:service_app/src/features/reports/bloc/service_work_report_step1_
 import 'package:service_app/src/features/reports/bloc/service_work_report_step1_autofill_bloc/service_work_report_step1_autofill_bloc.dart';
 import 'package:service_app/src/features/reports/bloc/service_work_report_step1_autofill_bloc/service_work_report_step1_autofill_event.dart';
 import 'package:service_app/src/features/reports/bloc/service_work_report_step1_autofill_bloc/service_work_report_step1_autofill_state.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step2_bloc/service_work_report_step2_bloc.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step2_bloc/service_work_report_step2_event.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step2_bloc/service_work_report_step2_state.dart';
+import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step2_usecase.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step2_autofill_bloc/service_work_report_step2_autofill_bloc.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step2_autofill_bloc/service_work_report_step2_autofill_event.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step2_autofill_bloc/service_work_report_step2_autofill_state.dart';
+import 'dart:convert';
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step1_usecase.dart';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
@@ -186,6 +194,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   late ServiceWorkReportStep1Bloc _serviceWorkReportStep1Bloc;
   late ServiceWorkReportStep1AutofillBloc _serviceWorkReportStep1AutofillBloc;
+  late ServiceWorkReportStep2Bloc _serviceWorkReportStep2Bloc;
+  late ServiceWorkReportStep2AutofillBloc _serviceWorkReportStep2AutofillBloc;
 
   @override
   void initState() {
@@ -199,6 +209,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
     _serviceWorkReportStep1Bloc = getIt<ServiceWorkReportStep1Bloc>();
     _serviceWorkReportStep1AutofillBloc = getIt<ServiceWorkReportStep1AutofillBloc>();
+    _serviceWorkReportStep2Bloc = getIt<ServiceWorkReportStep2Bloc>();
+    _serviceWorkReportStep2AutofillBloc = getIt<ServiceWorkReportStep2AutofillBloc>();
 
     if (_complaintId != null) {
       _serviceWorkReportStep1AutofillBloc.add(GetServiceWorkReportStep1AutofillEvent(_complaintId!));
@@ -252,6 +264,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   @override
   void dispose() {
     _serviceWorkReportStep1Bloc.close();
+    _serviceWorkReportStep2Bloc.close();
+    _serviceWorkReportStep2AutofillBloc.close();
     _technicianBloc.close();
     for (final c in _technicians) c.dispose();
     _customerBloc.close();
@@ -376,6 +390,54 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ),
         ),
       );
+    } else if (_currentStep == 2) {
+      if (_reportId == null) {
+        appSnackBar(context, const Color(0xFFF44336), "Missing report ID. Please save step 1 first.");
+        return;
+      }
+      List<Map<String, dynamic>> descList = [];
+      for (int i = 0; i < _workDescControllers.length; i++) {
+        if (_workDescControllers[i].text.isNotEmpty) {
+          descList.add({
+            "sr_no": i,
+            "description": _workDescControllers[i].text,
+          });
+        }
+      }
+
+      Map<String, dynamic> techDetails = {};
+      if (!_isTechnicalNA) {
+        techDetails = {
+          "pump_make": _pumpMakeCtrl.text,
+          "pump_model": _pumpModelCtrl.text,
+          "pump_serial": _pumpSerialCtrl.text,
+          "pump_flow": {
+            "lpm": _pumpFlowLpmCtrl.text,
+            "lps": _pumpFlowLpsCtrl.text,
+            "m3_hr": _pumpFlowM3hrCtrl.text,
+            "usgpm": _pumpFlowUsgpmCtrl.text,
+          },
+          "pump_head_mtr": _pumpHeadMtrCtrl.text,
+          "driver_make": _driverMakeCtrl.text,
+          "driver_serial": _driverSerialCtrl.text,
+          "rating_kw": _ratingKwCtrl.text,
+          "rating_hp": _ratingHpCtrl.text,
+          "rpm": _rpmCtrl.text,
+          "panel_make": _panelMakeCtrl.text,
+          "panel_serial": _panelSerialCtrl.text,
+        };
+      }
+
+      _serviceWorkReportStep2Bloc.add(
+        PostServiceWorkReportStep2Event(
+          ServiceWorkReportStep2Params(
+            id: _reportId!,
+            isTechnicalNa: _isTechnicalNA,
+            technicalDetails: jsonEncode(techDetails),
+            descriptions: descList,
+          ),
+        ),
+      );
     } else if (_currentStep < 4) {
       setState(() {
         _currentStep++;
@@ -392,6 +454,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       });
       if (_currentStep == 1 && _complaintId != null) {
         _serviceWorkReportStep1AutofillBloc.add(GetServiceWorkReportStep1AutofillEvent(_complaintId!));
+      }
+      if (_currentStep == 2 && _reportId != null) {
+        _serviceWorkReportStep2AutofillBloc.add(GetServiceWorkReportStep2AutofillEvent(_reportId!));
       }
     } else {
       widget.onBack();
@@ -600,28 +665,75 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ServiceWorkReportStep1Bloc, ServiceWorkReportStep1State>(
-      bloc: _serviceWorkReportStep1Bloc,
-      listener: (context, state) {
-        if (state is ServiceWorkReportStep1Success) {
-          setState(() {
-            _reportId = state.data.data.id;
-            if (state.data.data.complaintId.isNotEmpty) {
-              _complaintId = state.data.data.complaintId;
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<ServiceWorkReportStep1Bloc, ServiceWorkReportStep1State>(
+          bloc: _serviceWorkReportStep1Bloc,
+          listener: (context, state) {
+            if (state is ServiceWorkReportStep1Success) {
+              setState(() {
+                _reportId = state.data.data.id;
+                if (state.data.data.complaintId.isNotEmpty) {
+                  _complaintId = state.data.data.complaintId;
+                }
+                _currentStep++;
+              });
+              if (_complaintId != null) {
+                _serviceWorkReportStep1AutofillBloc.add(GetServiceWorkReportStep1AutofillEvent(_complaintId!));
+              }
+              // Trigger step2 autofill after moving to step 2
+              if (_reportId != null) {
+                _serviceWorkReportStep2AutofillBloc.add(GetServiceWorkReportStep2AutofillEvent(_reportId!));
+              }
+            } else if (state is ServiceWorkReportStep1Failure) {
+              appSnackBar(context, const Color(0xFFF44336), state.message);
             }
-            _currentStep++;
-          });
-          if (_complaintId != null) {
-            _serviceWorkReportStep1AutofillBloc.add(GetServiceWorkReportStep1AutofillEvent(_complaintId!));
-          }
-        } else if (state is ServiceWorkReportStep1Failure) {
-          appSnackBar(context, const Color(0xFFF44336), state.message);
-        }
-      },
-      builder: (context, state) {
-        return Stack(
-          children: [
-          Scaffold(
+          },
+        ),
+        BlocListener<ServiceWorkReportStep2Bloc, ServiceWorkReportStep2State>(
+          bloc: _serviceWorkReportStep2Bloc,
+          listener: (context, state) {
+            if (state is ServiceWorkReportStep2Success) {
+              setState(() {
+                _currentStep++;
+              });
+            } else if (state is ServiceWorkReportStep2Failure) {
+              appSnackBar(context, const Color(0xFFF44336), state.error);
+            }
+          },
+        ),
+        BlocListener<ServiceWorkReportStep2AutofillBloc, ServiceWorkReportStep2AutofillState>(
+          bloc: _serviceWorkReportStep2AutofillBloc,
+          listener: (context, state) {
+            if (state is ServiceWorkReportStep2AutofillSuccess) {
+              final data = state.data.data;
+              setState(() {
+                _isTechnicalNA = data.isTechnicalNa;
+                // Pre-fill work descriptions
+                _workDescControllers.clear();
+                for (var desc in data.savedDescriptions) {
+                  _workDescControllers.add(TextEditingController(text: desc.description));
+                }
+                // Always show at least 3 rows
+                while (_workDescControllers.length < 3) {
+                  _workDescControllers.add(TextEditingController());
+                }
+              });
+            } else if (state is ServiceWorkReportStep2AutofillFailure) {
+              // Silent fail - just keep existing data
+            }
+          },
+        ),
+      ],
+      child: BlocBuilder<ServiceWorkReportStep2Bloc, ServiceWorkReportStep2State>(
+        bloc: _serviceWorkReportStep2Bloc,
+        builder: (context, step2State) {
+          return BlocBuilder<ServiceWorkReportStep1Bloc, ServiceWorkReportStep1State>(
+            bloc: _serviceWorkReportStep1Bloc,
+            builder: (context, state) {
+              return Stack(
+                children: [
+                  Scaffold(
             backgroundColor: Colors.white,
             body: SafeArea(
               child: Column(
@@ -775,7 +887,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                             const SizedBox(width: 12)
                           else
                             const SizedBox.shrink(),
-                          if (_currentStep == 1 && state is ServiceWorkReportStep1Loading)
+                          if (_currentStep == 1 && state is ServiceWorkReportStep1Loading || _currentStep == 2 && step2State is ServiceWorkReportStep2Loading)
                             const SizedBox(
                               width: 20,
                               height: 20,
@@ -810,13 +922,16 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 ],
               ),
             ),
-          ],
-        ),
+                  ],
+                ),
+              ),
+            ), // End of Scaffold
+                ],
+              );
+            },
+          );
+        },
       ),
-          ), // End of Scaffold
-      ],
-      );
-      },
     );
   }
 
@@ -825,7 +940,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       case 1:
         return _buildStep1();
       case 2:
-        return _buildStep2();
+        return BlocBuilder<ServiceWorkReportStep2AutofillBloc, ServiceWorkReportStep2AutofillState>(
+          bloc: _serviceWorkReportStep2AutofillBloc,
+          builder: (context, autofillState) {
+            if (autofillState is ServiceWorkReportStep2AutofillLoading) {
+              return const StepShimmer(step: 1);
+            }
+            return _buildStep2();
+          },
+        );
       case 3:
         return _buildStep3();
       case 4:
@@ -1708,7 +1831,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                             color: const Color(0xFF0D121F),
                                           ),
                                           decoration: InputDecoration(
-                                            hintText: '...',
+                                            hintText: 'Enter Work Description',
                                             hintStyle: AppFont.style(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w800,
@@ -1759,36 +1882,33 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     String hint = '',
     bool isNumeric = false,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+    return TextField(
+      controller: ctrl,
+      keyboardType: isNumeric
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : null,
+      inputFormatters: isNumeric
+          ? [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))]
+          : null,
+      style: AppFont.style(
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+        color: const Color(0xFF0D121F),
       ),
-      child: TextField(
-        controller: ctrl,
-        keyboardType: isNumeric
-            ? const TextInputType.numberWithOptions(decimal: true)
-            : null,
-        inputFormatters: isNumeric
-            ? [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))]
-            : null,
-        style: AppFont.style(
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: AppFont.style(
           fontSize: 15,
-          fontWeight: FontWeight.w700,
-          color: const Color(0xFF0D121F),
+          fontWeight: FontWeight.w500,
+          color: const Color(0xFF9CA3AF),
         ),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: AppFont.style(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xFF9CA3AF),
-          ),
-          border: InputBorder.none,
-          isDense: true,
-          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(vertical: 8),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFFF1F2F6)),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFF1565C0), width: 1.5),
         ),
       ),
     );
@@ -1796,34 +1916,39 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   // ── Unit field: input + unit label inside ───────────────────────
   Widget _buildUnitField(TextEditingController ctrl, String unit) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-      child: TextField(
-        controller: ctrl,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))],
-        style: AppFont.style(
-          fontSize: 15,
-          fontWeight: FontWeight.w700,
-          color: const Color(0xFF0D121F),
-        ),
-        decoration: InputDecoration(
-          suffixText: unit,
-          suffixStyle: AppFont.style(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xFF9CA3AF),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          unit,
+          style: AppFont.style(
+            fontSize: 11,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFFA5ABB7),
           ),
-          border: InputBorder.none,
-          isDense: true,
-          contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),
-      ),
+        const SizedBox(height: 2),
+        TextField(
+          controller: ctrl,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))],
+          style: AppFont.style(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: const Color(0xFF0D121F),
+          ),
+          decoration: const InputDecoration(
+            isDense: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 8),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Color(0xFFF1F2F6)),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Color(0xFF1565C0), width: 1.5),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

@@ -47,6 +47,8 @@ import 'package:service_app/src/features/service_calls/domain/usecase/assign_tec
 import 'package:service_app/src/features/service_calls/domain/usecase/close_over_call_usecase.dart';
 import 'package:service_app/src/remote/models/service_work_report_step1_model/service_work_report_step1_response.dart';
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step1_usecase.dart';
+import 'package:service_app/src/remote/models/service_work_report_step2_model/service_work_report_step2_response.dart';
+import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step2_usecase.dart';
 import '../../configs/injector/injector.dart';
 import '../../core/api/api_exception.dart';
 import '../../core/api/api_helper.dart';
@@ -266,6 +268,16 @@ sealed class RemoteDataSource {
 
   Future<ServiceWorkReportStep1Response> serviceWorkReportStep1(
     ServiceWorkReportStep1Params params,
+    String token,
+  );
+
+  Future<ServiceWorkReportStep2Response> serviceWorkReportStep2(
+    ServiceWorkReportStep2Params params,
+    String token,
+  );
+
+  Future<ServiceWorkReportStep2Response> serviceWorkReportStep2AutoFill(
+    String reportId,
     String token,
   );
 
@@ -1706,6 +1718,35 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
+  Future<ServiceWorkReportStep2Response> serviceWorkReportStep2(
+    ServiceWorkReportStep2Params params,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.post,
+        url: ApiUrl.serviceWorkReportStep2,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        data: params.toJson(),
+      );
+
+      final respData = ServiceWorkReportStep2Response.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
   Future<ServiceWorkReportStep1Response> serviceWorkReportStep1AutoFill(
     String complaintId,
     String token,
@@ -1718,6 +1759,34 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = ServiceWorkReportStep1Response.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<ServiceWorkReportStep2Response> serviceWorkReportStep2AutoFill(
+    String reportId,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: '${ApiUrl.serviceWorkReportStep2AutoFill}$reportId',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = ServiceWorkReportStep2Response.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();
