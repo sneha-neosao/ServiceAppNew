@@ -367,6 +367,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   technicianId: item.dealerName,
                                   feedbackSubmitted: item.feedbackSubmitted,
                                   qrCodeImage: item.qrCodeImage,
+                                  status: item.status,
                                   onViewTap: (id) {
                                     _detailsBloc.add(
                                       CommissioningReportDetailsGetEvent(id),
@@ -464,6 +465,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   technicianId: item.dealerName,
                                   feedbackSubmitted: item.feedbackSubmitted,
                                   qrCodeImage: item.qrCodeImage,
+                                  status: item.status,
                                   onViewPdfTap: (id) {
                                     _serviceCallPdfBloc.add(
                                       FetchServiceCallReportPdfEvent(
@@ -549,6 +551,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   technicianId: item.dealerName,
                                   feedbackSubmitted: item.feedbackSubmitted,
                                   qrCodeImage: item.qrCodeImage,
+                                  status: item.status,
                                   onViewTap: (_) {
                                     Navigator.push(
                                       context,
@@ -591,6 +594,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           technician: 'Pravin Patil',
           technicianId: 'T-101',
           feedbackSubmitted: false,
+          status: 'Submitted Report',
         ),
       ];
     } else if (_selectedTab == 1) {
@@ -606,6 +610,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           technician: 'Pravin Patil',
           technicianId: 'T-101',
           feedbackSubmitted: false,
+          status: 'Submitted Report',
         ),
         const SizedBox(height: 16),
         _ReportCard(
@@ -618,6 +623,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           technician: 'Pravin Patil',
           technicianId: 'T-101',
           feedbackSubmitted: true,
+          status: 'Closed Over Call',
         ),
       ];
     } else {
@@ -632,6 +638,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           technician: 'Pravin Patil',
           technicianId: 'T-101',
           feedbackSubmitted: false,
+          status: 'Submitted Report',
         ),
       ];
     }
@@ -1144,6 +1151,7 @@ class _ReportCard extends StatelessWidget {
   final String technicianId;
   final bool feedbackSubmitted;
   final String? qrCodeImage;
+  final String? status;
   final void Function(String reportId)? onViewTap;
   final void Function(String reportId)? onViewPdfTap;
   final void Function(String reportId)? onDownloadPdfTap;
@@ -1160,6 +1168,7 @@ class _ReportCard extends StatelessWidget {
     required this.technicianId,
     required this.feedbackSubmitted,
     this.qrCodeImage,
+    this.status,
     this.onViewTap,
     this.onViewPdfTap,
     this.onDownloadPdfTap,
@@ -1206,6 +1215,13 @@ class _ReportCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (status != null && status!.isNotEmpty && type == ReportType.service) ...[
+              Align(
+                alignment: Alignment.centerRight,
+                child: _buildStatusPill(status!),
+              ),
+              const SizedBox(height: 12),
+            ],
             // Company & Date Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1499,6 +1515,53 @@ class _ReportCard extends StatelessWidget {
           border: Border.all(color: const Color(0xFFE5E7EB), width: 1.2),
         ),
         child: Center(child: Icon(icon, size: 22, color: iconColor)),
+      ),
+    );
+  }
+
+  Widget _buildStatusPill(String statusStr) {
+    Color borderColor;
+    Color bgColor;
+    Color textColor;
+
+    final lowerStatus = statusStr.trim().toLowerCase();
+
+    if (lowerStatus == 'submitted report' || lowerStatus == 'submitted') {
+      borderColor = const Color(0xFF4CAF50); // Green
+      bgColor = const Color(0xFFE8F5E9);
+      textColor = const Color(0xFF2E7D32);
+    } else if (lowerStatus == 'closed over call') {
+      borderColor = const Color(0xFF2196F3); // Blue
+      bgColor = const Color(0xFFE3F2FD);
+      textColor = const Color(0xFF1565C0);
+    } else if (lowerStatus == 'existing complaint') {
+      borderColor = const Color(0xFFFFB300); // Amber/Orange
+      bgColor = const Color(0xFFFFF8E1);
+      textColor = const Color(0xFFE65100);
+    } else if (lowerStatus == 'no complaints') {
+      borderColor = const Color(0xFF9C27B0); // Purple
+      bgColor = const Color(0xFFF3E5F5);
+      textColor = const Color(0xFF7B1FA2);
+    } else {
+      borderColor = const Color(0xFF9E9E9E); // Grey
+      bgColor = const Color(0xFFF5F5F5);
+      textColor = const Color(0xFF616161);
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: borderColor, width: 1),
+      ),
+      child: Text(
+        statusStr,
+        style: AppFont.style(
+          fontSize: 12,
+          fontWeight: FontWeight.w800,
+          color: textColor,
+        ),
       ),
     );
   }
