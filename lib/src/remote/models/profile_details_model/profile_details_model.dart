@@ -38,6 +38,7 @@ class ProfileData {
   final String email;
   final bool isActive;
   final Dealer dealer;
+  final List<String> permissions;
 
   ProfileData({
     required this.id,
@@ -47,6 +48,7 @@ class ProfileData {
     required this.email,
     required this.isActive,
     required this.dealer,
+    required this.permissions,
   });
 
   factory ProfileData.fromJson(Map<String, dynamic> json) {
@@ -57,7 +59,11 @@ class ProfileData {
       phone: json['phone'] ?? '',
       email: json['email'] ?? '',
       isActive: json['is_active'] ?? false,
-      dealer: Dealer.fromJson(json['dealer']),
+      dealer: Dealer.fromJson(json['dealer'] ?? {}),
+      permissions: (json['permissions'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
     );
   }
 
@@ -70,6 +76,7 @@ class ProfileData {
       'email': email,
       'is_active': isActive,
       'dealer': dealer.toJson(),
+      'permissions': permissions,
     };
   }
 }

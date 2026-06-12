@@ -51,6 +51,10 @@ class ApiUrl {
       'technician/service-work-report-step2';
   static const String serviceWorkReportStep2AutoFill =
       'technician/service-work-report-step2/';
+  static const String serviceWorkReportStep3 =
+      'technician/service-work-report-step3';
+  static const String serviceWorkReportStep3AutoFill =
+      'technician/service-work-report-step3/';
   static const String serviceWorkReportStep1AutoFill =
       'technician/service-work-report-step1/';
   static const String serviceCallReportStep1 =

@@ -23,6 +23,14 @@ import 'package:service_app/src/features/reports/domain/usecases/service_work_re
 import 'package:service_app/src/features/reports/bloc/service_work_report_step2_autofill_bloc/service_work_report_step2_autofill_bloc.dart';
 import 'package:service_app/src/features/reports/bloc/service_work_report_step2_autofill_bloc/service_work_report_step2_autofill_event.dart';
 import 'package:service_app/src/features/reports/bloc/service_work_report_step2_autofill_bloc/service_work_report_step2_autofill_state.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step3_autofill_bloc/service_work_report_step3_autofill_bloc.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step3_autofill_bloc/service_work_report_step3_autofill_event.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step3_autofill_bloc/service_work_report_step3_autofill_state.dart';
+import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step3_usecase.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step3_bloc/service_work_report_step3_bloc.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step3_bloc/service_work_report_step3_event.dart';
+import 'package:service_app/src/features/reports/bloc/service_work_report_step3_bloc/service_work_report_step3_state.dart';
+import 'package:service_app/src/remote/models/service_work_report_step3_model/service_work_report_step3_response.dart';
 import 'dart:convert';
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step1_usecase.dart';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
@@ -196,6 +204,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   late ServiceWorkReportStep1AutofillBloc _serviceWorkReportStep1AutofillBloc;
   late ServiceWorkReportStep2Bloc _serviceWorkReportStep2Bloc;
   late ServiceWorkReportStep2AutofillBloc _serviceWorkReportStep2AutofillBloc;
+  late ServiceWorkReportStep3Bloc _serviceWorkReportStep3Bloc;
+  late ServiceWorkReportStep3AutofillBloc _serviceWorkReportStep3AutofillBloc;
 
   @override
   void initState() {
@@ -211,6 +221,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _serviceWorkReportStep1AutofillBloc = getIt<ServiceWorkReportStep1AutofillBloc>();
     _serviceWorkReportStep2Bloc = getIt<ServiceWorkReportStep2Bloc>();
     _serviceWorkReportStep2AutofillBloc = getIt<ServiceWorkReportStep2AutofillBloc>();
+    _serviceWorkReportStep3Bloc = getIt<ServiceWorkReportStep3Bloc>();
+    _serviceWorkReportStep3AutofillBloc = getIt<ServiceWorkReportStep3AutofillBloc>();
 
     if (_complaintId != null) {
       _serviceWorkReportStep1AutofillBloc.add(GetServiceWorkReportStep1AutofillEvent(_complaintId!));
@@ -266,6 +278,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _serviceWorkReportStep1Bloc.close();
     _serviceWorkReportStep2Bloc.close();
     _serviceWorkReportStep2AutofillBloc.close();
+    _serviceWorkReportStep3Bloc.close();
+    _serviceWorkReportStep3AutofillBloc.close();
     _technicianBloc.close();
     for (final c in _technicians) c.dispose();
     _customerBloc.close();
@@ -438,6 +452,51 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ),
         ),
       );
+    } else if (_currentStep == 3) {
+      if (_reportId == null) return;
+      List<ServiceWorkChecklistItem> checklistItems = [];
+      void addChecklistIfNotNull(String? value, String checkType, String key) {
+        if (value != null) {
+          checklistItems.add(ServiceWorkChecklistItem(
+            checkType: checkType,
+            keyChecklist: key,
+            valueChecklist: value,
+          ));
+        }
+      }
+
+      // Mechanical
+      addChecklistIfNotNull(_bearingNoise, "mechanical", "Bearing Noise / Abnormal Sound Checked");
+      addChecklistIfNotNull(_vibration, "mechanical", "Vibration Checked");
+      addChecklistIfNotNull(_mechSeal, "mechanical", "Mechanical Seal / Gland Leakage Checked");
+      addChecklistIfNotNull(_pumpDry, "mechanical", "Pump Not Running Dry");
+
+      // Pipeline
+      addChecklistIfNotNull(_nrvValve, "pipeline", "NRV / Butterfly Valve / Gate Valve Condition Checked");
+      addChecklistIfNotNull(_strainerValve, "pipeline", "Strainer / Foot Valve Condition Checked");
+      addChecklistIfNotNull(_suctionLine, "pipeline", "Suction Line (Air Leakage & Water Leakage Checked)");
+      addChecklistIfNotNull(_deliveryLine, "pipeline", "Delivery Line (Air Leakage & Water Leakage Checked)");
+      addChecklistIfNotNull(_suctionDelivery, "pipeline", "Suction / Delivery Valve Condition Checked");
+      addChecklistIfNotNull(_pressureSwitch, "pipeline", "Pressure Switch / Pressure Transmitter Checked");
+
+      // Electrical
+      addChecklistIfNotNull(_elecFaults, "electrical", "Electrical Faults Checked");
+      addChecklistIfNotNull(_voltage, "electrical", "Voltage Checked");
+      addChecklistIfNotNull(_phase, "electrical", "Phase Checked");
+      addChecklistIfNotNull(_current, "electrical", "Current Checked");
+      addChecklistIfNotNull(_panelWiring, "electrical", "Control Panel Wiring Checked");
+
+      _serviceWorkReportStep3Bloc.add(
+        PostServiceWorkReportStep3Event(
+          ServiceWorkReportStep3Params(
+            id: _reportId!,
+            isMechanicalChecklistNa: _mechNA,
+            isPipelineChecklistNa: _pipeNA,
+            isElectricalChecklistNa: _elecNA,
+            checklistItems: checklistItems,
+          ),
+        ),
+      );
     } else if (_currentStep < 4) {
       setState(() {
         _currentStep++;
@@ -457,6 +516,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       }
       if (_currentStep == 2 && _reportId != null) {
         _serviceWorkReportStep2AutofillBloc.add(GetServiceWorkReportStep2AutofillEvent(_reportId!));
+      }
+      if (_currentStep == 3 && _reportId != null) {
+        _serviceWorkReportStep3AutofillBloc.add(GetServiceWorkReportStep3AutofillEvent(_reportId!));
       }
     } else {
       widget.onBack();
@@ -697,6 +759,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               setState(() {
                 _currentStep++;
               });
+              if (_reportId != null) {
+                _serviceWorkReportStep3AutofillBloc.add(GetServiceWorkReportStep3AutofillEvent(_reportId!));
+              }
             } else if (state is ServiceWorkReportStep2Failure) {
               appSnackBar(context, const Color(0xFFF44336), state.error);
             }
@@ -724,10 +789,60 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             }
           },
         ),
+        BlocListener<ServiceWorkReportStep3Bloc, ServiceWorkReportStep3State>(
+          bloc: _serviceWorkReportStep3Bloc,
+          listener: (context, state) {
+            if (state is ServiceWorkReportStep3Success) {
+              setState(() {
+                _currentStep++;
+              });
+            } else if (state is ServiceWorkReportStep3Failure) {
+              appSnackBar(context, const Color(0xFFF44336), state.error);
+            }
+          },
+        ),
+        BlocListener<ServiceWorkReportStep3AutofillBloc, ServiceWorkReportStep3AutofillState>(
+          bloc: _serviceWorkReportStep3AutofillBloc,
+          listener: (context, state) {
+            if (state is ServiceWorkReportStep3AutofillSuccess) {
+              final data = state.data.data;
+              setState(() {
+                _mechNA = data.isMechanicalChecklistNa;
+                _pipeNA = data.isPipelineChecklistNa;
+                _elecNA = data.isElectricalChecklistNa;
+
+                for (var item in data.savedChecklists) {
+                  if (item.checkType == "mechanical") {
+                    if (item.keyChecklist == "Bearing Noise / Abnormal Sound Checked") _bearingNoise = item.valueChecklist;
+                    if (item.keyChecklist == "Vibration Checked") _vibration = item.valueChecklist;
+                    if (item.keyChecklist == "Mechanical Seal / Gland Leakage Checked") _mechSeal = item.valueChecklist;
+                    if (item.keyChecklist == "Pump Not Running Dry") _pumpDry = item.valueChecklist;
+                  } else if (item.checkType == "pipeline") {
+                    if (item.keyChecklist == "NRV / Butterfly Valve / Gate Valve Condition Checked") _nrvValve = item.valueChecklist;
+                    if (item.keyChecklist == "Strainer / Foot Valve Condition Checked") _strainerValve = item.valueChecklist;
+                    if (item.keyChecklist == "Suction Line (Air Leakage & Water Leakage Checked)") _suctionLine = item.valueChecklist;
+                    if (item.keyChecklist == "Delivery Line (Air Leakage & Water Leakage Checked)") _deliveryLine = item.valueChecklist;
+                    if (item.keyChecklist == "Suction / Delivery Valve Condition Checked") _suctionDelivery = item.valueChecklist;
+                    if (item.keyChecklist == "Pressure Switch / Pressure Transmitter Checked") _pressureSwitch = item.valueChecklist;
+                  } else if (item.checkType == "electrical") {
+                    if (item.keyChecklist == "Electrical Faults Checked") _elecFaults = item.valueChecklist;
+                    if (item.keyChecklist == "Voltage Checked") _voltage = item.valueChecklist;
+                    if (item.keyChecklist == "Phase Checked") _phase = item.valueChecklist;
+                    if (item.keyChecklist == "Current Checked") _current = item.valueChecklist;
+                    if (item.keyChecklist == "Control Panel Wiring Checked") _panelWiring = item.valueChecklist;
+                  }
+                }
+              });
+            }
+          },
+        ),
       ],
-      child: BlocBuilder<ServiceWorkReportStep2Bloc, ServiceWorkReportStep2State>(
-        bloc: _serviceWorkReportStep2Bloc,
-        builder: (context, step2State) {
+      child: BlocBuilder<ServiceWorkReportStep3Bloc, ServiceWorkReportStep3State>(
+        bloc: _serviceWorkReportStep3Bloc,
+        builder: (context, step3State) {
+          return BlocBuilder<ServiceWorkReportStep2Bloc, ServiceWorkReportStep2State>(
+            bloc: _serviceWorkReportStep2Bloc,
+            builder: (context, step2State) {
           return BlocBuilder<ServiceWorkReportStep1Bloc, ServiceWorkReportStep1State>(
             bloc: _serviceWorkReportStep1Bloc,
             builder: (context, state) {
@@ -855,7 +970,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     ),
                   const Spacer(),
                   GestureDetector(
-                    onTap: _nextStep,
+                    onTap: () {
+                      if (state is ServiceWorkReportStep1Loading) return;
+                      if (step2State is ServiceWorkReportStep2Loading) return;
+                      if (step3State is ServiceWorkReportStep3Loading) return;
+                      _nextStep();
+                    },
                     child: Container(
                       height: 44,
                       padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -887,7 +1007,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                             const SizedBox(width: 12)
                           else
                             const SizedBox.shrink(),
-                          if (_currentStep == 1 && state is ServiceWorkReportStep1Loading || _currentStep == 2 && step2State is ServiceWorkReportStep2Loading)
+                          if (_currentStep == 1 && state is ServiceWorkReportStep1Loading ||
+                              _currentStep == 2 && step2State is ServiceWorkReportStep2Loading ||
+                              _currentStep == 3 && step3State is ServiceWorkReportStep3Loading)
                             const SizedBox(
                               width: 20,
                               height: 20,
@@ -931,6 +1053,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             },
           );
         },
+      );
+        },
       ),
     );
   }
@@ -950,7 +1074,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           },
         );
       case 3:
-        return _buildStep3();
+        return BlocBuilder<ServiceWorkReportStep3AutofillBloc, ServiceWorkReportStep3AutofillState>(
+          bloc: _serviceWorkReportStep3AutofillBloc,
+          builder: (context, autofillState) {
+            if (autofillState is ServiceWorkReportStep3AutofillLoading) {
+              return const StepShimmer(step: 1);
+            }
+            return _buildStep3();
+          },
+        );
       case 4:
         return _buildStep4();
       default:
