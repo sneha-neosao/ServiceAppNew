@@ -13,7 +13,7 @@ sealed class CommissioningStep1Event extends Equatable {
 
 class CommissioningStep1GetEvent extends CommissioningStep1Event {
   final String commissioning_report_id;
-  final List<String> technicianIds;
+  final List<Map<String, dynamic>> technicianIds;
 
   const CommissioningStep1GetEvent(
     this.commissioning_report_id,

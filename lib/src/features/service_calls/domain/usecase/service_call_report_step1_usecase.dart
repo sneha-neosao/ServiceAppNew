@@ -7,7 +7,7 @@ import 'package:service_app/src/remote/repositories/repository_impl.dart';
 
 class ServiceCallReportStep1Params extends Equatable {
   final String complaintId;
-  final List<String> technicianIds;
+  final List<Map<String, dynamic>> technicianIds;
 
   const ServiceCallReportStep1Params({
     required this.complaintId,

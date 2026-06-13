@@ -497,10 +497,27 @@ class _CreateCommissioningReportScreenState
 
   void _nextStep() {
     if (_currentStep == 1) {
-      List<String> technicianIds = [];
+      List<String> technicianIdsString = [];
+      List<Map<String, dynamic>> technicianIdsMap = [];
+      
+      final techState = _technicianBloc.state;
+      List<dynamic> allTechs = [];
+      if (techState is TechnicianSuccessState) {
+        allTechs = techState.data.data;
+      }
+
       for (var controller in _technicians) {
         if (controller.text.isNotEmpty) {
-          technicianIds.add(controller.text);
+          String id = controller.text;
+          technicianIdsString.add(id);
+
+          String name = "Unknown";
+          try {
+            final match = allTechs.firstWhere((t) => t.id == id);
+            name = match.name;
+          } catch (_) {}
+
+          technicianIdsMap.add({"id": id, "name": name});
         }
       }
       if (widget.isServiceReport) {
@@ -511,14 +528,14 @@ class _CreateCommissioningReportScreenState
           ServiceCallReportStep1PostEvent(
             ServiceCallReportStep1Params(
               complaintId: widget.commissioningWorkId,
-              technicianIds: technicianIds,
+              technicianIds: technicianIdsMap,
             ),
           ),
         );
       } else {
         if (_submitStep1Bloc.state is CommissioningStep1LoadingState) return;
         _submitStep1Bloc.add(
-          CommissioningStep1GetEvent(widget.commissioningWorkId, technicianIds),
+          CommissioningStep1GetEvent(widget.commissioningWorkId, technicianIdsMap),
         );
       }
     } else if (_currentStep == 2) {
@@ -3855,7 +3872,7 @@ class _CreateCommissioningReportScreenState
                   style: AppFont.style(
                     fontSize: 14,
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFF3A4152),
+                    color: const Color(0xFF5C616E),
                   ),
                 ),
                 // const TextSpan(
@@ -3911,7 +3928,7 @@ class _CreateCommissioningReportScreenState
                   style: AppFont.style(
                     fontSize: 14,
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFF3A4152),
+                    color: const Color(0xFF5C616E),
                   ),
                 ),
                 // const TextSpan(
@@ -4368,7 +4385,7 @@ class _CreateCommissioningReportScreenState
                   style: AppFont.style(
                     fontSize: 13,
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFF3A4152),
+                    color: const Color(0xFF5C616E),
                   ),
                 ),
                 const TextSpan(

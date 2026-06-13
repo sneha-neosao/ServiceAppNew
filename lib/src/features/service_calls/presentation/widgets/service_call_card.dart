@@ -51,83 +51,103 @@ class ServiceCallCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header Row
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1F8FF),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    complaintNo,
-                    style: AppFont.style(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF1565C0),
-                    ),
-                  ),
-                ),
-                if (isCompleted) ...[
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5E9),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
+            if (complaintNo.isNotEmpty || isCompleted) ...[
+              Row(
+                children: [
+                  if (complaintNo.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF1F8FF),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                       child: Text(
-                        'service_calls_btn_completed'.tr(),
-                      style: AppFont.style(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF2E7D32),
+                        complaintNo,
+                        style: AppFont.style(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF1565C0),
+                        ),
                       ),
                     ),
-                  ),
+                  if (isCompleted) ...[
+                    if (complaintNo.isNotEmpty) const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F5E9),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'service_calls_btn_completed'.tr(),
+                        style: AppFont.style(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF2E7D32),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
-                const Spacer(),
+              ),
+              const SizedBox(height: 12),
+            ],
+            // Info and Icons Row
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Company Name
+                      Text(
+                        companyName,
+                        style: AppFont.style(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      // Location
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            size: 14,
+                            color: Color(0xFFA5ABB7),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              location,
+                              style: AppFont.style(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFFA5ABB7),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
                 if (type == ServiceCallType.ongoing) ...[
                   _buildIconButton(Icons.edit_outlined, onTap: onEdit),
                   const SizedBox(width: 8),
                 ],
                 _buildIconButton(Icons.visibility_outlined, onTap: onView),
-              ],
-            ),
-            const SizedBox(height: 12),
-            // Company Name
-            Text(
-              companyName,
-              style: AppFont.style(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF0D121F),
-              ),
-            ),
-            const SizedBox(height: 4),
-            // Location
-            Row(
-              children: [
-                const Icon(
-                  Icons.location_on_outlined,
-                  size: 14,
-                  color: Color(0xFFA5ABB7),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  location,
-                  style: AppFont.style(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
-                  ),
-                ),
               ],
             ),
             if (assignedTo != null) ...[

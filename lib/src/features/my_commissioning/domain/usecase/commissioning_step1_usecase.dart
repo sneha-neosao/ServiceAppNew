@@ -24,7 +24,7 @@ class CommissioningStep1Usecase
 
 class CommissioningStep1Params extends Equatable {
   final String commissioningWorkId;
-  final List<String> technicianIds;
+  final List<Map<String, dynamic>> technicianIds;
 
   const CommissioningStep1Params({
     required this.commissioningWorkId,
@@ -37,7 +37,7 @@ class CommissioningStep1Params extends Equatable {
   factory CommissioningStep1Params.fromJson(Map<String, dynamic> json) {
     return CommissioningStep1Params(
       commissioningWorkId: json['commissioning_work_id'],
-      technicianIds: List<String>.from(json['technician_ids']),
+      technicianIds: List<Map<String, dynamic>>.from(json['technician_ids']),
     );
   }
 

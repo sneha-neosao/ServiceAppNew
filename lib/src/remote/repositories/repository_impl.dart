@@ -439,8 +439,8 @@ class AuthRepositoryImpl implements Repository {
 
           final respData = await _remoteDataSource.profileDetails(token);
 
-          if (respData.status != 200) {
-            return Left(CredentialFailure(respData.message!));
+          if (respData.status != 200 && respData.status != 300) {
+            return Left(CredentialFailure(respData.message));
           }
 
           // Save session directly

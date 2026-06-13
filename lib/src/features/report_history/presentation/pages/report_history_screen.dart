@@ -1616,7 +1616,12 @@ class _ReportCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'create_report_success_title'.tr(),
+                  type == ReportType.service
+                      ? 'Service Call Report Feedback'
+                      : type == ReportType.amc
+                          ? 'AMC Report Feedback'
+                          : 'Commissioning Report Feedback',
+                  textAlign: TextAlign.center,
                   style: AppFont.style(
                     fontSize: 22,
                     fontWeight: FontWeight.w900,
@@ -1624,15 +1629,6 @@ class _ReportCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'create_report_success_subtitle'.tr(),
-                  style: AppFont.style(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
-                  ),
-                ),
-                const SizedBox(height: 16),
                 const Divider(
                   height: 1,
                   thickness: 1,

@@ -228,6 +228,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   String _loggedInTechnicianId = '';
   String _loggedInTechnicianName = '';
+  String _loggedInDealerName = '';
   final TextEditingController _technicianNameController = TextEditingController();
 
   Future<void> _fetchLoggedInTechnician() async {
@@ -245,6 +246,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         setState(() {
           _loggedInTechnicianId = session!.dealer!.id;
           _loggedInTechnicianName = session!.dealer!.name;
+          _loggedInDealerName = session.dealer!.name;
           _technicianNameController.text = session!.dealer!.name;
         });
       }
@@ -920,34 +922,49 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 children: [
                   Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back,
-                          color: Color(0xFFA5ABB7),
-                        ),
-                        onPressed: _previousStep,
-                      ),
-                      const SizedBox(width: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Service / Work Report',
-                            style: AppFont.style(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xFF0D121F),
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            size: 20,
+                            color: Color(0xFF5C616E),
                           ),
-                          // Text(
-                          //   _getStepInfo(),
-                          //   style: AppFont.style(
-                          //     fontSize: 12,
-                          //     fontWeight: FontWeight.w800,
-                          //     color: const Color(0xFFA5ABB7),
-                          //   ),
-                          // ),
-                        ],
+                          onPressed: widget.onBack,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Container(
+                        width: 4,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0B68B9),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Service / Work Report',
+                          style: AppFont.style(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF0D121F),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -1221,6 +1238,18 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             (autofillState is ServiceWorkReportStep1AutofillInitial && _complaintId != null)) {
           return const StepShimmer(step: 1);
         }
+        
+        String currentDealer = '';
+        if (autofillState is ServiceWorkReportStep1AutofillSuccess && autofillState.data.data.dealerName.isNotEmpty) {
+          currentDealer = autofillState.data.data.dealerName;
+        }
+        
+        final dealerToShow = _loggedInDealerName.isNotEmpty
+            ? _loggedInDealerName
+            : (currentDealer.isNotEmpty
+                ? currentDealer
+                : 'commissioning_dealer_name_fallback'.tr());
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1256,7 +1285,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     //   ),
                     // ),
                     Text(
-                      'Flowmax Pumps Corporation',
+                      dealerToShow,
                       style: AppFont.style(
                         fontSize: 15,
                         fontWeight: FontWeight.w900,

@@ -378,5 +378,6 @@
   "val_amc_water_flow": "Please check water flow & pressure.",
   "val_amc_rotation": "Please check direction of rotation.",
   "create_report_btn_submit": "Submit Service / Work Report",
-  "commissioning_save": "Done"
+  "commissioning_save": "Done",
+  "amc_report_btn_done": "Done"
 }

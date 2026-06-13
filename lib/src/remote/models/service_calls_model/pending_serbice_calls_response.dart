@@ -99,22 +99,23 @@ class ServiceCallResult extends Equatable {
 
   factory ServiceCallResult.fromJson(Map<String, dynamic> json) {
     return ServiceCallResult(
-      id: json['id'],
-      complaintNumber: json['complaint_number'],
-      status: json['status'],
+      id: json['id'] ?? '',
+      complaintNumber: json['complaint_number'] ?? '',
+      status: json['status'] ?? '',
       serviceStatus: json['service_status'],
       serviceCallDetails: json['service_call_details'],
-      name: json['name'],
-      contactNumber: json['contact_number'],
-      equipmentModelName: json['equipment_model_name'],
-      complaintDetails: json['complaint_details'],
-      customerName: json['customer_name'],
-      siteName: json['site_name'],
-      dealerName: json['dealer_name'],
-      assignedTechnicians: (json['assigned_technicians'] as List)
-          .map((e) => AssignedTechnician.fromJson(e))
-          .toList(),
-      createdAt: json['created_at'],
+      name: json['name'] ?? '',
+      contactNumber: json['contact_number'] ?? '',
+      equipmentModelName: json['equipment_model_name'] ?? '',
+      complaintDetails: json['complaint_details'] ?? '',
+      customerName: json['customer_name'] ?? '',
+      siteName: json['site_name'] ?? '',
+      dealerName: json['dealer_name'] ?? '',
+      assignedTechnicians: (json['assigned_technicians'] as List?)
+              ?.map((e) => AssignedTechnician.fromJson(e))
+              .toList() ??
+          [],
+      createdAt: json['created_at'] ?? '',
     );
   }
 
@@ -173,10 +174,10 @@ class AssignedTechnician extends Equatable {
 
   factory AssignedTechnician.fromJson(Map<String, dynamic> json) {
     return AssignedTechnician(
-      id: json['id'],
-      name: json['name'],
-      code: json['code'],
-      assignedAt: json['assigned_at'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      code: json['code'] ?? '',
+      assignedAt: json['assigned_at'] ?? '',
     );
   }
 

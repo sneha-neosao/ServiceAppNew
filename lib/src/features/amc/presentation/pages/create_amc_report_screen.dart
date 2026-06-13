@@ -102,6 +102,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
   final _customerRepNameController = TextEditingController();
   String? _selectedTechnicianRepId;
   String? _loggedInTechnicianId;
+  String _loggedInDealerName = '';
   File? _technicianSignatureFile;
   File? _customerSignatureFile;
   String? _existingTechnicianSignatureUrl;
@@ -161,6 +162,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
       if (mounted) {
         setState(() {
           _loggedInTechnicianId = session!.dealer!.id;
+          _loggedInDealerName = session.dealer!.name;
         });
       }
     }
@@ -318,11 +320,8 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             }
 
             if (state is AmcReportStep3SuccessState) {
-              if (state.data.data.qrCodeBase64 != null && state.data.data.qrCodeBase64!.isNotEmpty) {
-                 _showSuccessDialog(qrCodeBase64: state.data.data.qrCodeBase64);
-              } else {
-                 _showSuccessDialog();
-              }
+              appSnackBar(context, const Color(0xFF4CAF50), 'AMC Report submitted successfully');
+              widget.onSubmit();
             } else if (state is AmcReportStep3ErrorState) {
               appSnackBar(context, const Color(0xFFF44336), state.message);
             }
@@ -476,13 +475,19 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     currentDealer = state.data.data.dealerName;
                   }
                   
+                  final dealerToShow = _loggedInDealerName.isNotEmpty
+                      ? _loggedInDealerName
+                      : (currentDealer.isNotEmpty
+                          ? currentDealer
+                          : 'commissioning_dealer_name_fallback'.tr());
+                  
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (currentDealer.isNotEmpty)
+                      if (dealerToShow.isNotEmpty)
                         Text(
-                          currentDealer,
+                          dealerToShow,
                           style: AppFont.style(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
@@ -2030,7 +2035,23 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 ? null
                 : () {
                     if (_currentStep == 1) {
-                      final selectedTechs = _technicians.map((c) => c.text).where((id) => id.isNotEmpty).toList();
+                      List<Map<String, dynamic>> selectedTechs = [];
+                      List<dynamic> allTechs = [];
+                      if (_technicianBloc.state is TechnicianSuccessState) {
+                        allTechs = (_technicianBloc.state as TechnicianSuccessState).data.data;
+                      }
+                      
+                      for (var controller in _technicians) {
+                        if (controller.text.isNotEmpty) {
+                          String id = controller.text;
+                          String name = "Unknown";
+                          try {
+                            final match = allTechs.firstWhere((t) => t.id == id);
+                            name = match.name;
+                          } catch (_) {}
+                          selectedTechs.add({"id": id, "name": name});
+                        }
+                      }
                       if (selectedTechs.isEmpty) {
                         appSnackBar(
                           context,
@@ -2267,125 +2288,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     );
   }
 
-  void _showSuccessDialog({String? qrCodeBase64}) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.close, color: Color(0xFFA5ABB7)),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        widget.onSubmit();
-                      },
-                    ),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFE8F5E9),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.check_circle,
-                    color: Color(0xFF4CAF50),
-                    size: 40,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'AMC Report Feedback',
-                  textAlign: TextAlign.center,
-                  style: AppFont.style(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    color: const Color(0xFF0D121F),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Color(0xFFF1F2F6),
-                ),
-                const SizedBox(height: 32),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FB),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFF1F2F6)),
-                  ),
-                  child: qrCodeBase64 != null && qrCodeBase64.isNotEmpty
-                      ? Image.memory(
-                          base64Decode(qrCodeBase64),
-                          width: 180,
-                          height: 180,
-                          fit: BoxFit.contain,
-                        )
-                      : const Icon(
-                          Icons.qr_code_2,
-                          size: 180,
-                          color: Color(0xFF0D121F),
-                        ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Scan for Customer Feedback',
-                  textAlign: TextAlign.center,
-                  style: AppFont.style(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 44,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      widget.onSubmit();
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1565C0),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'amc_report_btn_done'.tr(),
-                          style: AppFont.style(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+
 }
 
 class _DashedBorderPainter extends CustomPainter {

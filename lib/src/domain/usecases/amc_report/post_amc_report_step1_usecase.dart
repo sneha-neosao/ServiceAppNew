@@ -8,7 +8,7 @@ import 'package:service_app/src/remote/models/amc_report_model/amc_report_step1_
 class PostAmcReportStep1Params extends Equatable {
   final String amcVisitId;
   final String? amcReportId;
-  final List<String> technicianIds;
+  final List<Map<String, dynamic>> technicianIds;
   final String memberPresentsCustomerSide;
   final String agenda;
 
