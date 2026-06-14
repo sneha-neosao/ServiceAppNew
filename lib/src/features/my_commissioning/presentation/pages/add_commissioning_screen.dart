@@ -160,7 +160,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'New Customer',
+                          'Add New Customer',
                           style: AppFont.style(
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
@@ -395,7 +395,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'New Site',
+                          'Add New Site',
                           style: AppFont.style(
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
@@ -844,6 +844,17 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                       }
                                     }
                                   },
+                                  onClear: () {
+                                    setState(() {
+                                      _selectedCustomer = null;
+                                      _selectedSite = null;
+                                      _sites.clear();
+                                      _equipmentController.clear();
+                                      _technicianControllers = [
+                                        TextEditingController()
+                                      ];
+                                    });
+                                  },
                                 );
                               },
                             ),
@@ -943,6 +954,15 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                   onChanged: _selectedCustomer != null
                                       ? (v) => setState(() => _selectedSite = v)
                                       : null,
+                                  onClear: () {
+                                    setState(() {
+                                      _selectedSite = null;
+                                      _equipmentController.clear();
+                                      _technicianControllers = [
+                                        TextEditingController()
+                                      ];
+                                    });
+                                  },
                                 );
                               },
                             ),
@@ -1117,7 +1137,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                                       Text(
                                                         widget.editWorkId !=
                                                                 null
-                                                            ? 'Update'
+                                                            ? 'Save Changes'
                                                             : 'Assign',
                                                         style: AppFont.style(
                                                           fontSize: 14,
@@ -1223,6 +1243,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     void Function(String)? onSearchChanged,
     void Function(String)? onLoadMore,
     bool Function(String, String)? filterFn,
+    VoidCallback? onClear,
   }) {
     // Make sure current value is in items to avoid DropdownButton error
     List<String> validItems = List.from(items);
@@ -1246,6 +1267,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           onLoadMore: onLoadMore,
           filterFn: filterFn,
           isLoading: isLoading,
+          onClear: onClear,
           // icon: Icon(
           //   Icons.keyboard_arrow_down,
           //   color: isEnabled ? const Color(0xFFA5ABB7) : const Color(0xFFCBD5E1),
@@ -1336,117 +1358,153 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           },
           builder: (ctx, state) {
             final isLoading = state is CreateNewCustomerLoadingState;
-            return AlertDialog(
+            return Dialog(
               backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              contentPadding: const EdgeInsets.all(24),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: Stack(
                 children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFFF7E6),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.error_outline,
-                      color: Color(0xFFFF9800),
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Merge Customer?',
-                    style: AppFont.style(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0D121F),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'This customer name already exists and can be merged with the existing record. Click "Yes" to merge, or click "No" and enter a different name to save the record.',
-                    textAlign: TextAlign.center,
-                    style: AppFont.style(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF5C616E),
-                      height: 1.4,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () => Navigator.pop(dialogCtx),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFF1F2F6),
-                            foregroundColor: const Color(0xFF0D121F),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // ── Icon ───────────────────────────────────────────────────────
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFFFF7E6),
+                            shape: BoxShape.circle,
                           ),
-                          child: Text(
-                            'No',
-                            style: AppFont.style(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                            ),
+                          child: const Icon(
+                            Icons.error_outline,
+                            color: Color(0xFFFF9800),
+                            size: 32,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () {
-                                  _createNewCustomerBloc.add(
-                                    CreateNewCustomerSubmitEvent(
-                                      CreateNewCustomerParams(
-                                        name: name,
-                                        mergeExisting: true,
-                                      ),
-                                    ),
-                                  );
-                                },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFE65100),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                        
+                        const SizedBox(height: 20),
+
+                        // ── Title ───────────────────────────────────────────────────────
+                        Text(
+                          'Merge Customer?',
+                          style: AppFont.style(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF0D121F),
                           ),
-                          child: isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // ── Subtitle ────────────────────────────────────────────────────
+                        Text(
+                          'This customer name already exists and can be merged with the existing record. Click "Yes" to merge, or click "No" and enter a different name to save the record.',
+                          textAlign: TextAlign.center,
+                          style: AppFont.style(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF5C616E),
+                            height: 1.4,
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // ── Buttons ─────────────────────────────────────────────────────
+                        Row(
+                          children: [
+                            // Cancel Button
+                            Expanded(
+                              child: SizedBox(
+                                height: 48,
+                                child: TextButton(
+                                  onPressed: isLoading ? null : () => Navigator.pop(dialogCtx),
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: const Color(0xFFF6F6F6),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
                                   ),
-                                )
-                              : Text(
-                                  'Yes',
-                                  style: AppFont.style(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w800,
+                                  child: Text(
+                                    'No',
+                                    style: AppFont.style(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800,
+                                      color: const Color(0xFF0D121F),
+                                    ),
                                   ),
                                 ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Action Button
+                            Expanded(
+                              child: SizedBox(
+                                height: 48,
+                                child: ElevatedButton(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () {
+                                          _createNewCustomerBloc.add(
+                                            CreateNewCustomerSubmitEvent(
+                                              CreateNewCustomerParams(
+                                                name: name,
+                                                mergeExisting: true,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFE65100),
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: isLoading
+                                      ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : Text(
+                                          'Yes',
+                                          style: AppFont.style(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w800,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  // ── Close (X) Icon ────────────────────────────────────────────────
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: GestureDetector(
+                      onTap: isLoading ? null : () => Navigator.pop(dialogCtx),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        child: const Icon(
+                          Icons.close,
+                          size: 20,
+                          color: Color(0xFFB0B8C8),
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),

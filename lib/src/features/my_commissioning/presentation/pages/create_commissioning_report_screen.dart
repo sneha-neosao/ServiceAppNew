@@ -3696,7 +3696,9 @@ class _CreateCommissioningReportScreenState
             children: [
               TextField(
                 controller: _agendaController,
-                maxLines: 5,
+                minLines: 5,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
                 style: AppFont.style(
                   fontSize: 16,
                   fontWeight: FontWeight.w900,
@@ -3778,7 +3780,7 @@ class _CreateCommissioningReportScreenState
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'commissioning_na'.tr(),
+                  '(NA)',
                   style: AppFont.style(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
@@ -4089,7 +4091,9 @@ class _CreateCommissioningReportScreenState
                 children: [
                   TextField(
                     controller: controller,
-                    maxLines: 2,
+                    minLines: 2,
+                    maxLines: null,
+                    keyboardType: TextInputType.multiline,
                     style: AppFont.style(
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
@@ -4511,7 +4515,7 @@ class _CreateCommissioningReportScreenState
         ),
         const SizedBox(height: 10),
         _buildRemarksBox(
-          'commissioning_remarks_tech_hint'.tr(),
+          'Enter Technical Remarks',
           _technicianRemarksController,
         ),
         const SizedBox(height: 28),
@@ -4526,7 +4530,7 @@ class _CreateCommissioningReportScreenState
         ),
         const SizedBox(height: 10),
         _buildRemarksBox(
-          'commissioning_remarks_customer_hint'.tr(),
+          'Enter Customer Remarks',
           _customerRemarksController,
         ),
         const SizedBox(height: 36),
@@ -4714,6 +4718,7 @@ class _CreateCommissioningReportScreenState
                 ),
               ),
             ),
+            SpeechToTextMicButton(controller: _customerRepNameController),
           ],
         ),
         const SizedBox(height: 16),
@@ -5120,7 +5125,11 @@ class _CreateCommissioningReportScreenState
           ),
         );
       },
-    ).then((_) => signatureController.dispose());
+    ).then((_) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        signatureController.dispose();
+      });
+    });
   }
 
   Widget _buildRemarksBox(
@@ -5137,7 +5146,9 @@ class _CreateCommissioningReportScreenState
         children: [
           TextField(
             controller: controller,
-            maxLines: 4,
+            minLines: 4,
+            maxLines: null,
+            keyboardType: TextInputType.multiline,
             style: AppFont.style(
               fontSize: 16,
               fontWeight: FontWeight.w900,

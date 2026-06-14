@@ -16,118 +16,142 @@ class DeleteJobDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(28, 36, 28, 28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // ── Trash icon ─────────────────────────────────────────────────
-            Container(
-              width: 76,
-              height: 76,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF1F0),
-                borderRadius: BorderRadius.circular(22),
-              ),
-              child: const Icon(
-                Icons.delete_outline_rounded,
-                color: Color(0xFFFF4D4F),
-                size: 38,
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // ── Title ───────────────────────────────────────────────────────
-            Text(
-              'delete_job_title'.tr(),
-              style: AppFont.style(
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-                color: const Color(0xFF0D121F),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            // ── Subtitle ────────────────────────────────────────────────────
-            Text(
-              'delete_job_subtitle'.tr(),
-              textAlign: TextAlign.center,
-              style: AppFont.style(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF8E9BAE),
-                height: 1.55,
-              ),
-            ),
-
-            const SizedBox(height: 32),
-
-            // ── Confirm Delete button ───────────────────────────────────────
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: onConfirm,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // ── Icon ───────────────────────────────────────────────────────
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFF1F0),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.error_outline,
+                    color: Color(0xFFFF4D4F),
+                    size: 32,
                   ),
                 ),
-                child: isLoading
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2.5,
-                        ),
-                      )
-                    : Text(
-                        'delete_job_confirm'.tr(),
-                        style: AppFont.style(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                          letterSpacing: 1.0,
+                
+                const SizedBox(height: 20),
+
+                // ── Title ───────────────────────────────────────────────────────
+                Text(
+                  'Delete Work',
+                  style: AppFont.style(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF0D121F),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // ── Subtitle ────────────────────────────────────────────────────
+                Text(
+                  'Are you sure you want to delete this\ncommissioning job? This action cannot be\nundone.',
+                  textAlign: TextAlign.center,
+                  style: AppFont.style(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF5C616E),
+                    height: 1.4,
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // ── Buttons ─────────────────────────────────────────────────────
+                Row(
+                  children: [
+                    // Cancel Button
+                    Expanded(
+                      child: SizedBox(
+                        height: 48,
+                        child: TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: TextButton.styleFrom(
+                            backgroundColor: const Color(0xFFF6F6F6),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'Cancel',
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF0D121F),
+                            ),
+                          ),
                         ),
                       ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Delete Now Button
+                    Expanded(
+                      child: SizedBox(
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: isLoading ? null : onConfirm,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE30000),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(
+                                  'Delete Now',
+                                  style: AppFont.style(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          
+          // ── Close (X) Icon ────────────────────────────────────────────────
+          Positioned(
+            top: 12,
+            right: 12,
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                child: const Icon(
+                  Icons.close,
+                  size: 20,
+                  color: Color(0xFFB0B8C8),
+                ),
               ),
             ),
-
-            const SizedBox(height: 10),
-
-            // ── Cancel button ───────────────────────────────────────────────
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: TextButton(
-                onPressed: () => Navigator.pop(context),
-                style: TextButton.styleFrom(
-                  backgroundColor: Color(0xFFEF0F0F0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: Text(
-                  'delete_job_cancel'.tr(),
-                  style: AppFont.style(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFB0B8C8),
-                    letterSpacing: 1.0,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
