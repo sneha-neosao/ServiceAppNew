@@ -927,12 +927,14 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       final response = await _helper.execute(
         url: ApiUrl.technicianDeleteAccount,
         method: Method.delete,
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
       );
 
-      final respData = DeleteAccountResponse.fromJson(response.data);
+      final respData = DeleteAccountResponse.fromJson(response);
       if (respData.status == 200) {
         return respData;
       } else {
