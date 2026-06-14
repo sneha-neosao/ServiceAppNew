@@ -1386,114 +1386,110 @@ class _ReportCard extends StatelessWidget {
     } else if (type == ReportType.amc) {
       btnText = 'reports_btn_view_amc'.tr();
     }
-    return Column(
+    return Row(
       children: [
-        InkWell(
-          onTap: () {
-            if ((type == ReportType.commissioning || type == ReportType.service) &&
-                onViewPdfTap != null &&
-                reportId != null) {
-              onViewPdfTap!(reportId!);
-            } else if (onViewTap != null && reportId != null) {
-              onViewTap!(reportId!);
-            }
-          },
-          child: Container(
-            height: 44,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: const Color(0xFF1565C0),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  btnText,
-                  style: AppFont.style(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
+        Expanded(
+          child: InkWell(
+            onTap: () {
+              if ((type == ReportType.commissioning || type == ReportType.service) &&
+                  onViewPdfTap != null &&
+                  reportId != null) {
+                onViewPdfTap!(reportId!);
+              } else if (onViewTap != null && reportId != null) {
+                onViewTap!(reportId!);
+              }
+            },
+            child: Container(
+              height: 44,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1565C0),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    btnText,
+                    style: AppFont.style(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                const Icon(Icons.chevron_right, size: 16, color: Colors.white),
-              ],
+                  const SizedBox(width: 8),
+                  const Icon(Icons.chevron_right, size: 16, color: Colors.white),
+                ],
+              ),
             ),
           ),
         ),
-        // Extra action buttons — for commissioning, service, and amc types
         if (type == ReportType.commissioning || type == ReportType.service || type == ReportType.amc) ...[
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              // Eye / View icon button (Service Calls only)
-              if (type == ReportType.service) ...[
-                Expanded(
-                  child: _buildIconActionButton(
-                    icon: Icons.remove_red_eye_outlined,
-                    iconColor: const Color(0xFF6B7280),
+          const SizedBox(width: 12),
+          if (type == ReportType.service) ...[
+            SizedBox(
+              width: 44,
+              child: _buildIconActionButton(
+                icon: Icons.remove_red_eye_outlined,
+                iconColor: const Color(0xFF6B7280),
+                onTap: () {
+                  if (reportId != null) {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) {
+                        return ComplaintReportDialog(
+                          complaintId: reportId!,
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+          ],
+          SizedBox(
+            width: 44,
+            child: feedbackSubmitted
+                ? _buildIconActionButton(
+                    icon: Icons.check_circle,
+                    iconColor: Colors.green,
                     onTap: () {
                       if (reportId != null) {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) {
-                            return ComplaintReportDialog(
-                              complaintId: reportId!,
-                            );
-                          },
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FeedbackDetailsScreen(
+                              reportId: reportId!,
+                              isServiceCall: type == ReportType.service,
+                              isAmc: type == ReportType.amc,
+                              title: type == ReportType.service
+                                  ? 'Service Call Feedback Details'
+                                  : type == ReportType.amc
+                                      ? 'AMC Feedback Details'
+                                      : 'Commissioning Feedback Details',
+                              onBack: () => Navigator.pop(context),
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  )
+                : _buildIconActionButton(
+                    icon: Icons.qr_code_2_outlined,
+                    iconColor: const Color(0xFFF59E0B),
+                    onTap: () {
+                      if (qrCodeImage != null && qrCodeImage!.isNotEmpty) {
+                        _showQrCodeDialog(context);
+                      } else {
+                        appSnackBar(
+                          context,
+                          const Color(0xFFF44336),
+                          'reports_qr_not_available'.tr(),
                         );
                       }
                     },
                   ),
-                ),
-                const SizedBox(width: 10),
-              ],
-              // QR Code icon button or Checkmark
-              Expanded(
-                child: feedbackSubmitted
-                    ? _buildIconActionButton(
-                        icon: Icons.check_circle,
-                        iconColor: Colors.green,
-                        onTap: () {
-                          if (reportId != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FeedbackDetailsScreen(
-                                  reportId: reportId!,
-                                  isServiceCall: type == ReportType.service,
-                                  isAmc: type == ReportType.amc,
-                                  title: type == ReportType.service
-                                      ? 'Service Call Feedback Details'
-                                      : type == ReportType.amc
-                                          ? 'AMC Feedback Details'
-                                          : 'Commissioning Feedback Details',
-                                  onBack: () => Navigator.pop(context),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                      )
-                    : _buildIconActionButton(
-                        icon: Icons.qr_code_2_outlined,
-                        iconColor: const Color(0xFFF59E0B),
-                        onTap: () {
-                          if (qrCodeImage != null && qrCodeImage!.isNotEmpty) {
-                            _showQrCodeDialog(context);
-                          } else {
-                            appSnackBar(
-                              context,
-                              const Color(0xFFF44336),
-                              'reports_qr_not_available'.tr(),
-                            );
-                          }
-                        },
-                      ),
-              ),
-            ],
           ),
         ],
       ],
