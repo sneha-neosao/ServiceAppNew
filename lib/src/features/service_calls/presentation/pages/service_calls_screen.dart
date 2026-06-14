@@ -683,7 +683,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
             padding: const EdgeInsets.all(16),
             itemCount: 3,
             separatorBuilder: (_, __) => const SizedBox(height: 16),
-            itemBuilder: (_, __) => const ListCardShimmer(),
+            itemBuilder: (_, __) => const ServiceCallCardShimmer(type: ServiceCallType.ongoing),
           );
         }
 
@@ -728,6 +728,9 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               final techs = item.assignedTechnicians
                   .map((e) => e.name)
                   .join(', ');
+              final dateStr = item.createdAt.isNotEmpty
+                  ? DateFormat('dd-MM-yyyy').format(DateTime.parse(item.createdAt).toLocal())
+                  : null;
 
               return ServiceCallCard(
                 type: ServiceCallType.ongoing,
@@ -735,6 +738,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                 companyName: item.customerName,
                 location: item.siteName,
                 assignedTo: techs.isNotEmpty ? techs : 'UNASSIGNED',
+                dateReceived: dateStr,
                 onView: () => _showReportDialog(context, item.id),
                 onEdit: () => _showAssignTechDialog(
                   context,
@@ -794,7 +798,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
             padding: const EdgeInsets.all(16),
             itemCount: 3,
             separatorBuilder: (_, __) => const SizedBox(height: 16),
-            itemBuilder: (_, __) => const ListCardShimmer(),
+            itemBuilder: (_, __) => const ServiceCallCardShimmer(type: ServiceCallType.active),
           );
         }
 
@@ -836,12 +840,16 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               }
 
               final item = data.data.results[index];
+              final dateStr = item.createdAt.isNotEmpty
+                  ? DateFormat('dd-MM-yyyy').format(DateTime.parse(item.createdAt).toLocal())
+                  : null;
 
               return ServiceCallCard(
                 type: ServiceCallType.active,
                 complaintNo: item.complaintNumber,
                 companyName: item.customerName,
                 location: item.siteName,
+                dateReceived: dateStr,
                 onView: () => _showReportDialog(context, item.id),
                 onEdit: () => _showAssignTechDialog(
                   context,

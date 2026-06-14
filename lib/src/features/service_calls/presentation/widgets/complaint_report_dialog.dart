@@ -39,6 +39,8 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: Container(
         padding: const EdgeInsets.all(24),
@@ -75,9 +77,11 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
             const SizedBox(height: 24),
             
             Flexible(
-              child: BlocBuilder<ServiceCallDetailsBloc, ServiceCallDetailsState>(
-                bloc: _bloc,
-                builder: (context, state) {
+              child: ScrollConfiguration(
+                behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: BlocBuilder<ServiceCallDetailsBloc, ServiceCallDetailsState>(
+                  bloc: _bloc,
+                  builder: (context, state) {
                   if (state is ServiceCallDetailsLoadingState || state is ServiceCallDetailsInitialState) {
                     return SingleChildScrollView(child: _buildShimmer());
                   } else if (state is ServiceCallDetailsFailureState) {
@@ -125,7 +129,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: _buildInfoItem('complaint_report_site_label'.tr(), data.siteName),
+                            child: _buildInfoItem('Site Name', data.siteName),
                           ),
                           Expanded(
                             child: _buildInfoItem('Contact Person', data.name),
@@ -150,7 +154,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFAFBFD),
+                          color: const Color(0xFFF3F4F6),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: const Color(0xFFF1F2F6)),
                         ),
@@ -158,7 +162,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'complaint_report_issue_label'.tr(),
+                              'Complaint Description',
                               style: AppFont.style(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w800,
@@ -178,6 +182,42 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                           ],
                         ),
                       ),
+                      if (data.assignedTechnicians.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Assigned Technicians',
+                          style: AppFont.style(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFFA5ABB7),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: data.assignedTechnicians.map<Widget>((tech) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF3F4F6),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(color: const Color(0xFFF1F2F6)),
+                              ),
+                              child: Text(
+                                '${tech['name']} (${tech['phone']})',
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF424B5C),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
                       if (data.attachments.isNotEmpty) ...[
                         const SizedBox(height: 24),
                         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
@@ -202,12 +242,36 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                           ),
                           itemCount: data.attachments.length,
                           itemBuilder: (context, index) {
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                data.attachments[index].toString(),
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Container(color: Colors.grey[300]),
+                            final imageUrl = data.attachments[index]['image']?.toString() ?? '';
+                            return GestureDetector(
+                              onTap: () {
+                                if (imageUrl.isNotEmpty) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => Scaffold(
+                                        backgroundColor: Colors.black,
+                                        appBar: AppBar(
+                                          backgroundColor: Colors.black,
+                                          iconTheme: const IconThemeData(color: Colors.white),
+                                        ),
+                                        body: Center(
+                                          child: InteractiveViewer(
+                                            child: Image.network(imageUrl),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  imageUrl,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(color: Colors.grey[300]),
+                                ),
                               ),
                             );
                           },
@@ -218,7 +282,8 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                 );
               }
                 return const SizedBox();
-              },
+                },
+              ),
             ),
           ),
           ],

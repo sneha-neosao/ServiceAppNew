@@ -2631,15 +2631,24 @@ class _CreateCommissioningReportScreenState
                                                                                                                                                                         (
                                                                                                                                                                         context,
                                                                                                                                                                         submitStep6State,) {
-                                                                                                                                                                      return BlocBuilder<
-                                                                                                                                                                          ServiceCallReportStep6AutoFillBloc,
-                                                                                                                                                                          ServiceCallReportStep6AutoFillState
-                                                                                                                                                                      >(
-                                                                                                                                                                        bloc: _serviceCallStep6AutoFillBloc,
-                                                                                                                                                                        builder:
-                                                                                                                                                                            (
-                                                                                                                                                                            context,
-                                                                                                                                                                            serviceCallStep6AutoFillState,) {
+                                                                                                                                                                       return BlocBuilder<
+                                                                                                                                                                           ServiceCallReportStep6Bloc,
+                                                                                                                                                                           ServiceCallReportStep6State
+                                                                                                                                                                       >(
+                                                                                                                                                                         bloc: _submitServiceCallStep6Bloc,
+                                                                                                                                                                         builder:
+                                                                                                                                                                             (
+                                                                                                                                                                             context,
+                                                                                                                                                                             serviceCallStep6State,) {
+                                                                                                                                                                           return BlocBuilder<
+                                                                                                                                                                               ServiceCallReportStep6AutoFillBloc,
+                                                                                                                                                                               ServiceCallReportStep6AutoFillState
+                                                                                                                                                                           >(
+                                                                                                                                                                             bloc: _serviceCallStep6AutoFillBloc,
+                                                                                                                                                                             builder:
+                                                                                                                                                                                 (
+                                                                                                                                                                                 context,
+                                                                                                                                                                                 serviceCallStep6AutoFillState,) {
                                                                                                                                                                           bool isSubmitting =
                                                                                                                                                                               (_currentStep ==
                                                                                                                                                                                   1 &&
@@ -2681,14 +2690,18 @@ class _CreateCommissioningReportScreenState
                                                                                                                                                                                       5 &&
                                                                                                                                                                                       serviceCallStep5State
                                                                                                                                                                                       is ServiceCallReportStep5LoadingState) ||
-                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                      6 &&
-                                                                                                                                                                                      submitStep6State
-                                                                                                                                                                                      is CommissioningStep6LoadingState) ||
-                                                                                                                                                                                  (_currentStep ==
-                                                                                                                                                                                      6 &&
-                                                                                                                                                                                      serviceCallStep6AutoFillState
-                                                                                                                                                                                      is ServiceCallReportStep6AutoFillLoadingState);
+                                                                                                                                                                                   (_currentStep ==
+                                                                                                                                                                                       6 &&
+                                                                                                                                                                                       submitStep6State
+                                                                                                                                                                                       is CommissioningStep6LoadingState) ||
+                                                                                                                                                                                   (_currentStep ==
+                                                                                                                                                                                       6 &&
+                                                                                                                                                                                       serviceCallStep6State
+                                                                                                                                                                                       is ServiceCallReportStep6LoadingState) ||
+                                                                                                                                                                                   (_currentStep ==
+                                                                                                                                                                                       6 &&
+                                                                                                                                                                                       serviceCallStep6AutoFillState
+                                                                                                                                                                                       is ServiceCallReportStep6AutoFillLoadingState);
                                                                                                                                                                           return Container(
                                                                                                                                                                             height: 44,
                                                                                                                                                                             padding: const EdgeInsets
@@ -2795,6 +2808,8 @@ class _CreateCommissioningReportScreenState
                                                                                                                                                                           );
                                                                                                                                                                         },
                                                                                                                                                                       );
+                                                                                                                                                                         },
+                                                                                                                                                                       );
                                                                                                                                                                     },
                                                                                                                                                                   );
                                                                                                                                                                 },

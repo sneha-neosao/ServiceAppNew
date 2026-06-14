@@ -381,7 +381,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                               Expanded(
                                 child: Text(
                                   selectedCount == 0
-                                      ? 'select_technician'.tr()
+                                      ? 'Select Technicians'
                                       : '$selectedCount Selected',
                                   style: AppFont.style(
                                     fontSize: 16,

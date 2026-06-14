@@ -46,7 +46,9 @@ class ServiceCallStep2Data {
   factory ServiceCallStep2Data.fromJson(Map<String, dynamic> json) {
     return ServiceCallStep2Data(
       id: json['id'] ?? '',
-      memberPresentsCustomerSide: json['member_presents_customer_side'] ?? '',
+      memberPresentsCustomerSide: json['member_presents_customer_side'] is List
+          ? (json['member_presents_customer_side'] as List).join(", ")
+          : (json['member_presents_customer_side']?.toString() ?? ''),
       agenda: json['agenda'] ?? '',
       lastCompletedStep: json['last_completed_step'] ?? 0,
     );

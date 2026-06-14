@@ -74,8 +74,9 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
       insetPadding: const EdgeInsets.symmetric(horizontal: 16),
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
@@ -175,8 +176,9 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
             const SizedBox(height: 8),
             TextField(
               controller: _resolutionController,
-              maxLines: 5,
               minLines: 3,
+              maxLines: null,
+              keyboardType: TextInputType.multiline,
               style: AppFont.style(fontSize: 14, color: Colors.black),
               onChanged: (val) {
                 if (_isError && val.trim().length >= 10) {
@@ -319,6 +321,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
               ],
             ),
           ],
+        ),
         ),
       ),
     );
