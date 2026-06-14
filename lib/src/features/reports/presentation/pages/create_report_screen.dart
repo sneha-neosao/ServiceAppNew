@@ -158,21 +158,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     }
 
     if (source != 'LPM')
-      _pumpFlowLpmCtrl.text = lpm
-          .toStringAsFixed(2)
-          .replaceAll(RegExp(r'\.00$'), '');
+      _pumpFlowLpmCtrl.text = lpm.round().toString();
     if (source != 'LPS')
-      _pumpFlowLpsCtrl.text = lps
-          .toStringAsFixed(2)
-          .replaceAll(RegExp(r'\.00$'), '');
+      _pumpFlowLpsCtrl.text = lps.round().toString();
     if (source != 'M3HR')
-      _pumpFlowM3hrCtrl.text = m3hr
-          .toStringAsFixed(2)
-          .replaceAll(RegExp(r'\.00$'), '');
+      _pumpFlowM3hrCtrl.text = m3hr.round().toString();
     if (source != 'USGPM')
-      _pumpFlowUsgpmCtrl.text = usgpm
-          .toStringAsFixed(2)
-          .replaceAll(RegExp(r'\.00$'), '');
+      _pumpFlowUsgpmCtrl.text = usgpm.round().toString();
 
     _isAutoCalculatingFlow = false;
   }
@@ -199,16 +191,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       kw = value;
       hp = kw / 0.746;
       if (source != 'HP')
-        _ratingHpCtrl.text = hp
-            .toStringAsFixed(2)
-            .replaceAll(RegExp(r'\.00$'), '');
+        _ratingHpCtrl.text = hp.round().toString();
     } else {
       hp = value;
       kw = hp * 0.746;
       if (source != 'KW')
-        _ratingKwCtrl.text = kw
-            .toStringAsFixed(2)
-            .replaceAll(RegExp(r'\.00$'), '');
+        _ratingKwCtrl.text = kw.round().toString();
     }
 
     _isAutoCalculatingRating = false;
@@ -233,21 +221,21 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   Future<void> _fetchLoggedInTechnician() async {
     final session = await SessionManager.getUserSession();
-    if (session?.technician != null) {
+    if (session != null) {
       if (mounted) {
         setState(() {
-          _loggedInTechnicianId = session!.technician!.id;
-          _loggedInTechnicianName = session!.technician!.name;
-          _technicianNameController.text = session!.technician!.name;
-        });
-      }
-    } else if (session?.dealer != null) {
-      if (mounted) {
-        setState(() {
-          _loggedInTechnicianId = session!.dealer!.id;
-          _loggedInTechnicianName = session!.dealer!.name;
-          _loggedInDealerName = session.dealer!.name;
-          _technicianNameController.text = session!.dealer!.name;
+          if (session.technician != null) {
+            _loggedInTechnicianId = session.technician!.id;
+            _loggedInTechnicianName = session.technician!.name;
+            _technicianNameController.text = session.technician!.name;
+          } else if (session.dealer != null) {
+            _loggedInTechnicianId = session.dealer!.id;
+            _loggedInTechnicianName = session.dealer!.name;
+            _technicianNameController.text = session.dealer!.name;
+          }
+          if (session.dealer != null) {
+            _loggedInDealerName = session.dealer!.name;
+          }
         });
       }
     }
@@ -514,6 +502,79 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       );
     } else if (_currentStep == 3) {
       if (_reportId == null) return;
+
+      // Validate mechanical section
+      if (!_mechNA) {
+        if (_bearingNoise == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_bearing'.tr());
+          return;
+        }
+        if (_vibration == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_vibration'.tr());
+          return;
+        }
+        if (_mechSeal == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_mech_seal'.tr());
+          return;
+        }
+        if (_pumpDry == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_pump_dry'.tr());
+          return;
+        }
+      }
+
+      // Validate pipeline section
+      if (!_pipeNA) {
+        if (_nrvValve == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_nrv'.tr());
+          return;
+        }
+        if (_strainerValve == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_strainer'.tr());
+          return;
+        }
+        if (_suctionLine == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_suction_line'.tr());
+          return;
+        }
+        if (_deliveryLine == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_del_line'.tr());
+          return;
+        }
+        if (_suctionDelivery == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_suction_del'.tr());
+          return;
+        }
+        if (_pressureSwitch == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_pressure'.tr());
+          return;
+        }
+      }
+
+      // Validate electrical section
+      if (!_elecNA) {
+        if (_elecFaults == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_elec_faults'.tr());
+          return;
+        }
+        if (_voltage == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_voltage'.tr());
+          return;
+        }
+        if (_phase == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_phase'.tr());
+          return;
+        }
+        if (_current == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_current'.tr());
+          return;
+        }
+        if (_panelWiring == null) {
+          appSnackBar(context, const Color(0xFFF44336), 'val_sel_panel_wiring'.tr());
+          return;
+        }
+      }
+
       List<ServiceWorkChecklistItem> checklistItems = [];
       void addChecklistIfNotNull(String? value, String checkType, String key) {
         if (value != null) {
@@ -894,6 +955,37 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             }
           },
         ),
+        BlocListener<CustomerBloc, CustomerState>(
+          bloc: _customerBloc,
+          listener: (context, state) {
+            if (state is CustomerSuccessState) {
+              if ((_selectedCustomerId == null || _selectedCustomerId!.isEmpty) && _selectedCustomer != 'Select Customer') {
+                final matches = state.data.data.where((x) => x.name == _selectedCustomer);
+                if (matches.isNotEmpty) {
+                  setState(() {
+                    _selectedCustomerId = matches.first.id;
+                  });
+                  _sitesBloc.add(SitesGetEvent(customer_id: matches.first.id));
+                }
+              }
+            }
+          },
+        ),
+        BlocListener<SitesBloc, SitesState>(
+          bloc: _sitesBloc,
+          listener: (context, state) {
+            if (state is SitesSuccessState) {
+              if ((_selectedSiteId == null || _selectedSiteId!.isEmpty) && _selectedSite != 'Select Site') {
+                final matches = state.data.data.where((x) => x.name == _selectedSite);
+                if (matches.isNotEmpty) {
+                  setState(() {
+                    _selectedSiteId = matches.first.id;
+                  });
+                }
+              }
+            }
+          },
+        ),
       ],
       child: BlocBuilder<ServiceWorkReportStep4Bloc, ServiceWorkReportStep4State>(
         bloc: _serviceWorkReportStep4Bloc,
@@ -1229,6 +1321,34 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               _technicians.add(TextEditingController());
             }
           });
+
+          if ((_selectedCustomerId == null || _selectedCustomerId!.isEmpty) && _selectedCustomer != 'Select Customer') {
+            final custState = _customerBloc.state;
+            if (custState is CustomerSuccessState) {
+              final matches = custState.data.data.where((x) => x.name == _selectedCustomer);
+              if (matches.isNotEmpty) {
+                setState(() {
+                  _selectedCustomerId = matches.first.id;
+                });
+              }
+            }
+          }
+
+          if (_selectedCustomerId != null && _selectedCustomerId!.isNotEmpty) {
+            _sitesBloc.add(SitesGetEvent(customer_id: _selectedCustomerId!));
+            
+            if ((_selectedSiteId == null || _selectedSiteId!.isEmpty) && _selectedSite != 'Select Site') {
+              final sitesState = _sitesBloc.state;
+              if (sitesState is SitesSuccessState) {
+                final siteMatches = sitesState.data.data.where((x) => x.name == _selectedSite);
+                if (siteMatches.isNotEmpty) {
+                  setState(() {
+                    _selectedSiteId = siteMatches.first.id;
+                  });
+                }
+              }
+            }
+          }
         } else if (state is ServiceWorkReportStep1AutofillFailure) {
           appSnackBar(context, const Color(0xFFF44336), state.message);
         }
@@ -2439,12 +2559,26 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: AppFont.style(
-              fontSize: 13,
-              fontWeight: FontWeight.w900,
-              color: const Color(0xFF3A4152),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: label,
+                  style: AppFont.style(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF3A4152),
+                  ),
+                ),
+                const TextSpan(
+                  text: ' *',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 10),

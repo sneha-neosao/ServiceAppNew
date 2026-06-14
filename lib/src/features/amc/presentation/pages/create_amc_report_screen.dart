@@ -25,7 +25,7 @@ import 'package:service_app/src/features/amc/presentation/bloc/amc_assigned_tech
 import 'package:service_app/src/remote/models/amc_report_model/amc_assigned_technicians_response.dart';
 import 'dart:convert';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
-import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
+import 'package:service_app/src/features/widgets/step_shimmer.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_bloc/amc_report_step2_bloc.dart';
@@ -152,17 +152,17 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
   Future<void> _loadSession() async {
     final session = await SessionManager.getUserSession();
-    if (session?.technician != null) {
+    if (session != null) {
       if (mounted) {
         setState(() {
-          _loggedInTechnicianId = session!.technician!.id;
-        });
-      }
-    } else if (session?.dealer != null) {
-      if (mounted) {
-        setState(() {
-          _loggedInTechnicianId = session!.dealer!.id;
-          _loggedInDealerName = session.dealer!.name;
+          if (session.technician != null) {
+            _loggedInTechnicianId = session.technician!.id;
+          } else if (session.dealer != null) {
+            _loggedInTechnicianId = session.dealer!.id;
+          }
+          if (session.dealer != null) {
+            _loggedInDealerName = session.dealer!.name;
+          }
         });
       }
     }
@@ -188,10 +188,13 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 _hasFetchedStep2Autofill = true;
                 _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
               }
-            } else if (state is AmcReportStep1FailureState) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
+              appSnackBar(
+                context,
+                const Color(0xFF4CAF50),
+                state.data.message.isNotEmpty ? state.data.message : 'Step 1 saved successfully',
               );
+            } else if (state is AmcReportStep1FailureState) {
+              appSnackBar(context, const Color(0xFFF44336), state.message);
             }
           },
         ),
@@ -231,9 +234,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 }
               }
             } else if (state is AmcReportStep1AutofillFailureState) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
+              appSnackBar(context, const Color(0xFFF44336), state.message);
             }
           },
         ),
@@ -251,6 +252,11 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               if (_currentReportId != null) {
                 _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
               }
+              appSnackBar(
+                context,
+                const Color(0xFF4CAF50),
+                state.data.message.isNotEmpty ? state.data.message : 'Step 2 saved successfully',
+              );
             } else if (state is AmcReportStep2ErrorState) {
               appSnackBar(context, const Color(0xFFF44336), state.message);
             }
@@ -304,9 +310,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 _operationSelected = decodeMapToList(state.data.data.operationChecklist);
               });
             } else if (state is AmcReportStep2AutofillFailureState) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
+              appSnackBar(context, const Color(0xFFF44336), state.message);
             }
           },
         ),
@@ -323,6 +327,22 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               appSnackBar(context, const Color(0xFF4CAF50), 'AMC Report submitted successfully');
               widget.onSubmit();
             } else if (state is AmcReportStep3ErrorState) {
+              appSnackBar(context, const Color(0xFFF44336), state.message);
+            }
+          },
+        ),
+        BlocListener<AmcAssignedTechniciansBloc, AmcAssignedTechniciansState>(
+          bloc: _assignedTechniciansBloc,
+          listener: (context, state) {
+            if (state is AmcAssignedTechniciansFailureState) {
+              appSnackBar(context, const Color(0xFFF44336), state.message);
+            }
+          },
+        ),
+        BlocListener<TechnicianBloc, TechnicianState>(
+          bloc: _technicianBloc,
+          listener: (context, state) {
+            if (state is TechnicianFailureState) {
               appSnackBar(context, const Color(0xFFF44336), state.message);
             }
           },
@@ -439,10 +459,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
   Widget _buildStep1() {
     if (_isAutofillLoading) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 24.0),
-        child: ListCardShimmer(),
-      );
+      return const StepShimmer(step: 1);
     }
 
     return Column(
@@ -730,10 +747,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
   Widget _buildStep2() {
     if (_isAutofillLoading) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 24.0),
-        child: ListCardShimmer(),
-      );
+      return const StepShimmer(step: 2);
     }
 
     return Column(
@@ -1173,7 +1187,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         const SizedBox(height: 36),
         // Customer Rep
         Text(
-          'CUSTOMER REP',
+          'amc_report_customer_rep'.tr(),
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w900,
@@ -2063,7 +2077,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
                       _step1Bloc.add(PostAmcReportStep1Event(PostAmcReportStep1Params(
                         amcVisitId: widget.visitId,
-                        amcReportId: widget.reportId,
+                        amcReportId: _currentReportId,
                         technicianIds: selectedTechs,
                         memberPresentsCustomerSide: _memberPresentsControllers.map((c) => c.text.trim()).where((t) => t.isNotEmpty).join(", "),
                         agenda: _agendaController.text,

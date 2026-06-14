@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/features/amc/bloc/amc_visit_reports_bloc/amc_visit_reports_bloc.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_pdf_bloc/amc_report_pdf_bloc.dart';
-import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
+import 'package:service_app/src/features/widgets/amc_report_card_shimmer.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -348,10 +348,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                 ),
 
                 if (isLoading)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                    child: ListCardShimmer(),
-                  )
+                  AmcReportCardShimmer(isFromHistory: widget.isFromHistory)
                 else if (reportsCount > 0) ...[
                   const SizedBox(height: 16),
 
