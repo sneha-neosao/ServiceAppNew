@@ -93,6 +93,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
   String? _vibrationSelected;
 
   final List<TextEditingController> _technicians = [TextEditingController()];
+  final List<String?> _technicianIds = [null];
   final List<TextEditingController> _memberPresentsControllers = [TextEditingController()];
   final TextEditingController _agendaController = TextEditingController();
 
@@ -147,6 +148,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     for (var c in _technicians) {
       c.dispose();
     }
+    _technicianIds.clear();
     super.dispose();
   }
 
@@ -166,6 +168,126 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         });
       }
     }
+  }
+
+  void _showTechnicianBottomSheet(
+    BuildContext context,
+    List<dynamic> validItems,
+    TextEditingController controller,
+    int index,
+  ) {
+    String lastSearch = '';
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            final filteredItems = lastSearch.isEmpty
+                ? validItems
+                : validItems
+                    .where((item) => item.name
+                        .toLowerCase()
+                        .contains(lastSearch.toLowerCase()))
+                    .toList();
+
+            return SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                ),
+                child: Container(
+                  height: MediaQuery.of(ctx).size.height * 0.5,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  child: Column(
+                    children: [
+                      TextField(
+                        autofocus: true,
+                        onChanged: (val) {
+                          setModalState(() {
+                            lastSearch = val;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          hintStyle: AppFont.style(
+                            fontSize: 14,
+                            color: const Color(0xFFA5ABB7),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                const BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                const BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                const BorderSide(color: Color(0xFF1565C0)),
+                          ),
+                        ),
+                        style: AppFont.style(
+                          fontSize: 14,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: filteredItems.length,
+                          itemBuilder: (context, i) {
+                            final item = filteredItems[i];
+                            return InkWell(
+                              onTap: () {
+                                setState(() {
+                                  controller.text = item.name;
+                                  _technicianIds[index] = item.id;
+                                });
+                                Navigator.pop(ctx);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 12,
+                                ),
+                                child: Text(
+                                  item.name,
+                                  style: AppFont.style(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xFF0D121F),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -229,9 +351,15 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               _agendaController.text = state.data.data.agenda;
               if (state.data.data.assignedTechnicians.isNotEmpty) {
                 _technicians.clear();
+                _technicianIds.clear();
                 for (var tech in state.data.data.assignedTechnicians) {
-                  _technicians.add(TextEditingController(text: tech.id));
+                  _technicians.add(TextEditingController(text: tech.name));
+                  _technicianIds.add(tech.id);
                 }
+              }
+              if (_technicians.isEmpty) {
+                _technicians.add(TextEditingController());
+                _technicianIds.add(null);
               }
             } else if (state is AmcReportStep1AutofillFailureState) {
               appSnackBar(context, const Color(0xFFF44336), state.message);
@@ -552,6 +680,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               onTap: () {
                 setState(() {
                   _technicians.add(TextEditingController());
+                  _technicianIds.add(null);
                 });
               },
               child: _buildAddButton(),
@@ -593,22 +722,74 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                           } catch (_) {}
                         }
                       }
-                      return SearchableDropdown<dynamic>(
-                        items: validItems,
-                        value: controller.text.isNotEmpty
-                            ? validItems.firstWhere(
-                                (e) => e.id == controller.text,
-                                orElse: () => null,
-                              )
-                            : null,
-                        hintText: 'commissioning_select_technician'.tr(),
-                        itemAsString: (item) => item.name,
-                        isLoading: isLoading,
-                        onChanged: (v) {
-                          if (v != null) {
-                            setState(() => controller.text = v.id);
-                          }
-                        },
+                      return Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          TextFormField(
+                            controller: controller,
+                            onChanged: (val) {
+                              _technicianIds[idx] = ''; // Manual input, clear ID
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'commissioning_select_technician'.tr(),
+                              hintStyle: AppFont.style(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFFA5ABB7),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFFE5E7EB)),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFFE5E7EB)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFF1565C0)),
+                              ),
+                              suffixIcon: isLoading
+                                  ? const Padding(
+                                      padding: EdgeInsets.all(12.0),
+                                      child: SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Color(0xFF1565C0),
+                                        ),
+                                      ),
+                                    )
+                                  : IconButton(
+                                      icon: const Icon(
+                                        Icons.keyboard_arrow_down,
+                                        color: Color(0xFFA5ABB7),
+                                      ),
+                                      onPressed: () {
+                                        _showTechnicianBottomSheet(
+                                          context,
+                                          validItems,
+                                          controller,
+                                          idx,
+                                        );
+                                      },
+                                    ),
+                            ),
+                            style: AppFont.style(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xFF0D121F),
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),
@@ -619,6 +800,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     onTap: () {
                       setState(() {
                         var removed = _technicians.removeAt(idx);
+                        _technicianIds.removeAt(idx);
                         removed.dispose();
                       });
                     },
@@ -2055,14 +2237,18 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         allTechs = (_technicianBloc.state as TechnicianSuccessState).data.data;
                       }
                       
-                      for (var controller in _technicians) {
+                      for (int i = 0; i < _technicians.length; i++) {
+                        var controller = _technicians[i];
                         if (controller.text.isNotEmpty) {
-                          String id = controller.text;
-                          String name = "Unknown";
-                          try {
-                            final match = allTechs.firstWhere((t) => t.id == id);
-                            name = match.name;
-                          } catch (_) {}
+                          String name = controller.text;
+                          String id = _technicianIds[i] ?? "";
+
+                          if (id.isEmpty) {
+                            try {
+                              final match = allTechs.firstWhere((t) => t.name == name);
+                              id = match.id;
+                            } catch (_) {}
+                          }
                           selectedTechs.add({"id": id, "name": name});
                         }
                       }

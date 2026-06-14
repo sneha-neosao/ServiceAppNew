@@ -92,6 +92,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   late TechnicianBloc _technicianBloc;
 
   final List<TextEditingController> _technicians = [TextEditingController()];
+  final List<String?> _technicianIds = [null];
 
   bool _isAutoCalculatingFlow = false;
   bool _isAutoCalculatingRating = false;
@@ -329,6 +330,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _deleteServiceWorkReportBloc.close();
     _technicianBloc.close();
     for (final c in _technicians) c.dispose();
+    _technicianIds.clear();
     _customerBloc.close();
     _sitesBloc.close();
     for (final c in _memberControllers) c.dispose();
@@ -420,15 +422,22 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       List<Map<String, String>> techs = [];
       var techState = _technicianBloc.state;
       if (techState is TechnicianSuccessState) {
-        for (var ctrl in _technicians) {
+        for (int i = 0; i < _technicians.length; i++) {
+          var ctrl = _technicians[i];
           if (ctrl.text.isNotEmpty) {
-            try {
-              final match = techState.data.data.firstWhere((e) => e.id == ctrl.text);
-              techs.add({
-                "id": match.id,
-                "name": match.name,
-              });
-            } catch (_) {}
+            String name = ctrl.text;
+            String id = _technicianIds[i] ?? "";
+
+            if (id.isEmpty) {
+              try {
+                final match = techState.data.data.firstWhere((e) => e.name == name);
+                id = match.id;
+              } catch (_) {}
+            }
+            techs.add({
+              "id": id,
+              "name": name,
+            });
           }
         }
       }
@@ -1433,6 +1442,126 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     );
   }
 
+  void _showTechnicianBottomSheet(
+    BuildContext context,
+    List<dynamic> validItems,
+    TextEditingController controller,
+    int index,
+  ) {
+    String lastSearch = '';
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            final filteredItems = lastSearch.isEmpty
+                ? validItems
+                : validItems
+                    .where((item) => item.name
+                        .toLowerCase()
+                        .contains(lastSearch.toLowerCase()))
+                    .toList();
+
+            return SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                ),
+                child: Container(
+                  height: MediaQuery.of(ctx).size.height * 0.5,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  child: Column(
+                    children: [
+                      TextField(
+                        autofocus: true,
+                        onChanged: (val) {
+                          setModalState(() {
+                            lastSearch = val;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          hintStyle: AppFont.style(
+                            fontSize: 14,
+                            color: const Color(0xFFA5ABB7),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                const BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                const BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                const BorderSide(color: Color(0xFF1565C0)),
+                          ),
+                        ),
+                        style: AppFont.style(
+                          fontSize: 14,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: filteredItems.length,
+                          itemBuilder: (context, i) {
+                            final item = filteredItems[i];
+                            return InkWell(
+                              onTap: () {
+                                setState(() {
+                                  controller.text = item.name;
+                                  _technicianIds[index] = item.id;
+                                });
+                                Navigator.pop(ctx);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 12,
+                                ),
+                                child: Text(
+                                  item.name,
+                                  style: AppFont.style(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xFF0D121F),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildBodyContent() {
     switch (_currentStep) {
       case 1:
@@ -1515,12 +1644,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
             if (data.assignedTechnicians.isNotEmpty) {
               _technicians.clear();
+              _technicianIds.clear();
               for (var tech in data.assignedTechnicians) {
-                _technicians.add(TextEditingController(text: tech.id));
+                _technicians.add(TextEditingController(text: tech.name));
+                _technicianIds.add(tech.id);
               }
             }
             if (_technicians.isEmpty) {
               _technicians.add(TextEditingController());
+              _technicianIds.add(null);
             }
           });
 
@@ -1653,6 +1785,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               onTap: () {
                 setState(() {
                   _technicians.add(TextEditingController());
+                  _technicianIds.add(null);
                 });
               },
               child: _buildAddListItemButton('Add'),
@@ -1694,22 +1827,74 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           } catch (_) {}
                         }
                       }
-                      return SearchableDropdown<dynamic>(
-                        items: validItems,
-                        value: controller.text.isNotEmpty
-                            ? validItems.firstWhere(
-                                (e) => e.id == controller.text,
-                                orElse: () => null,
-                              )
-                            : null,
-                        hintText: 'commissioning_select_technician'.tr(),
-                        itemAsString: (item) => item.name,
-                        isLoading: isLoading,
-                        onChanged: (v) {
-                          if (v != null) {
-                            setState(() => controller.text = v.id);
-                          }
-                        },
+                      return Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          TextFormField(
+                            controller: controller,
+                            onChanged: (val) {
+                              _technicianIds[idx] = ''; // Manual input, clear ID
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'commissioning_select_technician'.tr(),
+                              hintStyle: AppFont.style(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFFA5ABB7),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFFE5E7EB)),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFFE5E7EB)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFF1565C0)),
+                              ),
+                              suffixIcon: isLoading
+                                  ? const Padding(
+                                      padding: EdgeInsets.all(12.0),
+                                      child: SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Color(0xFF1565C0),
+                                        ),
+                                      ),
+                                    )
+                                  : IconButton(
+                                      icon: const Icon(
+                                        Icons.keyboard_arrow_down,
+                                        color: Color(0xFFA5ABB7),
+                                      ),
+                                      onPressed: () {
+                                        _showTechnicianBottomSheet(
+                                          context,
+                                          validItems,
+                                          controller,
+                                          idx,
+                                        );
+                                      },
+                                    ),
+                            ),
+                            style: AppFont.style(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xFF0D121F),
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),
@@ -1720,6 +1905,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     onTap: () {
                       setState(() {
                         var removed = _technicians.removeAt(idx);
+                        _technicianIds.removeAt(idx);
                         removed.dispose();
                       });
                     },
