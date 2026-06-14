@@ -31,6 +31,8 @@ import 'package:service_app/src/features/my_commissioning/bloc/commissioning_wor
 import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_step1_autofill_usecase.dart';
 import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_work_usecase.dart';
 import 'package:service_app/src/features/profile/domain/usecase/profile_details_usecase.dart';
+import 'package:service_app/src/features/profile/domain/usecase/delete_account_usecase.dart';
+import 'package:service_app/src/features/profile/bloc/delete_account_bloc/delete_account_bloc.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step1_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step2_autofill_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step2_usecase.dart';
@@ -193,6 +195,10 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => ProfileDetailsUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => DeleteAccountUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(() => SitesBloc(getIt<SitesUseCase>()));
@@ -822,6 +828,9 @@ void configureDepedencies() {
   getIt.registerLazySingleton(
     () => DeleteAmcReportUsecase(getIt<AuthRepositoryImpl>()),
   );
+
+  // Profile Delete Account
+  getIt.registerFactory(() => DeleteAccountBloc(getIt()));
 
   getIt.registerFactory(
     () => DeleteServiceWorkReportBloc(usecase: getIt<DeleteServiceWorkReportUsecase>()),

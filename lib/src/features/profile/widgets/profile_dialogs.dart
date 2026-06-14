@@ -6,6 +6,9 @@ import 'package:service_app/src/configs/injector/injector.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/login/bloc/auth_login_bloc/login_bloc.dart';
+import 'package:service_app/src/features/profile/bloc/delete_account_bloc/delete_account_bloc.dart';
+import 'package:service_app/src/features/profile/bloc/delete_account_bloc/delete_account_event.dart';
+import 'package:service_app/src/features/profile/bloc/delete_account_bloc/delete_account_state.dart';
 import 'package:service_app/src/routes/app_route_path.dart';
 
 class ProfileLogoutDialog extends StatelessWidget {
@@ -190,28 +193,72 @@ class ProfileDeleteDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 40),
-            SizedBox(
-              width: double.infinity,
-              height: 64,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  // Handle deletion
+            BlocProvider(
+              create: (_) => getIt<DeleteAccountBloc>(),
+              child: BlocListener<DeleteAccountBloc, DeleteAccountState>(
+                listener: (context, state) {
+                  if (state is DeleteAccountSuccessState) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.data.message),
+                        backgroundColor: const Color(0xFF4CAF50),
+                      ),
+                    );
+                    final nav = Navigator.of(context, rootNavigator: true);
+                    final router = GoRouter.of(context);
+                    nav.pop();
+                    nav.pop();
+                    router.goNamed(AppRoute.loginScreen.name);
+                  } else if (state is DeleteAccountFailureState) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: const Color(0xFFF44336),
+                      ),
+                    );
+                  }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF44336),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  'delete_dialog_btn_confirm'.tr(),
-                  style: AppFont.style(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                  ),
+                child: BlocBuilder<DeleteAccountBloc, DeleteAccountState>(
+                  builder: (context, state) {
+                    final isLoading = state is DeleteAccountLoadingState;
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 64,
+                      child: ElevatedButton(
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                context.read<DeleteAccountBloc>().add(
+                                      const DeleteAccountSubmittedEvent(),
+                                    );
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFF44336),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(
+                                'delete_dialog_btn_confirm'.tr(),
+                                style: AppFont.style(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                ),
+                              ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),

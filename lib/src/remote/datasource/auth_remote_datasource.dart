@@ -98,6 +98,7 @@ import '../models/feedback_model/feedback_response.dart';
 import '../models/servicecalls_report_history_model/servicecalls_report_history_response.dart';
 import '../models/amc_visit_model/amc_visit_list_response.dart';
 import '../models/amc_visit_model/amc_visit_reports_response.dart';
+import '../models/delete_account_model/delete_account_response.dart';
 import '../models/service_calls_details_model/service_calls_details_response.dart';
 import '../models/amc_report_model/delete_amc_report_response.dart';
 import '../models/delete_service_work_report_model/delete_service_work_report_response.dart';
@@ -241,6 +242,8 @@ sealed class RemoteDataSource {
   );
 
   Future<void> logout();
+
+  Future<DeleteAccountResponse> deleteAccount(String token);
 
   Future<AssignedServiceCallsResponse> assignedServiceCalls(
     AssignedServiceCallsParams params,
@@ -914,6 +917,42 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       return;
     } catch (e) {
       logger.e(e);
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<DeleteAccountResponse> deleteAccount(String token) async {
+    try {
+      final response = await _helper.execute(
+        url: ApiUrl.technicianDeleteAccount,
+        method: Method.delete,
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      final respData = DeleteAccountResponse.fromJson(response.data);
+      if (respData.status == 200) {
+        return respData;
+      } else {
+        throw ApiException(respData.message);
+      }
+    } on DioException catch (e) {
+      logger.e(e.toString());
+      if (e.response != null && e.response?.data != null) {
+        if (e.response?.data is Map<String, dynamic>) {
+          if (e.response?.data['message'] != null) {
+            throw ApiException(e.response?.data['message']);
+          }
+        }
+      }
+      throw ServerException();
+    } catch (e) {
+      logger.e(e);
+      if (e is ApiException) {
+        throw e;
+      }
       throw ServerException();
     }
   }

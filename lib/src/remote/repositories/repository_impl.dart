@@ -113,6 +113,7 @@ import '../models/amc_visit_model/amc_visit_reports_response.dart';
 import '../models/amc_visit_model/amc_visit_list_response.dart';
 import '../models/amc_report_model/delete_amc_report_response.dart';
 import '../models/delete_service_work_report_model/delete_service_work_report_response.dart';
+import '../models/delete_account_model/delete_account_response.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -376,6 +377,8 @@ abstract class Repository {
   Future<Either<Failure, DeleteServiceWorkReportResponse>> deleteServiceWorkReport(
     String reportId,
   );
+
+  Future<Either<Failure, DeleteAccountResponse>> deleteAccount();
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -2864,6 +2867,36 @@ class AuthRepositoryImpl implements Repository {
           final respData = await _remoteDataSource.deleteServiceWorkReport(reportId, token);
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message ?? 'Unknown error'));
+          }
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, DeleteAccountResponse>> deleteAccount() {
+    return _networkInfo.check<DeleteAccountResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.deleteAccount(token);
+          if (respData.status != 200) {
+            return Left(CredentialFailure(respData.message));
           }
           return Right(respData);
         } on ServerException {
