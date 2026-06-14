@@ -1522,34 +1522,26 @@ class _ReportCard extends StatelessWidget {
 
     final lowerStatus = statusStr.trim().toLowerCase();
 
-    if (lowerStatus == 'submitted report' || lowerStatus == 'submitted') {
-      borderColor = const Color(0xFF4CAF50); // Green
+    if (lowerStatus == 'service call report' || lowerStatus == 'service_call_report' || lowerStatus == 'service call' || lowerStatus == 'service_call') {
+      borderColor = const Color(0xFFA5D6A7); // Light Green
       bgColor = const Color(0xFFE8F5E9);
-      textColor = const Color(0xFF2E7D32);
-    } else if (lowerStatus == 'closed over call') {
-      borderColor = const Color(0xFF2196F3); // Blue
+      textColor = const Color(0xFF00695C); // Teal Green
+    } else if (lowerStatus == 'service work report' || lowerStatus == 'service_work_report' || lowerStatus == 'service work' || lowerStatus == 'service_work') {
+      borderColor = const Color(0xFFFFCDD2); // Light Red
+      bgColor = const Color(0xFFFFEBEE);
+      textColor = const Color(0xFFB71C1C); // Red
+    } else if (lowerStatus == 'closed over call' || lowerStatus == 'closed_over_call') {
+      borderColor = const Color(0xFFBBDEFB); // Light Blue
       bgColor = const Color(0xFFE3F2FD);
-      textColor = const Color(0xFF1565C0);
-    } else if (lowerStatus == 'existing complaint') {
-      borderColor = const Color(0xFFFFB300); // Amber/Orange
-      bgColor = const Color(0xFFFFF8E1);
-      textColor = const Color(0xFFE65100);
-    } else if (lowerStatus == 'no complaints') {
-      borderColor = const Color(0xFF9C27B0); // Purple
-      bgColor = const Color(0xFFF3E5F5);
-      textColor = const Color(0xFF7B1FA2);
-    } else if (lowerStatus == 'service work' || lowerStatus == 'service_work') {
-      borderColor = const Color(0xFF00ACC1); // Cyan
-      bgColor = const Color(0xFFE0F7FA);
-      textColor = const Color(0xFF00838F);
-    } else if (lowerStatus == 'service call' || lowerStatus == 'service_call') {
-      borderColor = const Color(0xFFD81B60); // Pink
-      bgColor = const Color(0xFFFCE4EC);
-      textColor = const Color(0xFFAD1457);
+      textColor = const Color(0xFF1565C0); // Blue
+    } else if (lowerStatus == 'existing complaint report' || lowerStatus == 'existing_complaint_report' || lowerStatus == 'existing complaint') {
+      borderColor = const Color(0xFFFFE0B2); // Light Orange
+      bgColor = const Color(0xFFFFF3E0);
+      textColor = const Color(0xFFE65100); // Orange
     } else {
-      borderColor = const Color(0xFF9E9E9E); // Grey
-      bgColor = const Color(0xFFF5F5F5);
-      textColor = const Color(0xFF616161);
+      borderColor = const Color(0xFFE5E7EB); // Grey
+      bgColor = const Color(0xFFF3F4F6);
+      textColor = const Color(0xFF6B7280);
     }
 
     String displayStatus = statusStr.replaceAll('_', ' ');
@@ -1559,16 +1551,16 @@ class _ReportCard extends StatelessWidget {
     }).join(' ');
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: borderColor, width: 1),
       ),
       child: Text(
         displayStatus,
         style: AppFont.style(
-          fontSize: 12,
+          fontSize: 10,
           fontWeight: FontWeight.w800,
           color: textColor,
         ),
