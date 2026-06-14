@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -359,7 +360,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   bool _pipeNA = false;
   bool _elecNA = false;
 
-  // Mechanical Checklist  (null = unset, 'ok' / 'notok' / 'normal' / 'high')
+  // Mechanical Checklist  (null = unset, 'ok' / 'not_ok' / 'normal' / 'high')
   String? _bearingNoise;
   String? _vibration; // 'normal' | 'high'
   String? _mechSeal;
@@ -410,15 +411,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   void _nextStep() {
     if (_currentStep == 1) {
-      if (_selectedCustomerId == null) {
-        appSnackBar(context, const Color(0xFFF44336), "Please select customer");
-        return;
-      }
-      if (_selectedSiteId == null) {
-        appSnackBar(context, const Color(0xFFF44336), "Please select site");
-        return;
-      }
-
       List<Map<String, String>> techs = [];
       var techState = _technicianBloc.state;
       if (techState is TechnicianSuccessState) {
@@ -437,6 +429,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
       if (techs.isEmpty) {
         appSnackBar(context, const Color(0xFFF44336), "Please add at least one technician");
+        return;
+      }
+
+      if (_selectedCustomerId == null) {
+        appSnackBar(context, const Color(0xFFF44336), "Please select customer");
+        return;
+      }
+      if (_selectedSiteId == null) {
+        appSnackBar(context, const Color(0xFFF44336), "Please select site");
         return;
       }
 
@@ -621,6 +622,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     } else if (_currentStep == 4) {
       if (_reportId == null) {
         appSnackBar(context, const Color(0xFFF44336), "Missing report ID.");
+        return;
+      }
+      if (_technicianNameController.text.trim().isEmpty) {
+        appSnackBar(context, const Color(0xFFF44336), "Technician Representative name is required");
         return;
       }
       if (_customerRepNameCtrl.text.trim().isEmpty) {
@@ -1161,65 +1166,69 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           ),
                         ],
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (_currentStep == 4 && !(_currentStep == 1 && state is ServiceWorkReportStep1Loading))
-                            const Icon(
-                              Icons.check_box_outlined,
-                              size: 20,
-                              color: Colors.white,
-                            )
-                          else
-                            const SizedBox.shrink(),
-                          if (_currentStep == 4 && !(_currentStep == 1 && state is ServiceWorkReportStep1Loading))
-                            const SizedBox(width: 12)
-                          else
-                            const SizedBox.shrink(),
-                          if (_currentStep == 1 && state is ServiceWorkReportStep1Loading ||
-                              _currentStep == 2 && step2State is ServiceWorkReportStep2Loading ||
-                              _currentStep == 3 && step3State is ServiceWorkReportStep3Loading ||
-                              _currentStep == 4 && step4State is ServiceWorkReportStep4Loading)
-                            const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          else
-                            Text(
-                              _currentStep == 4
-                                  ? 'create_report_btn_submit'.tr()
-                                  : 'create_report_btn_next'.tr(),
-                              style: AppFont.style(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                              ),
-                            ),
-                          if (_currentStep < 4 && !(_currentStep == 1 && state is ServiceWorkReportStep1Loading)) ...[
-                            const SizedBox(width: 12),
-                            const Icon(
-                              Icons.arrow_forward,
-                              size: 18,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ],
+                      child: Builder(
+                        builder: (context) {
+                          bool isLoading = (_currentStep == 1 && state is ServiceWorkReportStep1Loading) ||
+                              (_currentStep == 2 && step2State is ServiceWorkReportStep2Loading) ||
+                              (_currentStep == 3 && step3State is ServiceWorkReportStep3Loading) ||
+                              (_currentStep == 4 && step4State is ServiceWorkReportStep4Loading);
+                              
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (_currentStep == 4 && !isLoading)
+                                const Icon(
+                                  Icons.check_box_outlined,
+                                  size: 20,
+                                  color: Colors.white,
+                                )
+                              else
+                                const SizedBox.shrink(),
+                              if (_currentStep == 4 && !isLoading)
+                                const SizedBox(width: 12)
+                              else
+                                const SizedBox.shrink(),
+                              if (isLoading)
+                                const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                )
+                              else
+                                Text(
+                                  _currentStep == 4
+                                      ? 'create_report_btn_submit'.tr()
+                                      : 'create_report_btn_next'.tr(),
+                                  style: AppFont.style(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              if (_currentStep < 4 && !isLoading) ...[
+                                const SizedBox(width: 12),
+                                const Icon(
+                                  Icons.arrow_forward,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ],
+                          );
+                        }
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-                  ],
-                ),
-              ),
-            ), // End of Scaffold
-                ],
-              );
+              ]),
+      ),
+    ),
+  ]);
             },
           );
         },
@@ -1440,7 +1449,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ),
         ),
 
-        const SizedBox(height: 32),
+        const SizedBox(height: 4),
 
         // Technician Names
         Row(
@@ -1542,7 +1551,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           );
         }),
 
-        const SizedBox(height: 32),
+        const SizedBox(height: 4),
 
         // Customer Name
         Row(
@@ -1578,15 +1587,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               controller: _newCustomerController,
               autofocus: true,
               style: AppFont.style(
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.w900,
                 color: const Color(0xFF0D121F),
               ),
               decoration: InputDecoration(
                 hintText: 'Enter new customer name',
                 hintStyle: AppFont.style(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
                   color: const Color(0xFFA5ABB7),
                 ),
                 border: InputBorder.none,
@@ -1627,9 +1636,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   );
                 },
                 onLoadMore: (lastSearch) {
-                  _customerBloc.add(
-                    CustomerGetEvent(search: lastSearch, page: 2, pageSize: 10),
-                  );
+                  if (state is CustomerSuccessState && state.data.data.length >= 10) {
+                    _customerBloc.add(
+                      CustomerGetEvent(search: lastSearch, page: 2, pageSize: 10),
+                    );
+                  }
                 },
                 onChanged: (val) {
                   setState(() {
@@ -1651,7 +1662,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ),
         ],
 
-        const SizedBox(height: 32),
+        const SizedBox(height: 4),
 
         // Site Name
         Row(
@@ -1687,15 +1698,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               controller: _newSiteController,
               autofocus: true,
               style: AppFont.style(
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.w900,
                 color: const Color(0xFF0D121F),
               ),
               decoration: InputDecoration(
                 hintText: 'Enter new site name',
                 hintStyle: AppFont.style(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
                   color: const Color(0xFFA5ABB7),
                 ),
                 border: InputBorder.none,
@@ -1730,8 +1741,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 filterFn: (item, filter) => true,
                 onSearchChanged: _selectedCustomer != 'Select Customer'
                     ? (v) {
-                  String? customerId;
-                  if (_customerBloc.state is CustomerSuccessState) {
+                  String? customerId = _selectedCustomerId;
+                  if ((customerId == null || customerId.isEmpty) && _customerBloc.state is CustomerSuccessState) {
                     final list =
                     (_customerBloc.state as CustomerSuccessState)
                         .data
@@ -1739,7 +1750,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         .where((x) => x.name == _selectedCustomer);
                     if (list.isNotEmpty) customerId = list.first.id;
                   }
-                  if (customerId != null) {
+                  if (customerId != null && customerId.isNotEmpty) {
                     _sitesBloc.add(
                       SitesGetEvent(
                         customer_id: customerId,
@@ -1753,24 +1764,27 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     : null,
                 onLoadMore: _selectedCustomer != 'Select Customer'
                     ? (lastSearch) {
-                  String? customerId2;
-                  if (_customerBloc.state is CustomerSuccessState) {
-                    final list2 =
-                    (_customerBloc.state as CustomerSuccessState)
-                        .data
-                        .data
-                        .where((x) => x.name == _selectedCustomer);
-                    if (list2.isNotEmpty) customerId2 = list2.first.id;
-                  }
-                  if (customerId2 != null) {
-                    _sitesBloc.add(
-                      SitesGetEvent(
-                        customer_id: customerId2,
-                        search: lastSearch,
-                        page: 2,
-                        pageSize: 10,
-                      ),
-                    );
+                  // Only fetch page 2 if we actually have a full page 1
+                  if (state is SitesSuccessState && state.data.data.length >= 10) {
+                    String? customerId2 = _selectedCustomerId;
+                    if ((customerId2 == null || customerId2.isEmpty) && _customerBloc.state is CustomerSuccessState) {
+                      final list2 =
+                      (_customerBloc.state as CustomerSuccessState)
+                          .data
+                          .data
+                          .where((x) => x.name == _selectedCustomer);
+                      if (list2.isNotEmpty) customerId2 = list2.first.id;
+                    }
+                    if (customerId2 != null && customerId2.isNotEmpty) {
+                      _sitesBloc.add(
+                        SitesGetEvent(
+                          customer_id: customerId2,
+                          search: lastSearch,
+                          page: 2,
+                          pageSize: 10,
+                        ),
+                      );
+                    }
                   }
                 }
                     : null,
@@ -1810,9 +1824,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         //     ),
         //   ],
         // ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 4),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-        const SizedBox(height: 32),
+        const SizedBox(height: 4),
 
         // Member Presents
         Row(
@@ -1849,15 +1863,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                             controller: ctrl,
                             style: AppFont.style(
                               fontSize: 15,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w900,
                               color: const Color(0xFF0D121F),
                             ),
                             decoration: InputDecoration(
-                              hintText: 'name',
+                              hintText: 'Enter Member name',
                               hintStyle: AppFont.style(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF9CA3AF),
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFFA5ABB7),
                               ),
                               border: InputBorder.none,
                               isDense: true,
@@ -1895,10 +1909,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           );
         }),
 
-        const SizedBox(height: 48),
+        const SizedBox(height: 4),
 
         // Agenda / Purpose
-        _buildLabel('create_report_agenda'.tr()),
+        _buildLabel('Agenda / Purpose Of Visit'),
         const SizedBox(height: 16),
         Container(
           height: 150,
@@ -1916,16 +1930,16 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   controller: _agendaController,
                   maxLines: null,
                   style: AppFont.style(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
                     color: const Color(0xFF0D121F),
                   ),
                   decoration: InputDecoration(
-                    hintText: 'Enter the main purpose of this visit...',
+                    hintText: 'Enter Agenda / Purpose Of Visit',
                     hintStyle: AppFont.style(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF8E9BAE),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFFA5ABB7),
                     ),
                     border: InputBorder.none,
                     isDense: true,
@@ -2139,7 +2153,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           child: Text(
                             '${index + 1}.',
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 15,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFFA5ABB7),
                             ),
@@ -2178,15 +2192,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                           minLines: 3,
                                           maxLines: null,
                                           style: AppFont.style(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w800,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w700,
                                             color: const Color(0xFF0D121F),
                                           ),
                                           decoration: InputDecoration(
                                             hintText: 'Enter Work Description',
                                             hintStyle: AppFont.style(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w800,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700,
                                               color: const Color(0xFFA5ABB7),
                                             ),
                                             border: InputBorder.none,
@@ -2244,15 +2258,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           : null,
       style: AppFont.style(
         fontSize: 15,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w900,
         color: const Color(0xFF0D121F),
       ),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: AppFont.style(
           fontSize: 15,
-          fontWeight: FontWeight.w500,
-          color: const Color(0xFF9CA3AF),
+          fontWeight: FontWeight.w800,
+          color: const Color(0xFFA5ABB7),
         ),
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(vertical: 8),
@@ -2286,7 +2300,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))],
           style: AppFont.style(
             fontSize: 15,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w900,
             color: const Color(0xFF0D121F),
           ),
           decoration: const InputDecoration(
@@ -2330,7 +2344,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             _buildCheckItem(
               label: 'Bearing Noise / Abnormal Sound Checked:',
               selected: _bearingNoise,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _bearingNoise = v),
             ),
@@ -2344,14 +2358,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             _buildCheckItem(
               label: 'Mechanical Seal / Gland Leakage Checked:',
               selected: _mechSeal,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _mechSeal = v),
             ),
             _buildCheckItem(
               label: 'Pump Not Running Dry:',
               selected: _pumpDry,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _pumpDry = v),
             ),
@@ -2370,42 +2384,42 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             _buildCheckItem(
               label: 'NRV / Butterfly Valve / Gate Valve Condition Checked:',
               selected: _nrvValve,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _nrvValve = v),
             ),
             _buildCheckItem(
               label: 'Strainer / Foot Valve Condition Checked:',
               selected: _strainerValve,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _strainerValve = v),
             ),
             _buildCheckItem(
               label: 'Suction Line (Air Leakage & Water Leakage Checked):',
               selected: _suctionLine,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _suctionLine = v),
             ),
             _buildCheckItem(
               label: 'Delivery Line (Air Leakage & Water Leakage Checked):',
               selected: _deliveryLine,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _deliveryLine = v),
             ),
             _buildCheckItem(
               label: 'Suction / Delivery Valve Condition Checked:',
               selected: _suctionDelivery,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _suctionDelivery = v),
             ),
             _buildCheckItem(
               label: 'Pressure Switch / Pressure Transmitter Checked:',
               selected: _pressureSwitch,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _pressureSwitch = v),
             ),
@@ -2424,35 +2438,35 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             _buildCheckItem(
               label: 'Electrical Faults Checked:',
               selected: _elecFaults,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _elecFaults = v),
             ),
             _buildCheckItem(
               label: 'Voltage Checked:',
               selected: _voltage,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _voltage = v),
             ),
             _buildCheckItem(
               label: 'Phase Checked:',
               selected: _phase,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _phase = v),
             ),
             _buildCheckItem(
               label: 'Current Checked:',
               selected: _current,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _current = v),
             ),
             _buildCheckItem(
               label: 'Control Panel Wiring Checked:',
               selected: _panelWiring,
-              options: const ['ok', 'notok'],
+              options: const ['ok', 'not_ok'],
               labels: const ['OK', 'NOT OK'],
               onSelect: (v) => setState(() => _panelWiring = v),
             ),
@@ -2656,7 +2670,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         const SizedBox(height: 10),
         _buildRemarksBox(
           controller: _remarksTechCtrl,
-          hint: 'Technician side remarks...',
+          hint: 'Enter Technician Remarks',
         ),
 
         const SizedBox(height: 28),
@@ -2673,7 +2687,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         const SizedBox(height: 10),
         _buildRemarksBox(
           controller: _remarksCustomerCtrl,
-          hint: 'Customer side remarks...',
+          hint: 'Enter Customer Remarks',
         ),
 
         const SizedBox(height: 36),
@@ -2978,36 +2992,70 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
             // Add Photo tile
             GestureDetector(
-              onTap: _pickPhoto,
-              child: Container(
-                width: 110,
-                height: 110,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: const Color(0xFFCDD0D8),
-                    width: 1.5,
-                    style: BorderStyle.solid,
+              onTap: () async {
+                final ImagePicker picker = ImagePicker();
+                final XFile? file = await picker.pickImage(source: ImageSource.gallery);
+                if (file != null) {
+                  setState(() {
+                    _pickedPhotos.add(file);
+                  });
+                }
+              },
+              child: CustomPaint(
+                painter: _DashedBorderPainter(color: const Color(0xFFCDD0D8)),
+                child: Container(
+                  width: 110,
+                  height: 110,
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.add, size: 28, color: Color(0xFFA5ABB7)),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Upload',
+                        style: AppFont.style(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFFA5ABB7),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.camera_alt_outlined,
-                      size: 28,
-                      color: Color(0xFFA5ABB7),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Add Photo',
-                      style: AppFont.style(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFFA5ABB7),
+              ),
+            ),
+            GestureDetector(
+              onTap: () async {
+                final ImagePicker picker = ImagePicker();
+                final XFile? file = await picker.pickImage(source: ImageSource.camera);
+                if (file != null) {
+                  setState(() {
+                    _pickedPhotos.add(file);
+                  });
+                }
+              },
+              child: CustomPaint(
+                painter: _DashedBorderPainter(color: const Color(0xFFCDD0D8)),
+                child: Container(
+                  width: 110,
+                  height: 110,
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.camera_alt_outlined, size: 28, color: Color(0xFFA5ABB7)),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Capture',
+                        style: AppFont.style(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFFA5ABB7),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -3071,17 +3119,17 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         Text(
           title,
           style: AppFont.style(
-            fontSize: 15,
-            fontWeight: FontWeight.w900,
-            color: const Color(0xFF0D121F),
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF5C6672),
           ),
         ),
         if (isMandatory)
           Text(
             ' *',
             style: AppFont.style(
-              fontSize: 15,
-              fontWeight: FontWeight.w900,
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
               color: const Color(0xFFE53935),
             ),
           ),
@@ -3455,4 +3503,38 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       },
     );
   }
+}
+
+class _DashedBorderPainter extends CustomPainter {
+  final Color color;
+  _DashedBorderPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+      
+    Path path = Path()
+      ..addRRect(RRect.fromRectAndRadius(Rect.fromLTWH(0, 0, size.width, size.height), const Radius.circular(10)));
+      
+    Path dashPath = Path();
+    double dashWidth = 6.0;
+    double dashSpace = 4.0;
+    for (PathMetric pathMetric in path.computeMetrics()) {
+      double distance = 0.0;
+      while (distance < pathMetric.length) {
+        dashPath.addPath(
+          pathMetric.extractPath(distance, distance + dashWidth),
+          Offset.zero,
+        );
+        distance += dashWidth + dashSpace;
+      }
+    }
+    canvas.drawPath(dashPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

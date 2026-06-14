@@ -23,8 +23,8 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
 
   /// - **Customer:** Handles [CustomerGetEvent] → calls [CustomerUseCase]
   Future _customers(CustomerGetEvent event, Emitter emit) async {
-    // If search text changed, reset everything
-    if (event.search != _currentSearch) {
+    // If search text changed, or page 1 is explicitly requested, reset everything
+    if (event.search != _currentSearch || event.page == 1) {
       _currentSearch = event.search;
       _currentPage = 1;
       _allCustomers.clear();

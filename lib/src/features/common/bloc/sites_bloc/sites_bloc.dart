@@ -27,9 +27,10 @@ class SitesBloc extends Bloc<SitesEvent, SitesState> {
 
   /// - **Sites:** Handles [SitesGetEvent] → calls [SitesUseCase]
   Future _sites(SitesGetEvent event, Emitter emit) async {
-    // If search text or customer id changed, reset everything
+    // If search text or customer id changed, or page 1 is explicitly requested, reset everything
     if (event.search != _currentSearch ||
-        event.customer_id != _currentCustomerId) {
+        event.customer_id != _currentCustomerId ||
+        event.page == 1) {
       _currentSearch = event.search;
       _currentCustomerId = event.customer_id;
       _currentPage = 1;
