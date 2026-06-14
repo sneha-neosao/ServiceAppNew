@@ -60,6 +60,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
   Customer? _selectedCustomer;
   Site? _selectedSite;
   late String _selectedFilter;
+  String? _selectedStatus;
 
   @override
   Widget build(BuildContext context) {
@@ -259,6 +260,27 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                 },
               ),
 
+              const SizedBox(height: 12),
+
+              // ── Status dropdown ──────────────────────────────────────────
+              SearchableDropdown<String>(
+                items: const ['Current Pending', 'Previous Pending'],
+                value: _selectedStatus,
+                hintText: 'Select Status',
+                itemAsString: (item) => item,
+                isSearchable: false,
+                onChanged: (val) {
+                  setState(() {
+                    _selectedStatus = val;
+                  });
+                },
+                onClear: () {
+                  setState(() {
+                    _selectedStatus = null;
+                  });
+                },
+              ),
+
               const SizedBox(height: 20),
 
               // ── Schedule cards ───────────────────────────────────────────
@@ -293,6 +315,9 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                   }
                   if (_selectedSite != null && _selectedSite!.name != 'All') {
                     filteredVisits = filteredVisits.where((e) => e.siteName == _selectedSite!.name).toList();
+                  }
+                  if (_selectedStatus != null) {
+                    filteredVisits = filteredVisits.where((e) => e.status == _selectedStatus).toList();
                   }
 
                   if (filteredVisits.isEmpty && state is UpcomingAmcSuccessState) {

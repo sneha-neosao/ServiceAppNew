@@ -10,6 +10,9 @@ import 'package:service_app/src/features/amc/presentation/bloc/amc_report_pdf_bl
 import 'package:service_app/src/features/widgets/amc_report_card_shimmer.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/delete_amc_report_bloc/delete_amc_report_bloc.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/delete_amc_report_bloc/delete_amc_report_event.dart';
+import 'package:service_app/src/features/amc/presentation/bloc/delete_amc_report_bloc/delete_amc_report_state.dart';
 
 class AmcVisitDetailsScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -46,18 +49,21 @@ class AmcVisitDetailsScreen extends StatefulWidget {
 class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
   late AmcVisitReportsBloc _reportsBloc;
   late AmcReportPdfBloc _pdfBloc;
+  late DeleteAmcReportBloc _deleteAmcReportBloc;
 
   @override
   void initState() {
     super.initState();
     _reportsBloc = getIt<AmcVisitReportsBloc>();
     _pdfBloc = getIt<AmcReportPdfBloc>();
+    _deleteAmcReportBloc = getIt<DeleteAmcReportBloc>();
     _reportsBloc.add(AmcVisitReportsGetEvent(visitId: widget.visitId));
   }
 
   @override
   void dispose() {
     _reportsBloc.close();
+    _deleteAmcReportBloc.close();
     super.dispose();
   }
 
@@ -67,6 +73,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
       providers: [
         BlocProvider.value(value: _reportsBloc),
         BlocProvider.value(value: _pdfBloc),
+        BlocProvider.value(value: _deleteAmcReportBloc),
       ],
       child: MultiBlocListener(
         listeners: [
@@ -91,6 +98,16 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                 } else {
                   appSnackBar(context, const Color(0xFFF44336), 'PDF URL is empty');
                 }
+              }
+            },
+          ),
+          BlocListener<DeleteAmcReportBloc, DeleteAmcReportState>(
+            listener: (context, state) {
+              if (state is DeleteAmcReportSuccessState) {
+                appSnackBar(context, const Color(0xFF00A76F), state.data.message ?? 'Report deleted successfully');
+                _reportsBloc.add(AmcVisitReportsGetEvent(visitId: widget.visitId));
+              } else if (state is DeleteAmcReportFailureState) {
+                appSnackBar(context, const Color(0xFFF44336), state.message);
               }
             },
           ),
@@ -862,118 +879,163 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+        return BlocListener<DeleteAmcReportBloc, DeleteAmcReportState>(
+          bloc: _deleteAmcReportBloc,
+          listener: (context, state) {
+            if (state is DeleteAmcReportSuccessState || state is DeleteAmcReportFailureState) {
+              Navigator.of(dialogContext).pop();
+            }
+          },
+          child: Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    GestureDetector(
-                      onTap: () => Navigator.of(dialogContext).pop(),
+                    // ── Icon ───────────────────────────────────────────────────────
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFFF1F0),
+                        shape: BoxShape.circle,
+                      ),
                       child: const Icon(
-                        Icons.close,
-                        color: Color(0xFFC4C4C4),
-                        size: 20,
+                        Icons.error_outline,
+                        color: Color(0xFFFF4D4F),
+                        size: 32,
                       ),
+                    ),
+                    
+                    const SizedBox(height: 20),
+
+                    // ── Title ───────────────────────────────────────────────────────
+                    Text(
+                      'Delete Draft Report',
+                      style: AppFont.style(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF0D121F),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // ── Subtitle ────────────────────────────────────────────────────
+                    Text(
+                      'Are you sure you want to delete this\ndraft report? This action cannot be\nundone.',
+                      textAlign: TextAlign.center,
+                      style: AppFont.style(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF5C616E),
+                        height: 1.4,
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // ── Buttons ─────────────────────────────────────────────────────
+                    Row(
+                      children: [
+                        // Cancel Button
+                        Expanded(
+                          child: SizedBox(
+                            height: 48,
+                            child: TextButton(
+                              onPressed: () => Navigator.of(dialogContext).pop(),
+                              style: TextButton.styleFrom(
+                                backgroundColor: const Color(0xFFF6F6F6),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Text(
+                                'Cancel',
+                                style: AppFont.style(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF0D121F),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Delete Button
+                        Expanded(
+                          child: SizedBox(
+                            height: 48,
+                            child: BlocBuilder<DeleteAmcReportBloc, DeleteAmcReportState>(
+                              bloc: _deleteAmcReportBloc,
+                              builder: (context, state) {
+                                bool isLoading = state is DeleteAmcReportLoadingState;
+                                return ElevatedButton(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () {
+                                          _deleteAmcReportBloc.add(DeleteAmcReportSubmitEvent(reportId));
+                                        },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFE30000),
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: isLoading
+                                      ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : Text(
+                                          'Delete',
+                                          style: AppFont.style(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w800,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFFF0F0),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.error_outline,
-                      color: Color(0xFFF44336),
-                      size: 32,
+              ),
+              
+              // ── Close (X) Icon ────────────────────────────────────────────────
+              Positioned(
+                top: 12,
+                right: 12,
+                child: GestureDetector(
+                  onTap: () => Navigator.of(dialogContext).pop(),
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    child: const Icon(
+                      Icons.close,
+                      size: 20,
+                      color: Color(0xFFB0B8C8),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  'Delete Draft Report',
-                  style: AppFont.style(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF0D121F),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Are you sure you want to delete this draft report? This action cannot be undone.',
-                  style: AppFont.style(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF6B7280),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.of(dialogContext).pop(),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF3F4F6),
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          'Cancel',
-                          style: AppFont.style(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF374151),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // TODO: implement actual delete logic if available in bloc
-                          Navigator.of(dialogContext).pop();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFE50000),
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          'Delete',
-                          style: AppFont.style(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
+        ));
       },
     );
   }

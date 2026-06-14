@@ -1041,7 +1041,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         ),
         const SizedBox(height: 10),
         _buildRemarksBox(
-          'amc_report_remarks_tech_hint'.tr(),
+          'Enter Technician Remarks',
           _technicianRemarksController,
         ),
         const SizedBox(height: 28),
@@ -1056,7 +1056,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         ),
         const SizedBox(height: 10),
         _buildRemarksBox(
-          'amc_report_remarks_customer_hint'.tr(),
+          'Enter Customer Remarks',
           _customerRemarksController,
         ),
         const SizedBox(height: 36),
