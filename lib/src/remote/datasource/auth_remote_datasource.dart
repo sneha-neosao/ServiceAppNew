@@ -100,6 +100,7 @@ import '../models/amc_visit_model/amc_visit_list_response.dart';
 import '../models/amc_visit_model/amc_visit_reports_response.dart';
 import '../models/service_calls_details_model/service_calls_details_response.dart';
 import '../models/amc_report_model/delete_amc_report_response.dart';
+import '../models/delete_service_work_report_model/delete_service_work_report_response.dart';
 
 sealed class RemoteDataSource {
   Future<LoginResponse> login(LoginParams params);
@@ -437,6 +438,11 @@ sealed class RemoteDataSource {
   );
 
   Future<DeleteAmcReportResponse> deleteAmcReport(
+    String reportId,
+    String token,
+  );
+
+  Future<DeleteServiceWorkReportResponse> deleteServiceWorkReport(
     String reportId,
     String token,
   );
@@ -2805,6 +2811,27 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       return DeleteAmcReportResponse.fromJson(response);
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      if (e.toString() == noElement) throw AuthException();
+      if (e is ApiException) throw e;
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<DeleteServiceWorkReportResponse> deleteServiceWorkReport(
+    String reportId,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.delete,
+        url: '${ApiUrl.deleteServiceWorkReport}$reportId/delete',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return DeleteServiceWorkReportResponse.fromJson(response);
     } on EmptyException {
       throw AuthException();
     } catch (e) {

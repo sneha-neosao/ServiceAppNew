@@ -138,6 +138,8 @@ import '../../features/reports/domain/usecases/service_work_report_technicians_u
 import '../../features/reports/bloc/service_work_report_technicians_bloc/service_work_report_technicians_bloc.dart';
 import '../../features/reports/domain/usecases/service_work_report_step3_autofill_usecase.dart';
 import '../../features/reports/bloc/service_work_report_step3_autofill_bloc/service_work_report_step3_autofill_bloc.dart';
+import '../../features/reports/domain/usecases/delete_service_work_report_usecase.dart';
+import '../../features/reports/bloc/delete_service_work_report_bloc/delete_service_work_report_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -819,6 +821,14 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => DeleteAmcReportUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => DeleteServiceWorkReportBloc(usecase: getIt<DeleteServiceWorkReportUsecase>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => DeleteServiceWorkReportUsecase(getIt<AuthRepositoryImpl>()),
   );
 
   /// API Helper

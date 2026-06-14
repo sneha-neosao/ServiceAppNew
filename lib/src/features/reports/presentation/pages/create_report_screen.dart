@@ -41,6 +41,9 @@ import 'package:service_app/src/features/reports/domain/usecases/service_work_re
 import 'package:service_app/src/features/reports/bloc/service_work_report_technicians_bloc/service_work_report_technicians_bloc.dart';
 import 'package:service_app/src/features/reports/bloc/service_work_report_technicians_bloc/service_work_report_technicians_event.dart';
 import 'package:service_app/src/features/reports/bloc/service_work_report_technicians_bloc/service_work_report_technicians_state.dart';
+import 'package:service_app/src/features/reports/bloc/delete_service_work_report_bloc/delete_service_work_report_bloc.dart';
+import 'package:service_app/src/features/reports/bloc/delete_service_work_report_bloc/delete_service_work_report_event.dart';
+import 'package:service_app/src/features/reports/bloc/delete_service_work_report_bloc/delete_service_work_report_state.dart';
 import 'package:service_app/src/remote/models/service_work_report_step3_model/service_work_report_step3_response.dart';
 import 'dart:convert';
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step1_usecase.dart';
@@ -212,6 +215,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   late ServiceWorkReportStep4Bloc _serviceWorkReportStep4Bloc;
   late ServiceWorkReportStep4AutofillBloc _serviceWorkReportStep4AutofillBloc;
   late ServiceWorkReportTechniciansBloc _serviceWorkReportTechniciansBloc;
+  late DeleteServiceWorkReportBloc _deleteServiceWorkReportBloc;
 
   String? _loggedInTechnicianAssignId;
 
@@ -262,6 +266,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _serviceWorkReportStep4Bloc = getIt<ServiceWorkReportStep4Bloc>();
     _serviceWorkReportStep4AutofillBloc = getIt<ServiceWorkReportStep4AutofillBloc>();
     _serviceWorkReportTechniciansBloc = getIt<ServiceWorkReportTechniciansBloc>();
+    _deleteServiceWorkReportBloc = getIt<DeleteServiceWorkReportBloc>();
 
     if (_complaintId != null) {
       _serviceWorkReportStep1AutofillBloc.add(GetServiceWorkReportStep1AutofillEvent(_complaintId!));
@@ -321,6 +326,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _serviceWorkReportStep3AutofillBloc.close();
     _serviceWorkReportStep4Bloc.close();
     _serviceWorkReportTechniciansBloc.close();
+    _deleteServiceWorkReportBloc.close();
     _technicianBloc.close();
     for (final c in _technicians) c.dispose();
     _customerBloc.close();
@@ -680,6 +686,188 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         _serviceWorkReportStep3AutofillBloc.add(GetServiceWorkReportStep3AutofillEvent(_reportId!));
       }
     } else {
+      _handleBack();
+    }
+  }
+
+  Future<void> _handleBack() async {
+    final step4State = _serviceWorkReportStep4Bloc.state;
+    if (step4State is ServiceWorkReportStep4Loaded) {
+      widget.onBack();
+      return;
+    }
+
+    if (_reportId != null) {
+      bool? confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // ── Icon ───────────────────────────────────────────────────────
+                      Container(
+                        width: 64,
+                        height: 64,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFFF1F0),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.error_outline,
+                          color: Color(0xFFFF4D4F),
+                          size: 32,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 20),
+
+                      // ── Title ───────────────────────────────────────────────────────
+                      Text(
+                        'Delete Draft Report?',
+                        style: AppFont.style(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // ── Subtitle ────────────────────────────────────────────────────
+                      Text(
+                        'Are you sure you want to go back?\nThis draft report will be permanently\ndeleted.',
+                        textAlign: TextAlign.center,
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF5C616E),
+                          height: 1.4,
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // ── Buttons ─────────────────────────────────────────────────────
+                      Row(
+                        children: [
+                          // Cancel Button
+                          Expanded(
+                            child: SizedBox(
+                              height: 48,
+                              child: TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                style: TextButton.styleFrom(
+                                  backgroundColor: const Color(0xFFF6F6F6),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Cancel',
+                                  style: AppFont.style(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                    color: const Color(0xFF0D121F),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          // Delete Now Button
+                          Expanded(
+                            child: SizedBox(
+                              height: 48,
+                              child: BlocConsumer<DeleteServiceWorkReportBloc, DeleteServiceWorkReportState>(
+                                bloc: _deleteServiceWorkReportBloc,
+                                listener: (context, state) {
+                                  if (state is DeleteServiceWorkReportSuccess) {
+                                    Navigator.pop(context, true);
+                                  } else if (state is DeleteServiceWorkReportFailure) {
+                                    appSnackBar(context, Colors.red, state.message);
+                                    Navigator.pop(context, true); // Go back anyway to exit draft
+                                  }
+                                },
+                                builder: (context, state) {
+                                  final isLoading = state is DeleteServiceWorkReportLoading;
+                                  return ElevatedButton(
+                                    onPressed: isLoading
+                                        ? null
+                                        : () {
+                                            _deleteServiceWorkReportBloc.add(
+                                              DeleteDraftServiceWorkReportEvent(_reportId!),
+                                            );
+                                          },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFE30000),
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      disabledBackgroundColor: const Color(0xFFE30000).withOpacity(0.6),
+                                    ),
+                                    child: isLoading
+                                        ? const SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                        : Text(
+                                            'Delete Now',
+                                            style: AppFont.style(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w800,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                
+                // ── Close (X) Icon ────────────────────────────────────────────────
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(context, false),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      child: const Icon(
+                        Icons.close,
+                        size: 20,
+                        color: Color(0xFFB0B8C8),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+      if (confirm == true) {
+        widget.onBack();
+      }
+    } else {
       widget.onBack();
     }
   }
@@ -1006,7 +1194,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             builder: (context, state) {
               return Stack(
                 children: [
-                  Scaffold(
+                  PopScope(
+                    canPop: false,
+                    onPopInvokedWithResult: (didPop, _) {
+                      if (!didPop) _handleBack();
+                    },
+                    child: Scaffold(
             backgroundColor: Colors.white,
             body: SafeArea(
               child: Column(
@@ -1040,7 +1233,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                             size: 20,
                             color: Color(0xFF5C616E),
                           ),
-                          onPressed: widget.onBack,
+                          onPressed: _handleBack,
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -1131,7 +1324,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     )
                   else
                     TextButton(
-                      onPressed: widget.onBack,
+                      onPressed: _handleBack,
                       child: Text(
                         'create_report_btn_cancel'.tr(),
                         style: AppFont.style(
@@ -1223,11 +1416,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     ),
                   ),
                 ],
-              ),
-            ),
+              ),)
               ]),
       ),
     ),
+  ),
   ]);
             },
           );
