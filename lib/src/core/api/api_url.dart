@@ -13,6 +13,8 @@ class ApiUrl {
 
   static const login = "technician/login";
   
+  static const appSettings = "technician/app-settings";
+  
   static const fcmRegister = "auth/fcm-register";
 
   static const upcomingAmcVisits = "technician/dashboard/upcoming-amc-visits";

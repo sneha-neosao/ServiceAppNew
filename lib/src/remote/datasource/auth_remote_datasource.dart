@@ -16,6 +16,7 @@ import 'package:service_app/src/features/common/domain/usecase/customer_usecase.
 import 'package:service_app/src/features/home/domain/usecase/upcoming_amc_usecase.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
 import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
+import 'package:service_app/src/remote/models/auth_model/app_settings_response.dart';
 import 'package:service_app/src/remote/models/auth_model/fcm_register_response.dart';
 import 'package:service_app/src/remote/models/commissioning_work_model/commissioning_work_list_response.dart';
 import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
@@ -245,6 +246,8 @@ sealed class RemoteDataSource {
   Future<void> logout();
 
   Future<FcmRegisterResponse> fcmRegister(String fcmToken, String token);
+
+  Future<AppSettingsResponse> getAppSettings(String token);
 
   Future<DeleteAccountResponse> deleteAccount(String token);
 
@@ -503,6 +506,31 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       );
 
       final respData = FcmRegisterResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e; // rethrow as-is
+      }
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<AppSettingsResponse> getAppSettings(String token) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: ApiUrl.appSettings,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = AppSettingsResponse.fromJson(response);
       return respData;
     } on EmptyException {
       throw AuthException();

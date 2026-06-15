@@ -144,6 +144,8 @@ import '../../features/reports/domain/usecases/delete_service_work_report_usecas
 import '../../features/reports/bloc/delete_service_work_report_bloc/delete_service_work_report_bloc.dart';
 import '../../features/notifications/domain/usecase/fcm_register_usecase.dart';
 import '../../features/notifications/bloc/fcm_register_bloc/fcm_register_bloc.dart';
+import '../../features/home/domain/usecase/get_app_settings_usecase.dart';
+import '../../features/home/bloc/app_settings_bloc/app_settings_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -837,6 +839,14 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => FcmRegisterUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => AppSettingsBloc(getAppSettingsUseCase: getIt<GetAppSettingsUseCase>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => GetAppSettingsUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   // Profile Delete Account

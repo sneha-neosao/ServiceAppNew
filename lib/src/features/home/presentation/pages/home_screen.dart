@@ -21,6 +21,12 @@ import 'package:service_app/src/core/services/notification_service.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:service_app/src/features/notifications/bloc/fcm_register_bloc/fcm_register_bloc.dart';
 import 'package:service_app/src/features/notifications/bloc/fcm_register_bloc/fcm_register_event.dart';
+import 'package:service_app/src/features/home/bloc/app_settings_bloc/app_settings_bloc.dart';
+import 'package:service_app/src/features/home/bloc/app_settings_bloc/app_settings_state.dart';
+import 'package:service_app/src/features/home/bloc/app_settings_bloc/app_settings_event.dart';
+import 'dart:io';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
@@ -34,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late UpcomingAmcBloc _upcomingAmcBloc;
   late ProfileDetailsBloc _profileDetailsBloc;
   late FcmRegisterBloc _fcmRegisterBloc;
+  late AppSettingsBloc _appSettingsBloc;
 
   @override
   void initState() {
@@ -43,6 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _profileDetailsBloc = getIt<ProfileDetailsBloc>()
       ..add(const ProfileDetailsGetEvent());
     _fcmRegisterBloc = getIt<FcmRegisterBloc>();
+    _appSettingsBloc = getIt<AppSettingsBloc>()
+      ..add(const GetAppSettingsEvent());
     _checkAndRegisterFcmToken();
   }
 
@@ -62,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _upcomingAmcBloc.close();
     _profileDetailsBloc.close();
     _fcmRegisterBloc.close();
+    _appSettingsBloc.close();
     super.dispose();
   }
 
@@ -103,7 +113,45 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
+    return BlocListener<AppSettingsBloc, AppSettingsState>(
+      bloc: _appSettingsBloc,
+      listener: (context, state) async {
+        if (state is AppSettingsSuccess) {
+          try {
+            PackageInfo packageInfo = await PackageInfo.fromPlatform();
+            final storeVersion = packageInfo.version;
+
+            String? currentVersion;
+            bool isCompulsory = false;
+            String? updateMessage;
+            String? link;
+
+            if (Platform.isAndroid) {
+              currentVersion = state.data.data?.androidApp?.version;
+              isCompulsory = state.data.data?.androidApp?.forceUpdate ?? false;
+              updateMessage = state.data.data?.androidApp?.updateMessage;
+              link = state.data.data?.androidApp?.playStoreLink;
+            } else if (Platform.isIOS) {
+              currentVersion = state.data.data?.iosApp?.version;
+              isCompulsory = state.data.data?.iosApp?.forceUpdate ?? false;
+              updateMessage = state.data.data?.iosApp?.updateMessage;
+              link = state.data.data?.iosApp?.appStoreLink;
+            }
+
+            if (currentVersion != null && currentVersion != storeVersion) {
+              _updateWarningDialog(
+                context,
+                message: updateMessage ?? "New version available",
+                isCompulsory: isCompulsory,
+                link: link,
+              );
+            }
+          } catch (e) {
+            print("Error fetching installed version: $e");
+          }
+        }
+      },
+      child: PopScope(
       canPop: _selectedIndex == 0,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
@@ -296,6 +344,116 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     ),
+    ),
+    );
+  }
+
+  void _updateWarningDialog(BuildContext context,
+      {required String message, required bool isCompulsory, String? link}) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (dialogContext) {
+        return PopScope(
+          canPop: false,
+          child: Dialog(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 40,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    "App Update",
+                    style: AppFont.style(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: AppFont.style(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF424B5C),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: () {
+                      if (!isCompulsory) {
+                        Navigator.of(dialogContext).pop(false);
+                      }
+                      if (link != null && link.isNotEmpty) {
+                        launchUrl(Uri.parse(link), mode: LaunchMode.externalApplication);
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: const Color(0xFF0B68B9),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Update Now",
+                          style: AppFont.style(
+                            fontSize: 14,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (!isCompulsory)
+                    GestureDetector(
+                      onTap: () => Navigator.of(dialogContext).pop(false),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white,
+                          border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Cancel",
+                            style: AppFont.style(
+                              fontSize: 14,
+                              color: const Color(0xFF1A1A1A),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
