@@ -1425,71 +1425,75 @@ class _ReportCard extends StatelessWidget {
         ),
         if (type == ReportType.commissioning || type == ReportType.service || type == ReportType.amc) ...[
           const SizedBox(width: 12),
-          if (type == ReportType.service) ...[
-            SizedBox(
-              width: 44,
-              child: _buildIconActionButton(
-                icon: Icons.remove_red_eye_outlined,
-                iconColor: const Color(0xFF6B7280),
-                onTap: () {
-                  if (reportId != null) {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) {
-                        return ComplaintReportDialog(
-                          complaintId: reportId!,
-                        );
-                      },
-                    );
-                  }
-                },
-              ),
-            ),
-            const SizedBox(width: 12),
-          ],
+          // if (type == ReportType.service) ...[
+          //   SizedBox(
+          //     width: 44,
+          //     child: _buildIconActionButton(
+          //       icon: Icons.remove_red_eye_outlined,
+          //       iconColor: const Color(0xFF6B7280),
+          //       onTap: () {
+          //         if (reportId != null) {
+          //           showDialog(
+          //             context: context,
+          //             barrierDismissible: false,
+          //             builder: (context) {
+          //               return ComplaintReportDialog(
+          //                 complaintId: reportId!,
+          //               );
+          //             },
+          //           );
+          //         }
+          //       },
+          //     ),
+          //   ),
+          //   const SizedBox(width: 12),
+          // ],
           SizedBox(
             width: 44,
-            child: feedbackSubmitted
-                ? _buildIconActionButton(
-                    icon: Icons.check_circle,
-                    iconColor: Colors.green,
-                    onTap: () {
-                      if (reportId != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => FeedbackDetailsScreen(
-                              reportId: reportId!,
-                              isServiceCall: type == ReportType.service,
-                              isAmc: type == ReportType.amc,
-                              title: type == ReportType.service
-                                  ? 'Service Call Feedback Details'
-                                  : type == ReportType.amc
-                                      ? 'AMC Feedback Details'
-                                      : 'Commissioning Feedback Details',
-                              onBack: () => Navigator.pop(context),
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                  )
-                : _buildIconActionButton(
-                    icon: Icons.qr_code_2_outlined,
-                    iconColor: const Color(0xFFF59E0B),
-                    onTap: () {
-                      if (qrCodeImage != null && qrCodeImage!.isNotEmpty) {
-                        _showQrCodeDialog(context);
-                      } else {
-                        appSnackBar(
-                          context,
-                          const Color(0xFFF44336),
-                          'reports_qr_not_available'.tr(),
-                        );
-                      }
-                    },
-                  ),
+            child: (type == ReportType.service &&
+                    (status?.toLowerCase() == 'closed over call' ||
+                     status?.toLowerCase() == 'closed_over_call'))
+                ? const SizedBox()
+                : feedbackSubmitted
+                    ? _buildIconActionButton(
+                        icon: Icons.check_circle,
+                        iconColor: Colors.green,
+                        onTap: () {
+                          if (reportId != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FeedbackDetailsScreen(
+                                  reportId: reportId!,
+                                  isServiceCall: type == ReportType.service,
+                                  isAmc: type == ReportType.amc,
+                                  title: type == ReportType.service
+                                      ? 'Service Call Feedback Details'
+                                      : type == ReportType.amc
+                                          ? 'AMC Feedback Details'
+                                          : 'Commissioning Feedback Details',
+                                  onBack: () => Navigator.pop(context),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      )
+                    : _buildIconActionButton(
+                        icon: Icons.qr_code_2_outlined,
+                        iconColor: const Color(0xFFF59E0B),
+                        onTap: () {
+                          if (qrCodeImage != null && qrCodeImage!.isNotEmpty) {
+                            _showQrCodeDialog(context);
+                          } else {
+                            appSnackBar(
+                              context,
+                              const Color(0xFFF44336),
+                              'reports_qr_not_available'.tr(),
+                            );
+                          }
+                        },
+                      ),
           ),
         ],
       ],

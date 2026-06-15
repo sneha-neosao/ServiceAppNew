@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "504492529710",
+    "project_id": "inorotech-b60a4",
+    "storage_bucket": "inorotech-b60a4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:504492529710:android:8f5a3f0ea657660a96e7bf",
+        "android_client_info": {
+          "package_name": "com.mainten"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEOf3JAZQ_VTos_LFSsO2H7YHiMOHFCt8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
