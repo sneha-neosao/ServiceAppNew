@@ -45,6 +45,7 @@ class CloseOverCallDialog extends StatefulWidget {
 }
 
 class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
+  final GlobalKey<ScaffoldMessengerState> _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   final TextEditingController _resolutionController = TextEditingController();
   bool _isError = false;
   late CloseOverCallBloc _bloc;
@@ -74,16 +75,32 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
 
   void _submit() {
     if (_resolutionController.text.trim().length < 10) {
+      _scaffoldKey.currentState?.showSnackBar(
+        const SnackBar(
+          content: Text('Please enter resolution details (min 10 chars)'),
+          backgroundColor: Colors.red,
+        ),
+      );
       setState(() {
         _isError = true;
       });
       return;
     }
 
-    if (_selectedCustomer == null || _selectedSite == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+    if (_selectedCustomer == null) {
+      _scaffoldKey.currentState?.showSnackBar(
         const SnackBar(
-          content: Text('Please select a customer and site'),
+          content: Text('Please select a customer'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (_selectedSite == null) {
+      _scaffoldKey.currentState?.showSnackBar(
+        const SnackBar(
+          content: Text('Please select a site'),
           backgroundColor: Colors.red,
         ),
       );
@@ -121,7 +138,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
     }
 
     if (customerId.isEmpty || siteId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      _scaffoldKey.currentState?.showSnackBar(
         const SnackBar(
           content: Text('Invalid customer or site selected'),
           backgroundColor: Colors.red,
@@ -152,7 +169,17 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
+    return ScaffoldMessenger(
+      key: _scaffoldKey,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => Navigator.of(context).pop(),
+          child: Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       backgroundColor: Colors.white,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -246,12 +273,20 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Customer Name *',
-                  style: AppFont.style(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF424B5C),
+                RichText(
+                  text: TextSpan(
+                    text: 'Customer Name ',
+                    style: AppFont.style(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF424B5C),
+                    ),
+                    children: const [
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ],
                   ),
                 ),
                 GestureDetector(
@@ -308,12 +343,20 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Site Name *',
-                  style: AppFont.style(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF424B5C),
+                RichText(
+                  text: TextSpan(
+                    text: 'Site Name ',
+                    style: AppFont.style(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF424B5C),
+                    ),
+                    children: const [
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ],
                   ),
                 ),
                 GestureDetector(
@@ -368,12 +411,20 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'close_call_resolution_label'.tr(),
-                  style: AppFont.style(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
+                RichText(
+                  text: TextSpan(
+                    text: '${'close_call_resolution_label'.tr()} ',
+                    style: AppFont.style(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFFA5ABB7),
+                    ),
+                    children: const [
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ],
                   ),
                 ),
                 SpeechToTextMicButton(controller: _resolutionController),
@@ -530,6 +581,11 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
         ),
         ),
       ),
+    ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -565,7 +621,11 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) {
-        return Dialog(
+        return ScaffoldMessenger(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(
+              child: Dialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           backgroundColor: Colors.white,
           insetPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -713,6 +773,9 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
               ],
             ),
           ),
+        ),
+            ),
+          ),
         );
       },
     );
@@ -720,7 +783,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
 
   Future<void> _showAddSiteDialog() async {
     if (_selectedCustomer == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      _scaffoldKey.currentState?.showSnackBar(
         const SnackBar(content: Text('Please select a customer first'), backgroundColor: Colors.red),
       );
       return;
@@ -753,7 +816,11 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) {
-        return Dialog(
+        return ScaffoldMessenger(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(
+              child: Dialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           backgroundColor: Colors.white,
           insetPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -912,6 +979,9 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
               ],
             ),
           ),
+        ),
+            ),
+          ),
         );
       },
     );
@@ -951,7 +1021,11 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
           },
           builder: (ctx, state) {
             final isLoading = state is CreateNewCustomerLoadingState;
-            return Dialog(
+            return ScaffoldMessenger(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(
+              child: Dialog(
               backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
@@ -1084,7 +1158,10 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                   ),
                 ],
               ),
-            );
+            ),
+            ),
+          ),
+        );
           },
         );
       },

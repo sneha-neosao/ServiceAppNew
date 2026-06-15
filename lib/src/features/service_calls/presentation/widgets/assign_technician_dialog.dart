@@ -46,6 +46,7 @@ class AssignTechnicianDialog extends StatefulWidget {
 }
 
 class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
+  final GlobalKey<ScaffoldMessengerState> _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   late ActiveTechniciansServiceCallsBloc _activeTechsBloc;
   late AssignTechnicianServiceCallsBloc _assignBloc;
   late CustomerBloc _customerBloc;
@@ -92,7 +93,16 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) {
-        return Dialog(
+        return ScaffoldMessenger(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => Navigator.of(context).pop(),
+          child: Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: Dialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           backgroundColor: Colors.white,
           insetPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -240,14 +250,19 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
               ],
             ),
           ),
-        );
+        ),
+            ),
+          ),
+        ),
+      ),
+    );
       },
     );
   }
 
   Future<void> _showAddSiteDialog() async {
     if (_selectedCustomer == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      _scaffoldKey.currentState?.showSnackBar(
         const SnackBar(content: Text('Please select a customer first'), backgroundColor: Colors.red),
       );
       return;
@@ -269,8 +284,8 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
     }
 
     if (customerId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid customer selected'), backgroundColor: Colors.red),
+      _scaffoldKey.currentState?.showSnackBar(
+        const SnackBar(content: Text('Error finding customer ID'), backgroundColor: Colors.red),
       );
       return;
     }
@@ -280,7 +295,11 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) {
-        return Dialog(
+        return ScaffoldMessenger(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(
+              child: Dialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           backgroundColor: Colors.white,
           insetPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -437,6 +456,9 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                   ],
                 ),
               ],
+            ),
+          ),
+        ),
             ),
           ),
         );
@@ -632,7 +654,12 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
+    return ScaffoldMessenger(
+      key: _scaffoldKey,
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(
+              child: Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       backgroundColor: Colors.white,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -701,12 +728,20 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Customer Name *',
-                        style: AppFont.style(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF424B5C),
+                      RichText(
+                        text: TextSpan(
+                          text: 'Customer Name ',
+                          style: AppFont.style(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF424B5C),
+                          ),
+                          children: const [
+                            TextSpan(
+                              text: '*',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
                         ),
                       ),
                       GestureDetector(
@@ -763,12 +798,20 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Site Name *',
-                        style: AppFont.style(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF424B5C),
+                      RichText(
+                        text: TextSpan(
+                          text: 'Site Name ',
+                          style: AppFont.style(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF424B5C),
+                          ),
+                          children: const [
+                            TextSpan(
+                              text: '*',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
                         ),
                       ),
                       GestureDetector(
@@ -818,12 +861,20 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'assign_tech_dialog_select_label'.tr(),
-                    style: AppFont.style(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF424B5C),
+                  RichText(
+                    text: TextSpan(
+                      text: '${'assign_tech_dialog_select_label'.tr()} ',
+                      style: AppFont.style(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF424B5C),
+                      ),
+                      children: const [
+                        TextSpan(
+                          text: '*',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -979,10 +1030,19 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           return;
                         }
 
-                        if (_selectedCustomer == null || _selectedSite == null) {
+                        if (_selectedCustomer == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Please select a customer and site'),
+                              content: Text('Please select a customer'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+                        if (_selectedSite == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please select a site'),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -1079,7 +1139,10 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
           ),
         ],
       ),
-    );
+    ),
+            ),
+          ),
+        );
   }
 
   void _showMergeCustomerDialog(BuildContext parentContext, String name) {
@@ -1116,7 +1179,11 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
           },
           builder: (ctx, state) {
             final isLoading = state is CreateNewCustomerLoadingState;
-            return Dialog(
+            return ScaffoldMessenger(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(
+              child: Dialog(
               backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
@@ -1249,7 +1316,10 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                   ),
                 ],
               ),
-            );
+            ),
+            ),
+          ),
+        );
           },
         );
       },
