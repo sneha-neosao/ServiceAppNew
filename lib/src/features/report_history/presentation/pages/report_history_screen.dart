@@ -38,6 +38,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
+import 'package:service_app/src/features/profile/bloc/profile_details_bloc/profile_details_bloc.dart';
 
 class ReportHistoryScreen extends StatefulWidget {
   const ReportHistoryScreen({super.key});
@@ -64,6 +65,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   String? _selectedTechnicianName;
   String? _selectedTechnicianId;
   DateTime? _selectedDate;
+  late ProfileDetailsBloc _profileDetailsBloc;
 
   void _fetchReportHistory() {
     final String? dateStr = _selectedDate != null
@@ -93,6 +95,19 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   @override
   void initState() {
     super.initState();
+    _profileDetailsBloc = getIt<ProfileDetailsBloc>();
+    
+    if (_profileDetailsBloc.state is ProfileDetailsSuccessState) {
+      final perms = (_profileDetailsBloc.state as ProfileDetailsSuccessState).data.data.permissions;
+      if (perms.contains('commissioning_work')) {
+        _selectedTab = 0;
+      } else if (perms.contains('service_calls')) {
+        _selectedTab = 1;
+      } else if (perms.contains('amcs')) {
+        _selectedTab = 2;
+      }
+    }
+
     _historyBloc = getIt<CommissioningReportHistoryBloc>();
     _serviceCallHistoryBloc = getIt<ServiceCallReportHistoryBloc>();
     _amcReportsHistoryBloc = getIt<AmcReportsHistoryBloc>();
@@ -254,28 +269,43 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             // ── Segmented Tab Control ───────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF1F2F6),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _buildSegmentTab(
-                        0,
-                        'reports_tab_commissioning'.tr(),
-                      ),
+              child: BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
+                bloc: _profileDetailsBloc,
+                builder: (context, state) {
+                  List<String> perms = [];
+                  if (state is ProfileDetailsSuccessState) {
+                    perms = state.data.data.permissions;
+                  } else {
+                    perms = ['commissioning_work', 'service_calls', 'amcs'];
+                  }
+
+                  return Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F2F6),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    Expanded(
-                      child: _buildSegmentTab(1, 'reports_tab_service'.tr()),
+                    child: Row(
+                      children: [
+                        if (perms.contains('commissioning_work'))
+                          Expanded(
+                            child: _buildSegmentTab(
+                              0,
+                              'reports_tab_commissioning'.tr(),
+                            ),
+                          ),
+                        if (perms.contains('service_calls'))
+                          Expanded(
+                            child: _buildSegmentTab(1, 'reports_tab_service'.tr()),
+                          ),
+                        if (perms.contains('amcs'))
+                          Expanded(
+                            child: _buildSegmentTab(2, 'reports_tab_amc'.tr()),
+                          ),
+                      ],
                     ),
-                    Expanded(
-                      child: _buildSegmentTab(2, 'reports_tab_amc'.tr()),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
 

@@ -86,7 +86,8 @@ class ApiInterceptor extends Interceptor {
     if (err.requestOptions.path.contains('/auth/send-otp') ||
         err.requestOptions.path.contains('/auth/refresh') ||
         err.requestOptions.path.contains('/auth/verify-otp') ||
-        err.requestOptions.path.contains('/auth/signup')) {
+        err.requestOptions.path.contains('/auth/signup') ||
+        err.requestOptions.path.contains('/token/refresh')) {
       return handler.next(err);
     }
 
@@ -106,10 +107,15 @@ class ApiInterceptor extends Interceptor {
         }
 
         try {
+          final token = await SessionManager.getAuthToken();
           final refreshResponse = await dio.post(
             "${ApiUrl.baseUrl}/technician/token/refresh",
             data: {'refresh_token': refreshToken},
-            options: Options(headers: {'Content-Type': 'application/json'}),
+            options: Options(headers: {
+              'accept': 'application/json',
+              'Content-Type': 'application/json',
+              if (token != null) 'Authorization': 'Bearer $token',
+            }),
           );
 
           if (refreshResponse.statusCode == 200 && refreshResponse.data['data'] != null) {

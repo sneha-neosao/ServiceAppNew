@@ -1,8 +1,8 @@
 class ApiUrl {
   const ApiUrl._();
 
-  // static const baseUrl = "http://192.168.1.35:8001/api/v1/"; // TEST
-  static const baseUrl = "https://backend.inorotech.in/api/v1/"; // LIVE
+  static const baseUrl = "http://192.168.1.14:8000/api/v1/"; // TEST
+  // static const baseUrl = "https://backend.inorotech.in/api/v1/"; // LIVE
 
   static const privacy_url = "https://theperpetuity.com/privacy-policy";
 
@@ -33,8 +33,7 @@ class ApiUrl {
 
   static const technicians = "technician/dropdowns/technicians";
 
-  static const activeTechniciansServiceCalls =
-      "technician/service-calls/technicians/dropdown";
+  static const activeTechniciansServiceCalls = "technician/service-calls/technicians/dropdown";
 
   static const commissioningWork = "technician/commissioning-works";
 
@@ -44,131 +43,115 @@ class ApiUrl {
 
   static const commissioningWorkDelete = "technician/commissioning-works";
 
-  static const serviceCallsAssigned =
-      "technician/service-calls/assign-technicians";
+  static const serviceCallsAssigned = "technician/service-calls/assign-technicians";
 
-  static const String assignTechnicianServiceCalls =
-      'technician/service-calls/assign-technicians';
-  static const String closeOverCall =
-      'technician/service-calls/close-over-call';
-  static const String serviceWorkReportStep1 =
-      'technician/service-work-report-step1';
-  static const String serviceWorkReportStep2 =
-      'technician/service-work-report-step2';
-  static const String serviceWorkReportStep2AutoFill =
-      'technician/service-work-report-step2/';
-  static const String serviceWorkReportStep3 =
-      'technician/service-work-report-step3';
-  static const String serviceWorkReportStep3AutoFill =
-      'technician/service-work-report-step3/';
-  static const String serviceWorkReportStep4 =
-      'technician/service-work-report-step4';
-  static const String serviceWorkReportStep4AutoFill =
-      'technician/service-work-report-step4/';
-  static const String serviceWorkReportStep1AutoFill =
-      'technician/service-work-report-step1/';
-  static const String serviceWorkReportTechnicians =
-      'technician/service-work-report/';
-  static const String deleteServiceWorkReport =
-      'technician/service-work-report/';
-  static const String serviceCallReportStep1 =
-      'technician/service-call-report-step1';
-  static const String serviceCallReportStep1AutoFill =
-      'technician/service-call-report-step1/';
-  static const String serviceCallReportStep2 =
-      'technician/service-call-report-step2';
-  static const String serviceCallReportStep2AutoFill =
-      'technician/service-call-report-step2/';
-  static const String serviceCallReportStep3 =
-      'technician/service-call-report-step3';
-  static const String serviceCallReportStep3AutoFill =
-      'technician/service-call-report-step3/';
-  static const String serviceCallReportStep4 =
-      'technician/service-call-report-step4';
-  static const String serviceCallReportStep4AutoFill =
-      'technician/service-call-report-step4/';
-  static const String serviceCallReportStep5 =
-      'technician/service-call-report-step5';
-  static const String serviceCallReportStep5AutoFill =
-      'technician/service-call-report-step5/';
-  static const String serviceCallReportStep6 =
-      'technician/service-call-report-step6';
-  static const String serviceCallReportStep6AutoFill =
-      'technician/service-call-report-step6/';
-  static const String assignedServiceCallTechnicians =
-      'technician/service-call-report/';
-  static const String amcReportStep1 =
-      'technician/amc-report/step1';
-  static const String amcReportStep1AutoFill =
-      'technician/amc-report/step1/';
-  static const String amcReportStep2 =
-      'technician/amc-report/step2';
-  static const String amcReportStep2AutoFill =
-      'technician/amc-report/step2/';
-  static const String amcReportStep3 =
-      'technician/amc-report/step3';
-  static const String amcReportAssignedTechnicians =
-      'technician/amc-report/';
-  static const String amcReportsHistory =
-      'technician/amc-reports/history';
-  static const String amcReportDetails =
-      'technician/amc-report';
+  static const  assignTechnicianServiceCalls = 'technician/service-calls/assign-technicians';
 
-  static const serviceCallsPending = "/api/v1/technician/service-calls/pending";
+  static const  closeOverCall = 'technician/service-calls/close-over-call';
 
-  static const createNewCustomer = "dealer/customers/";
+  static const  serviceWorkReportStep1 = 'technician/service-work-report-step1';
 
-  static const technicianCreateCustomer = "technician/customers";
+  static const  serviceWorkReportStep2 = 'technician/service-work-report-step2';
 
-  static const commissioningWorkReportStep1AutoFill =
-      "technician/commissioning-report/step1";
+  static const  serviceWorkReportStep2AutoFill = 'technician/service-work-report-step2/';
 
-  static const commissioningWorkReportStep2AutoFill =
-      "technician/commissioning-report/step2";
+  static const  serviceWorkReportStep3 = 'technician/service-work-report-step3';
 
-  static const commissioningWorkReportStep3AutoFill =
-      "technician/commissioning-report/step3";
+  static const  serviceWorkReportStep3AutoFill = 'technician/service-work-report-step3/';
 
-  static const commissioningWorkReportStep4AutoFill =
-      "technician/commissioning-report/step4";
+  static const  serviceWorkReportStep4 = 'technician/service-work-report-step4';
 
-  static const commissioningWorkReportStep5AutoFill =
-      "technician/commissioning-report/step5";
+  static const  serviceWorkReportStep4AutoFill = 'technician/service-work-report-step4/';
 
-  static const commissioningWorkReportStep6AutoFill =
-      "technician/commissioning-report/step6";
+  static const  serviceWorkReportStep1AutoFill = 'technician/service-work-report-step1/';
 
-  static const commissioningWorkReportStep1 =
-      "technician/commissioning-report/step1";
+  static const  serviceWorkReportTechnicians = 'technician/service-work-report/';
 
-  static const commissioningWorkReportStep2 =
-      "technician/commissioning-report/step2";
+  static const  deleteServiceWorkReport = 'technician/service-work-report/';
 
-  static const commissioningWorkReportStep3 =
-      "technician/commissioning-report/step3";
+  static const  serviceCallReportStep1 = 'technician/service-call-report-step1';
 
-  static const commissioningWorkReportStep4 =
-      "technician/commissioning-report/step4";
+  static const  serviceCallReportStep1AutoFill = 'technician/service-call-report-step1/';
 
-  static const commissioningWorkReportStep5 =
-      "technician/commissioning-report/step5";
+  static const  serviceCallReportStep2 = 'technician/service-call-report-step2';
 
-  static const commissioningWorkReportStep6 =
-      "technician/commissioning-report/step6";
+  static const  serviceCallReportStep2AutoFill = 'technician/service-call-report-step2/';
 
-  static const commissioningWorkReportTechnicians =
-      "technician/commissioning-report";
+  static const  serviceCallReportStep3 = 'technician/service-call-report-step3';
 
-  static const commissioningReportHistory =
-      "technician/commissioning-reports/history";
+  static const  serviceCallReportStep3AutoFill = 'technician/service-call-report-step3/';
 
-  static const commissioningReportDetails = "technician/commissioning-report";
+  static const  serviceCallReportStep4 = 'technician/service-call-report-step4';
 
-  static const serviceCallCheckFeedback = "technician/service-call-report";
+  static const  serviceCallReportStep4AutoFill = 'technician/service-call-report-step4/';
 
-  static const serviceCallReport = "technician/service-call-report";
+  static const  serviceCallReportStep5 = 'technician/service-call-report-step5';
 
-  static const serviceCallReportHistory = "technician/service-call-reports/history";
+  static const  serviceCallReportStep5AutoFill = 'technician/service-call-report-step5/';
 
-  static const serviceCallDetails = "technician/service-calls/";
+  static const  serviceCallReportStep6 = 'technician/service-call-report-step6';
+
+  static const  serviceCallReportStep6AutoFill = 'technician/service-call-report-step6/';
+
+  static const  assignedServiceCallTechnicians = 'technician/service-call-report/';
+
+  static const  amcReportStep1 = 'technician/amc-report/step1';
+
+  static const  amcReportStep1AutoFill = 'technician/amc-report/step1/';
+
+  static const  amcReportStep2 = 'technician/amc-report/step2';
+
+  static const  amcReportStep2AutoFill = 'technician/amc-report/step2/';
+
+  static const  amcReportStep3 = 'technician/amc-report/step3';
+
+  static const  amcReportAssignedTechnicians = 'technician/amc-report/';
+
+  static const  amcReportsHistory = 'technician/amc-reports/history';
+
+  static const  amcReportDetails = 'technician/amc-report';
+
+  static const  serviceCallsPending = "/api/v1/technician/service-calls/pending";
+
+  static const  createNewCustomer = "dealer/customers/";
+
+  static const  technicianCreateCustomer = "technician/customers";
+
+  static const  commissioningWorkReportStep1AutoFill = "technician/commissioning-report/step1";
+
+  static const  commissioningWorkReportStep2AutoFill = "technician/commissioning-report/step2";
+
+  static const  commissioningWorkReportStep3AutoFill = "technician/commissioning-report/step3";
+
+  static const  commissioningWorkReportStep4AutoFill = "technician/commissioning-report/step4";
+
+  static const  commissioningWorkReportStep5AutoFill = "technician/commissioning-report/step5";
+
+  static const  commissioningWorkReportStep6AutoFill = "technician/commissioning-report/step6";
+
+  static const  commissioningWorkReportStep1 = "technician/commissioning-report/step1";
+
+  static const  commissioningWorkReportStep2 = "technician/commissioning-report/step2";
+
+  static const  commissioningWorkReportStep3 = "technician/commissioning-report/step3";
+
+  static const  commissioningWorkReportStep4 = "technician/commissioning-report/step4";
+
+  static const  commissioningWorkReportStep5 = "technician/commissioning-report/step5";
+
+  static const  commissioningWorkReportStep6 = "technician/commissioning-report/step6";
+
+  static const  commissioningWorkReportTechnicians = "technician/commissioning-report";
+
+  static const  commissioningReportHistory = "technician/commissioning-reports/history";
+
+  static const  commissioningReportDetails = "technician/commissioning-report";
+
+  static const  serviceCallCheckFeedback = "technician/service-call-report";
+
+  static const  serviceCallReport = "technician/service-call-report";
+
+  static const  serviceCallReportHistory = "technician/service-call-reports/history";
+
+  static const  serviceCallDetails = "technician/service-calls/";
 }

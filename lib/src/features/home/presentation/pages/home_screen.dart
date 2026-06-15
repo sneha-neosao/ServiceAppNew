@@ -27,6 +27,10 @@ import 'package:service_app/src/features/home/bloc/app_settings_bloc/app_setting
 import 'dart:io';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
+import 'package:service_app/src/features/login/bloc/auth_login_bloc/login_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:service_app/src/routes/app_route_path.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
@@ -78,28 +82,50 @@ class _HomeScreenState extends State<HomeScreen> {
   late int _selectedIndex = widget.initialIndex;
   bool _showCreateReport = false;
   // ── Bottom nav tab labels & icons ─────────────────────────────────────────
-  static const List<_NavItem> _navItems = [
-    _NavItem(
-      labelKey: 'home_nav_home',
-      iconAsset: 'assets/icons/home_unselected_icon.png',
-      activeIconAsset: 'assets/icons/home_selected_icon.png',
-    ),
-    _NavItem(
-      labelKey: 'home_nav_commissioning',
-      iconAsset: 'assets/icons/mycommissioning_unselected_icon.png',
-      activeIconAsset: 'assets/icons/mycommissioning_selected_icon.png',
-    ),
-    _NavItem(
-      labelKey: 'home_nav_service_calls',
-      iconAsset: 'assets/icons/servicecalls_unselected_icon.png',
-      activeIconAsset: 'assets/icons/servicecalls_selected_icon.png',
-    ),
-    _NavItem(
+  List<_NavItem> get _currentNavItems {
+    List<_NavItem> items = [
+      const _NavItem(
+        labelKey: 'home_nav_home',
+        iconAsset: 'assets/icons/home_unselected_icon.png',
+        activeIconAsset: 'assets/icons/home_selected_icon.png',
+        originalIndex: 0,
+      ),
+    ];
+    List<String> perms = [];
+    if (_profileDetailsBloc.state is ProfileDetailsSuccessState) {
+      perms = (_profileDetailsBloc.state as ProfileDetailsSuccessState).data.data.permissions;
+    } else {
+      // Default to all if not loaded yet, or you can default to none
+      perms = ['commissioning_work', 'service_calls', 'amcs'];
+    }
+
+    if (perms.contains('commissioning_work')) {
+      items.add(const _NavItem(
+        labelKey: 'home_nav_commissioning',
+        iconAsset: 'assets/icons/mycommissioning_unselected_icon.png',
+        activeIconAsset: 'assets/icons/mycommissioning_selected_icon.png',
+        originalIndex: 1,
+      ));
+    }
+
+    if (perms.contains('service_calls')) {
+      items.add(const _NavItem(
+        labelKey: 'home_nav_service_calls',
+        iconAsset: 'assets/icons/servicecalls_unselected_icon.png',
+        activeIconAsset: 'assets/icons/servicecalls_selected_icon.png',
+        originalIndex: 2,
+      ));
+    }
+
+    items.add(const _NavItem(
       labelKey: 'home_nav_reports',
       iconAsset: 'assets/icons/reporthistory_unselected_icon.png',
       activeIconAsset: 'assets/icons/reporthistory_selected_icon.png',
-    ),
-  ];
+      originalIndex: 3,
+    ));
+
+    return items;
+  }
 
   bool _showSystemBars = true;
 
@@ -113,8 +139,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AppSettingsBloc, AppSettingsState>(
-      bloc: _appSettingsBloc,
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AppSettingsBloc, AppSettingsState>(
+          bloc: _appSettingsBloc,
       listener: (context, state) async {
         if (state is AppSettingsSuccess) {
           try {
@@ -151,7 +179,21 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         }
       },
-      child: PopScope(
+    ),
+    BlocListener<ProfileDetailsBloc, ProfileDetailsState>(
+      bloc: _profileDetailsBloc,
+      listener: (context, state) {
+        if (state is ProfileDetailsSuccessState) {
+          final profileData = state.data;
+          if (profileData.status == 300) {
+            _maintenanceWarningDialog(context,
+                message: profileData.message ?? "Account issue");
+          }
+        }
+      },
+    ),
+  ],
+  child: PopScope(
       canPop: _selectedIndex == 0,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
@@ -164,8 +206,11 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         }
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
+      child: BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
+        bloc: _profileDetailsBloc,
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: Colors.white,
         body: Column(
           children: [
           AnimatedContainer(
@@ -327,23 +372,51 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: AnimatedSize(
-        duration: const Duration(milliseconds: 300),
-        alignment: Alignment.topCenter,
-        child: Align(
-          alignment: Alignment.topCenter,
-          heightFactor: _showSystemBars ? 1.0 : 0.0,
-          child: SafeArea(
-            top: false,
-            child: _CustomBottomNavBar(
-              selectedIndex: _selectedIndex,
-              onTap: _onTabTapped,
-              navItems: _navItems,
+      bottomNavigationBar: state is ProfileDetailsLoadingState || state is ProfileDetailsInitialState
+          ? AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              alignment: Alignment.topCenter,
+              child: Align(
+                alignment: Alignment.topCenter,
+                heightFactor: _showSystemBars ? 1.0 : 0.0,
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 10, 8, 12),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(32),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              alignment: Alignment.topCenter,
+              child: Align(
+                alignment: Alignment.topCenter,
+                heightFactor: _showSystemBars ? 1.0 : 0.0,
+                child: SafeArea(
+                  top: false,
+                  child: _CustomBottomNavBar(
+                    selectedIndex: _selectedIndex,
+                    onTap: _onTabTapped,
+                    navItems: _currentNavItems,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
-    ),
     ),
     );
   }
@@ -457,9 +530,185 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _maintenanceWarningDialog(BuildContext context, {required String message}) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (dialogContext) {
+        return BlocProvider(
+          create: (_) => getIt<AuthLoginBloc>(),
+          child: BlocListener<AuthLoginBloc, AuthLoginState>(
+            listener: (loginContext, state) {
+              if (state is AuthLogoutSuccessState) {
+                final nav = Navigator.of(loginContext, rootNavigator: true);
+                final router = GoRouter.of(loginContext);
+                
+                nav.pop(); // close dialog
+                router.goNamed(AppRoute.loginScreen.name);
+              }
+            },
+            child: PopScope(
+              canPop: false,
+              child: Dialog(
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // ── Icon ───────────────────────────────────────────────────────
+                      Container(
+                        width: 64,
+                        height: 64,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFFF1F0),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.error_outline,
+                          color: Color(0xFFFF4D4F),
+                          size: 32,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 20),
+
+                      // ── Title ───────────────────────────────────────────────────────
+                      Text(
+                        'Maintenance Mode',
+                        style: AppFont.style(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // ── Subtitle ────────────────────────────────────────────────────
+                      Text(
+                        message,
+                        textAlign: TextAlign.center,
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF5C616E),
+                          height: 1.4,
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // ── Buttons ─────────────────────────────────────────────────────
+                      Row(
+                        children: [
+                          // Exit Button
+                          Expanded(
+                            child: SizedBox(
+                              height: 48,
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.of(dialogContext).pop();
+                                  SystemNavigator.pop();
+                                },
+                                style: TextButton.styleFrom(
+                                  backgroundColor: const Color(0xFFF6F6F6),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    'Exit',
+                                    maxLines: 1,
+                                    style: AppFont.style(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800,
+                                      color: const Color(0xFF0D121F),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          // Log Out Button
+                          Expanded(
+                            child: BlocBuilder<AuthLoginBloc, AuthLoginState>(
+                              builder: (loginContext, state) {
+                                final isLoading = state is AuthLogoutLoadingState;
+                                return SizedBox(
+                                  height: 48,
+                                  child: ElevatedButton(
+                                    onPressed: isLoading
+                                        ? null
+                                        : () {
+                                            loginContext.read<AuthLoginBloc>().add(AuthLogoutEvent());
+                                          },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF0B68B9),
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: isLoading
+                                        ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                        : FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            child: Text(
+                                              'Log Out',
+                                              maxLines: 1,
+                                              style: AppFont.style(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w800,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        ),
+        );
+      },
+    );
+  }
+
   Widget _buildCurrentView() {
+    final currentItems = _currentNavItems;
+    if (_selectedIndex >= currentItems.length) {
+      _selectedIndex = 0; // fallback
+    }
+    final originalIndex = currentItems.isNotEmpty ? currentItems[_selectedIndex].originalIndex : 0;
+
     Widget child;
-    switch (_selectedIndex) {
+    switch (originalIndex) {
       case 0:
         child = _buildHomeBody();
         break;
@@ -476,7 +725,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child = _buildPlaceholder();
     }
 
-    if (_selectedIndex == 1 || _selectedIndex == 2 || _selectedIndex == 3) {
+    if (originalIndex == 1 || originalIndex == 2 || originalIndex == 3) {
       return NotificationListener<ScrollUpdateNotification>(
         onNotification: (notification) {
           if (notification.metrics.axis == Axis.vertical) {
@@ -596,24 +845,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(height: screenHeight / 5),
 
                 // AMC Card
-                UpcomingAmcCard(
-                  upcomingAmcBloc: _upcomingAmcBloc,
-                  onScheduleTap: () {
-                    String initialFilter = 'Today';
-                    if (_upcomingAmcBloc.state is UpcomingAmcSuccessState) {
-                      final f = (_upcomingAmcBloc.state as UpcomingAmcSuccessState).data.data?.filter;
-                      if (f != null && f.isNotEmpty) {
-                        initialFilter = f[0].toUpperCase() + f.substring(1).toLowerCase();
+                if (_profileDetailsBloc.state is ProfileDetailsSuccessState && (_profileDetailsBloc.state as ProfileDetailsSuccessState).data.data.permissions.contains('amcs'))
+                  UpcomingAmcCard(
+                    upcomingAmcBloc: _upcomingAmcBloc,
+                    onScheduleTap: () {
+                      String initialFilter = 'Today';
+                      if (_upcomingAmcBloc.state is UpcomingAmcSuccessState) {
+                        final f = (_upcomingAmcBloc.state as UpcomingAmcSuccessState).data.data?.filter;
+                        if (f != null && f.isNotEmpty) {
+                          initialFilter = f[0].toUpperCase() + f.substring(1).toLowerCase();
+                        }
                       }
-                    }
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => AmcWorkflowScreen(initialFilter: initialFilter),
-                      ),
-                    );
-                  },
-                ),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AmcWorkflowScreen(initialFilter: initialFilter),
+                        ),
+                      );
+                    },
+                  ),
               ],
             ),
           ),
@@ -636,7 +886,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _getAppBarTitle() {
-    switch (_selectedIndex) {
+    final currentItems = _currentNavItems;
+    final originalIndex = currentItems.isNotEmpty ? currentItems[_selectedIndex].originalIndex : 0;
+    switch (originalIndex) {
       case 1:
         return 'commissioning_appbar_title'.tr();
       case 2:
@@ -653,10 +905,12 @@ class _NavItem {
   final String labelKey;
   final String iconAsset;
   final String activeIconAsset;
+  final int originalIndex;
   const _NavItem({
     required this.labelKey,
     required this.iconAsset,
     required this.activeIconAsset,
+    required this.originalIndex,
   });
 }
 
