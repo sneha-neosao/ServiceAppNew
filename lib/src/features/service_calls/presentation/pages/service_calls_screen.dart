@@ -680,7 +680,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
         if (state is AssignedServiceCallsLoadingState ||
             state is AssignedServiceCallsInitialState) {
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
             itemCount: 3,
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (_, __) => const ServiceCallCardShimmer(type: ServiceCallType.ongoing),
@@ -711,7 +711,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
             itemCount: data.data.results.length + (isPaginationLoading ? 1 : 0),
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
@@ -795,7 +795,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
         if (state is PendingServiceCallsLoadingState ||
             state is PendingServiceCallsInitialState) {
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
             itemCount: 3,
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (_, __) => const ServiceCallCardShimmer(type: ServiceCallType.active),
@@ -826,7 +826,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
             itemCount: data.data.results.length + (isPaginationLoading ? 1 : 0),
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
@@ -900,7 +900,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
 
   Widget _buildCompletedList() {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
       children: [
         ServiceCallCard(
           type: ServiceCallType.completed,

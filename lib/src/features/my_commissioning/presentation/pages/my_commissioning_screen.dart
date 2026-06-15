@@ -46,7 +46,7 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
       top: false,
       child: Scaffold(
         backgroundColor: Colors.white,
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: Padding(padding: const EdgeInsets.only(bottom: 50), child: FloatingActionButton(
           onPressed: () async {
             await Navigator.push(
               context,
@@ -60,6 +60,7 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
           backgroundColor: const Color(0xFF0B68B9),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: const Icon(Icons.add, color: Colors.white, size: 30),
+        ),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,7 +138,7 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                   if (state is CommissioningWorkListInitialState ||
                       state is CommissioningWorkListLoadingState) {
                     return ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      padding: const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 100),
                       itemCount: 3,
                       separatorBuilder: (context, index) => const SizedBox(height: 16),
                       itemBuilder: (context, index) => const ListCardShimmer(),
@@ -169,10 +170,7 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                     }
 
                     return ListView.separated(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 6,
-                      ),
+                      padding: const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 100),
                       itemCount: items.length,
                       separatorBuilder: (context, index) =>
                           const SizedBox(height: 16),
@@ -286,3 +284,6 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
     );
   }
 }
+
+
+

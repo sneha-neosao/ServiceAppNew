@@ -1539,7 +1539,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
             }).toList();
 
             return SafeArea(
-              bottom: false,
+              bottom: true,
               child: Padding(
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(ctx).viewInsets.bottom,

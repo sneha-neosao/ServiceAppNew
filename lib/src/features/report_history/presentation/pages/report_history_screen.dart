@@ -330,7 +330,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           if (state is CommissioningReportHistoryLoadingState ||
                               state is CommissioningReportHistoryInitialState) {
                             return ListView.separated(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
                               itemCount: 3,
                               separatorBuilder: (context, index) =>
                                   const SizedBox(height: 16),
@@ -365,7 +365,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                               );
                             }
                             return ListView.separated(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
                               itemCount: items.length,
                               separatorBuilder: (context, index) =>
                                   const SizedBox(height: 16),
@@ -431,7 +431,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           if (state is ServiceCallReportHistoryLoading ||
                               state is ServiceCallReportHistoryInitial) {
                             return ListView.separated(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
                               itemCount: 3,
                               separatorBuilder: (context, index) =>
                                   const SizedBox(height: 16),
@@ -464,7 +464,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                               );
                             }
                             return ListView.separated(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
                               itemCount: items.length,
                               separatorBuilder: (context, index) =>
                                   const SizedBox(height: 16),
@@ -520,7 +520,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           if (state is AmcReportsHistoryLoadingState ||
                               state is AmcReportsHistoryInitial) {
                             return ListView.separated(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
                               itemCount: 3,
                               separatorBuilder: (context, index) =>
                                   const SizedBox(height: 16),
@@ -543,7 +543,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                             if (items.isEmpty) {
                               return Center(
                                 child: Text(
-                                  'reports_empty_amc'.tr(),
+                                  "No AMC reports found.",
                                   style: AppFont.style(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -553,7 +553,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                               );
                             }
                             return ListView.separated(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
                               itemCount: items.length,
                               separatorBuilder: (context, index) =>
                                   const SizedBox(height: 16),
