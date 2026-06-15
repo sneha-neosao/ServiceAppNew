@@ -13,6 +13,7 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
   DateTime? _selectedDate;
+  String? _selectedCustomer;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -124,13 +125,20 @@ class _NotificationScreenState extends State<NotificationScreen> {
               child: Column(
                 children: [
                   _buildFilterDropdown(
-                    'notif_filter_customer'.tr(),
+                    _selectedCustomer ?? 'notif_filter_customer'.tr(),
                     Icons.business_outlined,
+                    onTap: () {
+                      // Dummy logic to test the behavior, remove or replace with actual selection logic
+                      setState(() {
+                        _selectedCustomer = _selectedCustomer == null ? 'Dummy Customer' : null;
+                      });
+                    },
                   ),
                   const SizedBox(height: 12),
                   _buildFilterDropdown(
                     'notif_filter_site'.tr(),
                     Icons.location_on_outlined,
+                    isActive: _selectedCustomer != null,
                   ),
                   const SizedBox(height: 12),
                   _buildFilterField(
@@ -202,31 +210,34 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  Widget _buildFilterDropdown(String label, IconData icon) {
-    return Container(
-      height: 48,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FB),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
-      ),
-      child: Row(
-        children: [
-          // Icon(icon, size: 20, color: const Color(0xFFA5ABB7)),
-          // const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              label,
-              style: AppFont.style(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF424B5C),
+  Widget _buildFilterDropdown(String label, IconData icon, {bool isActive = true, VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: isActive ? onTap : null,
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: isActive ? const Color(0xFFF8F9FB) : const Color(0xFFF1F2F6).withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFF1F2F6)),
+        ),
+        child: Row(
+          children: [
+            // Icon(icon, size: 20, color: const Color(0xFFA5ABB7)),
+            // const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: AppFont.style(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: isActive ? const Color(0xFF424B5C) : const Color(0xFFA5ABB7).withValues(alpha: 0.5),
+                ),
               ),
             ),
-          ),
-          const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
-        ],
+            Icon(Icons.keyboard_arrow_down, color: isActive ? const Color(0xFFA5ABB7) : const Color(0xFFA5ABB7).withValues(alpha: 0.5)),
+          ],
+        ),
       ),
     );
   }
