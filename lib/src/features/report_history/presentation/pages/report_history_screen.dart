@@ -41,7 +41,8 @@ import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:service_app/src/features/profile/bloc/profile_details_bloc/profile_details_bloc.dart';
 
 class ReportHistoryScreen extends StatefulWidget {
-  const ReportHistoryScreen({super.key});
+  final List<String> permissions;
+  const ReportHistoryScreen({super.key, required this.permissions});
 
   @override
   State<ReportHistoryScreen> createState() => _ReportHistoryScreenState();
@@ -65,7 +66,6 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   String? _selectedTechnicianName;
   String? _selectedTechnicianId;
   DateTime? _selectedDate;
-  late ProfileDetailsBloc _profileDetailsBloc;
 
   void _fetchReportHistory() {
     final String? dateStr = _selectedDate != null
@@ -95,17 +95,14 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   @override
   void initState() {
     super.initState();
-    _profileDetailsBloc = getIt<ProfileDetailsBloc>();
-    
-    if (_profileDetailsBloc.state is ProfileDetailsSuccessState) {
-      final perms = (_profileDetailsBloc.state as ProfileDetailsSuccessState).data.data.permissions;
-      if (perms.contains('commissioning_work')) {
-        _selectedTab = 0;
-      } else if (perms.contains('service_calls')) {
-        _selectedTab = 1;
-      } else if (perms.contains('amcs')) {
-        _selectedTab = 2;
-      }
+    if (widget.permissions.contains('commissioning_work')) {
+      _selectedTab = 0;
+    } else if (widget.permissions.contains('service_calls')) {
+      _selectedTab = 1;
+    } else if (widget.permissions.contains('amcs')) {
+      _selectedTab = 2;
+    } else {
+      _selectedTab = -1; // Default to no tab if no permissions
     }
 
     _historyBloc = getIt<CommissioningReportHistoryBloc>();
@@ -114,9 +111,15 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     _detailsBloc = getIt<CommissioningReportDetailsBloc>();
     _pdfBloc = getIt<CommissioningReportPdfBloc>();
     _serviceCallPdfBloc = getIt<ServiceCallReportPdfBloc>();
-    _fetchReportHistory();
-    _fetchServiceCallHistory();
-    _fetchAmcHistory();
+
+    if (_selectedTab == 0) {
+      _fetchReportHistory();
+    } else if (_selectedTab == 1) {
+      _fetchServiceCallHistory();
+    } else if (_selectedTab == 2) {
+      _fetchAmcHistory();
+    }
+
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
     _sitesBloc = getIt<SitesBloc>();
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
@@ -269,43 +272,31 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             // ── Segmented Tab Control ───────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
-                bloc: _profileDetailsBloc,
-                builder: (context, state) {
-                  List<String> perms = [];
-                  if (state is ProfileDetailsSuccessState) {
-                    perms = state.data.data.permissions;
-                  } else {
-                    perms = ['commissioning_work', 'service_calls', 'amcs'];
-                  }
-
-                  return Container(
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1F2F6),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        if (perms.contains('commissioning_work'))
-                          Expanded(
-                            child: _buildSegmentTab(
-                              0,
-                              'reports_tab_commissioning'.tr(),
-                            ),
-                          ),
-                        if (perms.contains('service_calls'))
-                          Expanded(
-                            child: _buildSegmentTab(1, 'reports_tab_service'.tr()),
-                          ),
-                        if (perms.contains('amcs'))
-                          Expanded(
-                            child: _buildSegmentTab(2, 'reports_tab_amc'.tr()),
-                          ),
-                      ],
-                    ),
-                  );
-                },
+              child: Container(
+                height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF1F2F6),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    if (widget.permissions.contains('commissioning_work'))
+                      Expanded(
+                        child: _buildSegmentTab(
+                          0,
+                          'reports_tab_commissioning'.tr(),
+                        ),
+                      ),
+                    if (widget.permissions.contains('service_calls'))
+                      Expanded(
+                        child: _buildSegmentTab(1, 'reports_tab_service'.tr()),
+                      ),
+                    if (widget.permissions.contains('amcs'))
+                      Expanded(
+                        child: _buildSegmentTab(2, 'reports_tab_amc'.tr()),
+                      ),
+                  ],
+                ),
               ),
             ),
 
@@ -313,19 +304,23 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
             // ── Filter Section ──────────────────────────────────────────────────
-            _buildFilterSection(
-              _selectedTab == 0
-                  ? 'Commissioning Report History'
-                  : _selectedTab == 1
-                      ? 'Service Report History'
-                      : 'AMC Report History',
-            ),
+            _selectedTab == -1 
+                ? const SizedBox.shrink()
+                : _buildFilterSection(
+                    _selectedTab == 0
+                        ? 'Commissioning Report History'
+                        : _selectedTab == 1
+                            ? 'Service Report History'
+                            : 'AMC Report History',
+                  ),
 
             // ── Reports List ────────────────────────────────────────────────────
             Expanded(
               child: Container(
                 color: const Color(0xFFF8F9FB),
-                child: _selectedTab == 0
+                child: _selectedTab == -1 
+                    ? const SizedBox()
+                    : _selectedTab == 0
                     ? BlocBuilder<
                         CommissioningReportHistoryBloc,
                         CommissioningReportHistoryState

@@ -707,6 +707,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     final originalIndex = currentItems.isNotEmpty ? currentItems[_selectedIndex].originalIndex : 0;
 
+    List<String> perms = [];
+    if (_profileDetailsBloc.state is ProfileDetailsSuccessState) {
+      perms = (_profileDetailsBloc.state as ProfileDetailsSuccessState).data.data.permissions;
+    } else {
+      perms = ['commissioning_work', 'service_calls', 'amcs'];
+    }
+
     Widget child;
     switch (originalIndex) {
       case 0:
@@ -719,7 +726,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child = const ServiceCallsScreen();
         break;
       case 3:
-        child = const ReportHistoryScreen();
+        child = ReportHistoryScreen(permissions: perms);
         break;
       default:
         child = _buildPlaceholder();
