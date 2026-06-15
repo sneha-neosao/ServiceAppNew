@@ -83,12 +83,16 @@ class DeleteJobDialog extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          child: Text(
-                            'Cancel',
-                            style: AppFont.style(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFF0D121F),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              'Cancel',
+                              maxLines: 1,
+                              style: AppFont.style(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFF0D121F),
+                              ),
                             ),
                           ),
                         ),
@@ -105,6 +109,7 @@ class DeleteJobDialog extends StatelessWidget {
                             backgroundColor: const Color(0xFFE30000),
                             foregroundColor: Colors.white,
                             elevation: 0,
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -118,12 +123,16 @@ class DeleteJobDialog extends StatelessWidget {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : Text(
-                                  'Delete Now',
-                                  style: AppFont.style(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
+                              : FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    'Delete Now',
+                                    maxLines: 1,
+                                    style: AppFont.style(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                         ),

@@ -145,7 +145,13 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                     setState(() {
                       _selectedFilter = val;
                     });
-                    _upcomingAmcBloc.add(UpcomingAmcGetEvent(val));
+                    String? pendingParam;
+                    if (_selectedStatus == 'Current Pending') {
+                      pendingParam = 'is_current_pending';
+                    } else if (_selectedStatus == 'Previous Pending') {
+                      pendingParam = 'is_prious_pending';
+                    }
+                    _upcomingAmcBloc.add(UpcomingAmcGetEvent(val, pending: pendingParam));
                   }
                 },
               ),
@@ -273,11 +279,20 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                   setState(() {
                     _selectedStatus = val;
                   });
+                  String? pendingParam;
+                  if (val == 'Current Pending') {
+                    pendingParam = 'is_current_pending';
+                  } else if (val == 'Previous Pending') {
+                    pendingParam = 'is_prious_pending';
+                  }
+                  print("✅ UI DROPDOWN SELECTED: $val -> Dispatching pendingParam: $pendingParam");
+                  _upcomingAmcBloc.add(UpcomingAmcGetEvent(_selectedFilter, pending: pendingParam));
                 },
                 onClear: () {
                   setState(() {
                     _selectedStatus = null;
                   });
+                  _upcomingAmcBloc.add(UpcomingAmcGetEvent(_selectedFilter));
                 },
               ),
 
@@ -315,9 +330,6 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                   }
                   if (_selectedSite != null && _selectedSite!.name != 'All') {
                     filteredVisits = filteredVisits.where((e) => e.siteName == _selectedSite!.name).toList();
-                  }
-                  if (_selectedStatus != null) {
-                    filteredVisits = filteredVisits.where((e) => e.status == _selectedStatus).toList();
                   }
 
                   if (filteredVisits.isEmpty && state is UpcomingAmcSuccessState) {

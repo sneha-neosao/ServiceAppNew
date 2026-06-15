@@ -20,7 +20,7 @@ class UpcomingAmcBloc extends Bloc<UpcomingAmcEvent, UpcomingAmcState> {
     emit(UpcomingAmcLoadingState());
 
     final result = await _upcomingAmcUseCase.call(
-      UpcomingAmcParams(filter: event.filter),
+      UpcomingAmcParams(filter: event.filter, pending: event.pending),
     );
 
     // fold() is synchronous — never put async work inside its callbacks.

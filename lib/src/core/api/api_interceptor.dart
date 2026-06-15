@@ -107,16 +107,22 @@ class ApiInterceptor extends Interceptor {
 
         try {
           final refreshResponse = await dio.post(
-            "${ApiUrl.baseUrl}/auth/refresh-token",
-            data: {'refresh': refreshToken},
+            "${ApiUrl.baseUrl}/technician/token/refresh",
+            data: {'refresh_token': refreshToken},
             options: Options(headers: {'Content-Type': 'application/json'}),
           );
 
-          if (refreshResponse.statusCode == 200) {
-            final newToken = refreshResponse.data['access_token'];
+          if (refreshResponse.statusCode == 200 && refreshResponse.data['data'] != null) {
+            final newToken = refreshResponse.data['data']['access_token'];
+            final newRefreshToken = refreshResponse.data['data']['refresh_token'];
             print("new token after refresh token api called: ${newToken}");
 
-            await SessionManager.saveSessionId(newToken.toString());
+            if (newToken != null) {
+              await SessionManager.saveSessionId(newToken.toString());
+            }
+            if (newRefreshToken != null) {
+              await SessionManager.saveRefreshToken(newRefreshToken.toString());
+            }
 
             dio.options.headers['Authorization'] = 'Bearer $newToken';
 

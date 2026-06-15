@@ -630,9 +630,16 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     String token,
   ) async {
     try {
+      String url = '${ApiUrl.upcomingAmcVisits}?filter=${params.filter.toLowerCase()}';
+      if (params.pending != null && params.pending!.isNotEmpty) {
+        url += '&pending=${params.pending}';
+      }
+
+      print("🚀🚀🚀 API CALL: $url 🚀🚀🚀");
+
       final response = await _helper.execute(
         method: Method.get,
-        url: '${ApiUrl.upcomingAmcVisits}?filter=${params.filter.toLowerCase()}',
+        url: url,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 

@@ -34,112 +34,161 @@ class ProfileLogoutDialog extends StatelessWidget {
           }
         },
         child: Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF8F9FB),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.logout,
-                    size: 32,
-                    color: Color(0xFF1565C0),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'logout_dialog_title'.tr(),
-                  style: AppFont.style(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w900,
-                    color: const Color(0xFF0D121F),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'logout_dialog_subtitle'.tr(),
-                  textAlign: TextAlign.center,
-                  style: AppFont.style(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(height: 40),
-                BlocBuilder<AuthLoginBloc, AuthLoginState>(
-                  builder: (context, state) {
-                    final isLoading = state is AuthLogoutLoadingState;
-                    return SizedBox(
-                      width: double.infinity,
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // ── Icon ───────────────────────────────────────────────────────
+                    Container(
+                      width: 64,
                       height: 64,
-                      child: ElevatedButton(
-                        onPressed: isLoading
-                            ? null
-                            : () => context.read<AuthLoginBloc>().add(
-                                AuthLogoutEvent(),
-                              ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0D47A1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: isLoading
-                            ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(
-                                'logout_dialog_btn_confirm'.tr(),
-                                style: AppFont.style(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.white,
-                                ),
-                              ),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFE9F5FF), // Light blue background
+                        shape: BoxShape.circle,
                       ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 64,
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: TextButton.styleFrom(
-                      backgroundColor: const Color(0xFFF8F9FB),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                      child: const Icon(
+                        Icons.logout,
+                        color: Color(0xFF1565C0), // Darker blue icon
+                        size: 32,
                       ),
                     ),
-                    child: Text(
-                      'logout_dialog_btn_cancel'.tr(),
+                    
+                    const SizedBox(height: 20),
+
+                    // ── Title ───────────────────────────────────────────────────────
+                    Text(
+                      'logout_dialog_title'.tr(),
+                      style: AppFont.style(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF0D121F),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // ── Subtitle ────────────────────────────────────────────────────
+                    Text(
+                      'logout_dialog_subtitle'.tr(),
+                      textAlign: TextAlign.center,
                       style: AppFont.style(
                         fontSize: 14,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF8E9BAE),
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF5C616E),
+                        height: 1.4,
                       ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // ── Buttons ─────────────────────────────────────────────────────
+                    Row(
+                      children: [
+                        // Cancel Button
+                        Expanded(
+                          child: SizedBox(
+                            height: 48,
+                            child: TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              style: TextButton.styleFrom(
+                                backgroundColor: const Color(0xFFF6F6F6),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'logout_dialog_btn_cancel'.tr(),
+                                  maxLines: 1,
+                                  style: AppFont.style(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                    color: const Color(0xFF0D121F),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Logout Now Button
+                        Expanded(
+                          child: BlocBuilder<AuthLoginBloc, AuthLoginState>(
+                            builder: (context, state) {
+                              final isLoading = state is AuthLogoutLoadingState;
+                              return SizedBox(
+                                height: 48,
+                                child: ElevatedButton(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () => context.read<AuthLoginBloc>().add(
+                                          AuthLogoutEvent(),
+                                        ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF0D47A1), // Blue for logout
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: isLoading
+                                      ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            'logout_dialog_btn_confirm'.tr(),
+                                            maxLines: 1,
+                                            style: AppFont.style(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w800,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              
+              // ── Close (X) Icon ────────────────────────────────────────────────
+              Positioned(
+                top: 12,
+                right: 12,
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    child: const Icon(
+                      Icons.close,
+                      size: 20,
+                      color: Color(0xFFB0B8C8),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -153,139 +202,190 @@ class ProfileDeleteDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFF1F0),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.delete_outline,
-                size: 32,
-                color: Color(0xFFF44336),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'delete_dialog_title'.tr(),
-              style: AppFont.style(
-                fontSize: 28,
-                fontWeight: FontWeight.w900,
-                color: const Color(0xFFF44336),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'delete_dialog_subtitle'.tr(),
-              textAlign: TextAlign.center,
-              style: AppFont.style(
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFFA5ABB7),
-                letterSpacing: 0.5,
-              ),
-            ),
-            const SizedBox(height: 40),
-            BlocProvider(
-              create: (_) => getIt<DeleteAccountBloc>(),
-              child: BlocListener<DeleteAccountBloc, DeleteAccountState>(
-                listener: (context, state) {
-                  if (state is DeleteAccountSuccessState) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.data.message),
-                        backgroundColor: const Color(0xFF4CAF50),
-                      ),
-                    );
-                    final nav = Navigator.of(context, rootNavigator: true);
-                    final router = GoRouter.of(context);
-                    nav.pop();
-                    nav.pop();
-                    router.goNamed(AppRoute.loginScreen.name);
-                  } else if (state is DeleteAccountFailureState) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.message),
-                        backgroundColor: const Color(0xFFF44336),
-                      ),
-                    );
-                  }
-                },
-                child: BlocBuilder<DeleteAccountBloc, DeleteAccountState>(
-                  builder: (context, state) {
-                    final isLoading = state is DeleteAccountLoadingState;
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 64,
-                      child: ElevatedButton(
-                        onPressed: isLoading
-                            ? null
-                            : () {
-                                context.read<DeleteAccountBloc>().add(
-                                      const DeleteAccountSubmittedEvent(),
-                                    );
-                              },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF44336),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: isLoading
-                            ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(
-                                'delete_dialog_btn_confirm'.tr(),
-                                style: AppFont.style(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.white,
-                                ),
-                              ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 64,
-              child: TextButton(
-                onPressed: () => Navigator.pop(context),
-                style: TextButton.styleFrom(
-                  backgroundColor: const Color(0xFFF8F9FB),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // ── Icon ───────────────────────────────────────────────────────
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFF1F0), // Light red background
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.delete_outline,
+                    color: Color(0xFFF44336), // Red icon
+                    size: 32,
                   ),
                 ),
-                child: Text(
-                  'delete_dialog_btn_cancel'.tr(),
+                
+                const SizedBox(height: 20),
+
+                // ── Title ───────────────────────────────────────────────────────
+                Text(
+                  'delete_dialog_title'.tr(),
+                  style: AppFont.style(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF0D121F),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // ── Subtitle ────────────────────────────────────────────────────
+                Text(
+                  'delete_dialog_subtitle'.tr(),
+                  textAlign: TextAlign.center,
                   style: AppFont.style(
                     fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    color: const Color(0xFF8E9BAE),
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF5C616E),
+                    height: 1.4,
                   ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // ── Buttons ─────────────────────────────────────────────────────
+                BlocProvider(
+                  create: (_) => getIt<DeleteAccountBloc>(),
+                  child: BlocListener<DeleteAccountBloc, DeleteAccountState>(
+                    listener: (context, state) {
+                      if (state is DeleteAccountSuccessState) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(state.data.message),
+                            backgroundColor: const Color(0xFF4CAF50),
+                          ),
+                        );
+                        final nav = Navigator.of(context, rootNavigator: true);
+                        final router = GoRouter.of(context);
+                        nav.pop();
+                        nav.pop();
+                        router.goNamed(AppRoute.loginScreen.name);
+                      } else if (state is DeleteAccountFailureState) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(state.message),
+                            backgroundColor: const Color(0xFFF44336),
+                          ),
+                        );
+                      }
+                    },
+                    child: Row(
+                      children: [
+                        // Cancel Button
+                        Expanded(
+                          child: SizedBox(
+                            height: 48,
+                            child: TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              style: TextButton.styleFrom(
+                                backgroundColor: const Color(0xFFF6F6F6),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'delete_dialog_btn_cancel'.tr(),
+                                  maxLines: 1,
+                                  style: AppFont.style(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                    color: const Color(0xFF0D121F),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Delete Now Button
+                        Expanded(
+                          child: BlocBuilder<DeleteAccountBloc, DeleteAccountState>(
+                            builder: (context, state) {
+                              final isLoading = state is DeleteAccountLoadingState;
+                              return SizedBox(
+                                height: 48,
+                                child: ElevatedButton(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () {
+                                          context.read<DeleteAccountBloc>().add(
+                                                const DeleteAccountSubmittedEvent(),
+                                              );
+                                        },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFE30000), // Red for delete
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: isLoading
+                                      ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            'delete_dialog_btn_confirm'.tr(),
+                                            maxLines: 1,
+                                            style: AppFont.style(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w800,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // ── Close (X) Icon ────────────────────────────────────────────────
+          Positioned(
+            top: 12,
+            right: 12,
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                child: const Icon(
+                  Icons.close,
+                  size: 20,
+                  color: Color(0xFFB0B8C8),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

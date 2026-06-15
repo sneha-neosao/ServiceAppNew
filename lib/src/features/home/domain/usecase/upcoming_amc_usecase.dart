@@ -28,9 +28,10 @@ class UpcomingAmcUseCase
 
 class UpcomingAmcParams extends Equatable {
   final String filter;
+  final String? pending;
 
-  const UpcomingAmcParams({required this.filter});
+  const UpcomingAmcParams({required this.filter, this.pending});
 
   @override
-  List<Object?> get props => [filter];
+  List<Object?> get props => [filter, pending];
 }

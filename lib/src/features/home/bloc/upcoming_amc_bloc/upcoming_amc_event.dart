@@ -13,9 +13,10 @@ sealed class UpcomingAmcEvent extends Equatable {
 
 class UpcomingAmcGetEvent extends UpcomingAmcEvent {
   final String filter;
+  final String? pending;
 
-  const UpcomingAmcGetEvent(this.filter);
+  const UpcomingAmcGetEvent(this.filter, {this.pending});
 
   @override
-  List<Object?> get props => [filter];
+  List<Object?> get props => [filter, pending];
 }
