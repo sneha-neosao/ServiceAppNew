@@ -142,6 +142,8 @@ import '../../features/reports/domain/usecases/service_work_report_step3_autofil
 import '../../features/reports/bloc/service_work_report_step3_autofill_bloc/service_work_report_step3_autofill_bloc.dart';
 import '../../features/reports/domain/usecases/delete_service_work_report_usecase.dart';
 import '../../features/reports/bloc/delete_service_work_report_bloc/delete_service_work_report_bloc.dart';
+import '../../features/notifications/domain/usecase/fcm_register_usecase.dart';
+import '../../features/notifications/bloc/fcm_register_bloc/fcm_register_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -827,6 +829,14 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => DeleteAmcReportUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => FcmRegisterBloc(fcmRegisterUseCase: getIt<FcmRegisterUseCase>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => FcmRegisterUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   // Profile Delete Account

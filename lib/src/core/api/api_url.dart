@@ -12,6 +12,8 @@ class ApiUrl {
   static const refund_url = "https://theperpetuity.com/refund-policy";
 
   static const login = "technician/login";
+  
+  static const fcmRegister = "auth/fcm-register";
 
   static const upcomingAmcVisits = "technician/dashboard/upcoming-amc-visits";
 

@@ -17,6 +17,10 @@ import 'package:service_app/src/features/reports/presentation/pages/create_repor
 import 'package:service_app/src/features/service_calls/presentation/pages/service_calls_screen.dart';
 import 'package:service_app/src/features/home/presentation/widgets/upcoming_amc_card.dart';
 import 'package:service_app/src/features/amc/presentation/pages/amc_workflow_screen.dart';
+import 'package:service_app/src/core/services/notification_service.dart';
+import 'package:service_app/src/core/session/session_manager.dart';
+import 'package:service_app/src/features/notifications/bloc/fcm_register_bloc/fcm_register_bloc.dart';
+import 'package:service_app/src/features/notifications/bloc/fcm_register_bloc/fcm_register_event.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
@@ -29,6 +33,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late UpcomingAmcBloc _upcomingAmcBloc;
   late ProfileDetailsBloc _profileDetailsBloc;
+  late FcmRegisterBloc _fcmRegisterBloc;
 
   @override
   void initState() {
@@ -37,12 +42,26 @@ class _HomeScreenState extends State<HomeScreen> {
       ..add(const UpcomingAmcGetEvent('Today'));
     _profileDetailsBloc = getIt<ProfileDetailsBloc>()
       ..add(const ProfileDetailsGetEvent());
+    _fcmRegisterBloc = getIt<FcmRegisterBloc>();
+    _checkAndRegisterFcmToken();
+  }
+
+  Future<void> _checkAndRegisterFcmToken() async {
+    final String? newToken = await NoficationService.getToken();
+    if (newToken != null && newToken.isNotEmpty) {
+      final String? savedToken = await SessionManager.getFirebaseToken();
+      if (savedToken != newToken) {
+        _fcmRegisterBloc.add(FcmRegisterTriggerEvent(fcmToken: newToken));
+        await SessionManager.saveFirebaseToken(newToken);
+      }
+    }
   }
 
   @override
   void dispose() {
     _upcomingAmcBloc.close();
     _profileDetailsBloc.close();
+    _fcmRegisterBloc.close();
     super.dispose();
   }
 
