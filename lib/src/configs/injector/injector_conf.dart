@@ -78,6 +78,7 @@ import '../../features/reports/domain/usecases/service_work_report_step3_autofil
 import '../../features/reports/domain/usecases/delete_service_work_report_usecase.dart';
 import '../../features/notifications/domain/usecase/fcm_register_usecase.dart';
 import '../../features/home/domain/usecase/get_app_settings_usecase.dart';
+import '../../features/notifications/domain/usecase/get_notifications_usecase.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -779,6 +780,14 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => GetAppSettingsUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => NotificationsBloc(getNotificationsUseCase: getIt<GetNotificationsUseCase>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => GetNotificationsUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   // Profile Delete Account

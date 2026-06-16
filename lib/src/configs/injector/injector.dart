@@ -87,3 +87,4 @@ export '../../features/reports/bloc/service_work_report_step3_autofill_bloc/serv
 export '../../features/reports/bloc/delete_service_work_report_bloc/delete_service_work_report_bloc.dart';
 export '../../features/notifications/bloc/fcm_register_bloc/fcm_register_bloc.dart';
 export '../../features/home/bloc/app_settings_bloc/app_settings_bloc.dart';
+export '../../features/notifications/bloc/notifications_bloc/notifications_bloc.dart';

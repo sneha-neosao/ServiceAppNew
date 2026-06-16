@@ -116,6 +116,7 @@ import '../models/amc_visit_model/amc_visit_list_response.dart';
 import '../models/amc_report_model/delete_amc_report_response.dart';
 import '../models/delete_service_work_report_model/delete_service_work_report_response.dart';
 import '../models/delete_account_model/delete_account_response.dart';
+import '../models/notifications_model/notifications_response.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -385,6 +386,13 @@ abstract class Repository {
   );
 
   Future<Either<Failure, DeleteAccountResponse>> deleteAccount();
+
+  Future<Either<Failure, NotificationsResponse>> getNotifications({
+    required int page,
+    String? customerName,
+    String? siteName,
+    String? date,
+  });
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -2971,6 +2979,47 @@ class AuthRepositoryImpl implements Repository {
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, NotificationsResponse>> getNotifications({
+    required int page,
+    String? customerName,
+    String? siteName,
+    String? date,
+  }) {
+    return _networkInfo.check<NotificationsResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.getNotifications(
+            page: page,
+            token: token,
+            customerName: customerName,
+            siteName: siteName,
+            date: date,
+          );
+
+          if (response.status != 200) {
+            return Left(ServerFailure(response.message ?? ""));
+          }
+
+          return Right(response);
         } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));

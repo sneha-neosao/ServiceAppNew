@@ -6,8 +6,7 @@ class ApiUrl {
 
   static const privacy_url = "https://theperpetuity.com/privacy-policy";
 
-  static const terms_condition_url =
-      "https://theperpetuity.com/terms-and-conditions";
+  static const terms_condition_url = "https://theperpetuity.com/terms-and-conditions";
 
   static const refund_url = "https://theperpetuity.com/refund-policy";
 
@@ -154,4 +153,6 @@ class ApiUrl {
   static const  serviceCallReportHistory = "technician/service-call-reports/history";
 
   static const  serviceCallDetails = "technician/service-calls/";
+
+  static const notifications = "notifications";
 }

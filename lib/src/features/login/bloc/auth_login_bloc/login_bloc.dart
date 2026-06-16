@@ -48,6 +48,12 @@ class AuthLoginBloc extends Bloc<AuthEvent, AuthLoginState> {
       // Persist sign-in status so splash can route correctly on next launch
       await SessionManager.saveLoginStatus(true);
       await SessionManager.saveUserSession(data);
+      if (data.accessToken != null) {
+        await SessionManager.saveSessionId(data.accessToken!);
+      }
+      if (data.refreshToken != null) {
+        await SessionManager.saveRefreshToken(data.refreshToken!);
+      }
       emit(AuthLoginSuccessState(data));
     }
   }

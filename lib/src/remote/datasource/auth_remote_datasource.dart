@@ -104,6 +104,7 @@ import '../models/delete_account_model/delete_account_response.dart';
 import '../models/service_calls_details_model/service_calls_details_response.dart';
 import '../models/amc_report_model/delete_amc_report_response.dart';
 import '../models/delete_service_work_report_model/delete_service_work_report_response.dart';
+import '../models/notifications_model/notifications_response.dart';
 
 sealed class RemoteDataSource {
   Future<LoginResponse> login(LoginParams params);
@@ -455,6 +456,14 @@ sealed class RemoteDataSource {
     String reportId,
     String token,
   );
+
+  Future<NotificationsResponse> getNotifications({
+    required int page,
+    required String token,
+    String? customerName,
+    String? siteName,
+    String? date,
+  });
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -2939,6 +2948,41 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       return DeleteServiceWorkReportResponse.fromJson(response);
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      if (e.toString() == noElement) throw AuthException();
+      if (e is ApiException) throw e;
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<NotificationsResponse> getNotifications({
+    required int page,
+    required String token,
+    String? customerName,
+    String? siteName,
+    String? date,
+  }) async {
+    try {
+      String params = '?page=$page&page_size=10';
+      if (customerName != null && customerName.isNotEmpty) {
+        params += '&customer_name=$customerName';
+      }
+      if (siteName != null && siteName.isNotEmpty) {
+        params += '&site_name=$siteName';
+      }
+      if (date != null && date.isNotEmpty) {
+        params += '&date=$date';
+      }
+
+      final response = await _helper.execute(
+        method: Method.get,
+        url: 'notifications$params',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return NotificationsResponse.fromJson(response);
     } on EmptyException {
       throw AuthException();
     } catch (e) {
