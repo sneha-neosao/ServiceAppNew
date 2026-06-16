@@ -6,6 +6,8 @@ import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/features/notifications/bloc/notifications_bloc/notifications_bloc.dart';
 import 'package:service_app/src/features/notifications/bloc/notifications_bloc/notifications_event.dart';
+import 'package:service_app/src/features/notifications/bloc/mark_all_read_bloc/mark_all_read_bloc.dart';
+import 'package:service_app/src/features/notifications/bloc/mark_all_read_bloc/mark_all_read_event.dart';
 import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
@@ -30,6 +32,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   late NotificationsBloc _notificationsBloc;
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
+  late MarkAllReadBloc _markAllReadBloc;
 
   @override
   void initState() {
@@ -38,6 +41,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
     _notificationsBloc = getIt<NotificationsBloc>();
     _customerBloc = getIt<CustomerBloc>()..add(const CustomerGetEvent());
     _sitesBloc = getIt<SitesBloc>();
+    _markAllReadBloc = getIt<MarkAllReadBloc>()
+      ..add(const MarkAllNotificationsReadEvent());
     _fetchNotifications(page: 1);
   }
 
@@ -67,6 +72,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     _scrollController.dispose();
     _customerBloc.close();
     _sitesBloc.close();
+    _markAllReadBloc.close();
     super.dispose();
   }
 

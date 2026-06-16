@@ -293,11 +293,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: Color(0xFF0B68B9),
                                   shape: BoxShape.circle,
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Image.asset(
-                                    'assets/icons/notification_icon.png',
-                                  ),
+                                child: const Icon(
+                                  Icons.notifications_outlined,
+                                  color: Colors.white,
+                                  size: 26,
                                 ),
                               ),
                             ),
