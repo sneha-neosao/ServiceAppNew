@@ -24,6 +24,7 @@ import 'package:service_app/src/features/service_calls/presentation/widgets/assi
 import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/complaint_report_dialog.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/service_call_card.dart';
+import 'package:service_app/src/features/service_calls/presentation/widgets/reassign_technician_dialog.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/close_over_call_dialog.dart';
 
 class ServiceCallsScreen extends StatefulWidget {
@@ -740,25 +741,19 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                 assignedTo: techs.isNotEmpty ? techs : 'UNASSIGNED',
                 dateReceived: dateStr,
                 onView: () => _showReportDialog(context, item.id),
-                onEdit: () => _showAssignTechDialog(
+                onEdit: () => _showReassignTechDialog(
                   context,
                   item.id,
                   item.complaintNumber,
+                  item.customerName,
+                  item.customerId,
+                  item.siteName,
+                  item.siteId,
                   initialTechnicians: item.assignedTechnicians
                       .map(
                         (e) => Technician(id: e.id, name: e.name, code: e.code),
                       )
                       .toList(),
-                  initialCustomerId: item.customerId.isNotEmpty
-                      ? item.customerId
-                      : null,
-                  initialCustomerName: item.customerName.isNotEmpty
-                      ? item.customerName
-                      : null,
-                  initialSiteId: item.siteId.isNotEmpty ? item.siteId : null,
-                  initialSiteName: item.siteName.isNotEmpty
-                      ? item.siteName
-                      : null,
                 ),
                 onSubmit: () {
                   Navigator.push(
@@ -874,16 +869,6 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         (e) => Technician(id: e.id, name: e.name, code: e.code),
                       )
                       .toList(),
-                  initialCustomerId: item.customerId.isNotEmpty
-                      ? item.customerId
-                      : null,
-                  initialCustomerName: item.customerName.isNotEmpty
-                      ? item.customerName
-                      : null,
-                  initialSiteId: item.siteId.isNotEmpty ? item.siteId : null,
-                  initialSiteName: item.siteName.isNotEmpty
-                      ? item.siteName
-                      : null,
                 ),
                 onCloseOverCall: () => _showCloseOverCallDialog(
                   context,
@@ -901,16 +886,6 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         (e) => Technician(id: e.id, name: e.name, code: e.code),
                       )
                       .toList(),
-                  initialCustomerId: item.customerId.isNotEmpty
-                      ? item.customerId
-                      : null,
-                  initialCustomerName: item.customerName.isNotEmpty
-                      ? item.customerName
-                      : null,
-                  initialSiteId: item.siteId.isNotEmpty ? item.siteId : null,
-                  initialSiteName: item.siteName.isNotEmpty
-                      ? item.siteName
-                      : null,
                 ),
               );
             },
@@ -961,10 +936,6 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
     String complaintId,
     String complaintNo, {
     List<Technician>? initialTechnicians,
-    String? initialCustomerId,
-    String? initialCustomerName,
-    String? initialSiteId,
-    String? initialSiteName,
   }) {
     showDialog(
       context: context,
@@ -974,10 +945,34 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           complaintId: complaintId,
           complaintNo: complaintNo,
           initialTechnicians: initialTechnicians,
-          initialCustomerId: initialCustomerId,
-          initialCustomerName: initialCustomerName,
-          initialSiteId: initialSiteId,
-          initialSiteName: initialSiteName,
+          onSuccess: () => _fetchServiceCalls(isRefresh: true),
+        );
+      },
+    );
+  }
+
+  void _showReassignTechDialog(
+    BuildContext context,
+    String complaintId,
+    String complaintNo,
+    String customerName,
+    String customerId,
+    String siteName,
+    String siteId, {
+    List<Technician>? initialTechnicians,
+  }) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return ReassignTechnicianDialog(
+          complaintId: complaintId,
+          complaintNo: complaintNo,
+          customerName: customerName,
+          customerId: customerId,
+          siteName: siteName,
+          siteId: siteId,
+          initialTechnicians: initialTechnicians,
           onSuccess: () => _fetchServiceCalls(isRefresh: true),
         );
       },

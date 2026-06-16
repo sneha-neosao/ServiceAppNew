@@ -32,10 +32,6 @@ class AssignTechnicianDialog extends StatefulWidget {
   final String complaintNo;
   final VoidCallback onSuccess;
   final List<Technician>? initialTechnicians;
-  final String? initialCustomerId;
-  final String? initialCustomerName;
-  final String? initialSiteId;
-  final String? initialSiteName;
 
   const AssignTechnicianDialog({
     super.key,
@@ -43,10 +39,6 @@ class AssignTechnicianDialog extends StatefulWidget {
     required this.complaintNo,
     required this.onSuccess,
     this.initialTechnicians,
-    this.initialCustomerId,
-    this.initialCustomerName,
-    this.initialSiteId,
-    this.initialSiteName,
   });
 
   @override
@@ -79,32 +71,12 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
     if (widget.initialTechnicians != null) {
       _selectedTechnicians = List.from(widget.initialTechnicians!);
     }
-    if (widget.initialCustomerName != null) {
-      _selectedCustomer = widget.initialCustomerName;
-      _customers.add(widget.initialCustomerName!);
-    }
-    if (widget.initialCustomerId != null &&
-        widget.initialCustomerName != null) {
-      _createdCustomerIds[widget.initialCustomerName!] =
-          widget.initialCustomerId!;
-    }
-    if (widget.initialSiteName != null) {
-      _selectedSite = widget.initialSiteName;
-      _sites.add(widget.initialSiteName!);
-    }
-    if (widget.initialSiteId != null && widget.initialSiteName != null) {
-      _createdSiteIds[widget.initialSiteName!] = widget.initialSiteId!;
-    }
 
     _activeTechsBloc = getIt<ActiveTechniciansServiceCallsBloc>()
       ..add(const ActiveTechniciansServiceCallsGetEvent());
     _assignBloc = getIt<AssignTechnicianServiceCallsBloc>();
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
     _sitesBloc = getIt<SitesBloc>();
-
-    if (widget.initialCustomerId != null) {
-      _sitesBloc.add(SitesGetEvent(customer_id: widget.initialCustomerId!));
-    }
   }
 
   @override
@@ -629,7 +601,6 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
             }).toList();
 
             return SafeArea(
-              bottom: false,
               child: Padding(
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(ctx).viewInsets.bottom,
