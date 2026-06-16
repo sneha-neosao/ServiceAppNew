@@ -431,6 +431,9 @@ class AuthRepositoryImpl implements Repository {
             await SessionManager.saveRefreshToken(respData.refreshToken!);
           }
 
+          // Save credentials for auto-fill on next login
+          await SessionManager.saveCredentials(params.phone, params.password);
+
           // Retrieve later
           final savedSession = await SessionManager.getUserSession();
           if (savedSession != null) {
