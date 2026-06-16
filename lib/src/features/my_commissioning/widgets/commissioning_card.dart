@@ -132,7 +132,7 @@ class CommissioningCard extends StatelessWidget {
                         ? Icons.people_outline   // multiple technicians
                         : Icons.person_outline,   // single technician
                     size: 18,
-                    color: const Color(0xFFA5ABB7),
+                    color: const Color(0xFF1565C0),
                   ),
                   const SizedBox(width: 10),
                   Expanded(

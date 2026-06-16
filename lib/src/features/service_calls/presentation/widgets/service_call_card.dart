@@ -296,7 +296,7 @@ class ServiceCallCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 18, color: const Color(0xFF5C616E)),
+          Icon(icon, size: 18, color: Colors.red),
           const SizedBox(width: 8),
           Flexible(
             child: Text(
