@@ -118,7 +118,9 @@ import '../models/delete_service_work_report_model/delete_service_work_report_re
 import '../models/delete_account_model/delete_account_response.dart';
 import '../models/notifications_model/notifications_response.dart';
 import '../models/notifications_model/mark_all_read_response.dart';
+import '../models/notifications_model/unread_count_response.dart';
 import '../../features/notifications/domain/usecase/mark_all_notifications_read_usecase.dart';
+import '../../features/notifications/domain/usecase/get_unread_count_usecase.dart';
 
 /// Abstract Repository interface defining all data operations for the app
 
@@ -397,6 +399,8 @@ abstract class Repository {
   });
 
   Future<Either<Failure, MarkAllReadResponse>> markAllNotificationsRead();
+
+  Future<Either<Failure, UnreadCountResponse>> getUnreadNotificationCount();
 }
 
 class AuthRepositoryImpl implements Repository {
@@ -3049,6 +3053,38 @@ class AuthRepositoryImpl implements Repository {
           String token = await SessionManager.getAuthToken() ?? "";
           final response =
               await _remoteDataSource.markAllNotificationsRead(token: token);
+
+          if (response.status != 200) {
+            return Left(ServerFailure(response.message ?? ""));
+          }
+
+          return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, UnreadCountResponse>> getUnreadNotificationCount() {
+    return _networkInfo.check<UnreadCountResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final response = await _remoteDataSource.getUnreadNotificationCount(
+            token: token,
+          );
 
           if (response.status != 200) {
             return Left(ServerFailure(response.message ?? ""));

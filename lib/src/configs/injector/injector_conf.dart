@@ -81,6 +81,8 @@ import '../../features/home/domain/usecase/get_app_settings_usecase.dart';
 import '../../features/notifications/domain/usecase/get_notifications_usecase.dart';
 import '../../features/notifications/domain/usecase/mark_all_notifications_read_usecase.dart';
 import '../../features/notifications/bloc/mark_all_read_bloc/mark_all_read_bloc.dart';
+import '../../features/notifications/domain/usecase/get_unread_count_usecase.dart';
+import '../../features/notifications/bloc/unread_count_bloc/unread_count_bloc.dart';
 import 'injector.dart';
 
 final getIt = GetIt.I;
@@ -801,6 +803,17 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => MarkAllNotificationsReadUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => UnreadCountBloc(
+      getUnreadNotificationCountUseCase:
+          getIt<GetUnreadNotificationCountUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton(
+    () => GetUnreadNotificationCountUseCase(getIt<AuthRepositoryImpl>()),
   );
 
   // Profile Delete Account

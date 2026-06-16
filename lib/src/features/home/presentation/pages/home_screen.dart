@@ -29,6 +29,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'package:service_app/src/features/login/bloc/auth_login_bloc/login_bloc.dart';
+import 'package:service_app/src/features/notifications/bloc/unread_count_bloc/unread_count_bloc.dart';
+import 'package:service_app/src/features/notifications/bloc/unread_count_bloc/unread_count_event.dart';
 import 'package:go_router/go_router.dart';
 import 'package:service_app/src/routes/app_route_path.dart';
 
@@ -45,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late ProfileDetailsBloc _profileDetailsBloc;
   late FcmRegisterBloc _fcmRegisterBloc;
   late AppSettingsBloc _appSettingsBloc;
+  late UnreadCountBloc _unreadCountBloc;
 
   @override
   void initState() {
@@ -56,6 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _fcmRegisterBloc = getIt<FcmRegisterBloc>();
     _appSettingsBloc = getIt<AppSettingsBloc>()
       ..add(const GetAppSettingsEvent());
+    _unreadCountBloc = getIt<UnreadCountBloc>()
+      ..add(const GetUnreadNotificationCountEvent());
     _checkAndRegisterFcmToken();
   }
 
@@ -76,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _profileDetailsBloc.close();
     _fcmRegisterBloc.close();
     _appSettingsBloc.close();
+    _unreadCountBloc.close();
     super.dispose();
   }
 
@@ -284,20 +290,78 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onBack: () => Navigator.pop(context),
                                     ),
                                   ),
-                                );
+                                ).then((_) {
+                                  // Refresh count after returning from notifications
+                                  _unreadCountBloc.add(
+                                    const GetUnreadNotificationCountEvent(),
+                                  );
+                                });
                               },
-                              child: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFF0B68B9),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.notifications_outlined,
-                                  color: Colors.white,
-                                  size: 26,
-                                ),
+                              child: BlocBuilder<UnreadCountBloc, UnreadCountState>(
+                                bloc: _unreadCountBloc,
+                                builder: (context, state) {
+                                  return Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFF0B68B9),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.notifications_outlined,
+                                          color: Colors.white,
+                                          size: 26,
+                                        ),
+                                      ),
+                                      if (state is UnreadCountLoading)
+                                        Positioned(
+                                          top: -4,
+                                          right: -4,
+                                          child: Shimmer.fromColors(
+                                            baseColor: Colors.grey[300]!,
+                                            highlightColor: Colors.grey[100]!,
+                                            child: Container(
+                                              width: 18,
+                                              height: 18,
+                                              decoration: const BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      else if (state is UnreadCountLoaded &&
+                                          state.unreadCount > 0)
+                                        Positioned(
+                                          top: -4,
+                                          right: -4,
+                                          child: Container(
+                                            width: 18,
+                                            height: 18,
+                                            decoration: const BoxDecoration(
+                                              color: Colors.red,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                state.unreadCount > 99
+                                                    ? '99+'
+                                                    : '${state.unreadCount}',
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
                             const SizedBox(width: 8),

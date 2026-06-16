@@ -106,6 +106,7 @@ import '../models/amc_report_model/delete_amc_report_response.dart';
 import '../models/delete_service_work_report_model/delete_service_work_report_response.dart';
 import '../models/notifications_model/notifications_response.dart';
 import '../models/notifications_model/mark_all_read_response.dart';
+import '../models/notifications_model/unread_count_response.dart';
 
 sealed class RemoteDataSource {
   Future<LoginResponse> login(LoginParams params);
@@ -467,6 +468,8 @@ sealed class RemoteDataSource {
   });
 
   Future<MarkAllReadResponse> markAllNotificationsRead({required String token});
+
+  Future<UnreadCountResponse> getUnreadNotificationCount({required String token});
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -3006,6 +3009,26 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       return MarkAllReadResponse.fromJson(response);
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      if (e.toString() == noElement) throw AuthException();
+      if (e is ApiException) throw e;
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<UnreadCountResponse> getUnreadNotificationCount({
+    required String token,
+  }) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: ApiUrl.unreadNotificationCount,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return UnreadCountResponse.fromJson(response);
     } on EmptyException {
       throw AuthException();
     } catch (e) {

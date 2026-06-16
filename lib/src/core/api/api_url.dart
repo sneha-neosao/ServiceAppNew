@@ -157,5 +157,7 @@ class ApiUrl {
   static const notifications = "notifications";
 
   static const markAllNotificationsRead = "notifications/mark-all-read";
+
+  static const unreadNotificationCount = "notifications/unread-count";
 }
 
