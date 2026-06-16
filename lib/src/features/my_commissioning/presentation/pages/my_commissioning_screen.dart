@@ -207,14 +207,7 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                                 builder: (context) =>
                                     CreateCommissioningReportScreen(
                                       commissioningWorkId: item.id,
-                                      onBack: () => Navigator.pushAndRemoveUntil(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const HomeScreen(initialIndex: 1),
-                                        ),
-                                        (route) => false,
-                                      ),
+                                      onBack: () => Navigator.pop(context),
                                     ),
                               ),
                             );

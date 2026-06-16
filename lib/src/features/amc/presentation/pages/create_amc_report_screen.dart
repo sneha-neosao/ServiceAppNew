@@ -361,6 +361,23 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 _technicians.add(TextEditingController());
                 _technicianIds.add(null);
               }
+
+              if (_currentReportId == null && state.data.data.id.isNotEmpty) {
+                _currentReportId = state.data.data.id;
+              }
+
+              // Smart routing logic
+              final completedStep = state.data.data.lastCompletedStep;
+              if (completedStep > 0 && completedStep < 3 && _currentStep == 1) {
+                _currentStep = completedStep + 1;
+                if (_currentReportId != null) {
+                  if (_currentStep == 2) {
+                    _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
+                  } else if (_currentStep == 3) {
+                    _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
+                  }
+                }
+              }
             } else if (state is AmcReportStep1AutofillFailureState) {
               appSnackBar(context, const Color(0xFFF44336), state.message);
             }
@@ -2194,6 +2211,13 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 widget.onBack();
               } else {
                 setState(() => _currentStep--);
+                if (_currentReportId != null) {
+                  if (_currentStep == 1) {
+                    _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
+                  } else if (_currentStep == 2) {
+                    _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
+                  }
+                }
               }
             },
             child: Row(

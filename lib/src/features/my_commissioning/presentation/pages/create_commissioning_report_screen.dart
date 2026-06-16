@@ -2879,6 +2879,39 @@ class _CreateCommissioningReportScreenState
                       _technicianIds.add(t.id);
                     }
                   }
+
+                  // Smart routing logic
+                  final completedStep = state.data.data.lastCompletedStep;
+                  if (completedStep > 0 && completedStep < 6 && _currentStep == 1) {
+                    _currentStep = completedStep + 1;
+                    
+                    if (_commissioningReportId != null) {
+                      if (_currentStep == 2) {
+                        _serviceCallStep2AutoFillBloc.add(
+                          ServiceCallReportStep2AutoFillGetEvent(_commissioningReportId!),
+                        );
+                      } else if (_currentStep == 3) {
+                        _serviceCallStep3AutoFillBloc.add(
+                          ServiceCallReportStep3AutoFillGetEvent(_commissioningReportId!),
+                        );
+                      } else if (_currentStep == 4) {
+                        _serviceCallStep4AutoFillBloc.add(
+                          ServiceCallReportStep4AutoFillGetEvent(_commissioningReportId!),
+                        );
+                      } else if (_currentStep == 5) {
+                        _serviceCallStep5AutoFillBloc.add(
+                          ServiceCallReportStep5AutoFillGetEvent(_commissioningReportId!),
+                        );
+                      } else if (_currentStep == 6) {
+                        _serviceCallStep6AutoFillBloc.add(
+                          ServiceCallReportStep6AutoFillGetEvent(_commissioningReportId!),
+                        );
+                        _assignedServiceCallTechnicianBloc.add(
+                          AssignedServicecallTechnicianGetEvent(_commissioningReportId!),
+                        );
+                      }
+                    }
+                  }
                 });
               }
             },
@@ -2912,6 +2945,39 @@ class _CreateCommissioningReportScreenState
                     for (var t in state.data.data.assignedTechnicians) {
                       _technicians.add(TextEditingController(text: t.name));
                       _technicianIds.add(t.id);
+                    }
+                  }
+
+                  // Smart routing logic
+                  final completedStep = state.data.data.lastCompletedStep;
+                  if (completedStep > 0 && completedStep < 6 && _currentStep == 1) {
+                    _currentStep = completedStep + 1;
+                    
+                    if (_commissioningReportId != null) {
+                      if (_currentStep == 2) {
+                        _step2Bloc.add(
+                          CommissioningStep2AutoFillGetEvent(_commissioningReportId!),
+                        );
+                      } else if (_currentStep == 3) {
+                        _step3Bloc.add(
+                          CommissioningStep3AutoFillGetEvent(_commissioningReportId!),
+                        );
+                      } else if (_currentStep == 4) {
+                        _step4Bloc.add(
+                          CommissioningStep4AutoFillGetEvent(_commissioningReportId!),
+                        );
+                      } else if (_currentStep == 5) {
+                        _step5Bloc.add(
+                          CommissioningStep5AutoFillGetEvent(_commissioningReportId!),
+                        );
+                      } else if (_currentStep == 6) {
+                        _step6Bloc.add(
+                          CommissioningStep6AutoFillGetEvent(_commissioningReportId!),
+                        );
+                        _assignedTechniciansBloc.add(
+                          AssignedTechnicianRepresentativeGetEvent(_commissioningReportId!),
+                        );
+                      }
                     }
                   }
                 });
@@ -3451,29 +3517,15 @@ class _CreateCommissioningReportScreenState
                   _technicianIds.add(null);
                 });
               },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8F9FB),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFF1F2F6)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.add, size: 16, color: Color(0xFF1565C0)),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Add',
-                      style: AppFont.style(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF1565C0),
-                      ),
-                    ),
-                  ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  'Add New +',
+                  style: AppFont.style(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF1565C0),
+                  ),
                 ),
               ),
             ),
@@ -3751,7 +3803,7 @@ class _CreateCommissioningReportScreenState
                                   });
                                 },
                                 child: Text(
-                                  'commissioning_add'.tr(),
+                                  'Add New +',
                                   style: AppFont.style(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w900,
@@ -4221,7 +4273,7 @@ class _CreateCommissioningReportScreenState
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
-                '+ Add More Rows',
+                'Add New +',
                 style: AppFont.style(
                   fontSize: 14,
                   fontWeight: FontWeight.w900,

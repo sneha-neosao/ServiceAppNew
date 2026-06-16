@@ -347,10 +347,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
 
                           if (_selectedCustomerId == null) {
                             return IgnorePointer(
-                              child: Opacity(
-                                opacity: 0.5,
-                                child: siteDropdown,
-                              ),
+                              child: Opacity(opacity: 0.5, child: siteDropdown),
                             );
                           }
 
@@ -683,7 +680,8 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
             padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
             itemCount: 3,
             separatorBuilder: (_, __) => const SizedBox(height: 16),
-            itemBuilder: (_, __) => const ServiceCallCardShimmer(type: ServiceCallType.ongoing),
+            itemBuilder: (_, __) =>
+                const ServiceCallCardShimmer(type: ServiceCallType.ongoing),
           );
         }
 
@@ -729,7 +727,9 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   .map((e) => e.name)
                   .join(', ');
               final dateStr = item.createdAt.isNotEmpty
-                  ? DateFormat('dd-MM-yyyy').format(DateTime.parse(item.createdAt).toLocal())
+                  ? DateFormat(
+                      'dd-MM-yyyy',
+                    ).format(DateTime.parse(item.createdAt).toLocal())
                   : null;
 
               return ServiceCallCard(
@@ -745,12 +745,20 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   item.id,
                   item.complaintNumber,
                   initialTechnicians: item.assignedTechnicians
-                      .map((e) => Technician(
-                            id: e.id,
-                            name: e.name,
-                            code: e.code,
-                          ))
+                      .map(
+                        (e) => Technician(id: e.id, name: e.name, code: e.code),
+                      )
                       .toList(),
+                  initialCustomerId: item.customerId.isNotEmpty
+                      ? item.customerId
+                      : null,
+                  initialCustomerName: item.customerName.isNotEmpty
+                      ? item.customerName
+                      : null,
+                  initialSiteId: item.siteId.isNotEmpty ? item.siteId : null,
+                  initialSiteName: item.siteName.isNotEmpty
+                      ? item.siteName
+                      : null,
                 ),
                 onSubmit: () {
                   Navigator.push(
@@ -758,14 +766,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                     MaterialPageRoute(
                       builder: (context) => CreateCommissioningReportScreen(
                         isServiceReport: true,
-                        onBack: () => Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const HomeScreen(initialIndex: 2),
-                          ),
-                          (route) => false,
-                        ),
+                        onBack: () => Navigator.pop(context),
                         commissioningWorkId: item.id,
                         complaintNo: item.complaintNumber,
                       ),
@@ -795,10 +796,16 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
         if (state is PendingServiceCallsLoadingState ||
             state is PendingServiceCallsInitialState) {
           return ListView.separated(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 16,
+              bottom: 100,
+            ),
             itemCount: 3,
             separatorBuilder: (_, __) => const SizedBox(height: 16),
-            itemBuilder: (_, __) => const ServiceCallCardShimmer(type: ServiceCallType.active),
+            itemBuilder: (_, __) =>
+                const ServiceCallCardShimmer(type: ServiceCallType.active),
           );
         }
 
@@ -826,7 +833,12 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 16,
+              bottom: 100,
+            ),
             itemCount: data.data.results.length + (isPaginationLoading ? 1 : 0),
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
@@ -841,7 +853,9 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
 
               final item = data.data.results[index];
               final dateStr = item.createdAt.isNotEmpty
-                  ? DateFormat('dd-MM-yyyy').format(DateTime.parse(item.createdAt).toLocal())
+                  ? DateFormat(
+                      'dd-MM-yyyy',
+                    ).format(DateTime.parse(item.createdAt).toLocal())
                   : null;
 
               return ServiceCallCard(
@@ -856,12 +870,20 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   item.id,
                   item.complaintNumber,
                   initialTechnicians: item.assignedTechnicians
-                      .map((e) => Technician(
-                            id: e.id,
-                            name: e.name,
-                            code: e.code,
-                          ))
+                      .map(
+                        (e) => Technician(id: e.id, name: e.name, code: e.code),
+                      )
                       .toList(),
+                  initialCustomerId: item.customerId.isNotEmpty
+                      ? item.customerId
+                      : null,
+                  initialCustomerName: item.customerName.isNotEmpty
+                      ? item.customerName
+                      : null,
+                  initialSiteId: item.siteId.isNotEmpty ? item.siteId : null,
+                  initialSiteName: item.siteName.isNotEmpty
+                      ? item.siteName
+                      : null,
                 ),
                 onCloseOverCall: () => _showCloseOverCallDialog(
                   context,
@@ -875,12 +897,20 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   item.id,
                   item.complaintNumber,
                   initialTechnicians: item.assignedTechnicians
-                      .map((e) => Technician(
-                            id: e.id,
-                            name: e.name,
-                            code: e.code,
-                          ))
+                      .map(
+                        (e) => Technician(id: e.id, name: e.name, code: e.code),
+                      )
                       .toList(),
+                  initialCustomerId: item.customerId.isNotEmpty
+                      ? item.customerId
+                      : null,
+                  initialCustomerName: item.customerName.isNotEmpty
+                      ? item.customerName
+                      : null,
+                  initialSiteId: item.siteId.isNotEmpty ? item.siteId : null,
+                  initialSiteName: item.siteName.isNotEmpty
+                      ? item.siteName
+                      : null,
                 ),
               );
             },
@@ -921,16 +951,21 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        return ComplaintReportDialog(
-          complaintId: complaintId,
-        );
+        return ComplaintReportDialog(complaintId: complaintId);
       },
     );
   }
 
   void _showAssignTechDialog(
-      BuildContext context, String complaintId, String complaintNo,
-      {List<Technician>? initialTechnicians}) {
+    BuildContext context,
+    String complaintId,
+    String complaintNo, {
+    List<Technician>? initialTechnicians,
+    String? initialCustomerId,
+    String? initialCustomerName,
+    String? initialSiteId,
+    String? initialSiteName,
+  }) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -939,6 +974,10 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           complaintId: complaintId,
           complaintNo: complaintNo,
           initialTechnicians: initialTechnicians,
+          initialCustomerId: initialCustomerId,
+          initialCustomerName: initialCustomerName,
+          initialSiteId: initialSiteId,
+          initialSiteName: initialSiteName,
           onSuccess: () => _fetchServiceCalls(isRefresh: true),
         );
       },

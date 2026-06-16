@@ -77,6 +77,8 @@ class ServiceCallResult extends Equatable {
   final String customerName;
   final String siteName;
   final String dealerName;
+  final String customerId;
+  final String siteId;
   final List<AssignedTechnician> assignedTechnicians;
   final String createdAt;
 
@@ -93,6 +95,8 @@ class ServiceCallResult extends Equatable {
     required this.customerName,
     required this.siteName,
     required this.dealerName,
+    required this.customerId,
+    required this.siteId,
     required this.assignedTechnicians,
     required this.createdAt,
   });
@@ -111,7 +115,10 @@ class ServiceCallResult extends Equatable {
       customerName: json['customer_name'] ?? '',
       siteName: json['site_name'] ?? '',
       dealerName: json['dealer_name'] ?? '',
-      assignedTechnicians: (json['assigned_technicians'] as List?)
+      customerId: json['customer_id'] ?? '',
+      siteId: json['site_id'] ?? '',
+      assignedTechnicians:
+          (json['assigned_technicians'] as List?)
               ?.map((e) => AssignedTechnician.fromJson(e))
               .toList() ??
           [],
@@ -133,6 +140,8 @@ class ServiceCallResult extends Equatable {
       'customer_name': customerName,
       'site_name': siteName,
       'dealer_name': dealerName,
+      'customer_id': customerId,
+      'site_id': siteId,
       'assigned_technicians': assignedTechnicians
           .map((e) => e.toJson())
           .toList(),
@@ -154,6 +163,8 @@ class ServiceCallResult extends Equatable {
     customerName,
     siteName,
     dealerName,
+    customerId,
+    siteId,
     assignedTechnicians,
     createdAt,
   ];

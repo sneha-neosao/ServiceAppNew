@@ -1211,20 +1211,15 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           if (showAdd && onAddTap != null)
             GestureDetector(
               onTap: onAddTap,
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF1F8FF),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: const Color(0xFF1565C0).withOpacity(0.15),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Text(
+                  'Add New +',
+                  style: AppFont.style(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF1565C0),
                   ),
-                ),
-                child: const Icon(
-                  Icons.add,
-                  size: 20,
-                  color: Color(0xFF1565C0),
                 ),
               ),
             ),

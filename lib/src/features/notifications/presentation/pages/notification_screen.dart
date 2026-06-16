@@ -25,6 +25,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Customer? _selectedCustomer;
   Site? _selectedSite;
   final ScrollController _scrollController = ScrollController();
+  bool _isFetchingMore = false;
   
   late NotificationsBloc _notificationsBloc;
   late CustomerBloc _customerBloc;
@@ -43,7 +44,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
   void _onScroll() {
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 50) {
       final state = _notificationsBloc.state;
-      if (state is NotificationsLoaded && !state.hasReachedMax) {
+      if (state is NotificationsLoaded && !state.hasReachedMax && !_isFetchingMore) {
+        setState(() => _isFetchingMore = true);
         final currentPage = state.response.data?.pagination?.page ?? 1;
         _fetchNotifications(page: currentPage + 1);
       }
@@ -304,8 +306,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
             // ── Notifications List ────────────────────────────────────────────
             Expanded(
-              child: BlocBuilder<NotificationsBloc, NotificationsState>(
+              child: BlocConsumer<NotificationsBloc, NotificationsState>(
                 bloc: _notificationsBloc,
+                listener: (context, state) {
+                  if (state is NotificationsLoaded || state is NotificationsError) {
+                    setState(() => _isFetchingMore = false);
+                  }
+                },
                 builder: (context, state) {
                   if (state is NotificationsLoading || state is NotificationsInitial) {
                     return ListView.builder(

@@ -194,6 +194,9 @@ class ApiInterceptor extends Interceptor {
       print("🔴 Navigation Context: $context");
       if (context == null) return;
 
+      // Close any open dialogs/bottom sheets on the root navigator
+      Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
+
       context.go(AppRoute.loginScreen.path);
     });
   }
