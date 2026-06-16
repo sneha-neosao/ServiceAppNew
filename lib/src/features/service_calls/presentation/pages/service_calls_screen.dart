@@ -112,7 +112,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
         children: [
           // ── Service Calls Header ──────────────────────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+            padding: const EdgeInsets.fromLTRB(24, 16, 16, 12),
             child: Row(
               children: [
                 Text(
@@ -163,31 +163,64 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         color: const Color(0xFFF1F2F6),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Row(
+                      child: Stack(
                         children: [
-                          Expanded(
-                            child: _buildSegmentTab(
-                              0,
-                              'service_calls_tab_assigned'.tr(),
-                              count: assignedCount,
-                              isLoading:
-                                  assignedState
-                                      is AssignedServiceCallsLoadingState ||
-                                  assignedState
-                                      is AssignedServiceCallsInitialState,
+                          AnimatedAlign(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            alignment: _selectedTab == 0
+                                ? Alignment.centerLeft
+                                : Alignment.centerRight,
+                            child: FractionallySizedBox(
+                              widthFactor: 0.5,
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 2,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.05,
+                                      ),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                          Expanded(
-                            child: _buildSegmentTab(
-                              1,
-                              'service_calls_tab_pending'.tr(),
-                              count: pendingCount,
-                              isLoading:
-                                  pendingState
-                                      is PendingServiceCallsLoadingState ||
-                                  pendingState
-                                      is PendingServiceCallsInitialState,
-                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildSegmentTab(
+                                  0,
+                                  'service_calls_tab_assigned'.tr(),
+                                  count: assignedCount,
+                                  isLoading:
+                                      assignedState
+                                          is AssignedServiceCallsLoadingState ||
+                                      assignedState
+                                          is AssignedServiceCallsInitialState,
+                                ),
+                              ),
+                              Expanded(
+                                child: _buildSegmentTab(
+                                  1,
+                                  'service_calls_tab_pending'.tr(),
+                                  count: pendingCount,
+                                  isLoading:
+                                      pendingState
+                                          is PendingServiceCallsLoadingState ||
+                                      pendingState
+                                          is PendingServiceCallsInitialState,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -197,8 +230,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               );
             },
           ),
-          const SizedBox(height: 16),
-          const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+
           // ── Search & Filters ────────────────────────────────────────────────
           Container(
             margin: const EdgeInsets.all(16),
@@ -461,20 +493,8 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
         }
       },
       child: Container(
+        color: Colors.transparent,
         margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
-        ),
         child: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

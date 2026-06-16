@@ -186,6 +186,20 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final activeTabs = <int>[];
+    if (widget.permissions.contains('commissioning_work')) activeTabs.add(0);
+    if (widget.permissions.contains('service_calls')) activeTabs.add(1);
+    if (widget.permissions.contains('amcs')) activeTabs.add(2);
+
+    final tabCount = activeTabs.length;
+    double alignX = -1.0;
+    if (tabCount > 1) {
+      final indexInActive = activeTabs.indexOf(_selectedTab);
+      if (indexInActive != -1) {
+        alignX = -1.0 + (indexInActive * (2.0 / (tabCount - 1)));
+      }
+    }
+
     return MultiBlocListener(
       listeners: [
         BlocListener<CommissioningReportPdfBloc, CommissioningReportPdfState>(
@@ -271,37 +285,69 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
 
             // ── Segmented Tab Control ───────────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
               child: Container(
                 height: 48,
                 decoration: BoxDecoration(
                   color: const Color(0xFFF1F2F6),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Row(
+                child: Stack(
                   children: [
-                    if (widget.permissions.contains('commissioning_work'))
-                      Expanded(
-                        child: _buildSegmentTab(
-                          0,
-                          'reports_tab_commissioning'.tr(),
+                    if (tabCount > 0)
+                      AnimatedAlign(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        alignment: Alignment(alignX, 0),
+                        child: FractionallySizedBox(
+                          widthFactor: 1.0 / tabCount,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 2,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    if (widget.permissions.contains('service_calls'))
-                      Expanded(
-                        child: _buildSegmentTab(1, 'reports_tab_service'.tr()),
-                      ),
-                    if (widget.permissions.contains('amcs'))
-                      Expanded(
-                        child: _buildSegmentTab(2, 'reports_tab_amc'.tr()),
-                      ),
+                    Row(
+                      children: [
+                        if (widget.permissions.contains('commissioning_work'))
+                          Expanded(
+                            child: _buildSegmentTab(
+                              0,
+                              'reports_tab_commissioning'.tr(),
+                            ),
+                          ),
+                        if (widget.permissions.contains('service_calls'))
+                          Expanded(
+                            child: _buildSegmentTab(
+                              1,
+                              'reports_tab_service'.tr(),
+                            ),
+                          ),
+                        if (widget.permissions.contains('amcs'))
+                          Expanded(
+                            child: _buildSegmentTab(2, 'reports_tab_amc'.tr()),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
               ),
             ),
 
-            const SizedBox(height: 16),
-            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+
 
             // ── Filter Section ──────────────────────────────────────────────────
             _selectedTab == -1 
@@ -683,20 +729,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
         }
       },
       child: Container(
+        color: Colors.transparent,
         margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
-        ),
         child: Center(
           child: Text(
             label,
@@ -717,7 +751,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+          padding: const EdgeInsets.fromLTRB(24, 16, 16, 8),
           child: Row(
             children: [
               Text(
@@ -732,7 +766,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           ),
         ),
         Container(
-          margin: const EdgeInsets.all(16),
+          margin: const EdgeInsets.fromLTRB(16, 4, 16, 16),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
