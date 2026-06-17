@@ -1045,8 +1045,8 @@ class _CustomBottomNavBar extends StatelessWidget {
                           // ── icon ───────────────────────────────────────────
                           Image.asset(
                             isActive ? item.activeIconAsset : item.iconAsset,
-                            width: 24,
-                            height: 24,
+                            width: 20,
+                            height: 20,
                             color: isActive
                                 ? Colors.white
                                 : Colors.white.withOpacity(0.55),
@@ -1056,7 +1056,7 @@ class _CustomBottomNavBar extends StatelessWidget {
                           Text(
                             item.labelKey.tr(),
                             style: AppFont.style(
-                              fontSize: 11,
+                              fontSize: 10,
                               fontWeight: isActive
                                   ? FontWeight.w700
                                   : FontWeight.w400,

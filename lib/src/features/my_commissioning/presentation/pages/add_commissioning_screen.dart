@@ -764,11 +764,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                       if (widget.editWorkId != null &&
                           (state is CommissioningWorkDetailsInitialState ||
                               state is CommissioningWorkDetailsLoadingState)) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: Color(0xFF1565C0),
-                          ),
-                        );
+                        return _buildFormShimmer();
                       }
 
                       return SingleChildScrollView(
@@ -1311,6 +1307,92 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildFormShimmer() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[200]!,
+      highlightColor: Colors.grey[50]!,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+
+            // STEP 1: SELECT CUSTOMER
+            _buildShimmerSectionHeader(),
+            _buildShimmerDropdown(),
+            const SizedBox(height: 32),
+
+            // STEP 2: SELECT SITE
+            _buildShimmerSectionHeader(),
+            _buildShimmerDropdown(),
+            const SizedBox(height: 32),
+
+            // STEP 3: APPLICATION OF EQUIPMENT
+            _buildShimmerSectionHeader(showAdd: false),
+            _buildShimmerDropdown(),
+            const SizedBox(height: 32),
+
+            // STEP 4: ASSIGN TECHNICIANS
+            _buildShimmerSectionHeader(showAdd: false),
+            _buildShimmerDropdown(),
+            const SizedBox(height: 48),
+
+            // Assign Button
+            Container(
+              width: double.infinity,
+              height: 56,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            const SizedBox(height: 30),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerSectionHeader({bool showAdd = true}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            width: 150,
+            height: 16,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          if (showAdd)
+            Container(
+              width: 60,
+              height: 16,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerDropdown() {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
     );
   }
