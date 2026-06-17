@@ -72,6 +72,7 @@ class ServiceCallReport {
   final String qrCodeUrl;
   final String qrCodeImage;
   final String reportType;
+  final String reportDetailId;
 
   ServiceCallReport({
     required this.id,
@@ -88,9 +89,11 @@ class ServiceCallReport {
     required this.qrCodeUrl,
     required this.qrCodeImage,
     required this.reportType,
+    required this.reportDetailId,
   });
 
   factory ServiceCallReport.fromJson(Map<String, dynamic> json) {
+    final detail = json['report_detail'] as Map<String, dynamic>? ?? {};
     return ServiceCallReport(
       id: json['id'] ?? '',
       complaintId: json['complaint_id'] ?? '',
@@ -98,14 +101,15 @@ class ServiceCallReport {
       customerName: json['customer_name'] ?? '',
       siteName: json['site_name'] ?? '',
       dealerName: json['dealer_name'] ?? '',
-      customerRepresentativeName: json['customer_representative_name'] ?? '',
-      technicianRepresentativeName: json['technician_representative_name'] ?? '',
+      customerRepresentativeName: detail['customer_representative_name'] ?? json['customer_representative_name'] ?? '',
+      technicianRepresentativeName: detail['technician_representative_name'] ?? json['technician_representative_name'] ?? '',
       status: json['status'] ?? '',
-      submittedAt: json['submitted_at'] ?? '',
-      feedbackSubmitted: json['feedback_submitted'] ?? false,
-      qrCodeUrl: json['qr_code_url'] ?? '',
-      qrCodeImage: json['qr_code_image'] ?? '',
+      submittedAt: detail['submitted_at'] ?? json['submitted_at'] ?? '',
+      feedbackSubmitted: detail['feedback_submitted'] ?? json['feedback_submitted'] ?? false,
+      qrCodeUrl: detail['qr_code_url'] ?? json['qr_code_url'] ?? '',
+      qrCodeImage: detail['qr_code_image'] ?? json['qr_code_image'] ?? '',
       reportType: json['report_type'] ?? '',
+      reportDetailId: detail['id'] ?? '',
     );
   }
 
@@ -125,6 +129,7 @@ class ServiceCallReport {
       'qr_code_url': qrCodeUrl,
       'qr_code_image': qrCodeImage,
       'report_type': reportType,
+      'report_detail_id': reportDetailId,
     };
   }
 }

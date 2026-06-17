@@ -43,6 +43,8 @@ class PendingServiceCallsBloc
       pageSize: event.pageSize,
       customerId: event.customerId,
       siteId: event.siteId,
+      customerName: event.customerName,
+      siteName: event.siteName,
       complaintNumber: event.complaintNumber,
       date: event.date,
     );

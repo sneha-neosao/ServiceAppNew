@@ -264,10 +264,10 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       child: Container(
         color: Colors.white,
         child: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              SliverToBoxAdapter(
-                child: Padding(
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                SliverToBoxAdapter(
+                  child: Padding(
                   padding: const EdgeInsets.fromLTRB(24, 16, 16, 12),
                   child: Row(
                     children: [
@@ -376,291 +376,352 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             ];
           },
           body: Container(
-                color: const Color(0xFFF8F9FB),
-                child: _selectedTab == -1 
-                    ? const SizedBox()
-                    : _selectedTab == 0
-                    ? BlocBuilder<
-                        CommissioningReportHistoryBloc,
-                        CommissioningReportHistoryState
-                      >(
-                        bloc: _historyBloc,
-                        builder: (context, state) {
-                          if (state is CommissioningReportHistoryLoadingState ||
-                              state is CommissioningReportHistoryInitialState) {
-                            return ListView.separated(
-                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
-                              itemCount: 3,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 16),
-                              itemBuilder: (context, index) =>
-                                  const ListCardShimmer(),
-                            );
-                          } else if (state
-                              is CommissioningReportHistoryFailureState) {
-                            return Center(
-                              child: Text(
-                                state.message,
-                                style: AppFont.style(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.red,
-                                ),
-                              ),
-                            );
-                          } else if (state
-                              is CommissioningReportHistorySuccessState) {
-                            final items = state.data.data.results;
-                            if (items.isEmpty) {
-                              return Center(
-                                child: Text(
-                                  'reports_empty_commissioning'.tr(),
-                                  style: AppFont.style(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: const Color(0xFFA5ABB7),
+            color: const Color(0xFFF8F9FB),
+            child: RefreshIndicator(
+              color: const Color(0xFF0B68B9),
+              onRefresh: () async {
+                if (_selectedTab == 0) {
+                  _fetchReportHistory();
+                } else if (_selectedTab == 1) {
+                  _fetchServiceCallHistory();
+                } else if (_selectedTab == 2) {
+                  _fetchAmcHistory();
+                }
+                await Future.delayed(const Duration(seconds: 1));
+              },
+              child: _selectedTab == -1
+                  ? const SizedBox()
+                  : _selectedTab == 0
+                  ? BlocBuilder<
+                      CommissioningReportHistoryBloc,
+                      CommissioningReportHistoryState
+                    >(
+                      bloc: _historyBloc,
+                      builder: (context, state) {
+                        if (state is CommissioningReportHistoryLoadingState ||
+                            state is CommissioningReportHistoryInitialState) {
+                          return ListView.separated(
+                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+                            itemCount: 3,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 16),
+                            itemBuilder: (context, index) =>
+                                const ListCardShimmer(),
+                          );
+                        } else if (state
+                            is CommissioningReportHistoryFailureState) {
+                          return ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height * 0.6,
+                                child: Center(
+                                  child: Text(
+                                    state.message,
+                                    style: AppFont.style(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.red,
+                                    ),
                                   ),
                                 ),
-                              );
-                            }
-                            return ListView.separated(
-                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
-                              itemCount: items.length,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 16),
-                              itemBuilder: (context, index) {
-                                final item = items[index];
-                                String formattedDate = item.submittedAt;
-                                try {
-                                  final dt = DateTime.parse(item.submittedAt);
-                                  formattedDate = DateFormat(
-                                    'dd MMM yyyy',
-                                  ).format(dt);
-                                } catch (_) {}
-
-                                return _ReportCard(
-                                  id: item.commissioningWorkId,
-                                  reportId: item.id,
-                                  type: ReportType.commissioning,
-                                  companyName: item.customerName,
-                                  location: item.siteName,
-                                  date: formattedDate,
-                                  technician:
-                                      item.technicianRepresentativeName ??
-                                      'No representative',
-                                  technicianId: item.dealerName,
-                                  feedbackSubmitted: item.feedbackSubmitted,
-                                  qrCodeImage: item.qrCodeImage,
-                                  status: item.status,
-                                  onViewTap: (id) {
-                                    _detailsBloc.add(
-                                      CommissioningReportDetailsGetEvent(id),
-                                    );
-                                  },
-                                  onViewPdfTap: (id) {
-                                    _pdfBloc.add(
-                                      FetchCommissioningReportPdfEvent(
-                                        reportId: id,
-                                        action: PdfAction.view,
-                                      ),
-                                    );
-                                  },
-                                  onDownloadPdfTap: (id) {
-                                    _pdfBloc.add(
-                                      FetchCommissioningReportPdfEvent(
-                                        reportId: id,
-                                        action: PdfAction.download,
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            );
-                          }
-                          return const SizedBox();
-                        },
-                      )
-                    : _selectedTab == 1
-                    ? BlocBuilder<
-                        ServiceCallReportHistoryBloc,
-                        ServiceCallReportHistoryState
-                      >(
-                        bloc: _serviceCallHistoryBloc,
-                        builder: (context, state) {
-                          if (state is ServiceCallReportHistoryLoading ||
-                              state is ServiceCallReportHistoryInitial) {
-                            return ListView.separated(
-                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
-                              itemCount: 3,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 16),
-                              itemBuilder: (context, index) =>
-                                  const ListCardShimmer(),
-                            );
-                          } else if (state is ServiceCallReportHistoryError) {
-                            return Center(
-                              child: Text(
-                                state.message,
-                                style: AppFont.style(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.red,
-                                ),
                               ),
-                            );
-                          } else if (state is ServiceCallReportHistoryLoaded) {
-                            final items = state.response.data?.results ?? [];
-                            if (items.isEmpty) {
-                              return Center(
-                                child: Text(
-                                  'reports_empty_service'.tr(),
-                                  style: AppFont.style(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: const Color(0xFFA5ABB7),
+                            ],
+                          );
+                        } else if (state is CommissioningReportHistorySuccessState) {
+                          final items = state.data.data.results;
+                          if (items.isEmpty) {
+                            return ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: [
+                                SizedBox(
+                                  height: MediaQuery.of(context).size.height * 0.6,
+                                  child: Center(
+                                    child: Text(
+                                      'No reports found.',
+                                      style: AppFont.style(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFFA5ABB7),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              );
-                            }
-                            return ListView.separated(
-                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
-                              itemCount: items.length,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 16),
-                              itemBuilder: (context, index) {
-                                final item = items[index];
-                                String formattedDate = item.submittedAt;
-                                try {
-                                  final dt = DateTime.parse(item.submittedAt);
-                                  formattedDate = DateFormat(
-                                    'dd MMM yyyy',
-                                  ).format(dt);
-                                } catch (_) {}
-
-                                return _ReportCard(
-                                  id: item.complaintNumber,
-                                  complaintNo: item.complaintNumber,
-                                  reportId: item.id,
-                                  type: ReportType.service,
-                                  companyName: item.customerName,
-                                  location: item.siteName,
-                                  date: formattedDate,
-                                  technician: item.technicianRepresentativeName,
-                                  technicianId: item.dealerName,
-                                  feedbackSubmitted: item.feedbackSubmitted,
-                                  qrCodeImage: item.qrCodeImage,
-                                  status: item.reportType.isNotEmpty ? item.reportType : item.status,
-                                  onViewPdfTap: (id) {
-                                    _serviceCallPdfBloc.add(
-                                      FetchServiceCallReportPdfEvent(
-                                        reportId: id,
-                                        action: ServiceCallPdfAction.view,
-                                      ),
-                                    );
-                                  },
-                                  onDownloadPdfTap: (id) {
-                                    _serviceCallPdfBloc.add(
-                                      FetchServiceCallReportPdfEvent(
-                                        reportId: id,
-                                        action: ServiceCallPdfAction.download,
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
+                              ],
                             );
                           }
-                          return const SizedBox();
-                        },
-                      )
-                    : BlocBuilder<AmcReportsHistoryBloc, AmcReportsHistoryState>(
-                        bloc: _amcReportsHistoryBloc,
-                        builder: (context, state) {
-                          if (state is AmcReportsHistoryLoadingState ||
-                              state is AmcReportsHistoryInitial) {
-                            return ListView.separated(
-                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
-                              itemCount: 3,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 16),
-                              itemBuilder: (context, index) =>
-                                  const ListCardShimmer(),
-                            );
-                          } else if (state is AmcReportsHistoryErrorState) {
-                            return Center(
-                              child: Text(
-                                state.errorMessage,
-                                style: AppFont.style(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.red,
-                                ),
-                              ),
-                            );
-                          } else if (state is AmcReportsHistorySuccessState) {
-                            final items = state.response.data;
-                            if (items.isEmpty) {
-                              return Center(
-                                child: Text(
-                                  "No AMC reports found.",
-                                  style: AppFont.style(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: const Color(0xFFA5ABB7),
+                          return ListView.separated(
+                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+                            itemCount: items.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 16),
+                            itemBuilder: (context, index) {
+                              final item = items[index];
+                              String formattedDate = item.submittedAt;
+                              try {
+                                final dt = DateTime.parse(item.submittedAt);
+                                formattedDate = DateFormat(
+                                  'dd MMM yyyy',
+                                ).format(dt);
+                              } catch (_) {}
+
+                              return _ReportCard(
+                                id: item.commissioningWorkId,
+                                reportId: item.id,
+                                type: ReportType.commissioning,
+                                companyName: item.customerName,
+                                location: item.siteName,
+                                date: formattedDate,
+                                technician:
+                                    item.technicianRepresentativeName ??
+                                    'No representative',
+                                technicianId: item.dealerName,
+                                feedbackSubmitted: item.feedbackSubmitted,
+                                qrCodeImage: item.qrCodeImage,
+                                status: item.status,
+                                onViewTap: (id) {
+                                  _detailsBloc.add(
+                                    CommissioningReportDetailsGetEvent(id),
+                                  );
+                                },
+                                onViewPdfTap: (id) {
+                                  _pdfBloc.add(
+                                    FetchCommissioningReportPdfEvent(
+                                      reportId: id,
+                                      action: PdfAction.view,
+                                    ),
+                                  );
+                                },
+                                onDownloadPdfTap: (id) {
+                                  _pdfBloc.add(
+                                    FetchCommissioningReportPdfEvent(
+                                      reportId: id,
+                                      action: PdfAction.download,
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        }
+                        return const SizedBox();
+                      },
+                    )
+                  : _selectedTab == 1
+                  ? BlocBuilder<
+                      ServiceCallReportHistoryBloc,
+                      ServiceCallReportHistoryState
+                    >(
+                      bloc: _serviceCallHistoryBloc,
+                      builder: (context, state) {
+                        if (state is ServiceCallReportHistoryLoading ||
+                            state is ServiceCallReportHistoryInitial) {
+                          return ListView.separated(
+                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+                            itemCount: 3,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 16),
+                            itemBuilder: (context, index) =>
+                                const ListCardShimmer(),
+                          );
+                        } else if (state is ServiceCallReportHistoryError) {
+                          return ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height * 0.6,
+                                child: Center(
+                                  child: Text(
+                                    state.message,
+                                    style: AppFont.style(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.red,
+                                    ),
                                   ),
                                 ),
-                              );
-                            }
-                            return ListView.separated(
-                              padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
-                              itemCount: items.length,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 16),
-                              itemBuilder: (context, index) {
-                                final item = items[index];
-                                String formattedDate = item.submittedAt;
-                                try {
-                                  final dt = DateTime.parse(item.submittedAt);
-                                  formattedDate = DateFormat('dd MMM yyyy').format(dt);
-                                } catch (_) {}
-
-                                return _ReportCard(
-                                  id: item.id,
-                                  reportId: item.amcVisitId,
-                                  type: ReportType.amc,
-                                  companyName: item.customerName,
-                                  location: item.siteName,
-                                  date: formattedDate,
-                                  technician: item.technicianRepresentativeName,
-                                  technicianId: item.dealerName,
-                                  feedbackSubmitted: item.feedbackSubmitted,
-                                  qrCodeImage: item.qrCodeImage,
-                                  status: item.status,
-                                  onViewTap: (_) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => AmcWorkflowScreen(
-                                          isFromHistory: true,
-                                          initialVisitId: item.amcVisitId,
-                                          initialTitle: item.customerName,
-                                          initialLocation: item.siteName,
-                                          initialVisitInfo: 'Visit ${item.visitNumber}',
-                                        ),
+                              ),
+                            ],
+                          );
+                        } else if (state is ServiceCallReportHistoryLoaded) {
+                          final items = state.response.data?.results ?? [];
+                          if (items.isEmpty) {
+                            return ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: [
+                                SizedBox(
+                                  height: MediaQuery.of(context).size.height * 0.6,
+                                  child: Center(
+                                    child: Text(
+                                      'No reports found.',
+                                      style: AppFont.style(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFFA5ABB7),
                                       ),
-                                    );
-                                  },
-                                );
-                              },
+                                    ),
+                                  ),
+                                ),
+                              ],
                             );
                           }
-                          return const SizedBox();
-                        },
-                      ),
-              ),
-              ),
-      ),
-    );
+                          return ListView.separated(
+                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+                            itemCount: items.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 16),
+                            itemBuilder: (context, index) {
+                              final item = items[index];
+                              String formattedDate = item.submittedAt;
+                              try {
+                                final dt = DateTime.parse(item.submittedAt);
+                                formattedDate = DateFormat(
+                                  'dd MMM yyyy',
+                                ).format(dt);
+                              } catch (_) {}
+
+                              return _ReportCard(
+                                id: item.complaintNumber,
+                                complaintNo: item.complaintNumber,
+                                reportId: item.id,
+                                feedbackReportId: item.reportDetailId.isNotEmpty ? item.reportDetailId : item.id,
+                                type: ReportType.service,
+                                companyName: item.customerName,
+                                location: item.siteName,
+                                date: formattedDate,
+                                technician: item.technicianRepresentativeName,
+                                technicianId: item.dealerName,
+                                feedbackSubmitted: item.feedbackSubmitted,
+                                qrCodeImage: item.qrCodeImage,
+                                status: item.reportType.isNotEmpty ? item.reportType : item.status,
+                                onViewPdfTap: (id) {
+                                  _serviceCallPdfBloc.add(
+                                    FetchServiceCallReportPdfEvent(
+                                      reportId: id,
+                                      action: ServiceCallPdfAction.view,
+                                    ),
+                                  );
+                                },
+                                onDownloadPdfTap: (id) {
+                                  _serviceCallPdfBloc.add(
+                                    FetchServiceCallReportPdfEvent(
+                                      reportId: id,
+                                      action: ServiceCallPdfAction.download,
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        }
+                        return const SizedBox();
+                      },
+                    )
+                  : BlocBuilder<AmcReportsHistoryBloc, AmcReportsHistoryState>(
+                      bloc: _amcReportsHistoryBloc,
+                      builder: (context, state) {
+                        if (state is AmcReportsHistoryLoadingState ||
+                            state is AmcReportsHistoryInitial) {
+                          return ListView.separated(
+                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+                            itemCount: 3,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 16),
+                            itemBuilder: (context, index) =>
+                                const ListCardShimmer(),
+                          );
+                        } else if (state is AmcReportsHistoryErrorState) {
+                          return ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height * 0.6,
+                                child: Center(
+                                  child: Text(
+                                    state.errorMessage,
+                                    style: AppFont.style(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        } else if (state is AmcReportsHistorySuccessState) {
+                          final items = state.response.data;
+                          if (items.isEmpty) {
+                            return ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: [
+                                SizedBox(
+                                  height: MediaQuery.of(context).size.height * 0.6,
+                                  child: Center(
+                                    child: Text(
+                                      'No reports found.',
+                                      style: AppFont.style(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFFA5ABB7),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                          return ListView.separated(
+                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+                            itemCount: items.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 16),
+                            itemBuilder: (context, index) {
+                              final item = items[index];
+                              String formattedDate = item.submittedAt;
+                              try {
+                                final dt = DateTime.parse(item.submittedAt);
+                                formattedDate = DateFormat('dd MMM yyyy').format(dt);
+                              } catch (_) {}
+
+                              return _ReportCard(
+                                id: item.id,
+                                reportId: item.amcVisitId,
+                                type: ReportType.amc,
+                                companyName: item.customerName,
+                                location: item.siteName,
+                                date: formattedDate,
+                                technician: item.technicianRepresentativeName,
+                                technicianId: item.dealerName,
+                                feedbackSubmitted: item.feedbackSubmitted,
+                                qrCodeImage: item.qrCodeImage,
+                                status: item.status,
+                                onViewTap: (_) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AmcWorkflowScreen(
+                                        isFromHistory: true,
+                                        initialVisitId: item.amcVisitId,
+                                        initialTitle: item.customerName,
+                                        initialLocation: item.siteName,
+                                        initialVisitInfo: 'Visit ${item.visitNumber}',
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        }
+                        return const SizedBox();
+                      },
+                    ),
+            ),        // closes RefreshIndicator
+          ),          // closes body Container
+        ),            // closes NestedScrollView
+      ),              // closes child Container
+    );               // closes MultiBlocListener
   }
 
   List<Widget> _buildReportList() {
@@ -1212,6 +1273,7 @@ enum ReportType { commissioning, service, amc }
 class _ReportCard extends StatelessWidget {
   final String id;
   final String? reportId;
+  final String? feedbackReportId;
   final ReportType type;
   final String companyName;
   final String location;
@@ -1229,6 +1291,7 @@ class _ReportCard extends StatelessWidget {
   const _ReportCard({
     required this.id,
     this.reportId,
+    this.feedbackReportId,
     required this.type,
     required this.companyName,
     required this.location,
@@ -1529,12 +1592,13 @@ class _ReportCard extends StatelessWidget {
                         icon: Icons.check_circle,
                         iconColor: Colors.green,
                         onTap: () {
-                          if (reportId != null) {
+                          final fbId = feedbackReportId ?? reportId;
+                          if (fbId != null) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => FeedbackDetailsScreen(
-                                  reportId: reportId!,
+                                  reportId: fbId,
                                   isServiceCall: type == ReportType.service,
                                   isAmc: type == ReportType.amc,
                                   title: type == ReportType.service
@@ -1726,30 +1790,7 @@ class _ReportCard extends StatelessWidget {
                     color: const Color(0xFFA5ABB7),
                   ),
                 ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1565C0),
-                      minimumSize: Size.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'create_report_btn_done'.tr(),
-                      style: AppFont.style(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 16),
               ],
             ),
           ),

@@ -12,6 +12,8 @@ class PendingServiceCallsGetEvent extends PendingServiceCallsEvent {
   final int pageSize;
   final String? customerId;
   final String? siteId;
+  final String? customerName;
+  final String? siteName;
   final String? complaintNumber;
   final String? date;
   final bool isRefresh;
@@ -21,6 +23,8 @@ class PendingServiceCallsGetEvent extends PendingServiceCallsEvent {
     this.pageSize = 10,
     this.customerId,
     this.siteId,
+    this.customerName,
+    this.siteName,
     this.complaintNumber,
     this.date,
     this.isRefresh = false,
@@ -32,6 +36,8 @@ class PendingServiceCallsGetEvent extends PendingServiceCallsEvent {
     pageSize,
     customerId,
     siteId,
+    customerName,
+    siteName,
     complaintNumber,
     date,
     isRefresh,

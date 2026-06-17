@@ -13,6 +13,7 @@ import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedbac
 import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_event.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_state.dart';
 import 'package:service_app/src/remote/models/feedback_model/feedback_response.dart';
+import 'package:shimmer/shimmer.dart';
 
 class FeedbackDetailsScreen extends StatelessWidget {
   final String reportId;
@@ -111,7 +112,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                   ? BlocBuilder<ServiceCallCheckFeedbackBloc, ServiceCallCheckFeedbackState>(
                       builder: (context, state) {
                         if (state is ServiceCallCheckFeedbackLoading) {
-                          return const Center(child: CircularProgressIndicator());
+                          return _buildShimmerContent();
                         } else if (state is ServiceCallCheckFeedbackError) {
                           return Center(
                             child: Text(state.message, style: AppFont.style(fontSize: 14, color: Colors.red)),
@@ -132,7 +133,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                       ? BlocBuilder<AmcCheckFeedbackBloc, AmcCheckFeedbackState>(
                           builder: (context, state) {
                             if (state is AmcCheckFeedbackLoadingState) {
-                              return const Center(child: CircularProgressIndicator());
+                              return _buildShimmerContent();
                             } else if (state is AmcCheckFeedbackFailureState) {
                               return Center(
                                 child: Text(state.message, style: AppFont.style(fontSize: 14, color: Colors.red)),
@@ -152,7 +153,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                       : BlocBuilder<CheckFeedbackBloc, CheckFeedbackState>(
                           builder: (context, state) {
                             if (state is CheckFeedbackLoading) {
-                              return const Center(child: CircularProgressIndicator());
+                              return _buildShimmerContent();
                             } else if (state is CheckFeedbackError) {
                               return Center(
                                 child: Text(state.message, style: AppFont.style(fontSize: 14, color: Colors.red)),
@@ -172,6 +173,109 @@ class FeedbackDetailsScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerContent() {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFF1F2F6)),
+          ),
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Column(
+              children: [
+                _buildShimmerRow(),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                _buildShimmerRow(),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                _buildShimmerRow(),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                _buildShimmerRow(),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                _buildShimmerRow(),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                _buildShimmerCommentRow(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildShimmerRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      child: Row(
+        children: [
+          Container(
+            width: 20,
+            height: 20,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Container(
+              height: 14,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: 24),
+          Container(
+            width: 80,
+            height: 14,
+            color: Colors.white,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerCommentRow() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Container(
+                width: 100,
+                height: 14,
+                color: Colors.white,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.only(left: 32),
+            child: Container(
+              height: 14,
+              width: double.infinity,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }

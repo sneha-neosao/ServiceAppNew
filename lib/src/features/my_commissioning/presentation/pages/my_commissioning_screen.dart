@@ -116,9 +116,15 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
 
             // ── List ─────────────────────────────────────────────────────────────
             Expanded(
-              child: BlocBuilder<CommissioningWorkListBloc, CommissioningWorkListState>(
-                bloc: _bloc,
-                builder: (context, state) {
+              child: RefreshIndicator(
+                color: const Color(0xFF0B68B9),
+                onRefresh: () async {
+                  _bloc.add(CommissioningWorkListGetEvent());
+                  await Future.delayed(const Duration(seconds: 1));
+                },
+                child: BlocBuilder<CommissioningWorkListBloc, CommissioningWorkListState>(
+                  bloc: _bloc,
+                  builder: (context, state) {
                   if (state is CommissioningWorkListInitialState ||
                       state is CommissioningWorkListLoadingState) {
                     return ListView.separated(
@@ -128,28 +134,44 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                       itemBuilder: (context, index) => const ListCardShimmer(),
                     );
                   } else if (state is CommissioningWorkListFailureState) {
-                    return Center(
-                      child: Text(
-                        state.message,
-                        style: AppFont.style(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.red,
+                    return ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.6,
+                          child: Center(
+                            child: Text(
+                              state.message,
+                              style: AppFont.style(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     );
                   } else if (state is CommissioningWorkListSuccessState) {
                     final items = state.data.data;
                     
                     if (items.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'No ongoing commissioning works found.',
-                          style: AppFont.style(
-                            fontSize: 14,
-                            color: const Color(0xFFA5ABB7),
+                      return ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            child: Center(
+                              child: Text(
+                                'No ongoing commissioning works found.',
+                                style: AppFont.style(
+                                  fontSize: 14,
+                                  color: const Color(0xFFA5ABB7),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       );
                     }
 
@@ -203,6 +225,7 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
                   }
                   return const SizedBox();
                 },
+              ),
               ),
             ),
           ],

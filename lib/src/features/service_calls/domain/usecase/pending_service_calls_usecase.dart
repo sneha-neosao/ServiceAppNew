@@ -10,6 +10,8 @@ class PendingServiceCallsParams extends Equatable {
   final int pageSize;
   final String? customerId;
   final String? siteId;
+  final String? customerName;
+  final String? siteName;
   final String? complaintNumber;
   final String? date;
 
@@ -18,6 +20,8 @@ class PendingServiceCallsParams extends Equatable {
     required this.pageSize,
     this.customerId,
     this.siteId,
+    this.customerName,
+    this.siteName,
     this.complaintNumber,
     this.date,
   });
@@ -29,6 +33,12 @@ class PendingServiceCallsParams extends Equatable {
     }
     if (siteId != null && siteId!.isNotEmpty) {
       map['site_id'] = siteId;
+    }
+    if (customerName != null && customerName!.isNotEmpty) {
+      map['customer_name'] = customerName;
+    }
+    if (siteName != null && siteName!.isNotEmpty) {
+      map['site_name'] = siteName;
     }
     if (complaintNumber != null && complaintNumber!.isNotEmpty) {
       map['complaint_number'] = complaintNumber;
@@ -45,6 +55,8 @@ class PendingServiceCallsParams extends Equatable {
     pageSize,
     customerId,
     siteId,
+    customerName,
+    siteName,
     complaintNumber,
     date,
   ];

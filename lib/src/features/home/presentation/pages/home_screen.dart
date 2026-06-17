@@ -855,8 +855,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenHeight = constraints.maxHeight;
-        return SingleChildScrollView(
-          child: Padding(
+        return RefreshIndicator(
+          color: const Color(0xFF0B68B9),
+          onRefresh: () async {
+            _upcomingAmcBloc.add(const UpcomingAmcGetEvent('Today'));
+            _profileDetailsBloc.add(const ProfileDetailsGetEvent());
+            await Future.delayed(const Duration(seconds: 1));
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -967,6 +975,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
+        ),
         );
       },
     );
