@@ -10,6 +10,8 @@ import 'package:service_app/src/features/amc/presentation/pages/amc_schedule_scr
 import 'package:service_app/src/features/amc/presentation/pages/amc_visit_details_screen.dart';
 import 'package:service_app/src/features/amc/presentation/pages/create_amc_report_screen.dart';
 import 'package:service_app/src/features/my_commissioning/presentation/pages/my_commissioning_screen.dart';
+import 'package:service_app/src/features/my_commissioning/presentation/pages/add_commissioning_screen.dart';
+import 'package:service_app/src/features/my_commissioning/bloc/commissioning_work_list_bloc/commissioning_work_list_bloc.dart';
 import 'package:service_app/src/features/notifications/presentation/pages/notification_screen.dart';
 import 'package:service_app/src/features/report_history/presentation/pages/report_history_screen.dart';
 import 'package:service_app/src/features/profile/presentation/pages/profile_screen.dart';
@@ -215,8 +217,15 @@ class _HomeScreenState extends State<HomeScreen> {
       child: BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
         bloc: _profileDetailsBloc,
         builder: (context, state) {
-          return Scaffold(
-            backgroundColor: Colors.white,
+          final currentItems = _currentNavItems;
+          final int originalIndex = (currentItems.isNotEmpty && _selectedIndex < currentItems.length)
+              ? currentItems[_selectedIndex].originalIndex
+              : 0;
+
+          return Stack(
+            children: [
+              Scaffold(
+                backgroundColor: Colors.white,
         body: Column(
           children: [
           AnimatedContainer(
@@ -477,7 +486,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-          );
+          ),
+          if (originalIndex == 1)
+            Positioned(
+              bottom: 146,
+              right: 22,
+              child: FloatingActionButton(
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddCommissioningScreen(onBack: () => Navigator.pop(context)),
+                    ),
+                  );
+                  getIt<CommissioningWorkListBloc>().add(CommissioningWorkListGetEvent());
+                },
+                backgroundColor: const Color(0xFF0B68B9),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: const Icon(Icons.add, color: Colors.white, size: 30),
+              ),
+            ),
+          ],
+        );
         },
       ),
     ),

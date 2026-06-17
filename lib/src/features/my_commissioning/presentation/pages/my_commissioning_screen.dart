@@ -46,22 +46,6 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
       top: false,
       child: Scaffold(
         backgroundColor: Colors.white,
-        floatingActionButton: Padding(padding: const EdgeInsets.only(bottom: 50), child: FloatingActionButton(
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    AddCommissioningScreen(onBack: () => Navigator.pop(context)),
-              ),
-            );
-            _bloc.add(CommissioningWorkListGetEvent());
-          },
-          backgroundColor: const Color(0xFF0B68B9),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: const Icon(Icons.add, color: Colors.white, size: 30),
-        ),
-        ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
