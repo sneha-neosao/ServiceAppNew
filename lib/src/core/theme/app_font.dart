@@ -8,7 +8,7 @@ class AppFont {
   AppFont._();
 
   // ── Single source of truth ─────────────────────────────────────────────────
-  static const String _fontFamily = 'sans-serif';
+  static const String _fontFamily = 'Geist';
 
   /// Returns a sans-serif [TextStyle].
   /// Only pass [fontSize], [fontWeight], [color], [height], [letterSpacing] —

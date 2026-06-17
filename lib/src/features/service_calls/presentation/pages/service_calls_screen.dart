@@ -107,27 +107,40 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Service Calls Header ──────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 16, 12),
-            child: Row(
-              children: [
-                Text(
-                  'service_calls_title'.tr(),
-                  style: AppFont.style(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF0D121F),
+      child: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Service Calls Header ──────────────────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 16, 12),
+                    child: Row(
+                      children: [
+                        Text(
+                          'service_calls_title'.tr(),
+                          style: AppFont.style(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF0D121F),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
 
-          // ── Segmented Tab Control ───────────────────────────────────────────
+                ],
+              ),
+            ),
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _StickyFilterDelegate(
+                height: 276,
+                child: Column(
+                  children: [
+                    // ── Segmented Tab Control ───────────────────────────────────────────
           BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
             bloc: _assignedServiceCallsBloc,
             builder: (context, assignedState) {
@@ -231,9 +244,9 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
             },
           ),
 
-          // ── Search & Filters ────────────────────────────────────────────────
-          Container(
-            margin: const EdgeInsets.all(16),
+                    // ── Search & Filters ────────────────────────────────────────────────
+                    Container(
+                      margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -444,35 +457,38 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               ],
             ),
           ),
-
-          // ── Tab Body ────────────────────────────────────────────────────────
-          Expanded(
-            child: Container(
-              color: const Color(0xFFF8F9FB),
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification scrollInfo) {
-                  if (scrollInfo.metrics.pixels >=
-                          scrollInfo.metrics.maxScrollExtent &&
-                      scrollInfo.metrics.axis == Axis.vertical) {
-                    if (_selectedTab == 0) {
-                      _fetchServiceCalls(
-                        isRefresh: false,
-                        isAssignedOnly: true,
-                      );
-                    } else {
-                      _fetchServiceCalls(isRefresh: false, isPendingOnly: true);
-                    }
-                  }
-                  return false;
-                },
-                child: _selectedTab == 0
-                    ? _buildOngoingList()
-                    : _buildActiveList(),
+                  ],
+                ),
               ),
             ),
+          ];
+      },
+
+      // ── Tab Body ────────────────────────────────────────────────────────
+      body: Container(
+        color: const Color(0xFFF8F9FB),
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification scrollInfo) {
+                if (scrollInfo.metrics.pixels >=
+                        scrollInfo.metrics.maxScrollExtent &&
+                    scrollInfo.metrics.axis == Axis.vertical) {
+                  if (_selectedTab == 0) {
+                    _fetchServiceCalls(
+                      isRefresh: false,
+                      isAssignedOnly: true,
+                    );
+                  } else {
+                    _fetchServiceCalls(isRefresh: false, isPendingOnly: true);
+                  }
+                }
+                return false;
+              },
+              child: _selectedTab == 0
+                  ? _buildOngoingList()
+                  : _buildActiveList(),
+            ),
           ),
-        ],
-      ),
+        ),
     );
   }
 
@@ -698,7 +714,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
         if (state is AssignedServiceCallsLoadingState ||
             state is AssignedServiceCallsInitialState) {
           return ListView.separated(
-            padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
             itemCount: 3,
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (_, __) =>
@@ -730,7 +746,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           }
 
           return ListView.separated(
-            padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
             itemCount: data.data.results.length + (isPaginationLoading ? 1 : 0),
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
@@ -1019,5 +1035,34 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
         );
       },
     );
+  }
+}
+
+class _StickyFilterDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  final double height;
+
+  _StickyFilterDelegate({
+    required this.child,
+    required this.height,
+  });
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Colors.white,
+      child: child,
+    );
+  }
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  double get minExtent => height;
+
+  @override
+  bool shouldRebuild(covariant _StickyFilterDelegate oldDelegate) {
+    return oldDelegate.child != child || oldDelegate.height != height;
   }
 }

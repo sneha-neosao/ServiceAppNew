@@ -263,27 +263,36 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       ],
       child: Container(
         color: Colors.white,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Reports History Header ──────────────────────────────────────────
-            // Padding(
-            //   padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-            //   child: Row(
-            //     children: [
-            //       Text(
-            //         'reports_title'.tr(),
-            //         style: AppFont.style(
-            //           fontSize: 18,
-            //           fontWeight: FontWeight.w800,
-            //           color: const Color(0xFF0D121F),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-
-            // ── Segmented Tab Control ───────────────────────────────────────────
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 16, 12),
+                  child: Row(
+                    children: [
+                      Text(
+                        'reports_title'.tr(),
+                        style: AppFont.style(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _StickyReportFilterDelegate(
+                  height: _selectedTab == -1 
+                      ? 64.0 
+                      : (_selectedTab == 1 ? 386.0 : 330.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ── Segmented Tab Control ───────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
               child: Container(
@@ -360,9 +369,13 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                             : 'AMC Report History',
                   ),
 
-            // ── Reports List ────────────────────────────────────────────────────
-            Expanded(
-              child: Container(
+                    ],
+                  ),
+                ),
+              ),
+            ];
+          },
+          body: Container(
                 color: const Color(0xFFF8F9FB),
                 child: _selectedTab == -1 
                     ? const SizedBox()
@@ -645,9 +658,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         },
                       ),
               ),
-            ),
-          ],
-        ),
+              ),
       ),
     );
   }
@@ -1745,5 +1756,34 @@ class _ReportCard extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class _StickyReportFilterDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  final double height;
+
+  _StickyReportFilterDelegate({
+    required this.child,
+    required this.height,
+  });
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Colors.white,
+      child: child,
+    );
+  }
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  double get minExtent => height;
+
+  @override
+  bool shouldRebuild(covariant _StickyReportFilterDelegate oldDelegate) {
+    return oldDelegate.child != child || oldDelegate.height != height;
   }
 }
