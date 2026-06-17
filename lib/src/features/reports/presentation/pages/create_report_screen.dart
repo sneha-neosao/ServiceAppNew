@@ -48,6 +48,14 @@ import 'package:service_app/src/remote/models/service_work_report_step3_model/se
 import 'dart:convert';
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step1_usecase.dart';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
+import 'package:service_app/src/features/common/bloc/create_new_customer_bloc/create_new_customer_bloc.dart';
+import 'package:service_app/src/features/common/bloc/create_new_customer_bloc/create_new_customer_event.dart';
+import 'package:service_app/src/features/common/bloc/create_new_customer_bloc/create_new_customer_state.dart';
+import 'package:service_app/src/features/common/domain/usecase/create_new_customer_usecase.dart';
+import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_bloc.dart';
+import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_event.dart';
+import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_state.dart';
+import 'package:service_app/src/features/common/domain/usecase/create_new_site_usecase.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:service_app/src/features/widgets/step_shimmer.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
@@ -70,18 +78,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   bool _isCustomerDropdownOpen = false;
   bool _isSiteDropdownOpen = false;
-  bool _isCustomerAddNew =
-      false; // true = show text field, false = show dropdown
-  bool _isSiteAddNew = false; // true = show text field, false = show dropdown
   String _selectedCustomer = 'Select Customer';
   String _selectedSite = 'Select Site';
   String? _selectedCustomerId;
   String? _selectedSiteId;
   String? _reportId;
   String? _complaintId;
-
-  final TextEditingController _newCustomerController = TextEditingController();
-  final TextEditingController _newSiteController = TextEditingController();
 
   final List<String> _customersList = [];
 
@@ -90,6 +92,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
   late TechnicianBloc _technicianBloc;
+  late CreateNewCustomerBloc _createNewCustomerBloc;
+  late CreateNewSiteBloc _createNewSiteBloc;
 
   final List<TextEditingController> _technicians = [TextEditingController()];
   final List<String?> _technicianIds = [null];
@@ -162,14 +166,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         break;
     }
 
-    if (source != 'LPM')
-      _pumpFlowLpmCtrl.text = lpm.round().toString();
-    if (source != 'LPS')
-      _pumpFlowLpsCtrl.text = lps.round().toString();
-    if (source != 'M3HR')
-      _pumpFlowM3hrCtrl.text = m3hr.round().toString();
-    if (source != 'USGPM')
-      _pumpFlowUsgpmCtrl.text = usgpm.round().toString();
+    if (source != 'LPM') _pumpFlowLpmCtrl.text = lpm.round().toString();
+    if (source != 'LPS') _pumpFlowLpsCtrl.text = lps.round().toString();
+    if (source != 'M3HR') _pumpFlowM3hrCtrl.text = m3hr.round().toString();
+    if (source != 'USGPM') _pumpFlowUsgpmCtrl.text = usgpm.round().toString();
 
     _isAutoCalculatingFlow = false;
   }
@@ -195,13 +195,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     if (source == 'KW') {
       kw = value;
       hp = kw / 0.746;
-      if (source != 'HP')
-        _ratingHpCtrl.text = hp.round().toString();
+      if (source != 'HP') _ratingHpCtrl.text = hp.round().toString();
     } else {
       hp = value;
       kw = hp * 0.746;
-      if (source != 'KW')
-        _ratingKwCtrl.text = kw.round().toString();
+      if (source != 'KW') _ratingKwCtrl.text = kw.round().toString();
     }
 
     _isAutoCalculatingRating = false;
@@ -223,7 +221,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   String _loggedInTechnicianId = '';
   String _loggedInTechnicianName = '';
   String _loggedInDealerName = '';
-  final TextEditingController _technicianNameController = TextEditingController();
+  final TextEditingController _technicianNameController =
+      TextEditingController();
 
   Future<void> _fetchLoggedInTechnician() async {
     final session = await SessionManager.getUserSession();
@@ -258,19 +257,28 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _customerBloc = getIt<CustomerBloc>()..add(CustomerGetEvent());
     _sitesBloc = getIt<SitesBloc>();
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
+    _createNewCustomerBloc = getIt<CreateNewCustomerBloc>();
+    _createNewSiteBloc = getIt<CreateNewSiteBloc>();
     _serviceWorkReportStep1Bloc = getIt<ServiceWorkReportStep1Bloc>();
-    _serviceWorkReportStep1AutofillBloc = getIt<ServiceWorkReportStep1AutofillBloc>();
+    _serviceWorkReportStep1AutofillBloc =
+        getIt<ServiceWorkReportStep1AutofillBloc>();
     _serviceWorkReportStep2Bloc = getIt<ServiceWorkReportStep2Bloc>();
-    _serviceWorkReportStep2AutofillBloc = getIt<ServiceWorkReportStep2AutofillBloc>();
+    _serviceWorkReportStep2AutofillBloc =
+        getIt<ServiceWorkReportStep2AutofillBloc>();
     _serviceWorkReportStep3Bloc = getIt<ServiceWorkReportStep3Bloc>();
-    _serviceWorkReportStep3AutofillBloc = getIt<ServiceWorkReportStep3AutofillBloc>();
+    _serviceWorkReportStep3AutofillBloc =
+        getIt<ServiceWorkReportStep3AutofillBloc>();
     _serviceWorkReportStep4Bloc = getIt<ServiceWorkReportStep4Bloc>();
-    _serviceWorkReportStep4AutofillBloc = getIt<ServiceWorkReportStep4AutofillBloc>();
-    _serviceWorkReportTechniciansBloc = getIt<ServiceWorkReportTechniciansBloc>();
+    _serviceWorkReportStep4AutofillBloc =
+        getIt<ServiceWorkReportStep4AutofillBloc>();
+    _serviceWorkReportTechniciansBloc =
+        getIt<ServiceWorkReportTechniciansBloc>();
     _deleteServiceWorkReportBloc = getIt<DeleteServiceWorkReportBloc>();
 
     if (_complaintId != null) {
-      _serviceWorkReportStep1AutofillBloc.add(GetServiceWorkReportStep1AutofillEvent(_complaintId!));
+      _serviceWorkReportStep1AutofillBloc.add(
+        GetServiceWorkReportStep1AutofillEvent(_complaintId!),
+      );
     }
   }
 
@@ -333,10 +341,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _technicianIds.clear();
     _customerBloc.close();
     _sitesBloc.close();
+    _createNewCustomerBloc.close();
+    _createNewSiteBloc.close();
     for (final c in _memberControllers) c.dispose();
     _agendaController.dispose();
-    _newCustomerController.dispose();
-    _newSiteController.dispose();
     // step 2
     _pumpMakeCtrl.dispose();
     _pumpModelCtrl.dispose();
@@ -430,20 +438,23 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
             if (id.isEmpty) {
               try {
-                final match = techState.data.data.firstWhere((e) => e.name == name);
+                final match = techState.data.data.firstWhere(
+                  (e) => e.name == name,
+                );
                 id = match.id;
               } catch (_) {}
             }
-            techs.add({
-              "id": id,
-              "name": name,
-            });
+            techs.add({"id": id, "name": name});
           }
         }
       }
 
       if (techs.isEmpty) {
-        appSnackBar(context, const Color(0xFFF44336), "Please add at least one technician");
+        appSnackBar(
+          context,
+          const Color(0xFFF44336),
+          "Please add at least one technician",
+        );
         return;
       }
 
@@ -462,15 +473,21 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             customerId: _selectedCustomerId!,
             siteId: _selectedSiteId!,
             technicianIds: techs,
-            memberPresentsCustomerSide:
-                _memberControllers.map((e) => e.text).where((e) => e.isNotEmpty).join(", "),
+            memberPresentsCustomerSide: _memberControllers
+                .map((e) => e.text)
+                .where((e) => e.isNotEmpty)
+                .join(", "),
             agenda: _agendaController.text,
           ),
         ),
       );
     } else if (_currentStep == 2) {
       if (_reportId == null) {
-        appSnackBar(context, const Color(0xFFF44336), "Missing report ID. Please save step 1 first.");
+        appSnackBar(
+          context,
+          const Color(0xFFF44336),
+          "Missing report ID. Please save step 1 first.",
+        );
         return;
       }
       List<Map<String, dynamic>> descList = [];
@@ -526,15 +543,27 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           return;
         }
         if (_vibration == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_vibration'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_vibration'.tr(),
+          );
           return;
         }
         if (_mechSeal == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_mech_seal'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_mech_seal'.tr(),
+          );
           return;
         }
         if (_pumpDry == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_pump_dry'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_pump_dry'.tr(),
+          );
           return;
         }
       }
@@ -546,23 +575,43 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           return;
         }
         if (_strainerValve == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_strainer'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_strainer'.tr(),
+          );
           return;
         }
         if (_suctionLine == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_suction_line'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_suction_line'.tr(),
+          );
           return;
         }
         if (_deliveryLine == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_del_line'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_del_line'.tr(),
+          );
           return;
         }
         if (_suctionDelivery == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_suction_del'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_suction_del'.tr(),
+          );
           return;
         }
         if (_pressureSwitch == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_pressure'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_pressure'.tr(),
+          );
           return;
         }
       }
@@ -570,7 +619,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       // Validate electrical section
       if (!_elecNA) {
         if (_elecFaults == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_elec_faults'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_elec_faults'.tr(),
+          );
           return;
         }
         if (_voltage == null) {
@@ -586,7 +639,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           return;
         }
         if (_panelWiring == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_panel_wiring'.tr());
+          appSnackBar(
+            context,
+            const Color(0xFFF44336),
+            'val_sel_panel_wiring'.tr(),
+          );
           return;
         }
       }
@@ -594,34 +651,76 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       List<ServiceWorkChecklistItem> checklistItems = [];
       void addChecklistIfNotNull(String? value, String checkType, String key) {
         if (value != null) {
-          checklistItems.add(ServiceWorkChecklistItem(
-            checkType: checkType,
-            keyChecklist: key,
-            valueChecklist: value,
-          ));
+          checklistItems.add(
+            ServiceWorkChecklistItem(
+              checkType: checkType,
+              keyChecklist: key,
+              valueChecklist: value,
+            ),
+          );
         }
       }
 
       // Mechanical
-      addChecklistIfNotNull(_bearingNoise, "mechanical", "Bearing Noise / Abnormal Sound Checked");
+      addChecklistIfNotNull(
+        _bearingNoise,
+        "mechanical",
+        "Bearing Noise / Abnormal Sound Checked",
+      );
       addChecklistIfNotNull(_vibration, "mechanical", "Vibration Checked");
-      addChecklistIfNotNull(_mechSeal, "mechanical", "Mechanical Seal / Gland Leakage Checked");
+      addChecklistIfNotNull(
+        _mechSeal,
+        "mechanical",
+        "Mechanical Seal / Gland Leakage Checked",
+      );
       addChecklistIfNotNull(_pumpDry, "mechanical", "Pump Not Running Dry");
 
       // Pipeline
-      addChecklistIfNotNull(_nrvValve, "pipeline", "NRV / Butterfly Valve / Gate Valve Condition Checked");
-      addChecklistIfNotNull(_strainerValve, "pipeline", "Strainer / Foot Valve Condition Checked");
-      addChecklistIfNotNull(_suctionLine, "pipeline", "Suction Line (Air Leakage & Water Leakage Checked)");
-      addChecklistIfNotNull(_deliveryLine, "pipeline", "Delivery Line (Air Leakage & Water Leakage Checked)");
-      addChecklistIfNotNull(_suctionDelivery, "pipeline", "Suction / Delivery Valve Condition Checked");
-      addChecklistIfNotNull(_pressureSwitch, "pipeline", "Pressure Switch / Pressure Transmitter Checked");
+      addChecklistIfNotNull(
+        _nrvValve,
+        "pipeline",
+        "NRV / Butterfly Valve / Gate Valve Condition Checked",
+      );
+      addChecklistIfNotNull(
+        _strainerValve,
+        "pipeline",
+        "Strainer / Foot Valve Condition Checked",
+      );
+      addChecklistIfNotNull(
+        _suctionLine,
+        "pipeline",
+        "Suction Line (Air Leakage & Water Leakage Checked)",
+      );
+      addChecklistIfNotNull(
+        _deliveryLine,
+        "pipeline",
+        "Delivery Line (Air Leakage & Water Leakage Checked)",
+      );
+      addChecklistIfNotNull(
+        _suctionDelivery,
+        "pipeline",
+        "Suction / Delivery Valve Condition Checked",
+      );
+      addChecklistIfNotNull(
+        _pressureSwitch,
+        "pipeline",
+        "Pressure Switch / Pressure Transmitter Checked",
+      );
 
       // Electrical
-      addChecklistIfNotNull(_elecFaults, "electrical", "Electrical Faults Checked");
+      addChecklistIfNotNull(
+        _elecFaults,
+        "electrical",
+        "Electrical Faults Checked",
+      );
       addChecklistIfNotNull(_voltage, "electrical", "Voltage Checked");
       addChecklistIfNotNull(_phase, "electrical", "Phase Checked");
       addChecklistIfNotNull(_current, "electrical", "Current Checked");
-      addChecklistIfNotNull(_panelWiring, "electrical", "Control Panel Wiring Checked");
+      addChecklistIfNotNull(
+        _panelWiring,
+        "electrical",
+        "Control Panel Wiring Checked",
+      );
 
       _serviceWorkReportStep3Bloc.add(
         PostServiceWorkReportStep3Event(
@@ -640,19 +739,39 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         return;
       }
       if (_technicianNameController.text.trim().isEmpty) {
-        appSnackBar(context, const Color(0xFFF44336), "Technician Representative name is required");
+        appSnackBar(
+          context,
+          const Color(0xFFF44336),
+          "Technician Representative name is required",
+        );
         return;
       }
       if (_customerRepNameCtrl.text.trim().isEmpty) {
-        appSnackBar(context, const Color(0xFFF44336), "Customer Representative name is required");
+        appSnackBar(
+          context,
+          const Color(0xFFF44336),
+          "Customer Representative name is required",
+        );
         return;
       }
-      if (_customerSignatureFile == null && (_existingCustomerSignatureUrl == null || _existingCustomerSignatureUrl!.isEmpty)) {
-        appSnackBar(context, const Color(0xFFF44336), "Customer Signature is required");
+      if (_customerSignatureFile == null &&
+          (_existingCustomerSignatureUrl == null ||
+              _existingCustomerSignatureUrl!.isEmpty)) {
+        appSnackBar(
+          context,
+          const Color(0xFFF44336),
+          "Customer Signature is required",
+        );
         return;
       }
-      if (_technicianSignatureFile == null && (_existingTechnicianSignatureUrl == null || _existingTechnicianSignatureUrl!.isEmpty)) {
-        appSnackBar(context, const Color(0xFFF44336), "Technician Signature is required");
+      if (_technicianSignatureFile == null &&
+          (_existingTechnicianSignatureUrl == null ||
+              _existingTechnicianSignatureUrl!.isEmpty)) {
+        appSnackBar(
+          context,
+          const Color(0xFFF44336),
+          "Technician Signature is required",
+        );
         return;
       }
 
@@ -666,10 +785,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             customerRepresentativeName: _customerRepNameCtrl.text.trim(),
             customerRemarks: _remarksCustomerCtrl.text.trim(),
             technicianRemarks: _remarksTechCtrl.text.trim(),
-            technicianRepresentative: _loggedInTechnicianAssignId ?? _loggedInTechnicianId,
+            technicianRepresentative:
+                _loggedInTechnicianAssignId ?? _loggedInTechnicianId,
             workPhotosPaths: allWorkPhotos,
-            customerSignaturePath: _customerSignatureFile?.path ?? _existingCustomerSignatureUrl,
-            technicianSignaturePath: _technicianSignatureFile?.path ?? _existingTechnicianSignatureUrl,
+            customerSignaturePath:
+                _customerSignatureFile?.path ?? _existingCustomerSignatureUrl,
+            technicianSignaturePath:
+                _technicianSignatureFile?.path ??
+                _existingTechnicianSignatureUrl,
           ),
         ),
       );
@@ -686,13 +809,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         _currentStep--;
       });
       if (_currentStep == 1 && _complaintId != null) {
-        _serviceWorkReportStep1AutofillBloc.add(GetServiceWorkReportStep1AutofillEvent(_complaintId!));
+        _serviceWorkReportStep1AutofillBloc.add(
+          GetServiceWorkReportStep1AutofillEvent(_complaintId!),
+        );
       }
       if (_currentStep == 2 && _reportId != null) {
-        _serviceWorkReportStep2AutofillBloc.add(GetServiceWorkReportStep2AutofillEvent(_reportId!));
+        _serviceWorkReportStep2AutofillBloc.add(
+          GetServiceWorkReportStep2AutofillEvent(_reportId!),
+        );
       }
       if (_currentStep == 3 && _reportId != null) {
-        _serviceWorkReportStep3AutofillBloc.add(GetServiceWorkReportStep3AutofillEvent(_reportId!));
+        _serviceWorkReportStep3AutofillBloc.add(
+          GetServiceWorkReportStep3AutofillEvent(_reportId!),
+        );
       }
     } else {
       _handleBack();
@@ -712,8 +841,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         builder: (context) {
           return Dialog(
             backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            insetPadding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 24,
+            ),
             child: Stack(
               children: [
                 Padding(
@@ -735,7 +869,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           size: 32,
                         ),
                       ),
-                      
+
                       const SizedBox(height: 20),
 
                       // ── Title ───────────────────────────────────────────────────────
@@ -795,55 +929,79 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           Expanded(
                             child: SizedBox(
                               height: 48,
-                              child: BlocConsumer<DeleteServiceWorkReportBloc, DeleteServiceWorkReportState>(
-                                bloc: _deleteServiceWorkReportBloc,
-                                listener: (context, state) {
-                                  if (state is DeleteServiceWorkReportSuccess) {
-                                    Navigator.pop(context, true);
-                                  } else if (state is DeleteServiceWorkReportFailure) {
-                                    appSnackBar(context, Colors.red, state.message);
-                                    Navigator.pop(context, true); // Go back anyway to exit draft
-                                  }
-                                },
-                                builder: (context, state) {
-                                  final isLoading = state is DeleteServiceWorkReportLoading;
-                                  return ElevatedButton(
-                                    onPressed: isLoading
-                                        ? null
-                                        : () {
-                                            _deleteServiceWorkReportBloc.add(
-                                              DeleteDraftServiceWorkReportEvent(_reportId!),
-                                            );
-                                          },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFFE30000),
-                                      foregroundColor: Colors.white,
-                                      elevation: 0,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      disabledBackgroundColor: const Color(0xFFE30000).withOpacity(0.6),
-                                    ),
-                                    child: isLoading
-                                        ? const SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2,
-                                            ),
-                                          )
-                                        : Text(
-                                            'Delete Now',
-                                            style: AppFont.style(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w800,
-                                              color: Colors.white,
+                              child:
+                                  BlocConsumer<
+                                    DeleteServiceWorkReportBloc,
+                                    DeleteServiceWorkReportState
+                                  >(
+                                    bloc: _deleteServiceWorkReportBloc,
+                                    listener: (context, state) {
+                                      if (state
+                                          is DeleteServiceWorkReportSuccess) {
+                                        Navigator.pop(context, true);
+                                      } else if (state
+                                          is DeleteServiceWorkReportFailure) {
+                                        appSnackBar(
+                                          context,
+                                          Colors.red,
+                                          state.message,
+                                        );
+                                        Navigator.pop(
+                                          context,
+                                          true,
+                                        ); // Go back anyway to exit draft
+                                      }
+                                    },
+                                    builder: (context, state) {
+                                      final isLoading =
+                                          state
+                                              is DeleteServiceWorkReportLoading;
+                                      return ElevatedButton(
+                                        onPressed: isLoading
+                                            ? null
+                                            : () {
+                                                _deleteServiceWorkReportBloc.add(
+                                                  DeleteDraftServiceWorkReportEvent(
+                                                    _reportId!,
+                                                  ),
+                                                );
+                                              },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color(
+                                            0xFFE30000,
+                                          ),
+                                          foregroundColor: Colors.white,
+                                          elevation: 0,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
                                             ),
                                           ),
-                                  );
-                                },
-                              ),
+                                          disabledBackgroundColor: const Color(
+                                            0xFFE30000,
+                                          ).withOpacity(0.6),
+                                        ),
+                                        child: isLoading
+                                            ? const SizedBox(
+                                                height: 20,
+                                                width: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      color: Colors.white,
+                                                      strokeWidth: 2,
+                                                    ),
+                                              )
+                                            : Text(
+                                                'Delete Now',
+                                                style: AppFont.style(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w800,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                      );
+                                    },
+                                  ),
                             ),
                           ),
                         ],
@@ -851,7 +1009,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     ],
                   ),
                 ),
-                
+
                 // ── Close (X) Icon ────────────────────────────────────────────────
                 Positioned(
                   top: 12,
@@ -1005,11 +1163,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 _currentStep++;
               });
               if (_complaintId != null) {
-                _serviceWorkReportStep1AutofillBloc.add(GetServiceWorkReportStep1AutofillEvent(_complaintId!));
+                _serviceWorkReportStep1AutofillBloc.add(
+                  GetServiceWorkReportStep1AutofillEvent(_complaintId!),
+                );
               }
               // Trigger step2 autofill after moving to step 2
               if (_reportId != null) {
-                _serviceWorkReportStep2AutofillBloc.add(GetServiceWorkReportStep2AutofillEvent(_reportId!));
+                _serviceWorkReportStep2AutofillBloc.add(
+                  GetServiceWorkReportStep2AutofillEvent(_reportId!),
+                );
               }
             } else if (state is ServiceWorkReportStep1Failure) {
               appSnackBar(context, const Color(0xFFF44336), state.message);
@@ -1024,14 +1186,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 _currentStep++;
               });
               if (_reportId != null) {
-                _serviceWorkReportStep3AutofillBloc.add(GetServiceWorkReportStep3AutofillEvent(_reportId!));
+                _serviceWorkReportStep3AutofillBloc.add(
+                  GetServiceWorkReportStep3AutofillEvent(_reportId!),
+                );
               }
             } else if (state is ServiceWorkReportStep2Failure) {
               appSnackBar(context, const Color(0xFFF44336), state.error);
             }
           },
         ),
-        BlocListener<ServiceWorkReportStep2AutofillBloc, ServiceWorkReportStep2AutofillState>(
+        BlocListener<
+          ServiceWorkReportStep2AutofillBloc,
+          ServiceWorkReportStep2AutofillState
+        >(
           bloc: _serviceWorkReportStep2AutofillBloc,
           listener: (context, state) {
             if (state is ServiceWorkReportStep2AutofillSuccess) {
@@ -1041,7 +1208,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 // Pre-fill work descriptions
                 _workDescControllers.clear();
                 for (var desc in data.savedDescriptions) {
-                  _workDescControllers.add(TextEditingController(text: desc.description));
+                  _workDescControllers.add(
+                    TextEditingController(text: desc.description),
+                  );
                 }
                 // Always show at least 3 rows
                 while (_workDescControllers.length < 3) {
@@ -1061,8 +1230,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 _currentStep++;
               });
               if (_reportId != null) {
-                _serviceWorkReportTechniciansBloc.add(FetchServiceWorkReportTechniciansEvent(_reportId!));
-                _serviceWorkReportStep4AutofillBloc.add(GetServiceWorkReportStep4AutofillEvent(_reportId!));
+                _serviceWorkReportTechniciansBloc.add(
+                  FetchServiceWorkReportTechniciansEvent(_reportId!),
+                );
+                _serviceWorkReportStep4AutofillBloc.add(
+                  GetServiceWorkReportStep4AutofillEvent(_reportId!),
+                );
               }
             } else if (state is ServiceWorkReportStep3Failure) {
               appSnackBar(context, const Color(0xFFF44336), state.error);
@@ -1073,14 +1246,21 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           bloc: _serviceWorkReportStep4Bloc,
           listener: (context, state) {
             if (state is ServiceWorkReportStep4Loaded) {
-              appSnackBar(context, const Color(0xFF4CAF50), state.response.message ?? 'Report submitted successfully');
+              appSnackBar(
+                context,
+                const Color(0xFF4CAF50),
+                state.response.message ?? 'Report submitted successfully',
+              );
               _showSuccessDialog(qrCodeUrl: state.response.data.qrCodeImage);
             } else if (state is ServiceWorkReportStep4Error) {
               appSnackBar(context, const Color(0xFFF44336), state.message);
             }
           },
         ),
-        BlocListener<ServiceWorkReportStep3AutofillBloc, ServiceWorkReportStep3AutofillState>(
+        BlocListener<
+          ServiceWorkReportStep3AutofillBloc,
+          ServiceWorkReportStep3AutofillState
+        >(
           bloc: _serviceWorkReportStep3AutofillBloc,
           listener: (context, state) {
             if (state is ServiceWorkReportStep3AutofillSuccess) {
@@ -1091,35 +1271,63 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 _elecNA = data.isElectricalChecklistNa;
 
                 if (_reportId != null) {
-                  _serviceWorkReportTechniciansBloc.add(FetchServiceWorkReportTechniciansEvent(_reportId!));
+                  _serviceWorkReportTechniciansBloc.add(
+                    FetchServiceWorkReportTechniciansEvent(_reportId!),
+                  );
                 }
 
                 for (var item in data.savedChecklists) {
                   if (item.checkType == "mechanical") {
-                    if (item.keyChecklist == "Bearing Noise / Abnormal Sound Checked") _bearingNoise = item.valueChecklist;
-                    if (item.keyChecklist == "Vibration Checked") _vibration = item.valueChecklist;
-                    if (item.keyChecklist == "Mechanical Seal / Gland Leakage Checked") _mechSeal = item.valueChecklist;
-                    if (item.keyChecklist == "Pump Not Running Dry") _pumpDry = item.valueChecklist;
+                    if (item.keyChecklist ==
+                        "Bearing Noise / Abnormal Sound Checked")
+                      _bearingNoise = item.valueChecklist;
+                    if (item.keyChecklist == "Vibration Checked")
+                      _vibration = item.valueChecklist;
+                    if (item.keyChecklist ==
+                        "Mechanical Seal / Gland Leakage Checked")
+                      _mechSeal = item.valueChecklist;
+                    if (item.keyChecklist == "Pump Not Running Dry")
+                      _pumpDry = item.valueChecklist;
                   } else if (item.checkType == "pipeline") {
-                    if (item.keyChecklist == "NRV / Butterfly Valve / Gate Valve Condition Checked") _nrvValve = item.valueChecklist;
-                    if (item.keyChecklist == "Strainer / Foot Valve Condition Checked") _strainerValve = item.valueChecklist;
-                    if (item.keyChecklist == "Suction Line (Air Leakage & Water Leakage Checked)") _suctionLine = item.valueChecklist;
-                    if (item.keyChecklist == "Delivery Line (Air Leakage & Water Leakage Checked)") _deliveryLine = item.valueChecklist;
-                    if (item.keyChecklist == "Suction / Delivery Valve Condition Checked") _suctionDelivery = item.valueChecklist;
-                    if (item.keyChecklist == "Pressure Switch / Pressure Transmitter Checked") _pressureSwitch = item.valueChecklist;
+                    if (item.keyChecklist ==
+                        "NRV / Butterfly Valve / Gate Valve Condition Checked")
+                      _nrvValve = item.valueChecklist;
+                    if (item.keyChecklist ==
+                        "Strainer / Foot Valve Condition Checked")
+                      _strainerValve = item.valueChecklist;
+                    if (item.keyChecklist ==
+                        "Suction Line (Air Leakage & Water Leakage Checked)")
+                      _suctionLine = item.valueChecklist;
+                    if (item.keyChecklist ==
+                        "Delivery Line (Air Leakage & Water Leakage Checked)")
+                      _deliveryLine = item.valueChecklist;
+                    if (item.keyChecklist ==
+                        "Suction / Delivery Valve Condition Checked")
+                      _suctionDelivery = item.valueChecklist;
+                    if (item.keyChecklist ==
+                        "Pressure Switch / Pressure Transmitter Checked")
+                      _pressureSwitch = item.valueChecklist;
                   } else if (item.checkType == "electrical") {
-                    if (item.keyChecklist == "Electrical Faults Checked") _elecFaults = item.valueChecklist;
-                    if (item.keyChecklist == "Voltage Checked") _voltage = item.valueChecklist;
-                    if (item.keyChecklist == "Phase Checked") _phase = item.valueChecklist;
-                    if (item.keyChecklist == "Current Checked") _current = item.valueChecklist;
-                    if (item.keyChecklist == "Control Panel Wiring Checked") _panelWiring = item.valueChecklist;
+                    if (item.keyChecklist == "Electrical Faults Checked")
+                      _elecFaults = item.valueChecklist;
+                    if (item.keyChecklist == "Voltage Checked")
+                      _voltage = item.valueChecklist;
+                    if (item.keyChecklist == "Phase Checked")
+                      _phase = item.valueChecklist;
+                    if (item.keyChecklist == "Current Checked")
+                      _current = item.valueChecklist;
+                    if (item.keyChecklist == "Control Panel Wiring Checked")
+                      _panelWiring = item.valueChecklist;
                   }
                 }
               });
             }
           },
         ),
-        BlocListener<ServiceWorkReportStep4AutofillBloc, ServiceWorkReportStep4AutofillState>(
+        BlocListener<
+          ServiceWorkReportStep4AutofillBloc,
+          ServiceWorkReportStep4AutofillState
+        >(
           bloc: _serviceWorkReportStep4AutofillBloc,
           listener: (context, state) {
             if (state is ServiceWorkReportStep4AutofillSuccess) {
@@ -1142,7 +1350,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             }
           },
         ),
-        BlocListener<ServiceWorkReportTechniciansBloc, ServiceWorkReportTechniciansState>(
+        BlocListener<
+          ServiceWorkReportTechniciansBloc,
+          ServiceWorkReportTechniciansState
+        >(
           bloc: _serviceWorkReportTechniciansBloc,
           listener: (context, state) {
             if (state is ServiceWorkReportTechniciansLoaded) {
@@ -1161,8 +1372,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           bloc: _customerBloc,
           listener: (context, state) {
             if (state is CustomerSuccessState) {
-              if ((_selectedCustomerId == null || _selectedCustomerId!.isEmpty) && _selectedCustomer != 'Select Customer') {
-                final matches = state.data.data.where((x) => x.name == _selectedCustomer);
+              if ((_selectedCustomerId == null ||
+                      _selectedCustomerId!.isEmpty) &&
+                  _selectedCustomer != 'Select Customer') {
+                final matches = state.data.data.where(
+                  (x) => x.name == _selectedCustomer,
+                );
                 if (matches.isNotEmpty) {
                   setState(() {
                     _selectedCustomerId = matches.first.id;
@@ -1177,8 +1392,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           bloc: _sitesBloc,
           listener: (context, state) {
             if (state is SitesSuccessState) {
-              if ((_selectedSiteId == null || _selectedSiteId!.isEmpty) && _selectedSite != 'Select Site') {
-                final matches = state.data.data.where((x) => x.name == _selectedSite);
+              if ((_selectedSiteId == null || _selectedSiteId!.isEmpty) &&
+                  _selectedSite != 'Select Site') {
+                final matches = state.data.data.where(
+                  (x) => x.name == _selectedSite,
+                );
                 if (matches.isNotEmpty) {
                   setState(() {
                     _selectedSiteId = matches.first.id;
@@ -1192,251 +1410,346 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       child: BlocBuilder<ServiceWorkReportStep4Bloc, ServiceWorkReportStep4State>(
         bloc: _serviceWorkReportStep4Bloc,
         builder: (context, step4State) {
-          return BlocBuilder<ServiceWorkReportStep3Bloc, ServiceWorkReportStep3State>(
+          return BlocBuilder<
+            ServiceWorkReportStep3Bloc,
+            ServiceWorkReportStep3State
+          >(
             bloc: _serviceWorkReportStep3Bloc,
             builder: (context, step3State) {
-          return BlocBuilder<ServiceWorkReportStep2Bloc, ServiceWorkReportStep2State>(
-            bloc: _serviceWorkReportStep2Bloc,
-            builder: (context, step2State) {
-          return BlocBuilder<ServiceWorkReportStep1Bloc, ServiceWorkReportStep1State>(
-            bloc: _serviceWorkReportStep1Bloc,
-            builder: (context, state) {
-              return Stack(
-                children: [
-                  PopScope(
-                    canPop: false,
-                    onPopInvokedWithResult: (didPop, _) {
-                      if (!didPop) _handleBack();
-                    },
-                    child: Scaffold(
-            backgroundColor: Colors.white,
-            body: SafeArea(
-              child: Column(
-                children: [
-            // ── Progress & Header ─────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            size: 20,
-                            color: Color(0xFF5C616E),
-                          ),
-                          onPressed: _handleBack,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Container(
-                        width: 4,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF0B68B9),
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Service / Work Report',
-                          style: AppFont.style(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFF0D121F),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  // Step Indicators
-                  Row(
-                    children: List.generate(4, (index) {
-                      bool isActive = index < _currentStep;
-                      return Expanded(
-                        child: Container(
-                          height: 4,
-                          margin: EdgeInsets.only(right: index == 3 ? 0 : 8),
-                          decoration: BoxDecoration(
-                            color: isActive
-                                ? const Color(0xFF1565C0)
-                                : const Color(0xFFF1F2F6),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                ],
-              ),
-            ),
-
-            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-
-            // ── Form Body ─────────────────────────────────────────────────────
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: _buildBodyContent(),
-              ),
-            ),
-
-            // ── Bottom Buttons ────────────────────────────────────────────────
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                border: Border(top: BorderSide(color: Color(0xFFF1F2F6))),
-              ),
-              child: Row(
-                children: [
-                  if (_currentStep > 1)
-                    GestureDetector(
-                      onTap: _previousStep,
-                      child: Row(
+              return BlocBuilder<
+                ServiceWorkReportStep2Bloc,
+                ServiceWorkReportStep2State
+              >(
+                bloc: _serviceWorkReportStep2Bloc,
+                builder: (context, step2State) {
+                  return BlocBuilder<
+                    ServiceWorkReportStep1Bloc,
+                    ServiceWorkReportStep1State
+                  >(
+                    bloc: _serviceWorkReportStep1Bloc,
+                    builder: (context, state) {
+                      return Stack(
                         children: [
-                          const Icon(
-                            Icons.arrow_back,
-                            size: 18,
-                            color: Color(0xFFA5ABB7),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'create_report_btn_back'.tr(),
-                            style: AppFont.style(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFFA5ABB7),
+                          PopScope(
+                            canPop: false,
+                            onPopInvokedWithResult: (didPop, _) {
+                              if (!didPop) _handleBack();
+                            },
+                            child: Scaffold(
+                              backgroundColor: Colors.white,
+                              body: SafeArea(
+                                child: Column(
+                                  children: [
+                                    // ── Progress & Header ─────────────────────────────────────────────
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                        20,
+                                        20,
+                                        20,
+                                        10,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 44,
+                                                height: 44,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  border: Border.all(
+                                                    color: const Color(
+                                                      0xFFE5E7EB,
+                                                    ),
+                                                  ),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withOpacity(0.04),
+                                                      blurRadius: 8,
+                                                      offset: const Offset(
+                                                        0,
+                                                        2,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: IconButton(
+                                                  icon: const Icon(
+                                                    Icons.arrow_back,
+                                                    size: 20,
+                                                    color: Color(0xFF5C616E),
+                                                  ),
+                                                  onPressed: _handleBack,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Container(
+                                                width: 4,
+                                                height: 24,
+                                                decoration: BoxDecoration(
+                                                  color: const Color(
+                                                    0xFF0B68B9,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Text(
+                                                  'Service / Work Report',
+                                                  style: AppFont.style(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w900,
+                                                    color: const Color(
+                                                      0xFF0D121F,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 20),
+                                          // Step Indicators
+                                          Row(
+                                            children: List.generate(4, (index) {
+                                              bool isActive =
+                                                  index < _currentStep;
+                                              return Expanded(
+                                                child: Container(
+                                                  height: 4,
+                                                  margin: EdgeInsets.only(
+                                                    right: index == 3 ? 0 : 8,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: isActive
+                                                        ? const Color(
+                                                            0xFF1565C0,
+                                                          )
+                                                        : const Color(
+                                                            0xFFF1F2F6,
+                                                          ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          2,
+                                                        ),
+                                                  ),
+                                                ),
+                                              );
+                                            }),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    const Divider(
+                                      height: 1,
+                                      thickness: 1,
+                                      color: Color(0xFFF1F2F6),
+                                    ),
+
+                                    // ── Form Body ─────────────────────────────────────────────────────
+                                    Expanded(
+                                      child: SingleChildScrollView(
+                                        padding: const EdgeInsets.all(24),
+                                        child: _buildBodyContent(),
+                                      ),
+                                    ),
+
+                                    // ── Bottom Buttons ────────────────────────────────────────────────
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 24,
+                                      ),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border(
+                                          top: BorderSide(
+                                            color: Color(0xFFF1F2F6),
+                                          ),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          if (_currentStep > 1)
+                                            GestureDetector(
+                                              onTap: _previousStep,
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.arrow_back,
+                                                    size: 18,
+                                                    color: Color(0xFFA5ABB7),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                    'create_report_btn_back'
+                                                        .tr(),
+                                                    style: AppFont.style(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                      color: const Color(
+                                                        0xFFA5ABB7,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          else
+                                            TextButton(
+                                              onPressed: _handleBack,
+                                              child: Text(
+                                                'create_report_btn_cancel'.tr(),
+                                                style: AppFont.style(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w800,
+                                                  color: const Color(
+                                                    0xFFA5ABB7,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          const Spacer(),
+                                          GestureDetector(
+                                            onTap: () {
+                                              if (state
+                                                  is ServiceWorkReportStep1Loading)
+                                                return;
+                                              if (step2State
+                                                  is ServiceWorkReportStep2Loading)
+                                                return;
+                                              if (step3State
+                                                  is ServiceWorkReportStep3Loading)
+                                                return;
+                                              if (step4State
+                                                  is ServiceWorkReportStep4Loading)
+                                                return;
+                                              _nextStep();
+                                            },
+                                            child: Container(
+                                              height: 44,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 32,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFF1565C0),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: const Color(
+                                                      0xFF1565C0,
+                                                    ).withValues(alpha: 0.2),
+                                                    blurRadius: 15,
+                                                    offset: const Offset(0, 8),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Builder(
+                                                builder: (context) {
+                                                  bool isLoading =
+                                                      (_currentStep == 1 &&
+                                                          state
+                                                              is ServiceWorkReportStep1Loading) ||
+                                                      (_currentStep == 2 &&
+                                                          step2State
+                                                              is ServiceWorkReportStep2Loading) ||
+                                                      (_currentStep == 3 &&
+                                                          step3State
+                                                              is ServiceWorkReportStep3Loading) ||
+                                                      (_currentStep == 4 &&
+                                                          step4State
+                                                              is ServiceWorkReportStep4Loading);
+
+                                                  return Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      if (_currentStep == 4 &&
+                                                          !isLoading)
+                                                        const Icon(
+                                                          Icons
+                                                              .check_box_outlined,
+                                                          size: 20,
+                                                          color: Colors.white,
+                                                        )
+                                                      else
+                                                        const SizedBox.shrink(),
+                                                      if (_currentStep == 4 &&
+                                                          !isLoading)
+                                                        const SizedBox(
+                                                          width: 12,
+                                                        )
+                                                      else
+                                                        const SizedBox.shrink(),
+                                                      if (isLoading)
+                                                        const SizedBox(
+                                                          width: 20,
+                                                          height: 20,
+                                                          child: CircularProgressIndicator(
+                                                            strokeWidth: 2.5,
+                                                            valueColor:
+                                                                AlwaysStoppedAnimation<
+                                                                  Color
+                                                                >(Colors.white),
+                                                          ),
+                                                        )
+                                                      else
+                                                        Text(
+                                                          _currentStep == 4
+                                                              ? 'create_report_btn_submit'
+                                                                    .tr()
+                                                              : 'create_report_btn_next'
+                                                                    .tr(),
+                                                          style: AppFont.style(
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight.w800,
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      if (_currentStep < 4 &&
+                                                          !isLoading) ...[
+                                                        const SizedBox(
+                                                          width: 12,
+                                                        ),
+                                                        const Icon(
+                                                          Icons.arrow_forward,
+                                                          size: 16,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ],
+                                                    ],
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ],
-                      ),
-                    )
-                  else
-                    TextButton(
-                      onPressed: _handleBack,
-                      child: Text(
-                        'create_report_btn_cancel'.tr(),
-                        style: AppFont.style(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFFA5ABB7),
-                        ),
-                      ),
-                    ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () {
-                      if (state is ServiceWorkReportStep1Loading) return;
-                      if (step2State is ServiceWorkReportStep2Loading) return;
-                      if (step3State is ServiceWorkReportStep3Loading) return;
-                      if (step4State is ServiceWorkReportStep4Loading) return;
-                      _nextStep();
+                      );
                     },
-                    child: Container(
-                      height: 44,
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1565C0),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(
-                              0xFF1565C0,
-                            ).withValues(alpha: 0.2),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: Builder(
-                        builder: (context) {
-                          bool isLoading = (_currentStep == 1 && state is ServiceWorkReportStep1Loading) ||
-                              (_currentStep == 2 && step2State is ServiceWorkReportStep2Loading) ||
-                              (_currentStep == 3 && step3State is ServiceWorkReportStep3Loading) ||
-                              (_currentStep == 4 && step4State is ServiceWorkReportStep4Loading);
-                              
-                          return Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (_currentStep == 4 && !isLoading)
-                                const Icon(
-                                  Icons.check_box_outlined,
-                                  size: 20,
-                                  color: Colors.white,
-                                )
-                              else
-                                const SizedBox.shrink(),
-                              if (_currentStep == 4 && !isLoading)
-                                const SizedBox(width: 12)
-                              else
-                                const SizedBox.shrink(),
-                              if (isLoading)
-                                const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                  ),
-                                )
-                              else
-                                Text(
-                                  _currentStep == 4
-                                      ? 'create_report_btn_submit'.tr()
-                                      : 'create_report_btn_next'.tr(),
-                                  style: AppFont.style(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              if (_currentStep < 4 && !isLoading) ...[
-                                const SizedBox(width: 12),
-                                const Icon(
-                                  Icons.arrow_forward,
-                                  size: 16,
-                                  color: Colors.white,
-                                ),
-                              ],
-                            ],
-                          );
-                        }
-                      ),
-                    ),
-                  ),
-                ],
-              ),)
-              ]),
-      ),
-    ),
-  ),
-  ]);
+                  );
+                },
+              );
             },
           );
-        },
-      );
-        },
-      );
         },
       ),
     );
@@ -1462,10 +1775,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             final filteredItems = lastSearch.isEmpty
                 ? validItems
                 : validItems
-                    .where((item) => item.name
-                        .toLowerCase()
-                        .contains(lastSearch.toLowerCase()))
-                    .toList();
+                      .where(
+                        (item) => item.name.toLowerCase().contains(
+                          lastSearch.toLowerCase(),
+                        ),
+                      )
+                      .toList();
 
             return SafeArea(
               bottom: false,
@@ -1500,18 +1815,21 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide:
-                                const BorderSide(color: Color(0xFFE5E7EB)),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE5E7EB),
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide:
-                                const BorderSide(color: Color(0xFFE5E7EB)),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE5E7EB),
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide:
-                                const BorderSide(color: Color(0xFF1565C0)),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF1565C0),
+                            ),
                           ),
                         ),
                         style: AppFont.style(
@@ -1567,7 +1885,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       case 1:
         return _buildStep1();
       case 2:
-        return BlocBuilder<ServiceWorkReportStep2AutofillBloc, ServiceWorkReportStep2AutofillState>(
+        return BlocBuilder<
+          ServiceWorkReportStep2AutofillBloc,
+          ServiceWorkReportStep2AutofillState
+        >(
           bloc: _serviceWorkReportStep2AutofillBloc,
           builder: (context, autofillState) {
             if (autofillState is ServiceWorkReportStep2AutofillLoading) {
@@ -1577,7 +1898,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           },
         );
       case 3:
-        return BlocBuilder<ServiceWorkReportStep3AutofillBloc, ServiceWorkReportStep3AutofillState>(
+        return BlocBuilder<
+          ServiceWorkReportStep3AutofillBloc,
+          ServiceWorkReportStep3AutofillState
+        >(
           bloc: _serviceWorkReportStep3AutofillBloc,
           builder: (context, autofillState) {
             if (autofillState is ServiceWorkReportStep3AutofillLoading) {
@@ -1587,7 +1911,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           },
         );
       case 4:
-        return BlocBuilder<ServiceWorkReportStep4AutofillBloc, ServiceWorkReportStep4AutofillState>(
+        return BlocBuilder<
+          ServiceWorkReportStep4AutofillBloc,
+          ServiceWorkReportStep4AutofillState
+        >(
           bloc: _serviceWorkReportStep4AutofillBloc,
           builder: (context, autofillState) {
             if (autofillState is ServiceWorkReportStep4AutofillLoading) {
@@ -1613,24 +1940,661 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     }
   }
 
+  void _showAddCustomerBottomSheet() async {
+    final controller = TextEditingController();
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return BlocConsumer<CreateNewCustomerBloc, CreateNewCustomerState>(
+          bloc: _createNewCustomerBloc,
+          listener: (ctx, state) {
+            if (state is CreateNewCustomerSuccessState) {
+              appSnackBar(ctx, const Color(0xFF4CAF50), state.data.message);
+              final newName = state.data.data?.name ?? controller.text.trim();
+              Navigator.pop(ctx);
+              setState(() {
+                if (!_customersList.contains(newName)) {
+                  _customersList.insert(0, newName);
+                }
+                if (state.data.data?.id != null) {
+                  _selectedCustomerId = state.data.data!.id;
+                }
+                _selectedCustomer = newName;
+                _selectedSite = 'Select Site';
+                _selectedSiteId = null;
+                _sitesList.clear();
+              });
+              if (_selectedCustomerId != null &&
+                  _selectedCustomerId!.isNotEmpty) {
+                _sitesBloc.add(
+                  SitesGetEvent(customer_id: _selectedCustomerId!),
+                );
+              }
+            } else if (state is CreateNewCustomerFailureState) {
+              if (state.message.contains('merged with the existing record')) {
+                Navigator.pop(ctx); // Close the bottom sheet immediately
+                _showMergeCustomerDialog(context, controller.text.trim());
+              } else {
+                appSnackBar(ctx, const Color(0xFFF44336), state.message);
+              }
+            }
+          },
+          builder: (ctx, state) {
+            final isLoading = state is CreateNewCustomerLoadingState;
+            return SafeArea(
+              bottom: true,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  top: 24,
+                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Add New Customer',
+                          style: AppFont.style(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF0D121F),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: isLoading ? null : () => Navigator.pop(ctx),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8F9FB),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFFF1F2F6),
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Color(0xFFA5ABB7),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Customer Name',
+                      style: AppFont.style(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFA5ABB7),
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: controller,
+                      autofocus: true,
+                      enabled: !isLoading,
+                      style: AppFont.style(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF0D121F),
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Enter Customer Name',
+                        hintStyle: AppFont.style(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFFA5ABB7),
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFFF8F9FB),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF1565C0),
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Save button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton.icon(
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                final text = controller.text.trim();
+                                if (text.isNotEmpty) {
+                                  _createNewCustomerBloc.add(
+                                    CreateNewCustomerSubmitEvent(
+                                      CreateNewCustomerParams(name: text),
+                                    ),
+                                  );
+                                }
+                              },
+                        icon: isLoading
+                            ? const SizedBox.shrink()
+                            : const Icon(Icons.save_outlined, size: 18),
+                        label: isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : Text(
+                                'Save Entry',
+                                style: AppFont.style(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1565C0),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+    Future.delayed(const Duration(milliseconds: 300), () {
+      controller.dispose();
+    });
+  }
+
+  void _showMergeCustomerDialog(BuildContext parentContext, String name) {
+    showDialog(
+      context: parentContext,
+      barrierDismissible: false,
+      builder: (dialogCtx) {
+        return BlocConsumer<CreateNewCustomerBloc, CreateNewCustomerState>(
+          bloc: _createNewCustomerBloc,
+          listener: (ctx, state) {
+            if (state is CreateNewCustomerSuccessState) {
+              Navigator.pop(ctx); // Close dialog
+              appSnackBar(
+                parentContext,
+                const Color(0xFF4CAF50),
+                state.data.message,
+              );
+              final newName = state.data.data?.name ?? name;
+              setState(() {
+                if (!_customersList.contains(newName)) {
+                  _customersList.insert(0, newName);
+                }
+                if (state.data.data?.id != null) {
+                  _selectedCustomerId = state.data.data!.id;
+                }
+                _selectedCustomer = newName;
+                _selectedSite = 'Select Site';
+                _selectedSiteId = null;
+                _sitesList.clear();
+              });
+            } else if (state is CreateNewCustomerFailureState) {
+              Navigator.pop(ctx); // Close dialog
+              appSnackBar(
+                parentContext,
+                const Color(0xFFF44336),
+                state.message,
+              );
+            }
+          },
+          builder: (ctx, state) {
+            final isLoading = state is CreateNewCustomerLoadingState;
+            return Dialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              insetPadding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 24,
+              ),
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // ── Icon ───────────────────────────────────────────────────────
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFFFF7E6),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.error_outline,
+                            color: Color(0xFFFF9800),
+                            size: 32,
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // ── Title ───────────────────────────────────────────────────────
+                        Text(
+                          'Merge Customer?',
+                          style: AppFont.style(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF0D121F),
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // ── Subtitle ────────────────────────────────────────────────────
+                        Text(
+                          'This customer name already exists and can be merged with the existing record. Click "Yes" to merge, or click "No" and enter a different name to save the record.',
+                          textAlign: TextAlign.center,
+                          style: AppFont.style(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF5C616E),
+                            height: 1.4,
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // ── Buttons ─────────────────────────────────────────────────────
+                        Row(
+                          children: [
+                            // Cancel Button
+                            Expanded(
+                              child: SizedBox(
+                                height: 48,
+                                child: TextButton(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () => Navigator.pop(dialogCtx),
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: const Color(0xFFF6F6F6),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'No',
+                                    style: AppFont.style(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800,
+                                      color: const Color(0xFF0D121F),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Action Button
+                            Expanded(
+                              child: SizedBox(
+                                height: 48,
+                                child: ElevatedButton(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () {
+                                          _createNewCustomerBloc.add(
+                                            CreateNewCustomerSubmitEvent(
+                                              CreateNewCustomerParams(
+                                                name: name,
+                                                mergeExisting: true,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFE65100),
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: isLoading
+                                      ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : Text(
+                                          'Yes',
+                                          style: AppFont.style(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w800,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // ── Close (X) Icon ────────────────────────────────────────────────
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: GestureDetector(
+                      onTap: isLoading ? null : () => Navigator.pop(dialogCtx),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        child: const Icon(
+                          Icons.close,
+                          size: 20,
+                          color: Color(0xFFB0B8C8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showAddSiteBottomSheet() async {
+    if (_selectedCustomerId == null || _selectedCustomerId!.isEmpty) {
+      appSnackBar(
+        context,
+        const Color(0xFFF44336),
+        'Please select a customer first',
+      );
+      return;
+    }
+    String customerId = _selectedCustomerId!;
+
+    final controller = TextEditingController();
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return BlocConsumer<CreateNewSiteBloc, CreateNewSiteState>(
+          bloc: _createNewSiteBloc,
+          listener: (ctx, state) {
+            if (state is CreateNewSiteSuccessState) {
+              appSnackBar(ctx, const Color(0xFF4CAF50), state.data.message);
+              final newName = controller.text.trim();
+              Navigator.pop(ctx);
+              setState(() {
+                if (!_sitesList.contains(newName)) {
+                  _sitesList.insert(0, newName);
+                }
+                if (state.data.data != null) {
+                  for (var s in state.data.data!.sites) {
+                    if (s.name == newName) {
+                      _selectedSiteId = s.id;
+                      break;
+                    }
+                  }
+                }
+                _selectedSite = newName;
+              });
+            } else if (state is CreateNewSiteFailureState) {
+              appSnackBar(ctx, const Color(0xFFF44336), state.message);
+            }
+          },
+          builder: (ctx, state) {
+            final isLoading = state is CreateNewSiteLoadingState;
+            return SafeArea(
+              bottom: true,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  top: 24,
+                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Add New Site',
+                          style: AppFont.style(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF0D121F),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: isLoading ? null : () => Navigator.pop(ctx),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8F9FB),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFFF1F2F6),
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Color(0xFFA5ABB7),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Site Name',
+                      style: AppFont.style(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFA5ABB7),
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: controller,
+                      autofocus: true,
+                      enabled: !isLoading,
+                      style: AppFont.style(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF0D121F),
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Enter Site Name',
+                        hintStyle: AppFont.style(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFFA5ABB7),
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFFF8F9FB),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE5E7EB),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF1565C0),
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Save button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton.icon(
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                final text = controller.text.trim();
+                                if (text.isNotEmpty) {
+                                  _createNewSiteBloc.add(
+                                    CreateNewSiteSubmitEvent(
+                                      CreateNewSiteParams(
+                                        customerId: customerId,
+                                        customerName: _selectedCustomer,
+                                        siteName: text,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                        icon: isLoading
+                            ? const SizedBox.shrink()
+                            : const Icon(Icons.save_outlined, size: 18),
+                        label: isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : Text(
+                                'Save Entry',
+                                style: AppFont.style(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1565C0),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+    Future.delayed(const Duration(milliseconds: 300), () {
+      controller.dispose();
+    });
+  }
+
   Widget _buildStep1() {
-    return BlocConsumer<ServiceWorkReportStep1AutofillBloc, ServiceWorkReportStep1AutofillState>(
+    return BlocConsumer<
+      ServiceWorkReportStep1AutofillBloc,
+      ServiceWorkReportStep1AutofillState
+    >(
       bloc: _serviceWorkReportStep1AutofillBloc,
       listener: (context, state) {
         if (state is ServiceWorkReportStep1AutofillSuccess) {
           final data = state.data.data;
           setState(() {
             _selectedCustomerId = data.customerId;
-            _selectedCustomer = data.customerName.isNotEmpty ? data.customerName : 'Select Customer';
+            _selectedCustomer = data.customerName.isNotEmpty
+                ? data.customerName
+                : 'Select Customer';
             _selectedSiteId = data.siteId;
-            _selectedSite = data.siteName.isNotEmpty ? data.siteName : 'Select Site';
-            
+            _selectedSite = data.siteName.isNotEmpty
+                ? data.siteName
+                : 'Select Site';
+
             if (data.memberPresentsCustomerSide.isNotEmpty) {
               final members = data.memberPresentsCustomerSide.split(',');
               _memberControllers.clear();
               for (var member in members) {
                 if (member.trim().isNotEmpty) {
-                  _memberControllers.add(TextEditingController(text: member.trim()));
+                  _memberControllers.add(
+                    TextEditingController(text: member.trim()),
+                  );
                 }
               }
             }
@@ -1656,10 +2620,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             }
           });
 
-          if ((_selectedCustomerId == null || _selectedCustomerId!.isEmpty) && _selectedCustomer != 'Select Customer') {
+          if ((_selectedCustomerId == null || _selectedCustomerId!.isEmpty) &&
+              _selectedCustomer != 'Select Customer') {
             final custState = _customerBloc.state;
             if (custState is CustomerSuccessState) {
-              final matches = custState.data.data.where((x) => x.name == _selectedCustomer);
+              final matches = custState.data.data.where(
+                (x) => x.name == _selectedCustomer,
+              );
               if (matches.isNotEmpty) {
                 setState(() {
                   _selectedCustomerId = matches.first.id;
@@ -1670,11 +2637,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
           if (_selectedCustomerId != null && _selectedCustomerId!.isNotEmpty) {
             _sitesBloc.add(SitesGetEvent(customer_id: _selectedCustomerId!));
-            
-            if ((_selectedSiteId == null || _selectedSiteId!.isEmpty) && _selectedSite != 'Select Site') {
+
+            if ((_selectedSiteId == null || _selectedSiteId!.isEmpty) &&
+                _selectedSite != 'Select Site') {
               final sitesState = _sitesBloc.state;
               if (sitesState is SitesSuccessState) {
-                final siteMatches = sitesState.data.data.where((x) => x.name == _selectedSite);
+                final siteMatches = sitesState.data.data.where(
+                  (x) => x.name == _selectedSite,
+                );
                 if (siteMatches.isNotEmpty) {
                   setState(() {
                     _selectedSiteId = siteMatches.first.id;
@@ -1689,654 +2659,607 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       },
       builder: (context, autofillState) {
         if (autofillState is ServiceWorkReportStep1AutofillLoading ||
-            (autofillState is ServiceWorkReportStep1AutofillInitial && _complaintId != null)) {
+            (autofillState is ServiceWorkReportStep1AutofillInitial &&
+                _complaintId != null)) {
           return const StepShimmer(step: 1);
         }
-        
+
         String currentDealer = '';
-        if (autofillState is ServiceWorkReportStep1AutofillSuccess && autofillState.data.data.dealerName.isNotEmpty) {
+        if (autofillState is ServiceWorkReportStep1AutofillSuccess &&
+            autofillState.data.data.dealerName.isNotEmpty) {
           currentDealer = autofillState.data.data.dealerName;
         }
-        
+
         final dealerToShow = _loggedInDealerName.isNotEmpty
             ? _loggedInDealerName
             : (currentDealer.isNotEmpty
-                ? currentDealer
-                : 'commissioning_dealer_name_fallback'.tr());
+                  ? currentDealer
+                  : 'commissioning_dealer_name_fallback'.tr());
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-        // Service Provider Card
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFF1F2F6)),
-                ),
-                child: const Icon(
-                  Icons.business_outlined,
-                  color: Color(0xFFA5ABB7),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Text(
-                    //   'create_report_service_provider'.tr(),
-                    //   style: AppFont.style(
-                    //     fontSize: 12,
-                    //     fontWeight: FontWeight.w800,
-                    //     color: const Color(0xFFA5ABB7),
-                    //   ),
-                    // ),
-                    Text(
-                      dealerToShow,
-                      style: AppFont.style(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF0D121F),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+            // Service Provider Card
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+              child: Row(
                 children: [
-                  Text(
-                    'create_report_date'.tr(),
-                    style: AppFont.style(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFFA5ABB7),
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFF1F2F6)),
+                    ),
+                    child: const Icon(
+                      Icons.business_outlined,
+                      color: Color(0xFFA5ABB7),
                     ),
                   ),
-                  Text(
-                    '28/05/2026',
-                    style: AppFont.style(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w900,
-                      color: const Color(0xFF0D121F),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Text(
+                        //   'create_report_service_provider'.tr(),
+                        //   style: AppFont.style(
+                        //     fontSize: 12,
+                        //     fontWeight: FontWeight.w800,
+                        //     color: const Color(0xFFA5ABB7),
+                        //   ),
+                        // ),
+                        Text(
+                          dealerToShow,
+                          style: AppFont.style(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF0D121F),
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'create_report_date'.tr(),
+                        style: AppFont.style(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFFA5ABB7),
+                        ),
+                      ),
+                      Text(
+                        '28/05/2026',
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 4),
-
-        // Technician Names
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildLabel('create_report_tech_name'.tr(), isMandatory: true),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _technicians.add(TextEditingController());
-                  _technicianIds.add(null);
-                });
-              },
-              child: _buildAddListItemButton('Add'),
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        ..._technicians.asMap().entries.map((entry) {
-          int idx = entry.key;
-          TextEditingController controller = entry.value;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
+
+            const SizedBox(height: 4),
+
+            // Technician Names
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: BlocBuilder<TechnicianBloc, TechnicianState>(
-                    bloc: _technicianBloc,
-                    builder: (context, state) {
-                      bool isLoading = state is TechnicianLoadingState;
-                      List<dynamic> validItems = [];
-                      if (state is TechnicianSuccessState) {
-                        validItems = List.from(state.data.data);
-                      }
-                      final otherSelected = _technicians
-                          .where((c) => c != controller && c.text.isNotEmpty)
-                          .map((c) => c.text)
-                          .toSet();
-                      validItems.removeWhere(
-                        (item) => otherSelected.contains(item.id),
-                      );
-                      if (controller.text.isNotEmpty &&
-                          !validItems.any((e) => e.id == controller.text)) {
-                        if (state is TechnicianSuccessState) {
-                          try {
-                            final match = state.data.data.firstWhere(
-                              (e) => e.id == controller.text,
-                            );
-                            validItems.add(match);
-                          } catch (_) {}
-                        }
-                      }
-                      return Stack(
-                        alignment: Alignment.centerRight,
-                        children: [
-                          TextFormField(
-                            controller: controller,
-                            onChanged: (val) {
-                              _technicianIds[idx] = ''; // Manual input, clear ID
-                            },
-                            decoration: InputDecoration(
-                              hintText: 'commissioning_select_technician'.tr(),
-                              hintStyle: AppFont.style(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFFA5ABB7),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFFE5E7EB)),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFFE5E7EB)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFF1565C0)),
-                              ),
-                              suffixIcon: isLoading
-                                  ? const Padding(
-                                      padding: EdgeInsets.all(12.0),
-                                      child: SizedBox(
-                                        width: 16,
-                                        height: 16,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Color(0xFF1565C0),
-                                        ),
-                                      ),
-                                    )
-                                  : IconButton(
-                                      icon: const Icon(
-                                        Icons.keyboard_arrow_down,
-                                        color: Color(0xFFA5ABB7),
-                                      ),
-                                      onPressed: () {
-                                        _showTechnicianBottomSheet(
-                                          context,
-                                          validItems,
-                                          controller,
-                                          idx,
-                                        );
-                                      },
-                                    ),
-                            ),
-                            style: AppFont.style(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFF0D121F),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                _buildLabel('create_report_tech_name'.tr(), isMandatory: true),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _technicians.add(TextEditingController());
+                      _technicianIds.add(null);
+                    });
+                  },
+                  child: _buildAddListItemButton('Add'),
                 ),
-                if (_technicians.length > 1) ...[
-                  const SizedBox(width: 12),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        var removed = _technicians.removeAt(idx);
-                        _technicianIds.removeAt(idx);
-                        removed.dispose();
-                      });
-                    },
-                    child: Container(
-                      width: 54,
-                      height: 54,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFF0F0),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFFFD6D6)),
-                      ),
-                      child: const Icon(
-                        Icons.delete_outline,
-                        color: Color(0xFFE53935),
-                        size: 24,
-                      ),
-                    ),
-                  ),
-                ],
               ],
             ),
-          );
-        }),
-
-        const SizedBox(height: 4),
-
-        // Customer Name
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildLabel('create_report_customer_name'.tr(), isMandatory: true),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isCustomerAddNew = !_isCustomerAddNew;
-                  // Reset dropdown when switching modes
-                  _isCustomerDropdownOpen = false;
-                  _newCustomerController.clear();
-                });
-              },
-              child: _isCustomerAddNew
-                  ? _buildSelectExistingButton()
-                  : _buildAddNewButton('create_report_add_new'.tr()),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        if (_isCustomerAddNew) ...[
-          // ── Add New mode: text field
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF9FAFB),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-            ),
-            child: TextField(
-              controller: _newCustomerController,
-              autofocus: true,
-              style: AppFont.style(
-                fontSize: 15,
-                fontWeight: FontWeight.w900,
-                color: const Color(0xFF0D121F),
-              ),
-              decoration: InputDecoration(
-                hintText: 'Enter new customer name',
-                hintStyle: AppFont.style(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFFA5ABB7),
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-            ),
-          ),
-        ] else ...[
-          // ── Select Existing mode: dropdown
-          BlocBuilder<CustomerBloc, CustomerState>(
-            bloc: _customerBloc,
-            builder: (context, state) {
-              bool isLoading = state is CustomerLoadingState;
-              if (state is CustomerSuccessState) {
-                _customersList.clear();
-                final apiNames = state.data.data.map((e) => e.name).toList();
-                _customersList.addAll(apiNames);
-              }
-
-              List<String> validItems = List.from(_customersList);
-              if (_selectedCustomer != 'Select Customer' &&
-                  !validItems.contains(_selectedCustomer)) {
-                validItems.add(_selectedCustomer);
-              }
-
-              return SearchableDropdown<String>(
-                items: validItems,
-                value: _selectedCustomer == 'Select Customer'
-                    ? null
-                    : _selectedCustomer,
-                hintText: 'Select Customer',
-                itemAsString: (item) => item,
-                isLoading: isLoading,
-                filterFn: (item, filter) => true,
-                onSearchChanged: (v) {
-                  _customerBloc.add(
-                    CustomerGetEvent(search: v, page: 1, pageSize: 10),
-                  );
-                },
-                onLoadMore: (lastSearch) {
-                  if (state is CustomerSuccessState && state.data.data.length >= 10) {
-                    _customerBloc.add(
-                      CustomerGetEvent(search: lastSearch, page: 2, pageSize: 10),
-                    );
-                  }
-                },
-                onChanged: (val) {
-                  setState(() {
-                    _selectedCustomer = val ?? 'Select Customer';
-                    if (val == null) {
-                      _selectedCustomerId = null;
-                    }
-                  });
-                  if (state is CustomerSuccessState && val != null) {
-                    final cList = state.data.data.where((x) => x.name == val);
-                    if (cList.isNotEmpty) {
-                      _selectedCustomerId = cList.first.id;
-                      _sitesBloc.add(SitesGetEvent(customer_id: cList.first.id));
-                    }
-                  }
-                },
-              );
-            },
-          ),
-        ],
-
-        const SizedBox(height: 4),
-
-        // Site Name
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildLabel('create_report_site_name'.tr(), isMandatory: true),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isSiteAddNew = !_isSiteAddNew;
-                  // Reset dropdown when switching modes
-                  _isSiteDropdownOpen = false;
-                  _newSiteController.clear();
-                });
-              },
-              child: _isSiteAddNew
-                  ? _buildSelectExistingButton()
-                  : _buildAddNewButton('create_report_add_new'.tr()),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        if (_isSiteAddNew) ...[
-          // ── Add New mode: text field
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF9FAFB),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-            ),
-            child: TextField(
-              controller: _newSiteController,
-              autofocus: true,
-              style: AppFont.style(
-                fontSize: 15,
-                fontWeight: FontWeight.w900,
-                color: const Color(0xFF0D121F),
-              ),
-              decoration: InputDecoration(
-                hintText: 'Enter new site name',
-                hintStyle: AppFont.style(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFFA5ABB7),
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-            ),
-          ),
-        ] else ...[
-          // ── Select Existing mode: dropdown
-          BlocBuilder<SitesBloc, SitesState>(
-            bloc: _sitesBloc,
-            builder: (context, state) {
-              bool isLoading = state is SitesLoadingState;
-              if (state is SitesSuccessState) {
-                _sitesList.clear();
-                final apiNames = state.data.data.map((e) => e.name).toList();
-                _sitesList.addAll(apiNames);
-              }
-
-              List<String> validItems = List.from(_sitesList);
-              if (_selectedSite != 'Select Site' &&
-                  !validItems.contains(_selectedSite)) {
-                validItems.add(_selectedSite);
-              }
-
-              return SearchableDropdown<String>(
-                items: validItems,
-                value: _selectedSite == 'Select Site' ? null : _selectedSite,
-                hintText: 'Select Site',
-                itemAsString: (item) => item,
-                isLoading: isLoading,
-                filterFn: (item, filter) => true,
-                onSearchChanged: _selectedCustomer != 'Select Customer'
-                    ? (v) {
-                  String? customerId = _selectedCustomerId;
-                  if ((customerId == null || customerId.isEmpty) && _customerBloc.state is CustomerSuccessState) {
-                    final list =
-                    (_customerBloc.state as CustomerSuccessState)
-                        .data
-                        .data
-                        .where((x) => x.name == _selectedCustomer);
-                    if (list.isNotEmpty) customerId = list.first.id;
-                  }
-                  if (customerId != null && customerId.isNotEmpty) {
-                    _sitesBloc.add(
-                      SitesGetEvent(
-                        customer_id: customerId,
-                        search: v,
-                        page: 1,
-                        pageSize: 10,
+            const SizedBox(height: 12),
+            ..._technicians.asMap().entries.map((entry) {
+              int idx = entry.key;
+              TextEditingController controller = entry.value;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: BlocBuilder<TechnicianBloc, TechnicianState>(
+                        bloc: _technicianBloc,
+                        builder: (context, state) {
+                          bool isLoading = state is TechnicianLoadingState;
+                          List<dynamic> validItems = [];
+                          if (state is TechnicianSuccessState) {
+                            validItems = List.from(state.data.data);
+                          }
+                          final otherSelected = _technicians
+                              .where(
+                                (c) => c != controller && c.text.isNotEmpty,
+                              )
+                              .map((c) => c.text)
+                              .toSet();
+                          validItems.removeWhere(
+                            (item) => otherSelected.contains(item.id),
+                          );
+                          if (controller.text.isNotEmpty &&
+                              !validItems.any((e) => e.id == controller.text)) {
+                            if (state is TechnicianSuccessState) {
+                              try {
+                                final match = state.data.data.firstWhere(
+                                  (e) => e.id == controller.text,
+                                );
+                                validItems.add(match);
+                              } catch (_) {}
+                            }
+                          }
+                          return Stack(
+                            alignment: Alignment.centerRight,
+                            children: [
+                              TextFormField(
+                                controller: controller,
+                                onChanged: (val) {
+                                  _technicianIds[idx] =
+                                      ''; // Manual input, clear ID
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'commissioning_select_technician'
+                                      .tr(),
+                                  hintStyle: AppFont.style(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFFA5ABB7),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 16,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFE5E7EB),
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFE5E7EB),
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFF1565C0),
+                                    ),
+                                  ),
+                                  suffixIcon: isLoading
+                                      ? const Padding(
+                                          padding: EdgeInsets.all(12.0),
+                                          child: SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Color(0xFF1565C0),
+                                            ),
+                                          ),
+                                        )
+                                      : IconButton(
+                                          icon: const Icon(
+                                            Icons.keyboard_arrow_down,
+                                            color: Color(0xFFA5ABB7),
+                                          ),
+                                          onPressed: () {
+                                            _showTechnicianBottomSheet(
+                                              context,
+                                              validItems,
+                                              controller,
+                                              idx,
+                                            );
+                                          },
+                                        ),
+                                ),
+                                style: AppFont.style(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xFF0D121F),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
-                    );
-                  }
+                    ),
+                    if (_technicians.length > 1) ...[
+                      const SizedBox(width: 12),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            var removed = _technicians.removeAt(idx);
+                            _technicianIds.removeAt(idx);
+                            removed.dispose();
+                          });
+                        },
+                        child: Container(
+                          width: 54,
+                          height: 54,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF0F0),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFFFD6D6)),
+                          ),
+                          child: const Icon(
+                            Icons.delete_outline,
+                            color: Color(0xFFE53935),
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            }),
+
+            const SizedBox(height: 4),
+
+            // Customer Name
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildLabel(
+                  'create_report_customer_name'.tr(),
+                  isMandatory: true,
+                ),
+                GestureDetector(
+                  onTap: _showAddCustomerBottomSheet,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Text(
+                      'create_report_add_new'.tr(),
+                      style: AppFont.style(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF1565C0),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            // ── Select Existing mode: dropdown
+            BlocBuilder<CustomerBloc, CustomerState>(
+              bloc: _customerBloc,
+              builder: (context, state) {
+                bool isLoading = state is CustomerLoadingState;
+                if (state is CustomerSuccessState) {
+                  _customersList.clear();
+                  final apiNames = state.data.data.map((e) => e.name).toList();
+                  _customersList.addAll(apiNames);
                 }
-                    : null,
-                onLoadMore: _selectedCustomer != 'Select Customer'
-                    ? (lastSearch) {
-                  // Only fetch page 2 if we actually have a full page 1
-                  if (state is SitesSuccessState && state.data.data.length >= 10) {
-                    String? customerId2 = _selectedCustomerId;
-                    if ((customerId2 == null || customerId2.isEmpty) && _customerBloc.state is CustomerSuccessState) {
-                      final list2 =
-                      (_customerBloc.state as CustomerSuccessState)
-                          .data
-                          .data
-                          .where((x) => x.name == _selectedCustomer);
-                      if (list2.isNotEmpty) customerId2 = list2.first.id;
-                    }
-                    if (customerId2 != null && customerId2.isNotEmpty) {
-                      _sitesBloc.add(
-                        SitesGetEvent(
-                          customer_id: customerId2,
+
+                List<String> validItems = List.from(_customersList);
+                if (_selectedCustomer != 'Select Customer' &&
+                    !validItems.contains(_selectedCustomer)) {
+                  validItems.add(_selectedCustomer);
+                }
+
+                return SearchableDropdown<String>(
+                  items: validItems,
+                  value: _selectedCustomer == 'Select Customer'
+                      ? null
+                      : _selectedCustomer,
+                  hintText: 'Select Customer',
+                  itemAsString: (item) => item,
+                  isLoading: isLoading,
+                  filterFn: (item, filter) => true,
+                  onSearchChanged: (v) {
+                    _customerBloc.add(
+                      CustomerGetEvent(search: v, page: 1, pageSize: 10),
+                    );
+                  },
+                  onLoadMore: (lastSearch) {
+                    if (state is CustomerSuccessState &&
+                        state.data.data.length >= 10) {
+                      _customerBloc.add(
+                        CustomerGetEvent(
                           search: lastSearch,
                           page: 2,
                           pageSize: 10,
                         ),
                       );
                     }
-                  }
-                }
-                    : null,
-                onChanged: (val) {
-                  setState(() {
-                    _selectedSite = val ?? 'Select Site';
-                    if (val == null) {
-                      _selectedSiteId = null;
+                  },
+                  onChanged: (val) {
+                    setState(() {
+                      _selectedCustomer = val ?? 'Select Customer';
+                      if (val == null) {
+                        _selectedCustomerId = null;
+                      }
+                    });
+                    if (state is CustomerSuccessState && val != null) {
+                      final cList = state.data.data.where((x) => x.name == val);
+                      if (cList.isNotEmpty) {
+                        _selectedCustomerId = cList.first.id;
+                        _sitesBloc.add(
+                          SitesGetEvent(customer_id: cList.first.id),
+                        );
+                      }
                     }
-                  });
-                  if (state is SitesSuccessState && val != null) {
-                    final sList = state.data.data.where((x) => x.name == val);
-                    if (sList.isNotEmpty) {
-                      _selectedSiteId = sList.first.id;
-                    }
-                  }
-                },
-              );
-            }
-          ),
-        ],
-
-        // const SizedBox(height: 32),
-        //
-        // // Complaint No
-        // Row(
-        //   children: [
-        //     _buildLabel('create_report_complaint_no'.tr()),
-        //     const SizedBox(width: 40),
-        //     Text(
-        //       ':    -',
-        //       style: AppFont.style(
-        //         fontSize: 16,
-        //         fontWeight: FontWeight.w900,
-        //         color: const Color(0xFF0D121F),
-        //       ),
-        //     ),
-        //   ],
-        // ),
-        const SizedBox(height: 4),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-        const SizedBox(height: 4),
-
-        // Member Presents
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildLabel('create_report_member_presents'.tr()),
-            GestureDetector(
-              onTap: _addMemberField,
-              child: _buildAddListItemButton('Add'),
+                  },
+                );
+              },
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        // Render one row per controller
-        ...List.generate(_memberControllers.length, (index) {
-          final ctrl = _memberControllers[index];
-          final isFirst = index == 0;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
+
+            const SizedBox(height: 4),
+
+            // Site Name
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF9FAFB),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE5E7EB)),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: ctrl,
-                            style: AppFont.style(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xFF0D121F),
-                            ),
-                            decoration: InputDecoration(
-                              hintText: 'Enter Member name',
-                              hintStyle: AppFont.style(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: const Color(0xFFA5ABB7),
-                              ),
-                              border: InputBorder.none,
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                            ),
-                          ),
-                        ),
-                        SpeechToTextMicButton(controller: ctrl),
-                      ],
+                _buildLabel('create_report_site_name'.tr(), isMandatory: true),
+                GestureDetector(
+                  onTap: _showAddSiteBottomSheet,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Text(
+                      'create_report_add_new'.tr(),
+                      style: AppFont.style(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF1565C0),
+                      ),
                     ),
                   ),
                 ),
-                if (!isFirst) ...[
-                  const SizedBox(width: 12),
-                  GestureDetector(
-                    onTap: () => _removeMemberField(index),
-                    child: Container(
-                      width: 54,
-                      height: 54,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFF0F0),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFFFD6D6)),
-                      ),
-                      child: const Icon(
-                        Icons.delete_outline,
-                        color: Color(0xFFE53935),
-                        size: 24,
-                      ),
-                    ),
-                  ),
-                ],
               ],
             ),
-          );
-        }),
+            const SizedBox(height: 12),
+            // ── Select Existing mode: dropdown
+            BlocBuilder<SitesBloc, SitesState>(
+              bloc: _sitesBloc,
+              builder: (context, state) {
+                bool isLoading = state is SitesLoadingState;
+                if (state is SitesSuccessState) {
+                  _sitesList.clear();
+                  final apiNames = state.data.data.map((e) => e.name).toList();
+                  _sitesList.addAll(apiNames);
+                }
 
-        const SizedBox(height: 4),
+                List<String> validItems = List.from(_sitesList);
+                if (_selectedSite != 'Select Site' &&
+                    !validItems.contains(_selectedSite)) {
+                  validItems.add(_selectedSite);
+                }
 
-        // Agenda / Purpose
-        _buildLabel('Agenda / Purpose Of Visit'),
-        const SizedBox(height: 16),
-        Container(
-          height: 150,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF8F9FB),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFF1F2F6)),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _agendaController,
-                  maxLines: null,
-                  style: AppFont.style(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF0D121F),
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Enter Agenda / Purpose Of Visit',
-                    hintStyle: AppFont.style(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFFA5ABB7),
-                    ),
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
+                return SearchableDropdown<String>(
+                  items: validItems,
+                  value: _selectedSite == 'Select Site' ? null : _selectedSite,
+                  hintText: 'Select Site',
+                  itemAsString: (item) => item,
+                  isLoading: isLoading,
+                  filterFn: (item, filter) => true,
+                  onSearchChanged: _selectedCustomer != 'Select Customer'
+                      ? (v) {
+                          String? customerId = _selectedCustomerId;
+                          if ((customerId == null || customerId.isEmpty) &&
+                              _customerBloc.state is CustomerSuccessState) {
+                            final list =
+                                (_customerBloc.state as CustomerSuccessState)
+                                    .data
+                                    .data
+                                    .where((x) => x.name == _selectedCustomer);
+                            if (list.isNotEmpty) customerId = list.first.id;
+                          }
+                          if (customerId != null && customerId.isNotEmpty) {
+                            _sitesBloc.add(
+                              SitesGetEvent(
+                                customer_id: customerId,
+                                search: v,
+                                page: 1,
+                                pageSize: 10,
+                              ),
+                            );
+                          }
+                        }
+                      : null,
+                  onLoadMore: _selectedCustomer != 'Select Customer'
+                      ? (lastSearch) {
+                          // Only fetch page 2 if we actually have a full page 1
+                          if (state is SitesSuccessState &&
+                              state.data.data.length >= 10) {
+                            String? customerId2 = _selectedCustomerId;
+                            if ((customerId2 == null || customerId2.isEmpty) &&
+                                _customerBloc.state is CustomerSuccessState) {
+                              final list2 =
+                                  (_customerBloc.state as CustomerSuccessState)
+                                      .data
+                                      .data
+                                      .where(
+                                        (x) => x.name == _selectedCustomer,
+                                      );
+                              if (list2.isNotEmpty)
+                                customerId2 = list2.first.id;
+                            }
+                            if (customerId2 != null && customerId2.isNotEmpty) {
+                              _sitesBloc.add(
+                                SitesGetEvent(
+                                  customer_id: customerId2,
+                                  search: lastSearch,
+                                  page: 2,
+                                  pageSize: 10,
+                                ),
+                              );
+                            }
+                          }
+                        }
+                      : null,
+                  onChanged: (val) {
+                    setState(() {
+                      _selectedSite = val ?? 'Select Site';
+                      if (val == null) {
+                        _selectedSiteId = null;
+                      }
+                    });
+                    if (state is SitesSuccessState && val != null) {
+                      final sList = state.data.data.where((x) => x.name == val);
+                      if (sList.isNotEmpty) {
+                        _selectedSiteId = sList.first.id;
+                      }
+                    }
+                  },
+                );
+              },
+            ),
+
+            const SizedBox(height: 4),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+            const SizedBox(height: 4),
+
+            // Member Presents
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildLabel('create_report_member_presents'.tr()),
+                GestureDetector(
+                  onTap: _addMemberField,
+                  child: _buildAddListItemButton('Add'),
                 ),
-              ),
-              Align(
-                alignment: Alignment.topRight,
-                child: SpeechToTextMicButton(controller: _agendaController),
-              ),
-            ],
-          ),
-        ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            // Render one row per controller
+            ...List.generate(_memberControllers.length, (index) {
+              final ctrl = _memberControllers[index];
+              final isFirst = index == 0;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF9FAFB),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: ctrl,
+                                style: AppFont.style(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w900,
+                                  color: const Color(0xFF0D121F),
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: 'Enter Member name',
+                                  hintStyle: AppFont.style(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w800,
+                                    color: const Color(0xFFA5ABB7),
+                                  ),
+                                  border: InputBorder.none,
+                                  isDense: true,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SpeechToTextMicButton(controller: ctrl),
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (!isFirst) ...[
+                      const SizedBox(width: 12),
+                      GestureDetector(
+                        onTap: () => _removeMemberField(index),
+                        child: Container(
+                          width: 54,
+                          height: 54,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF0F0),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFFFD6D6)),
+                          ),
+                          child: const Icon(
+                            Icons.delete_outline,
+                            color: Color(0xFFE53935),
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            }),
 
-        const SizedBox(height: 60),
-      ],
-    );
+            const SizedBox(height: 4),
+
+            // Agenda / Purpose
+            _buildLabel('Agenda / Purpose Of Visit'),
+            const SizedBox(height: 16),
+            Container(
+              height: 150,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8F9FB),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFF1F2F6)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _agendaController,
+                      maxLines: null,
+                      style: AppFont.style(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF0D121F),
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Enter Agenda / Purpose Of Visit',
+                        hintStyle: AppFont.style(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFFA5ABB7),
+                        ),
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: SpeechToTextMicButton(controller: _agendaController),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 60),
+          ],
+        );
       },
     );
   }
@@ -2615,10 +3538,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   Widget _buildTechLabel(String text) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionTitle(text),
-        const SizedBox(height: 8),
-      ],
+      children: [_buildSectionTitle(text), const SizedBox(height: 8)],
     );
   }
 
@@ -2676,7 +3596,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         TextField(
           controller: ctrl,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))],
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*')),
+          ],
           style: AppFont.style(
             fontSize: 15,
             fontWeight: FontWeight.w900,
@@ -3130,9 +4052,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: SearchableDropdown<String>(
-                items: _technicianNameController.text.isNotEmpty ? [_technicianNameController.text] : [],
+                items: _technicianNameController.text.isNotEmpty
+                    ? [_technicianNameController.text]
+                    : [],
                 itemAsString: (t) => t,
-                value: _technicianNameController.text.isNotEmpty ? _technicianNameController.text : null,
+                value: _technicianNameController.text.isNotEmpty
+                    ? _technicianNameController.text
+                    : null,
                 onChanged: (val) {},
                 hintText: 'commissioning_select_technician'.tr(),
                 readOnly: true,
@@ -3373,7 +4299,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             GestureDetector(
               onTap: () async {
                 final ImagePicker picker = ImagePicker();
-                final XFile? file = await picker.pickImage(source: ImageSource.gallery);
+                final XFile? file = await picker.pickImage(
+                  source: ImageSource.gallery,
+                );
                 if (file != null) {
                   setState(() {
                     _pickedPhotos.add(file);
@@ -3407,7 +4335,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             GestureDetector(
               onTap: () async {
                 final ImagePicker picker = ImagePicker();
-                final XFile? file = await picker.pickImage(source: ImageSource.camera);
+                final XFile? file = await picker.pickImage(
+                  source: ImageSource.camera,
+                );
                 if (file != null) {
                   setState(() {
                     _pickedPhotos.add(file);
@@ -3423,7 +4353,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.camera_alt_outlined, size: 28, color: Color(0xFFA5ABB7)),
+                      const Icon(
+                        Icons.camera_alt_outlined,
+                        size: 28,
+                        color: Color(0xFFA5ABB7),
+                      ),
                       const SizedBox(height: 6),
                       Text(
                         'Capture',
@@ -3488,6 +4422,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       ),
     );
   }
+
   Widget _buildLabel(String text, {bool isMandatory = false}) {
     return _buildSectionTitle(text, isMandatory: isMandatory);
   }
@@ -3517,68 +4452,30 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   }
 
   Widget _buildAddNewButton(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FB),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.add, size: 16, color: Color(0xFF1565C0)),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: AppFont.style(
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF1565C0),
-            ),
-          ),
-        ],
+    return Text(
+      'Add New +',
+      style: AppFont.style(
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        color: const Color(0xFF0B68B9),
       ),
     );
   }
 
   Widget _buildAddListItemButton(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FB),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.add, size: 16, color: Color(0xFF1565C0)),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: AppFont.style(
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF1565C0),
-            ),
-          ),
-        ],
+    return Text(
+      'Add New +',
+      style: AppFont.style(
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        color: const Color(0xFF0B68B9),
       ),
     );
   }
 
   Widget _buildSelectExistingButton() {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: const Color(0xFFF8F9FB),
         borderRadius: BorderRadius.circular(8),
@@ -3650,7 +4547,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         const SizedBox(width: 8),
         Expanded(
           child: GestureDetector(
-            onTap: (signatureFile == null &&
+            onTap:
+                (signatureFile == null &&
                     (existingUrl == null || existingUrl.isEmpty))
                 ? onTap
                 : null,
@@ -3814,7 +4712,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: const Color(0xFFCDD0D8)),
+                              border: Border.all(
+                                color: const Color(0xFFCDD0D8),
+                              ),
                             ),
                             child: Center(
                               child: Text(
@@ -3835,12 +4735,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           onTap: () async {
                             if (signatureController.isEmpty) {
                               appSnackBar(
-                                  context,
-                                  const Color(0xFFF44336),
-                                  'commissioning_please_draw_signature'.tr());
+                                context,
+                                const Color(0xFFF44336),
+                                'commissioning_please_draw_signature'.tr(),
+                              );
                               return;
                             }
-                            final bytes = await signatureController.toPngBytes();
+                            final bytes = await signatureController
+                                .toPngBytes();
                             if (bytes != null) {
                               final tempDir = await getTemporaryDirectory();
                               final file = File(
@@ -3894,10 +4796,15 @@ class _DashedBorderPainter extends CustomPainter {
       ..color = color
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
-      
+
     Path path = Path()
-      ..addRRect(RRect.fromRectAndRadius(Rect.fromLTWH(0, 0, size.width, size.height), const Radius.circular(10)));
-      
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(0, 0, size.width, size.height),
+          const Radius.circular(10),
+        ),
+      );
+
     Path dashPath = Path();
     double dashWidth = 6.0;
     double dashSpace = 4.0;
