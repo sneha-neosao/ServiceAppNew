@@ -255,6 +255,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                             final item = filteredItems[i];
                             return InkWell(
                               onTap: () {
+                                FocusManager.instance.primaryFocus?.unfocus();
                                 setState(() {
                                   controller.text = item.name;
                                   _technicianIds[index] = item.id;
@@ -563,7 +564,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'amc_report_title'.tr(),
+              'AMC Report',
               style: AppFont.style(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
@@ -1680,6 +1681,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     BuildContext context,
     Function(File) onSignatureDrawn,
   ) async {
+    FocusManager.instance.primaryFocus?.unfocus();
     final SignatureController signatureController = SignatureController(
       penStrokeWidth: 4,
       penColor: const Color(0xFF0D121F),
@@ -1781,8 +1783,11 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                                 '${tempDir.path}/signature_${DateTime.now().millisecondsSinceEpoch}.png',
                               );
                               await file.writeAsBytes(bytes);
+                              FocusManager.instance.primaryFocus?.unfocus();
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                              }
                               onSignatureDrawn(file);
-                              Navigator.pop(context);
                             }
                           },
                           child: Container(
@@ -2040,29 +2045,12 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
   }
 
   Widget _buildAddButton() {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FB),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.add, size: 16, color: Color(0xFF1565C0)),
-          const SizedBox(width: 4),
-          Text(
-            'Add',
-            style: AppFont.style(
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF1565C0),
-            ),
-          ),
-        ],
+    return Text(
+      'Add New +',
+      style: AppFont.style(
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        color: const Color(0xFF0B68B9),
       ),
     );
   }

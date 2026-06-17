@@ -192,6 +192,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
 
                               return InkWell(
                                 onTap: () {
+                                  FocusManager.instance.primaryFocus?.unfocus();
                                   widget.onChanged?.call(item);
                                   Navigator.pop(ctx);
                                 },

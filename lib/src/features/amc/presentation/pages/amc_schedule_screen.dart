@@ -123,9 +123,28 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
 
         // ── Dropdowns + List ──────────────────────────────────────────────
         Expanded(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-            children: [
+          child: RefreshIndicator(
+            color: const Color(0xFF0B68B9),
+            onRefresh: () async {
+              String? pendingParam;
+              if (_selectedStatus == 'Current Pending') {
+                pendingParam = 'is_current_pending';
+              } else if (_selectedStatus == 'Previous Pending') {
+                pendingParam = 'is_prious_pending';
+              }
+              _upcomingAmcBloc.add(UpcomingAmcGetEvent(_selectedFilter, pending: pendingParam));
+              
+              _customerBloc.add(const CustomerGetEvent());
+              if (_selectedCustomer != null) {
+                _sitesBloc.add(SitesGetEvent(customer_id: _selectedCustomer!.id, page: 1, pageSize: 10));
+              }
+              
+              await Future.delayed(const Duration(seconds: 1));
+            },
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+              children: [
               SearchableDropdown<String>(
                 items: const ['Today', 'Tomorrow', 'Week', 'Month'],
                 value: _selectedFilter,
@@ -378,6 +397,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
             ],
           ),
         ),
+      ),
       ],
     );
   }
