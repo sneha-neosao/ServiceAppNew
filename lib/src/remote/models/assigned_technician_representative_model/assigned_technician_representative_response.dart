@@ -55,9 +55,9 @@ class AssignedTechnician extends Equatable {
 
   factory AssignedTechnician.fromJson(Map<String, dynamic> json) {
     return AssignedTechnician(
-      assignId: json['assign_id'],
-      technicianId: json['technician_id'],
-      name: json['name'],
+      assignId: json['assign_id'] ?? '',
+      technicianId: json['technician_id'] ?? '',
+      name: json['name'] ?? '',
     );
   }
 

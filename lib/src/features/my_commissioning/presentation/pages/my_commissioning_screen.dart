@@ -21,10 +21,10 @@ class MyCommissioningScreen extends StatefulWidget {
   const MyCommissioningScreen({super.key});
 
   @override
-  State<MyCommissioningScreen> createState() => _MyCommissioningScreenState();
+  State<MyCommissioningScreen> createState() => MyCommissioningScreenState();
 }
 
-class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
+class MyCommissioningScreenState extends State<MyCommissioningScreen> {
   late CommissioningWorkListBloc _bloc;
 
   @override
@@ -32,6 +32,10 @@ class _MyCommissioningScreenState extends State<MyCommissioningScreen> {
     super.initState();
     _bloc = getIt<CommissioningWorkListBloc>()
       ..add(CommissioningWorkListGetEvent());
+  }
+
+  void refreshList() {
+    _bloc.add(CommissioningWorkListGetEvent());
   }
 
   @override

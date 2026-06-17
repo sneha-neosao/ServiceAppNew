@@ -136,6 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   bool _showSystemBars = true;
+  final GlobalKey<MyCommissioningScreenState> _myCommissioningKey = GlobalKey<MyCommissioningScreenState>();
 
   void _onTabTapped(int index) {
     setState(() {
@@ -499,7 +500,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       builder: (context) => AddCommissioningScreen(onBack: () => Navigator.pop(context)),
                     ),
                   );
-                  getIt<CommissioningWorkListBloc>().add(CommissioningWorkListGetEvent());
+                  _myCommissioningKey.currentState?.refreshList();
                 },
                 backgroundColor: const Color(0xFF0B68B9),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -813,7 +814,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child = _buildHomeBody();
         break;
       case 1:
-        child = const MyCommissioningScreen();
+        child = MyCommissioningScreen(key: _myCommissioningKey);
         break;
       case 2:
         child = const ServiceCallsScreen();
