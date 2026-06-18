@@ -1605,10 +1605,10 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             GestureDetector(
               onTap: () async {
                 final ImagePicker picker = ImagePicker();
-                final XFile? file = await picker.pickImage(source: ImageSource.gallery);
-                if (file != null) {
+                final List<XFile> files = await picker.pickMultiImage();
+                if (files.isNotEmpty) {
                   setState(() {
-                    _workPhotos.add(File(file.path));
+                    _workPhotos.addAll(files.map((e) => File(e.path)));
                   });
                 }
               },

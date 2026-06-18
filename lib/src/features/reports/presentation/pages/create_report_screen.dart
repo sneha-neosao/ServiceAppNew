@@ -2923,14 +2923,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   onTap: _showAddCustomerBottomSheet,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Text(
-                      'create_report_add_new'.tr(),
-                      style: AppFont.style(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF1565C0),
-                      ),
-                    ),
+                    child: _buildAddNewButton('Add'),
                   ),
                 ),
               ],
@@ -3011,14 +3004,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   onTap: _showAddSiteBottomSheet,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Text(
-                      'create_report_add_new'.tr(),
-                      style: AppFont.style(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF1565C0),
-                      ),
-                    ),
+                    child: _buildAddNewButton('Add'),
                   ),
                 ),
               ],
@@ -4299,12 +4285,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             GestureDetector(
               onTap: () async {
                 final ImagePicker picker = ImagePicker();
-                final XFile? file = await picker.pickImage(
-                  source: ImageSource.gallery,
-                );
-                if (file != null) {
+                final List<XFile> files = await picker.pickMultiImage();
+                if (files.isNotEmpty) {
                   setState(() {
-                    _pickedPhotos.add(file);
+                    _pickedPhotos.addAll(files);
                   });
                 }
               },

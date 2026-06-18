@@ -1138,14 +1138,13 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     CommissioningStep6Params params,
   ) async {
     try {
-      final session = await SessionManager.getUserSession();
       final Map<String, dynamic> map = {
         "id": params.id,
         "technician_remarks": params.technicianRemarks,
         "customer_remarks": params.customerRemarks,
         "technician_representative": params.technicianRepresentative,
         "customer_representative_name": params.customerRepresentativeName,
-        "technician_id": session?.technician?.id ?? session?.dealer?.id ?? "",
+        "technician_id": params.technicianRepresentative,
       };
 
       print("=== Step 6 API Payload ===");
@@ -2025,6 +2024,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         "customer_remarks": params.customerRemarks,
         "technician_remarks": params.technicianRemarks,
         "technician_representative": params.technicianRepresentative,
+        "technician_id": params.technicianRepresentative,
         if (params.qrCodeUrl.isNotEmpty) "qr_code_url": params.qrCodeUrl,
       };
 
@@ -2453,14 +2453,13 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     String token,
   ) async {
     try {
-      final session = await SessionManager.getUserSession();
       final Map<String, dynamic> map = {
         "id": params.id,
         "technician_remarks": params.technicianRemarks,
         "customer_remarks": params.customerRemarks,
         "technician_representative": params.technicianRepresentative,
         "customer_representative_name": params.customerRepresentativeName,
-        "technician_id": session?.technician?.id ?? session?.dealer?.id ?? "",
+        "technician_id": params.technicianRepresentative,
       };
 
       print("=== Service Call Step 6 API Payload ===");

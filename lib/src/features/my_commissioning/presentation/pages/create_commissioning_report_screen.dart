@@ -1375,119 +1375,121 @@ class _CreateCommissioningReportScreenState
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.close, color: Color(0xFFA5ABB7)),
-                      onPressed: ()
-                      {
-                        Navigator.of(context).pop();
-                        widget.onBack();
-                      },
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Color(0xFFA5ABB7)),
+                        onPressed: ()
+                        {
+                          Navigator.of(context).pop();
+                          widget.onBack();
+                        },
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFE8F5E9),
+                      shape: BoxShape.circle,
                     ),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFE8F5E9),
-                    shape: BoxShape.circle,
+                    child: const Icon(
+                      Icons.check_circle,
+                      color: Color(0xFF4CAF50),
+                      size: 40,
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.check_circle,
-                    color: Color(0xFF4CAF50),
-                    size: 40,
+                  const SizedBox(height: 24),
+                  Text(
+                    widget.isServiceReport ? 'Service Call Report Feedback' : 'Commissioning Work Report Feedback',
+                    textAlign: TextAlign.center,
+                    style: AppFont.style(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFF0D121F),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  widget.isServiceReport ? 'Service Call Report Feedback' : 'Commissioning Work Report Feedback',
-                  textAlign: TextAlign.center,
-                  style: AppFont.style(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    color: const Color(0xFF0D121F),
+                  const SizedBox(height: 8),
+                  // Text(
+                  //   'create_report_success_subtitle'.tr(),
+                  //   style: AppFont.style(
+                  //     fontSize: 14,
+                  //     fontWeight: FontWeight.w800,
+                  //     color: const Color(0xFFA5ABB7),
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 16),
+                  const Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Color(0xFFF1F2F6),
                   ),
-                ),
-                const SizedBox(height: 8),
-                // Text(
-                //   'create_report_success_subtitle'.tr(),
-                //   style: AppFont.style(
-                //     fontSize: 14,
-                //     fontWeight: FontWeight.w800,
-                //     color: const Color(0xFFA5ABB7),
-                //   ),
-                // ),
-                // const SizedBox(height: 16),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Color(0xFFF1F2F6),
-                ),
-                const SizedBox(height: 32),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FB),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFF1F2F6)),
+                  const SizedBox(height: 32),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8F9FB),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFF1F2F6)),
+                    ),
+                    child: qrCodeImage != null && qrCodeImage.isNotEmpty
+                        ? Image.network(
+                            qrCodeImage,
+                            width: 180,
+                            height: 180,
+                            fit: BoxFit.contain,
+                          )
+                        : const Icon(
+                            Icons.qr_code_2,
+                            size: 180,
+                            color: Color(0xFF0D121F),
+                          ),
                   ),
-                  child: qrCodeImage != null && qrCodeImage.isNotEmpty
-                      ? Image.network(
-                          qrCodeImage,
-                          width: 180,
-                          height: 180,
-                          fit: BoxFit.contain,
-                        )
-                      : const Icon(
-                          Icons.qr_code_2,
-                          size: 180,
-                          color: Color(0xFF0D121F),
-                        ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Scan for Customer Feedback',
-                  textAlign: TextAlign.center,
-                  style: AppFont.style(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Scan for Customer Feedback',
+                    textAlign: TextAlign.center,
+                    style: AppFont.style(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFFA5ABB7),
+                    ),
                   ),
-                ),
-                // const SizedBox(height: 32),
-                // SizedBox(
-                //   width: double.infinity,
-                //   height: 56,
-                //   child: ElevatedButton(
-                //     onPressed: () {
-                //       Navigator.of(context).pop();
-                //       widget.onBack();
-                //     },
-                //     style: ElevatedButton.styleFrom(
-                //       backgroundColor: const Color(0xFF1565C0),
-                //       shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.circular(16),
-                //       ),
-                //       elevation: 0,
-                //     ),
-                //     child: Text(
-                //       'create_report_btn_done'.tr(),
-                //       style: AppFont.style(
-                //         fontSize: 16,
-                //         fontWeight: FontWeight.w800,
-                //         color: Colors.white,
-                //       ),
-                //     ),
-                //   ),
-                // ),
-              ],
+                  // const SizedBox(height: 32),
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   height: 56,
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       Navigator.of(context).pop();
+                  //       widget.onBack();
+                  //     },
+                  //     style: ElevatedButton.styleFrom(
+                  //       backgroundColor: const Color(0xFF1565C0),
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(16),
+                  //       ),
+                  //       elevation: 0,
+                  //     ),
+                  //     child: Text(
+                  //       'create_report_btn_done'.tr(),
+                  //       style: AppFont.style(
+                  //         fontSize: 16,
+                  //         fontWeight: FontWeight.w800,
+                  //         color: Colors.white,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                ],
+              ),
             ),
           ),
         );
@@ -5096,10 +5098,10 @@ class _CreateCommissioningReportScreenState
             GestureDetector(
               onTap: () async {
                 final ImagePicker picker = ImagePicker();
-                final XFile? file = await picker.pickImage(source: ImageSource.gallery);
-                if (file != null) {
+                final List<XFile> files = await picker.pickMultiImage();
+                if (files.isNotEmpty) {
                   setState(() {
-                    _workPhotos.add(File(file.path));
+                    _workPhotos.addAll(files.map((e) => File(e.path)));
                   });
                 }
               },
