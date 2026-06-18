@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/features/amc/bloc/amc_visit_reports_bloc/amc_visit_reports_bloc.dart';
 import 'package:service_app/src/features/amc/presentation/bloc/amc_report_pdf_bloc/amc_report_pdf_bloc.dart';
@@ -228,17 +228,41 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
 
         // ── Scrollable body ──────────────────────────────────────────────────
         Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          child: RefreshIndicator(
+            color: const Color(0xFF0B68B9),
+            onRefresh: () async {
+              _reportsBloc.add(AmcVisitReportsGetEvent(visitId: widget.visitId));
+              await Future.delayed(const Duration(seconds: 1));
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 // ── Visit Info Card ────────────────────────────────────────
                 if (!widget.isFromHistory)
-                  Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 8,
-                  ),
+                  if (isLoading)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          height: 120,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
@@ -710,6 +734,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                 ],
                 const SizedBox(height: 40),
               ],
+              ),
             ),
           ),
         ),

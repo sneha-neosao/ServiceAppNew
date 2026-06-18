@@ -24,8 +24,8 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
   DateTime? _selectedDate;
-  Customer? _selectedCustomer;
-  Site? _selectedSite;
+  final TextEditingController _customerController = TextEditingController();
+  final TextEditingController _siteController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _isFetchingMore = false;
   
@@ -61,14 +61,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
     _notificationsBloc.add(GetNotificationsEvent(
       page: page,
       isRefresh: page == 1,
-      customerName: _selectedCustomer?.name,
-      siteName: _selectedSite?.name,
+      customerName: _customerController.text.trim().isNotEmpty ? _customerController.text.trim() : null,
+      siteName: _siteController.text.trim().isNotEmpty ? _siteController.text.trim() : null,
       date: _selectedDate != null ? DateFormat('yyyy-MM-dd').format(_selectedDate!) : null,
     ));
   }
 
   @override
   void dispose() {
+    _customerController.dispose();
+    _siteController.dispose();
     _scrollController.dispose();
     _customerBloc.close();
     _sitesBloc.close();
@@ -163,8 +165,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              _selectedCustomer = null;
-                              _selectedSite = null;
+                              _customerController.clear();
+                              _siteController.clear();
                               _selectedDate = null;
                             });
                             _fetchNotifications(page: 1);
@@ -179,8 +181,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              _selectedCustomer = null;
-                              _selectedSite = null;
+                              _customerController.clear();
+                              _siteController.clear();
                               _selectedDate = null;
                             });
                             _fetchNotifications(page: 1);
@@ -206,94 +208,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  BlocBuilder<CustomerBloc, CustomerState>(
-                    bloc: _customerBloc,
-                    builder: (context, state) {
-                      bool isLoading = state is CustomerLoadingState;
-                      List<Customer> customers = [];
-                      if (state is CustomerSuccessState) {
-                        customers = state.data.data;
-                      } else if (state is CustomerFailureState) {
-                        customers = [];
-                      }
-
-                      return SearchableDropdown<Customer>(
-                        items: customers,
-                        value: _selectedCustomer,
-                        hintText: 'notif_filter_customer'.tr(),
-                        itemAsString: (Customer c) => c.name,
-                        isLoading: isLoading,
-                        isFilter: true,
-                        onChanged: (Customer? newValue) {
-                          setState(() {
-                            _selectedCustomer = newValue;
-                            _selectedSite = null;
-                          });
-                          if (newValue != null && newValue.id != null) {
-                            _sitesBloc.add(SitesGetEvent(customer_id: newValue.id!));
-                          }
-                          _fetchNotifications(page: 1);
-                        },
-                        onSearchChanged: (query) {
-                          _customerBloc.add(CustomerGetEvent(search: query, page: 1));
-                        },
-                        onLoadMore: (query) {
-                          _customerBloc.add(CustomerGetEvent(search: query, page: 2)); // The bloc handles the exact page increment internally
-                        },
-                        onClear: () {
-                          setState(() {
-                            _selectedCustomer = null;
-                            _selectedSite = null;
-                          });
-                          _fetchNotifications(page: 1);
-                        },
-                      );
-                    },
+                  _buildTextInputField(
+                    controller: _customerController,
+                    hintText: 'Enter Customer Name',
+                    onSubmitted: () => _fetchNotifications(page: 1),
                   ),
                   const SizedBox(height: 12),
-                  BlocBuilder<SitesBloc, SitesState>(
-                    bloc: _sitesBloc,
-                    builder: (context, state) {
-                      bool isLoading = state is SitesLoadingState;
-                      List<Site> sites = [];
-                      if (state is SitesSuccessState) {
-                        sites = state.data.data;
-                      } else if (state is SitesFailureState) {
-                        sites = [];
-                      }
-
-                      return SearchableDropdown<Site>(
-                        items: sites,
-                        value: _selectedSite,
-                        hintText: 'notif_filter_site'.tr(),
-                        itemAsString: (Site s) => s.name,
-                        isLoading: isLoading,
-                        isFilter: true,
-                        readOnly: _selectedCustomer == null,
-                        onChanged: (Site? newValue) {
-                          setState(() {
-                            _selectedSite = newValue;
-                          });
-                          _fetchNotifications(page: 1);
-                        },
-                        onSearchChanged: (query) {
-                          if (_selectedCustomer != null && _selectedCustomer!.id != null) {
-                            _sitesBloc.add(SitesGetEvent(customer_id: _selectedCustomer!.id!, search: query, page: 1));
-                          }
-                        },
-                        onLoadMore: (query) {
-                          if (_selectedCustomer != null && _selectedCustomer!.id != null) {
-                            _sitesBloc.add(SitesGetEvent(customer_id: _selectedCustomer!.id!, search: query, page: 2));
-                          }
-                        },
-                        onClear: () {
-                          setState(() {
-                            _selectedSite = null;
-                          });
-                          _fetchNotifications(page: 1);
-                        },
-                      );
-                    },
+                  _buildTextInputField(
+                    controller: _siteController,
+                    hintText: 'Enter Site Name',
+                    onSubmitted: () => _fetchNotifications(page: 1),
                   ),
                   const SizedBox(height: 12),
                   _buildFilterField(
@@ -335,10 +259,29 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     return Center(child: Text(state.message));
                   } else if (state is NotificationsLoaded) {
                     if (state.notifications.isEmpty) {
-                      return const Center(child: Text("No notifications found"));
+                      return RefreshIndicator(
+                        color: const Color(0xFF0B68B9),
+                        onRefresh: () async {
+                          _fetchNotifications(page: 1);
+                        },
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            alignment: Alignment.center,
+                            child: const Text("No notifications found"),
+                          ),
+                        ),
+                      );
                     }
-                    return ListView.builder(
-                      controller: _scrollController,
+                    return RefreshIndicator(
+                      color: const Color(0xFF0B68B9),
+                      onRefresh: () async {
+                        _fetchNotifications(page: 1);
+                      },
+                      child: ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        controller: _scrollController,
                       padding: const EdgeInsets.all(20),
                       itemCount: state.notifications.length + (state.hasReachedMax ? 0 : 1),
                       itemBuilder: (context, index) {
@@ -384,6 +327,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           ),
                         );
                       },
+                    ),
                     );
                   }
                   return const SizedBox();
@@ -396,6 +340,43 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
+  Widget _buildTextInputField({
+    required TextEditingController controller,
+    required String hintText,
+    required VoidCallback onSubmitted,
+  }) {
+    return Container(
+      height: 48,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFF1F2F6)),
+      ),
+      child: TextField(
+        controller: controller,
+        textInputAction: TextInputAction.search,
+        onSubmitted: (_) => onSubmitted(),
+        style: AppFont.style(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: const Color(0xFF424B5C),
+        ),
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: hintText,
+          hintStyle: AppFont.style(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFFA5ABB7),
+          ),
+          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+          isDense: true,
+        ),
+      ),
+    );
+  }
+
   Widget _buildFilterField(String label, IconData icon, {VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
@@ -403,7 +384,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         height: 48,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFFF8F9FB),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: const Color(0xFFF1F2F6)),
         ),
