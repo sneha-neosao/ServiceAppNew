@@ -970,7 +970,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          'home_greeting_message'
+                          _getGreetingMessage()
                               .tr(args: [dealerName]),
                           style: AppFont.style(
                             fontSize: 16,
@@ -1040,6 +1040,14 @@ class _HomeScreenState extends State<HomeScreen> {
       default:
         return 'home_appbar_title'.tr();
     }
+  }
+
+  String _getGreetingMessage() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'greetingMorning';
+    if (hour < 17) return 'greetingAfternoon';
+    if (hour < 21) return 'greetingEvening';
+    return 'greetingNight';
   }
 }
 
