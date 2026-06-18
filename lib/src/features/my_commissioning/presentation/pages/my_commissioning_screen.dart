@@ -167,7 +167,7 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
                             height: MediaQuery.of(context).size.height * 0.6,
                             child: Center(
                               child: Text(
-                                'No ongoing commissioning works found.',
+                                'no_commissioning_work_message'.tr(),
                                 style: AppFont.style(
                                   fontSize: 14,
                                   color: const Color(0xFFA5ABB7),

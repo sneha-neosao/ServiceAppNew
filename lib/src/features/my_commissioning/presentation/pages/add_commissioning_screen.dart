@@ -699,8 +699,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                       Expanded(
                         child: Text(
                           widget.editWorkId != null
-                              ? 'Edit Commissioning Work'
-                              : 'Assign For New Commissioning Work',
+                              ? ''
+                              : 'assign_for_new_commissioning_work'.tr(),
                           style: AppFont.style(
                             fontSize: 17,
                             fontWeight: FontWeight.w900,
@@ -1133,8 +1133,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                                       Text(
                                                         widget.editWorkId !=
                                                                 null
-                                                            ? 'Save Changes'
-                                                            : 'Assign',
+                                                            ? 'save_changes'.tr()
+                                                            : 'assign'.tr(),
                                                         style: AppFont.style(
                                                           fontSize: 14,
                                                           fontWeight:

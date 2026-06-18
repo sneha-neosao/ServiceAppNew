@@ -56,8 +56,8 @@ class _LoginInputWidgetState extends State<LoginInputWidget> {
     return Column(
       children: [
         LoginTextField<AuthLoginFormBloc>(
-          label: 'login_username_label',
-          hintKey: 'login_username_hint',
+          label: 'login_username_label'.tr(),
+          hintKey: 'login_username_hint'.tr(),
           prefixIcon: Icons.person_outline,
           initialValue: _savedUsername.isNotEmpty ? _savedUsername : null,
           onChanged: (val) {
@@ -68,8 +68,8 @@ class _LoginInputWidgetState extends State<LoginInputWidget> {
         ),
         const SizedBox(height: 24),
         LoginTextField<AuthLoginFormBloc>(
-          label: 'login_password_label',
-          hintKey: 'login_password_hint',
+          label: 'login_password_label'.tr(),
+          hintKey: 'login_password_hint'.tr(),
           prefixIcon: Icons.lock_outline,
           initialValue: _savedPassword.isNotEmpty ? _savedPassword : null,
           isSecure: true,
