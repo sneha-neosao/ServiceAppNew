@@ -8,10 +8,10 @@ import 'package:service_app/src/features/my_commissioning/bloc/check_feedback_bl
 import 'package:service_app/src/features/service_calls/bloc/service_call_check_feedback_bloc/service_call_check_feedback_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_check_feedback_bloc/service_call_check_feedback_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_check_feedback_bloc/service_call_check_feedback_state.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_bloc.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_state.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_event.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_check_feedback_bloc/amc_check_feedback_state.dart';
+import 'package:service_app/src/features/amc/bloc/amc_check_feedback_bloc/amc_check_feedback_bloc.dart';
+import 'package:service_app/src/features/amc/bloc/amc_check_feedback_bloc/amc_check_feedback_state.dart';
+import 'package:service_app/src/features/amc/bloc/amc_check_feedback_bloc/amc_check_feedback_event.dart';
+import 'package:service_app/src/features/amc/bloc/amc_check_feedback_bloc/amc_check_feedback_state.dart';
 import 'package:service_app/src/remote/models/feedback_model/feedback_response.dart';
 import 'package:shimmer/shimmer.dart';
 

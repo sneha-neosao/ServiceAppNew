@@ -1,56 +1,40 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
 import '../../core/theme/app_color.dart';
 
-class AppButtonWidget extends StatefulWidget {
+class AppTextButtonWidget extends StatelessWidget {
   final VoidCallback onPressed;
-  final String label;
-  final bool enabled; // 👈 new param
+  final bool enabled;
 
-  const AppButtonWidget({
+  const AppTextButtonWidget({
     super.key,
     required this.onPressed,
-    required this.label,
     this.enabled = true,
   });
 
   @override
-  State<AppButtonWidget> createState() => _AppButtonWidgetState();
-}
-
-class _AppButtonWidgetState extends State<AppButtonWidget> {
-  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 13.0),
-      child: ElevatedButton(
-        onPressed: widget.enabled ? widget.onPressed : null,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            SizedBox(height: 35),
-            Text(
-              widget.label,
-              style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                color: _getTextColor(isDark),
-                fontSize: 17,
-              ),
-            ),
-            Image.asset("assets/icons/arrow.png", height: 35),
-          ],
-        ), // uses theme textStyle automatically
+
+    return TextButton(
+      onPressed: enabled ? onPressed : null,
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        foregroundColor: _getTextColor(isDark), // text + icon color
+        textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
       ),
+      child: Text("add_new".tr()),
     );
   }
 
   Color _getTextColor(bool isDark) {
     if (isDark) {
-      // Dark mode: always white
       return AppColor.white;
     } else {
-      // Light mode: white if enabled, black if disabled
-      return widget.enabled ? AppColor.white : AppColor.black;
+      return enabled ? AppColor.primaryColor : AppColor.black;
     }
   }
 }

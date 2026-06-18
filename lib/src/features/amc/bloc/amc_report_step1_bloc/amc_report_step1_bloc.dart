@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step1_usecase.dart';
+import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step1_usecase.dart';
 
 import 'amc_report_step1_event.dart';
 import 'amc_report_step1_state.dart';

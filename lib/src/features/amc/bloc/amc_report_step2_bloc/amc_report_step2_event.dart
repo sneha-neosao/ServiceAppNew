@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step2_usecase.dart';
+import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step2_usecase.dart';
 
 abstract class AmcReportStep2Event extends Equatable {
   const AmcReportStep2Event();

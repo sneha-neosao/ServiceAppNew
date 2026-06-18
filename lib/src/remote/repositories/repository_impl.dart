@@ -4,9 +4,9 @@ import 'package:service_app/src/remote/models/amc_report_model/amc_report_step2_
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_step3_response.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_pdf_response.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_visit_complete_response.dart';
-import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step3_usecase.dart';
+import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step3_usecase.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_assigned_technicians_response.dart';
-import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step1_usecase.dart';
+import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step1_usecase.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:service_app/src/core/usecases/usecase.dart';
@@ -28,7 +28,7 @@ import 'package:service_app/src/remote/models/service_work_report_step3_model/se
 import 'package:service_app/src/remote/models/service_work_report_step1_model/service_work_report_step1_response.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/assigned_service_calls_usecase.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/pending_service_calls_usecase.dart';
-import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step2_usecase.dart';
+import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step2_usecase.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_report_step2_response.dart';
 import 'package:service_app/src/remote/models/service_calls_model/assigned_service_calls_response.dart';
 import 'package:service_app/src/remote/models/service_calls_model/pending_serbice_calls_response.dart';

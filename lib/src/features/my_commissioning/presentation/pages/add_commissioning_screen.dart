@@ -21,6 +21,7 @@ import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create
 import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_event.dart';
 import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_state.dart';
 import 'package:service_app/src/features/common/domain/usecase/create_new_site_usecase.dart';
+import 'package:service_app/src/features/widgets/appButtonWidget.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:shimmer/shimmer.dart';
@@ -160,7 +161,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Add New Customer',
+                          '',
                           style: AppFont.style(
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
@@ -1205,20 +1206,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
             ),
           ),
           if (showAdd && onAddTap != null)
-            GestureDetector(
-              onTap: onAddTap,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Text(
-                  'Add New +',
-                  style: AppFont.style(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    color: const Color(0xFF1565C0),
-                  ),
-                ),
-              ),
-            ),
+            AppTextButtonWidget(
+                onPressed: onAddTap
+            )
         ],
       ),
     );

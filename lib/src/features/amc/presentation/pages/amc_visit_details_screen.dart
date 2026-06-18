@@ -6,13 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/features/amc/bloc/amc_visit_reports_bloc/amc_visit_reports_bloc.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_pdf_bloc/amc_report_pdf_bloc.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_pdf_bloc/amc_report_pdf_bloc.dart';
 import 'package:service_app/src/features/widgets/amc_report_card_shimmer.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/delete_amc_report_bloc/delete_amc_report_bloc.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/delete_amc_report_bloc/delete_amc_report_event.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/delete_amc_report_bloc/delete_amc_report_state.dart';
+import 'package:service_app/src/features/amc/bloc/delete_amc_report_bloc/delete_amc_report_bloc.dart';
+import 'package:service_app/src/features/amc/bloc/delete_amc_report_bloc/delete_amc_report_event.dart';
+import 'package:service_app/src/features/amc/bloc/delete_amc_report_bloc/delete_amc_report_state.dart';
 
 class AmcVisitDetailsScreen extends StatefulWidget {
   final VoidCallback onBack;

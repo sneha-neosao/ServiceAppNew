@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/usecases/usecase.dart';
-import '../../../../../domain/usecases/amc_report/delete_amc_report_usecase.dart';
+import '../../../../core/usecases/usecase.dart';
+import '../../domain/usecase/delete_amc_report_usecase.dart';
 import 'delete_amc_report_event.dart';
 import 'delete_amc_report_state.dart';
 

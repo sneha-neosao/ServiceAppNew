@@ -389,5 +389,7 @@
   "assign_for_new_commissioning_work": "नवीन कमिशनिंग कामासाठी नेमा",
   "edit_commissioning_work": "कमिशनिंग काम संपादित करा",
   "assign": "नेमा",
-  "save_changes": "बदल जतन करा"
+  "save_changes": "बदल जतन करा",
+  "add_new": "नवीन जोडा +",
+  "add_new_customer": "नवीन ग्राहक जोडा"
 }

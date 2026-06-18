@@ -10,6 +10,7 @@ import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
+import 'package:service_app/src/features/widgets/appButtonWidget.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:service_app/src/features/reports/bloc/service_work_report_step1_bloc/service_work_report_step1_bloc.dart';
 import 'package:service_app/src/features/reports/bloc/service_work_report_step1_bloc/service_work_report_step1_event.dart';
@@ -2754,15 +2755,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildLabel('create_report_tech_name'.tr(), isMandatory: true),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _technicians.add(TextEditingController());
-                      _technicianIds.add(null);
-                    });
-                  },
-                  child: _buildAddListItemButton('Add'),
-                ),
+                AppTextButtonWidget(
+                    onPressed: () {
+                      setState(() {
+                        _technicians.add(TextEditingController());
+                        _technicianIds.add(null);
+                      });
+                    }
+                )
               ],
             ),
             const SizedBox(height: 12),
@@ -2920,13 +2920,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   'create_report_customer_name'.tr(),
                   isMandatory: true,
                 ),
-                GestureDetector(
-                  onTap: _showAddCustomerBottomSheet,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: _buildAddNewButton('Add'),
-                  ),
-                ),
+                AppTextButtonWidget(
+                    onPressed: _showAddCustomerBottomSheet
+                )
               ],
             ),
             const SizedBox(height: 12),
@@ -3001,13 +2997,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildLabel('create_report_site_name'.tr(), isMandatory: true),
-                GestureDetector(
-                  onTap: _showAddSiteBottomSheet,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: _buildAddNewButton('Add'),
-                  ),
-                ),
+                AppTextButtonWidget(
+                    onPressed: _showAddSiteBottomSheet
+                )
               ],
             ),
             const SizedBox(height: 12),
@@ -3117,10 +3109,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildLabel('create_report_member_presents'.tr()),
-                GestureDetector(
-                  onTap: _addMemberField,
-                  child: _buildAddListItemButton('Add'),
-                ),
+                AppTextButtonWidget(
+                    onPressed: _addMemberField
+                )
               ],
             ),
             const SizedBox(height: 12),
@@ -4433,54 +4424,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             ),
           ),
       ],
-    );
-  }
-
-  Widget _buildAddNewButton(String text) {
-    return Text(
-      'Add New +',
-      style: AppFont.style(
-        fontSize: 14,
-        fontWeight: FontWeight.w700,
-        color: const Color(0xFF0B68B9),
-      ),
-    );
-  }
-
-  Widget _buildAddListItemButton(String text) {
-    return Text(
-      'Add New +',
-      style: AppFont.style(
-        fontSize: 14,
-        fontWeight: FontWeight.w700,
-        color: const Color(0xFF0B68B9),
-      ),
-    );
-  }
-
-  Widget _buildSelectExistingButton() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FB),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.list, size: 16, color: Color(0xFF1565C0)),
-          const SizedBox(width: 4),
-          Text(
-            'Select Existing',
-            style: AppFont.style(
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF1565C0),
-            ),
-          ),
-        ],
-      ),
     );
   }
 

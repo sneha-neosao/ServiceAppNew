@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../../../../src/remote/models/amc_report_model/delete_amc_report_response.dart';
+import '../../../../remote/models/amc_report_model/delete_amc_report_response.dart';
 
 abstract class DeleteAmcReportState extends Equatable {
   const DeleteAmcReportState();

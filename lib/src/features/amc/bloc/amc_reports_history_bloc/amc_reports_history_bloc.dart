@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/core/usecases/usecase.dart';
-import 'package:service_app/src/domain/usecases/amc_report/get_amc_reports_history_usecase.dart';
+import 'package:service_app/src/features/amc/domain/usecase/get_amc_reports_history_usecase.dart';
 import 'amc_reports_history_event.dart';
 import 'amc_reports_history_state.dart';
 

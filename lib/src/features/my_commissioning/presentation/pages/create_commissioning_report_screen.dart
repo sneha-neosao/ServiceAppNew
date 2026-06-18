@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:service_app/src/features/widgets/appButtonWidget.dart';
 import 'package:service_app/src/features/widgets/step_shimmer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:signature/signature.dart';
@@ -3512,25 +3513,14 @@ class _CreateCommissioningReportScreenState
                 ],
               ),
             ),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _technicians.add(TextEditingController());
-                  _technicianIds.add(null);
-                });
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  'Add New +',
-                  style: AppFont.style(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    color: const Color(0xFF1565C0),
-                  ),
-                ),
-              ),
-            ),
+            AppTextButtonWidget(
+                onPressed: () {
+                  setState(() {
+                    _technicians.add(TextEditingController());
+                    _technicianIds.add(null);
+                  });
+                }
+            )
           ],
         ),
         const SizedBox(height: 16),
@@ -3796,22 +3786,14 @@ class _CreateCommissioningReportScreenState
                             SpeechToTextMicButton(controller: controller),
                             const SizedBox(width: 12),
                             if (isFirst)
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _representatives.add(
-                                      TextEditingController(),
-                                    );
-                                  });
-                                },
-                                child: Text(
-                                  'Add New +',
-                                  style: AppFont.style(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w900,
-                                    color: const Color(0xFF1565C0),
-                                  ),
-                                ),
+                              AppTextButtonWidget(
+                                  onPressed: () {
+                                    setState(() {
+                                      _representatives.add(
+                                        TextEditingController(),
+                                      );
+                                    });
+                                  }
                               )
                             else
                               GestureDetector(
@@ -4266,24 +4248,13 @@ class _CreateCommissioningReportScreenState
         ),
         Align(
           alignment: Alignment.center,
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                _workDescriptionControllers.add(TextEditingController());
-              });
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(
-                'Add New +',
-                style: AppFont.style(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
-                  color: const Color(0xFF1565C0),
-                ),
-              ),
-            ),
-          ),
+          child: AppTextButtonWidget(
+              onPressed: () {
+                setState(() {
+                  _workDescriptionControllers.add(TextEditingController());
+                });
+              }
+          )
         ),
         const SizedBox(height: 40),
       ],

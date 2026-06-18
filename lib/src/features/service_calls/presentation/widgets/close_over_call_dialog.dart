@@ -22,6 +22,7 @@ import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create
 import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_event.dart';
 import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_state.dart';
 import 'package:service_app/src/features/common/domain/usecase/create_new_site_usecase.dart';
+import 'package:service_app/src/features/widgets/appButtonWidget.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 
 class CloseOverCallDialog extends StatefulWidget {
@@ -289,16 +290,8 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     ],
                   ),
                 ),
-                GestureDetector(
-                  onTap: _showAddCustomerDialog,
-                  child: Text(
-                    'Add New +',
-                    style: AppFont.style(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF1565C0),
-                    ),
-                  ),
+                AppTextButtonWidget(
+                  onPressed: _showAddCustomerDialog
                 ),
               ],
             ),
@@ -359,17 +352,9 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     ],
                   ),
                 ),
-                GestureDetector(
-                  onTap: _showAddSiteDialog,
-                  child: Text(
-                    'Add New +',
-                    style: AppFont.style(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF1565C0),
-                    ),
-                  ),
-                ),
+                AppTextButtonWidget(
+                  onPressed: _showAddSiteDialog
+                )
               ],
             ),
             const SizedBox(height: 8),

@@ -6,6 +6,7 @@ import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_state.dart';
+import 'package:service_app/src/features/widgets/appButtonWidget.dart';
 import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
 import 'package:service_app/src/features/service_calls/bloc/assign_technician_service_calls_bloc/assign_technician_service_calls_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/assign_technician_service_calls_bloc/assign_technician_service_calls_event.dart';
@@ -905,17 +906,9 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 ],
                               ),
                             ),
-                            GestureDetector(
-                              onTap: _showAddCustomerDialog,
-                              child: Text(
-                                'Add New +',
-                                style: AppFont.style(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF1565C0),
-                                ),
-                              ),
-                            ),
+                            AppTextButtonWidget(
+                                onPressed: _showAddCustomerDialog
+                            )
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -982,17 +975,9 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 ],
                               ),
                             ),
-                            GestureDetector(
-                              onTap: _showAddSiteDialog,
-                              child: Text(
-                                'Add New +',
-                                style: AppFont.style(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF1565C0),
-                                ),
-                              ),
-                            ),
+                            AppTextButtonWidget(
+                                onPressed: _showAddSiteDialog
+                            )
                           ],
                         ),
                         const SizedBox(height: 8),

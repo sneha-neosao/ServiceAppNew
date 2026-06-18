@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:service_app/src/domain/usecases/amc_report/get_amc_assigned_technicians_usecase.dart';
+import 'package:service_app/src/features/amc/domain/usecase/get_amc_assigned_technicians_usecase.dart';
 
 import 'amc_assigned_technicians_event.dart';
 import 'amc_assigned_technicians_state.dart';

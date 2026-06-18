@@ -5,40 +5,41 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:service_app/src/features/widgets/appButtonWidget.dart';
 import 'package:signature/signature.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
-import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step1_usecase.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_bloc/amc_report_step1_bloc.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_bloc/amc_report_step1_event.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_bloc/amc_report_step1_state.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_bloc.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_event.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_state.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_bloc.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_assigned_technicians_bloc/amc_assigned_technicians_bloc.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_assigned_technicians_bloc/amc_assigned_technicians_event.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_assigned_technicians_bloc/amc_assigned_technicians_state.dart';
+import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step1_usecase.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step1_bloc/amc_report_step1_bloc.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step1_bloc/amc_report_step1_event.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step1_bloc/amc_report_step1_state.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_bloc.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_event.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step1_autofill_bloc/amc_report_step1_autofill_state.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_bloc.dart';
+import 'package:service_app/src/features/amc/bloc/amc_assigned_technicians_bloc/amc_assigned_technicians_bloc.dart';
+import 'package:service_app/src/features/amc/bloc/amc_assigned_technicians_bloc/amc_assigned_technicians_event.dart';
+import 'package:service_app/src/features/amc/bloc/amc_assigned_technicians_bloc/amc_assigned_technicians_state.dart';
 import 'package:service_app/src/remote/models/amc_report_model/amc_assigned_technicians_response.dart';
 import 'dart:convert';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
 import 'package:service_app/src/features/widgets/step_shimmer.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_bloc/amc_report_step2_bloc.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_bloc/amc_report_step2_event.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_bloc/amc_report_step2_state.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step3_bloc/amc_report_step3_bloc.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step3_bloc/amc_report_step3_event.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step3_bloc/amc_report_step3_state.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_bloc.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_event.dart';
-import 'package:service_app/src/features/amc/presentation/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_state.dart';
-import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step2_usecase.dart';
-import 'package:service_app/src/domain/usecases/amc_report/post_amc_report_step3_usecase.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step2_bloc/amc_report_step2_bloc.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step2_bloc/amc_report_step2_event.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step2_bloc/amc_report_step2_state.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step3_bloc/amc_report_step3_bloc.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step3_bloc/amc_report_step3_event.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step3_bloc/amc_report_step3_state.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_bloc.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_event.dart';
+import 'package:service_app/src/features/amc/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_state.dart';
+import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step2_usecase.dart';
+import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step3_usecase.dart';
 class CreateAmcReportScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSubmit;
@@ -694,15 +695,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildSectionTitle('amc_report_technician_names'.tr(), isMandatory: true),
-            GestureDetector(
-              onTap: () {
+            AppTextButtonWidget(
+              onPressed: () {
                 setState(() {
                   _technicians.add(TextEditingController());
                   _technicianIds.add(null);
                 });
               },
-              child: _buildAddButton(),
-            ),
+            )
           ],
         ),
         const SizedBox(height: 16),
@@ -877,14 +877,13 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildSectionTitle('amc_report_member_presents'.tr()),
-            GestureDetector(
-              onTap: () {
+            AppTextButtonWidget(
+              onPressed: () {
                 setState(() {
                   _memberPresentsControllers.add(TextEditingController());
                 });
               },
-              child: _buildAddButton(),
-            ),
+            )
           ],
         ),
         const SizedBox(height: 12),
@@ -2040,17 +2039,6 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildAddButton() {
-    return Text(
-      'Add New +',
-      style: AppFont.style(
-        fontSize: 14,
-        fontWeight: FontWeight.w700,
-        color: const Color(0xFF0B68B9),
       ),
     );
   }

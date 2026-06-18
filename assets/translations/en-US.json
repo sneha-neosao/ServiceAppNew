@@ -389,5 +389,7 @@
   "assign_for_new_commissioning_work": "Assign For New Commissioning Work",
   "edit_commissioning_work": "Edit Commissioning Work",
   "assign": "Assign",
-  "save_changes": "Save Changes"
+  "save_changes": "Save Changes",
+  "add_new+": "Add New +",
+  "add_new_customer": "Add New Customer"
 }
