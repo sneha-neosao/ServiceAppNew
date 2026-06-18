@@ -33,6 +33,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _selectedLanguage = translateState.isMarathi ? 'Marathi' : 'English';
   }
 
+  String _getInitials(String? name) {
+    if (name == null || name.trim().isEmpty) return '';
+    List<String> nameParts = name.trim().split(RegExp(r'\s+'));
+    if (nameParts.length >= 2) {
+      return '${nameParts[0][0]}${nameParts[1][0]}'.toUpperCase();
+    } else {
+      return nameParts[0].substring(0, 1).toUpperCase();
+    }
+  }
+
   // ── Language bottom sheet ──────────────────────────────────────────────────
   void _showLanguageBottomSheet() {
     showModalBottomSheet(
@@ -416,7 +426,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     shape: BoxShape.circle,
                     // border: Border.all(color: const Color(0xFF0B68B9), width: 2),
                   ),
-                  child: Image.asset("assets/icons/profile_icon.png"),
+                  child: isLoading
+                      ? Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        )
+                      : data != null && data.name.isNotEmpty
+                      ? Center(
+                          child: Text(
+                            _getInitials(data.name),
+                            style: AppFont.style(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                      : Image.asset("assets/icons/profile_icon.png"),
                 ),
                 const SizedBox(width: 14),
                 Column(
