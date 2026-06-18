@@ -1,8 +1,8 @@
 class ApiUrl {
   const ApiUrl._();
 
-  // static const baseUrl = "http://192.168.1.14:8000/api/v1/"; // TEST
-  static const baseUrl = "https://backend.inorotech.in/api/v1/"; // LIVE
+  static const baseUrl = "http://192.168.1.14:8000/api/v1/"; // TEST
+  // static const baseUrl = "https://backend.inorotech.in/api/v1/"; // LIVE
 
   static const privacy_url = "https://theperpetuity.com/privacy-policy";
 

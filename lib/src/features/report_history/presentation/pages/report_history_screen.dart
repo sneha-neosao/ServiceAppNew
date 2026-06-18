@@ -597,7 +597,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                 onViewPdfTap: (id) {
                                   _serviceCallPdfBloc.add(
                                     FetchServiceCallReportPdfEvent(
-                                      reportId: id,
+                                      reportId: item.reportDetailId,
                                       action: ServiceCallPdfAction.view,
                                     ),
                                   );
@@ -605,7 +605,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                 onDownloadPdfTap: (id) {
                                   _serviceCallPdfBloc.add(
                                     FetchServiceCallReportPdfEvent(
-                                      reportId: id,
+                                      reportId: item.reportDetailId,
                                       action: ServiceCallPdfAction.download,
                                     ),
                                   );

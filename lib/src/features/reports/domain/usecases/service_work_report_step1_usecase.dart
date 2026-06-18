@@ -11,6 +11,7 @@ class ServiceWorkReportStep1Params extends Equatable {
   final List<Map<String, String>> technicianIds;
   final String memberPresentsCustomerSide;
   final String agenda;
+  final String? complaintId;
 
   const ServiceWorkReportStep1Params({
     required this.customerId,
@@ -18,16 +19,21 @@ class ServiceWorkReportStep1Params extends Equatable {
     required this.technicianIds,
     required this.memberPresentsCustomerSide,
     required this.agenda,
+    this.complaintId,
   });
 
   Map<String, dynamic> toJson() {
-    return {
+    final Map<String, dynamic> data = {
       'customer_id': customerId,
       'site_id': siteId,
       'technician_ids': technicianIds,
       'member_presents_customer_side': memberPresentsCustomerSide,
       'agenda': agenda,
     };
+    if (complaintId != null && complaintId!.isNotEmpty) {
+      data['complaint_id'] = complaintId;
+    }
+    return data;
   }
 
   @override
@@ -37,6 +43,7 @@ class ServiceWorkReportStep1Params extends Equatable {
         technicianIds,
         memberPresentsCustomerSide,
         agenda,
+        complaintId,
       ];
 }
 

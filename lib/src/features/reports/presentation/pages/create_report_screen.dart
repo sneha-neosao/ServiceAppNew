@@ -478,6 +478,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 .where((e) => e.isNotEmpty)
                 .join(", "),
             agenda: _agendaController.text,
+            complaintId: _reportId != null ? _complaintId : null,
           ),
         ),
       );
