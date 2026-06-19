@@ -6,7 +6,7 @@ import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/active_technicians_service_calls_bloc/active_technicians_service_calls_state.dart';
-import 'package:service_app/src/features/widgets/appButtonWidget.dart';
+import 'package:service_app/src/features/widgets/app_add_new_text_button_widget.dart';
 import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
 import 'package:service_app/src/features/service_calls/bloc/assign_technician_service_calls_bloc/assign_technician_service_calls_bloc.dart';
 import 'package:service_app/src/features/service_calls/bloc/assign_technician_service_calls_bloc/assign_technician_service_calls_event.dart';
@@ -906,7 +906,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 ],
                               ),
                             ),
-                            AppTextButtonWidget(
+                            AppAddNewTextButtonWidget(
                                 onPressed: _showAddCustomerDialog
                             )
                           ],
@@ -975,7 +975,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 ],
                               ),
                             ),
-                            AppTextButtonWidget(
+                            AppAddNewTextButtonWidget(
                                 onPressed: _showAddSiteDialog
                             )
                           ],

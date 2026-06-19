@@ -21,7 +21,9 @@ import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create
 import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_event.dart';
 import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_state.dart';
 import 'package:service_app/src/features/common/domain/usecase/create_new_site_usecase.dart';
-import 'package:service_app/src/features/widgets/appButtonWidget.dart';
+import 'package:service_app/src/features/widgets/add_new_entry_bottomshhet_widget.dart';
+import 'package:service_app/src/features/widgets/app_add_new_text_button_widget.dart';
+import 'package:service_app/src/features/widgets/merge_customer_dialogue_widget.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:shimmer/shimmer.dart';
@@ -104,12 +106,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   String _pendingNewCustomerName = "";
 
   Future<void> _showAddCustomerBottomSheet() async {
-    final controller = TextEditingController();
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      isDismissible: false,
-      enableDrag: false,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -119,8 +118,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           bloc: _createNewCustomerBloc,
           listener: (ctx, state) {
             if (state is CreateNewCustomerSuccessState) {
-              appSnackBar(ctx, const Color(0xFF4CAF50), state.data.message);
-              final newName = state.data.data?.name ?? controller.text.trim();
+              appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+              final newName = state.data.data?.name ?? _pendingNewCustomerName;
               Navigator.pop(ctx);
               setState(() {
                 if (!_customers.contains(newName)) {
@@ -136,175 +135,32 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
             } else if (state is CreateNewCustomerFailureState) {
               if (state.message.contains('merged with the existing record')) {
                 Navigator.pop(ctx); // Close the bottom sheet immediately
-                _showMergeCustomerDialog(context, controller.text.trim());
+                _showMergeCustomerDialog(context, _pendingNewCustomerName);
               } else {
                 appSnackBar(ctx, const Color(0xFFF44336), state.message);
               }
             }
           },
           builder: (ctx, state) {
-            final isLoading = state is CreateNewCustomerLoadingState;
-            return SafeArea(
-              bottom: true,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(
-                  left: 24,
-                  right: 24,
-                  top: 24,
-                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '',
-                          style: AppFont.style(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFF0D121F),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: isLoading ? null : () => Navigator.pop(ctx),
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF8F9FB),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color(0xFFF1F2F6),
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.close,
-                              size: 16,
-                              color: Color(0xFFA5ABB7),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Customer Name',
-                      style: AppFont.style(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFFA5ABB7),
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: controller,
-                      autofocus: true,
-                      enabled: !isLoading,
-                      style: AppFont.style(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF0D121F),
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Enter Customer Name',
-                        hintStyle: AppFont.style(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFFA5ABB7),
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFF8F9FB),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE5E7EB),
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE5E7EB),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF1565C0),
-                            width: 1.5,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Save button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton.icon(
-                        onPressed: isLoading
-                            ? null
-                            : () {
-                                final text = controller.text.trim();
-                                if (text.isNotEmpty) {
-                                  _pendingNewCustomerName = text;
-                                  _createNewCustomerBloc.add(
-                                    CreateNewCustomerSubmitEvent(
-                                      CreateNewCustomerParams(name: text),
-                                    ),
-                                  );
-                                }
-                              },
-                        icon: isLoading
-                            ? const SizedBox.shrink()
-                            : const Icon(Icons.save_outlined, size: 18),
-                        label: isLoading
-                            ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2.5,
-                                ),
-                              )
-                            : Text(
-                                'Save Entry',
-                                style: AppFont.style(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1565C0),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            return AddNewEntryBottomSheet(
+              title: "add_new_customer".tr(),
+              label: "close_call_customer_name_label".tr(),
+              hint: "enter_customer_name".tr(),
+              isLoading: state is CreateNewCustomerLoadingState,
+              onClose: () => Navigator.pop(ctx),
+              onSubmit: (name) {
+                _pendingNewCustomerName = name;
+                _createNewCustomerBloc.add(
+                  CreateNewCustomerSubmitEvent(
+                    CreateNewCustomerParams(name: name),
+                  ),
+                );
+              },
             );
           },
         );
       },
     );
-    Future.delayed(const Duration(milliseconds: 300), () {
-      controller.dispose();
-    });
   }
 
   Future<void> _showAddSiteBottomSheet() async {
@@ -317,6 +173,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
       return;
     }
 
+    // Resolve customerId
     String customerId = "";
     if (_createdCustomerIds.containsKey(_selectedCustomer)) {
       customerId = _createdCustomerIds[_selectedCustomer]!;
@@ -341,12 +198,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
       return;
     }
 
-    final controller = TextEditingController();
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      isDismissible: false,
-      enableDrag: false,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -357,7 +211,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           listener: (ctx, state) {
             if (state is CreateNewSiteSuccessState) {
               appSnackBar(ctx, const Color(0xFF4CAF50), state.data.message);
-              final newName = controller.text.trim();
+              final newName = state.data.data?.sites.first.name ?? "";
               Navigator.pop(ctx);
               setState(() {
                 if (!_sites.contains(newName)) {
@@ -379,171 +233,269 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           },
           builder: (ctx, state) {
             final isLoading = state is CreateNewSiteLoadingState;
-            return SafeArea(
-              bottom: true,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(
-                  left: 24,
-                  right: 24,
-                  top: 24,
-                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Add New Site',
-                          style: AppFont.style(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFF0D121F),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: isLoading ? null : () => Navigator.pop(ctx),
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF8F9FB),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color(0xFFF1F2F6),
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.close,
-                              size: 16,
-                              color: Color(0xFFA5ABB7),
-                            ),
-                          ),
-                        ),
-                      ],
+            return AddNewEntryBottomSheet(
+              title: "add_new_site".tr(),
+              label: "site_name".tr(),
+              hint: "enter_site_name".tr(),
+              isLoading: isLoading,
+              onClose: () => Navigator.pop(ctx),
+              onSubmit: (siteName) {
+                _createNewSiteBloc.add(
+                  CreateNewSiteSubmitEvent(
+                    CreateNewSiteParams(
+                      customerId: customerId,
+                      customerName: _selectedCustomer!,
+                      siteName: siteName,
                     ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Site Name',
-                      style: AppFont.style(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFFA5ABB7),
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: controller,
-                      autofocus: true,
-                      enabled: !isLoading,
-                      style: AppFont.style(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF0D121F),
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Enter Site Name',
-                        hintStyle: AppFont.style(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFFA5ABB7),
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFF8F9FB),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE5E7EB),
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE5E7EB),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF1565C0),
-                            width: 1.5,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Save button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton.icon(
-                        onPressed: isLoading
-                            ? null
-                            : () {
-                                final text = controller.text.trim();
-                                if (text.isNotEmpty) {
-                                  _createNewSiteBloc.add(
-                                    CreateNewSiteSubmitEvent(
-                                      CreateNewSiteParams(
-                                        customerId: customerId,
-                                        customerName: _selectedCustomer!,
-                                        siteName: text,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
-                        icon: isLoading
-                            ? const SizedBox.shrink()
-                            : const Icon(Icons.save_outlined, size: 18),
-                        label: isLoading
-                            ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2.5,
-                                ),
-                              )
-                            : Text(
-                                'Save Entry',
-                                style: AppFont.style(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1565C0),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             );
           },
         );
       },
     );
-    Future.delayed(const Duration(milliseconds: 300), () {
-      controller.dispose();
-    });
   }
+
+
+
+  // Future<void> _showAddSiteBottomSheet() async {
+  //   if (_selectedCustomer == null) {
+  //     appSnackBar(
+  //       context,
+  //       const Color(0xFFF44336),
+  //       'Please select a customer first',
+  //     );
+  //     return;
+  //   }
+  //
+  //   String customerId = "";
+  //   if (_createdCustomerIds.containsKey(_selectedCustomer)) {
+  //     customerId = _createdCustomerIds[_selectedCustomer]!;
+  //   } else {
+  //     final customerState = _customerBloc.state;
+  //     if (customerState is CustomerSuccessState) {
+  //       for (var c in customerState.data.data) {
+  //         if (c.name == _selectedCustomer) {
+  //           customerId = c.id;
+  //           break;
+  //         }
+  //       }
+  //     }
+  //   }
+  //
+  //   if (customerId.isEmpty) {
+  //     appSnackBar(
+  //       context,
+  //       const Color(0xFFF44336),
+  //       'Invalid customer selected',
+  //     );
+  //     return;
+  //   }
+  //
+  //   final controller = TextEditingController();
+  //   await showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     isDismissible: false,
+  //     enableDrag: false,
+  //     backgroundColor: Colors.white,
+  //     shape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+  //     ),
+  //     builder: (ctx) {
+  //       return BlocConsumer<CreateNewSiteBloc, CreateNewSiteState>(
+  //         bloc: _createNewSiteBloc,
+  //         listener: (ctx, state) {
+  //           if (state is CreateNewSiteSuccessState) {
+  //             appSnackBar(ctx, const Color(0xFF4CAF50), state.data.message);
+  //             final newName = controller.text.trim();
+  //             Navigator.pop(ctx);
+  //             setState(() {
+  //               if (!_sites.contains(newName)) {
+  //                 _sites.insert(0, newName);
+  //               }
+  //               if (state.data.data != null) {
+  //                 for (var s in state.data.data!.sites) {
+  //                   if (s.name == newName) {
+  //                     _createdSiteIds[newName] = s.id;
+  //                     break;
+  //                   }
+  //                 }
+  //               }
+  //               _selectedSite = newName;
+  //             });
+  //           } else if (state is CreateNewSiteFailureState) {
+  //             appSnackBar(ctx, const Color(0xFFF44336), state.message);
+  //           }
+  //         },
+  //         builder: (ctx, state) {
+  //           final isLoading = state is CreateNewSiteLoadingState;
+  //           return SafeArea(
+  //             bottom: true,
+  //             child: SingleChildScrollView(
+  //               padding: EdgeInsets.only(
+  //                 left: 24,
+  //                 right: 24,
+  //                 top: 24,
+  //                 bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+  //               ),
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   Row(
+  //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                     children: [
+  //                       Text(
+  //                         'Add New Site',
+  //                         style: AppFont.style(
+  //                           fontSize: 18,
+  //                           fontWeight: FontWeight.w900,
+  //                           color: const Color(0xFF0D121F),
+  //                         ),
+  //                       ),
+  //                       GestureDetector(
+  //                         onTap: isLoading ? null : () => Navigator.pop(ctx),
+  //                         child: Container(
+  //                           padding: const EdgeInsets.all(6),
+  //                           decoration: BoxDecoration(
+  //                             color: const Color(0xFFF8F9FB),
+  //                             shape: BoxShape.circle,
+  //                             border: Border.all(
+  //                               color: const Color(0xFFF1F2F6),
+  //                             ),
+  //                           ),
+  //                           child: const Icon(
+  //                             Icons.close,
+  //                             size: 16,
+  //                             color: Color(0xFFA5ABB7),
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                   const SizedBox(height: 24),
+  //                   Text(
+  //                     'Site Name',
+  //                     style: AppFont.style(
+  //                       fontSize: 10,
+  //                       fontWeight: FontWeight.w800,
+  //                       color: const Color(0xFFA5ABB7),
+  //                       letterSpacing: 1.0,
+  //                     ),
+  //                   ),
+  //                   const SizedBox(height: 8),
+  //                   TextField(
+  //                     controller: controller,
+  //                     autofocus: true,
+  //                     enabled: !isLoading,
+  //                     style: AppFont.style(
+  //                       fontSize: 15,
+  //                       fontWeight: FontWeight.w600,
+  //                       color: const Color(0xFF0D121F),
+  //                     ),
+  //                     decoration: InputDecoration(
+  //                       hintText: 'Enter Site Name',
+  //                       hintStyle: AppFont.style(
+  //                         fontSize: 15,
+  //                         fontWeight: FontWeight.w500,
+  //                         color: const Color(0xFFA5ABB7),
+  //                       ),
+  //                       filled: true,
+  //                       fillColor: const Color(0xFFF8F9FB),
+  //                       contentPadding: const EdgeInsets.symmetric(
+  //                         horizontal: 16,
+  //                         vertical: 14,
+  //                       ),
+  //                       border: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(10),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFFE5E7EB),
+  //                         ),
+  //                       ),
+  //                       enabledBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(10),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFFE5E7EB),
+  //                         ),
+  //                       ),
+  //                       focusedBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(10),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFF1565C0),
+  //                           width: 1.5,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //
+  //                   const SizedBox(height: 24),
+  //
+  //                   // Save button
+  //                   SizedBox(
+  //                     width: double.infinity,
+  //                     height: 52,
+  //                     child: ElevatedButton.icon(
+  //                       onPressed: isLoading
+  //                           ? null
+  //                           : () {
+  //                               final text = controller.text.trim();
+  //                               if (text.isNotEmpty) {
+  //                                 _createNewSiteBloc.add(
+  //                                   CreateNewSiteSubmitEvent(
+  //                                     CreateNewSiteParams(
+  //                                       customerId: customerId,
+  //                                       customerName: _selectedCustomer!,
+  //                                       siteName: text,
+  //                                     ),
+  //                                   ),
+  //                                 );
+  //                               }
+  //                             },
+  //                       icon: isLoading
+  //                           ? const SizedBox.shrink()
+  //                           : const Icon(Icons.save_outlined, size: 18),
+  //                       label: isLoading
+  //                           ? const SizedBox(
+  //                               width: 24,
+  //                               height: 24,
+  //                               child: CircularProgressIndicator(
+  //                                 color: Colors.white,
+  //                                 strokeWidth: 2.5,
+  //                               ),
+  //                             )
+  //                           : Text(
+  //                               'Save Entry',
+  //                               style: AppFont.style(
+  //                                 fontSize: 13,
+  //                                 fontWeight: FontWeight.w800,
+  //                                 color: Colors.white,
+  //                                 letterSpacing: 0.5,
+  //                               ),
+  //                             ),
+  //                       style: ElevatedButton.styleFrom(
+  //                         backgroundColor: const Color(0xFF1565C0),
+  //                         foregroundColor: Colors.white,
+  //                         elevation: 0,
+  //                         shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(10),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  //   Future.delayed(const Duration(milliseconds: 300), () {
+  //     controller.dispose();
+  //   });
+  // }
 
   // ── Assign button handler ──────────────────────────────────────────────────
   void _onAssign() {
@@ -700,7 +652,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                       Expanded(
                         child: Text(
                           widget.editWorkId != null
-                              ? ''
+                              ? 'edit_commissioning_work'.tr()
                               : 'assign_for_new_commissioning_work'.tr(),
                           style: AppFont.style(
                             fontSize: 17,
@@ -1206,7 +1158,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
             ),
           ),
           if (showAdd && onAddTap != null)
-            AppTextButtonWidget(
+            AppAddNewTextButtonWidget(
                 onPressed: onAddTap
             )
         ],
@@ -1387,198 +1339,14 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     );
   }
 
-  void _showMergeCustomerDialog(BuildContext parentContext, String name) {
+  void _showMergeCustomerDialog(BuildContext context, String name) {
     showDialog(
-      context: parentContext,
+      context: context,
       barrierDismissible: false,
-      builder: (dialogCtx) {
-        return BlocConsumer<CreateNewCustomerBloc, CreateNewCustomerState>(
-          bloc: _createNewCustomerBloc,
-          listener: (ctx, state) {
-            if (state is CreateNewCustomerSuccessState) {
-              Navigator.pop(ctx); // Close dialog
-              appSnackBar(
-                parentContext,
-                const Color(0xFF4CAF50),
-                state.data.message,
-              );
-              final newName = state.data.data?.name ?? name;
-              setState(() {
-                if (!_customers.contains(newName)) {
-                  _customers.insert(0, newName);
-                }
-                if (state.data.data?.id != null) {
-                  _createdCustomerIds[newName] = state.data.data!.id;
-                }
-                _selectedCustomer = newName;
-                _selectedSite = null;
-                _sites.clear();
-              });
-            } else if (state is CreateNewCustomerFailureState) {
-              Navigator.pop(ctx); // Close dialog
-              appSnackBar(
-                parentContext,
-                const Color(0xFFF44336),
-                state.message,
-              );
-            }
-          },
-          builder: (ctx, state) {
-            final isLoading = state is CreateNewCustomerLoadingState;
-            return Dialog(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // ── Icon ───────────────────────────────────────────────────────
-                        Container(
-                          width: 64,
-                          height: 64,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFFFF7E6),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.error_outline,
-                            color: Color(0xFFFF9800),
-                            size: 32,
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 20),
-
-                        // ── Title ───────────────────────────────────────────────────────
-                        Text(
-                          'Merge Customer?',
-                          style: AppFont.style(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF0D121F),
-                          ),
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        // ── Subtitle ────────────────────────────────────────────────────
-                        Text(
-                          'This customer name already exists and can be merged with the existing record. Click "Yes" to merge, or click "No" and enter a different name to save the record.',
-                          textAlign: TextAlign.center,
-                          style: AppFont.style(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF5C616E),
-                            height: 1.4,
-                          ),
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        // ── Buttons ─────────────────────────────────────────────────────
-                        Row(
-                          children: [
-                            // Cancel Button
-                            Expanded(
-                              child: SizedBox(
-                                height: 48,
-                                child: TextButton(
-                                  onPressed: isLoading ? null : () => Navigator.pop(dialogCtx),
-                                  style: TextButton.styleFrom(
-                                    backgroundColor: const Color(0xFFF6F6F6),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'No',
-                                    style: AppFont.style(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w800,
-                                      color: const Color(0xFF0D121F),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            // Action Button
-                            Expanded(
-                              child: SizedBox(
-                                height: 48,
-                                child: ElevatedButton(
-                                  onPressed: isLoading
-                                      ? null
-                                      : () {
-                                          _createNewCustomerBloc.add(
-                                            CreateNewCustomerSubmitEvent(
-                                              CreateNewCustomerParams(
-                                                name: name,
-                                                mergeExisting: true,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFE65100),
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: isLoading
-                                      ? const SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CircularProgressIndicator(
-                                            color: Colors.white,
-                                            strokeWidth: 2,
-                                          ),
-                                        )
-                                      : Text(
-                                          'Yes',
-                                          style: AppFont.style(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w800,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  
-                  // ── Close (X) Icon ────────────────────────────────────────────────
-                  Positioned(
-                    top: 12,
-                    right: 12,
-                    child: GestureDetector(
-                      onTap: isLoading ? null : () => Navigator.pop(dialogCtx),
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        child: const Icon(
-                          Icons.close,
-                          size: 20,
-                          color: Color(0xFFB0B8C8),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+      builder: (_) => MergeCustomerDialogWidget(
+        name: name,
+        bloc: _createNewCustomerBloc,
+      ),
     );
   }
 

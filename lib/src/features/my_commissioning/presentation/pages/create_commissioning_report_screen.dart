@@ -5,7 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:service_app/src/features/widgets/appButtonWidget.dart';
+import 'package:service_app/src/features/widgets/app_add_new_text_button_widget.dart';
 import 'package:service_app/src/features/widgets/step_shimmer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:signature/signature.dart';
@@ -3513,7 +3513,7 @@ class _CreateCommissioningReportScreenState
                 ],
               ),
             ),
-            AppTextButtonWidget(
+            AppAddNewTextButtonWidget(
                 onPressed: () {
                   setState(() {
                     _technicians.add(TextEditingController());
@@ -3786,7 +3786,7 @@ class _CreateCommissioningReportScreenState
                             SpeechToTextMicButton(controller: controller),
                             const SizedBox(width: 12),
                             if (isFirst)
-                              AppTextButtonWidget(
+                              AppAddNewTextButtonWidget(
                                   onPressed: () {
                                     setState(() {
                                       _representatives.add(
@@ -4248,7 +4248,7 @@ class _CreateCommissioningReportScreenState
         ),
         Align(
           alignment: Alignment.center,
-          child: AppTextButtonWidget(
+          child: AppAddNewTextButtonWidget(
               onPressed: () {
                 setState(() {
                   _workDescriptionControllers.add(TextEditingController());

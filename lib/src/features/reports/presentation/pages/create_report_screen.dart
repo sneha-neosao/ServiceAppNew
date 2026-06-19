@@ -10,7 +10,8 @@ import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 import 'package:service_app/src/core/utils/speech_to_text_mic_button.dart';
-import 'package:service_app/src/features/widgets/appButtonWidget.dart';
+import 'package:service_app/src/features/widgets/app_add_new_text_button_widget.dart';
+import 'package:service_app/src/features/widgets/merge_customer_dialogue_widget.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:service_app/src/features/reports/bloc/service_work_report_step1_bloc/service_work_report_step1_bloc.dart';
 import 'package:service_app/src/features/reports/bloc/service_work_report_step1_bloc/service_work_report_step1_event.dart';
@@ -2152,208 +2153,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     });
   }
 
-  void _showMergeCustomerDialog(BuildContext parentContext, String name) {
+  void _showMergeCustomerDialog(BuildContext context, String name) {
     showDialog(
-      context: parentContext,
+      context: context,
       barrierDismissible: false,
       builder: (dialogCtx) {
-        return BlocConsumer<CreateNewCustomerBloc, CreateNewCustomerState>(
-          bloc: _createNewCustomerBloc,
-          listener: (ctx, state) {
-            if (state is CreateNewCustomerSuccessState) {
-              Navigator.pop(ctx); // Close dialog
-              appSnackBar(
-                parentContext,
-                const Color(0xFF4CAF50),
-                state.data.message,
-              );
-              final newName = state.data.data?.name ?? name;
-              setState(() {
-                if (!_customersList.contains(newName)) {
-                  _customersList.insert(0, newName);
-                }
-                if (state.data.data?.id != null) {
-                  _selectedCustomerId = state.data.data!.id;
-                }
-                _selectedCustomer = newName;
-                _selectedSite = 'Select Site';
-                _selectedSiteId = null;
-                _sitesList.clear();
-              });
-            } else if (state is CreateNewCustomerFailureState) {
-              Navigator.pop(ctx); // Close dialog
-              appSnackBar(
-                parentContext,
-                const Color(0xFFF44336),
-                state.message,
-              );
-            }
-          },
-          builder: (ctx, state) {
-            final isLoading = state is CreateNewCustomerLoadingState;
-            return Dialog(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              insetPadding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 24,
-              ),
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // ── Icon ───────────────────────────────────────────────────────
-                        Container(
-                          width: 64,
-                          height: 64,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFFFF7E6),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.error_outline,
-                            color: Color(0xFFFF9800),
-                            size: 32,
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // ── Title ───────────────────────────────────────────────────────
-                        Text(
-                          'Merge Customer?',
-                          style: AppFont.style(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF0D121F),
-                          ),
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        // ── Subtitle ────────────────────────────────────────────────────
-                        Text(
-                          'This customer name already exists and can be merged with the existing record. Click "Yes" to merge, or click "No" and enter a different name to save the record.',
-                          textAlign: TextAlign.center,
-                          style: AppFont.style(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF5C616E),
-                            height: 1.4,
-                          ),
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        // ── Buttons ─────────────────────────────────────────────────────
-                        Row(
-                          children: [
-                            // Cancel Button
-                            Expanded(
-                              child: SizedBox(
-                                height: 48,
-                                child: TextButton(
-                                  onPressed: isLoading
-                                      ? null
-                                      : () => Navigator.pop(dialogCtx),
-                                  style: TextButton.styleFrom(
-                                    backgroundColor: const Color(0xFFF6F6F6),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'No',
-                                    style: AppFont.style(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w800,
-                                      color: const Color(0xFF0D121F),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            // Action Button
-                            Expanded(
-                              child: SizedBox(
-                                height: 48,
-                                child: ElevatedButton(
-                                  onPressed: isLoading
-                                      ? null
-                                      : () {
-                                          _createNewCustomerBloc.add(
-                                            CreateNewCustomerSubmitEvent(
-                                              CreateNewCustomerParams(
-                                                name: name,
-                                                mergeExisting: true,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFE65100),
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: isLoading
-                                      ? const SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CircularProgressIndicator(
-                                            color: Colors.white,
-                                            strokeWidth: 2,
-                                          ),
-                                        )
-                                      : Text(
-                                          'Yes',
-                                          style: AppFont.style(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w800,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // ── Close (X) Icon ────────────────────────────────────────────────
-                  Positioned(
-                    top: 12,
-                    right: 12,
-                    child: GestureDetector(
-                      onTap: isLoading ? null : () => Navigator.pop(dialogCtx),
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        child: const Icon(
-                          Icons.close,
-                          size: 20,
-                          color: Color(0xFFB0B8C8),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
+        return MergeCustomerDialogWidget(
+          name: name,
+          bloc: _createNewCustomerBloc, // reuse the same bloc instance
         );
       },
     );
   }
+
 
   void _showAddSiteBottomSheet() async {
     if (_selectedCustomerId == null || _selectedCustomerId!.isEmpty) {
@@ -2755,7 +2567,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildLabel('create_report_tech_name'.tr(), isMandatory: true),
-                AppTextButtonWidget(
+                AppAddNewTextButtonWidget(
                     onPressed: () {
                       setState(() {
                         _technicians.add(TextEditingController());
@@ -2920,7 +2732,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   'create_report_customer_name'.tr(),
                   isMandatory: true,
                 ),
-                AppTextButtonWidget(
+                AppAddNewTextButtonWidget(
                     onPressed: _showAddCustomerBottomSheet
                 )
               ],
@@ -2997,7 +2809,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildLabel('create_report_site_name'.tr(), isMandatory: true),
-                AppTextButtonWidget(
+                AppAddNewTextButtonWidget(
                     onPressed: _showAddSiteBottomSheet
                 )
               ],
@@ -3109,7 +2921,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildLabel('create_report_member_presents'.tr()),
-                AppTextButtonWidget(
+                AppAddNewTextButtonWidget(
                     onPressed: _addMemberField
                 )
               ],

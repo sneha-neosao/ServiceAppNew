@@ -22,7 +22,7 @@ import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create
 import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_event.dart';
 import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_state.dart';
 import 'package:service_app/src/features/common/domain/usecase/create_new_site_usecase.dart';
-import 'package:service_app/src/features/widgets/appButtonWidget.dart';
+import 'package:service_app/src/features/widgets/app_add_new_text_button_widget.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 
 class CloseOverCallDialog extends StatefulWidget {
@@ -290,7 +290,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     ],
                   ),
                 ),
-                AppTextButtonWidget(
+                AppAddNewTextButtonWidget(
                   onPressed: _showAddCustomerDialog
                 ),
               ],
@@ -352,7 +352,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     ],
                   ),
                 ),
-                AppTextButtonWidget(
+                AppAddNewTextButtonWidget(
                   onPressed: _showAddSiteDialog
                 )
               ],

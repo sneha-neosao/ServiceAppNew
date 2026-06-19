@@ -2,11 +2,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_color.dart';
 
-class AppTextButtonWidget extends StatelessWidget {
+class AppAddNewTextButtonWidget extends StatelessWidget {
   final VoidCallback onPressed;
   final bool enabled;
 
-  const AppTextButtonWidget({
+  const AppAddNewTextButtonWidget({
     super.key,
     required this.onPressed,
     this.enabled = true,

@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:service_app/src/features/widgets/app_alert_dialogue_widget.dart';
 import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
@@ -245,48 +246,52 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
       builder: (BuildContext dialogContext) {
         return BlocProvider(
           create: (_) => getIt<CommissioningWorkDeleteBloc>(),
-          child:
-              BlocConsumer<
-                CommissioningWorkDeleteBloc,
-                CommissioningWorkDeleteState
-              >(
-                listener: (context, state) {
-                  if (state is CommissioningWorkDeleteSuccessState) {
-                    Navigator.pop(dialogContext);
-                    appSnackBar(
-                      context,
-                      const Color(0xFF4CAF50),
-                      state.message,
-                    );
-                    _bloc.add(CommissioningWorkListGetEvent());
-                  } else if (state is CommissioningWorkDeleteFailureState) {
-                    appSnackBar(
-                      context,
-                      const Color(0xFFF44336),
-                      state.message,
-                    );
-                    Navigator.pop(dialogContext);
-                  }
-                },
-                builder: (context, state) {
-                  final isLoading =
-                      state is CommissioningWorkDeleteLoadingState;
-                  return DeleteJobDialog(
-                    isLoading: isLoading,
-                    onConfirm: isLoading
-                        ? () {}
-                        : () {
-                            context.read<CommissioningWorkDeleteBloc>().add(
-                              CommissioningWorkDeleteSubmitEvent(workId),
-                            );
-                          },
+          child: BlocConsumer<CommissioningWorkDeleteBloc, CommissioningWorkDeleteState>(
+            listener: (context, state) {
+              if (state is CommissioningWorkDeleteSuccessState) {
+                Navigator.pop(dialogContext);
+                appSnackBar(
+                  context,
+                  const Color(0xFF4CAF50),
+                  state.message,
+                );
+                _bloc.add(CommissioningWorkListGetEvent());
+              } else if (state is CommissioningWorkDeleteFailureState) {
+                Navigator.pop(dialogContext);
+                appSnackBar(
+                  context,
+                  const Color(0xFFF44336),
+                  state.message,
+                );
+              }
+            },
+            builder: (context, state) {
+              final isLoading = state is CommissioningWorkDeleteLoadingState;
+              return AppAlertDialogWidget(
+                title: 'delete_work'.tr(),
+                subtitle: 'delete_work_subtitle'.tr(),
+                confirmText: 'delete_now'.tr(),
+                cancelText: 'cancel'.tr(),
+                icon: Icons.error_outline,
+                iconBgColor: const Color(0xFFFFF1F0),
+                iconColor: const Color(0xFFFF4D4F),
+                confirmBtnColor: const Color(0xFFE30000),
+                isLoading: isLoading,
+                onConfirm: isLoading
+                    ? () {}
+                    : () {
+                  context.read<CommissioningWorkDeleteBloc>().add(
+                    CommissioningWorkDeleteSubmitEvent(workId),
                   );
                 },
-              ),
+              );
+            },
+          ),
         );
       },
     );
   }
+
 }
 
 

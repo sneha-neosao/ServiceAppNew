@@ -5,7 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:service_app/src/features/widgets/appButtonWidget.dart';
+import 'package:service_app/src/features/widgets/app_add_new_text_button_widget.dart';
 import 'package:signature/signature.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
@@ -695,7 +695,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildSectionTitle('amc_report_technician_names'.tr(), isMandatory: true),
-            AppTextButtonWidget(
+            AppAddNewTextButtonWidget(
               onPressed: () {
                 setState(() {
                   _technicians.add(TextEditingController());
@@ -877,7 +877,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildSectionTitle('amc_report_member_presents'.tr()),
-            AppTextButtonWidget(
+            AppAddNewTextButtonWidget(
               onPressed: () {
                 setState(() {
                   _memberPresentsControllers.add(TextEditingController());
