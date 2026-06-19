@@ -574,9 +574,9 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
 
                                 if (_selectedTechnicians.isEmpty) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
+                                     SnackBar(
                                       content: Text(
-                                        'Please select at least one technician',
+                                        'assign_tech_validation_msg'.tr(),
                                       ),
                                       backgroundColor: Colors.red,
                                     ),

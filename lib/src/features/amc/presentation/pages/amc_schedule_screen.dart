@@ -289,9 +289,9 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
 
               // ── Status dropdown ──────────────────────────────────────────
               SearchableDropdown<String>(
-                items: const ['Current Pending', 'Previous Pending'],
+                items:  ['current_pending'.tr(), 'previous_pending'.tr()],
                 value: _selectedStatus,
-                hintText: 'Select Status',
+                hintText: 'select_status'.tr(),
                 itemAsString: (item) => item,
                 isSearchable: false,
                 onChanged: (val) {
@@ -299,9 +299,9 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                     _selectedStatus = val;
                   });
                   String? pendingParam;
-                  if (val == 'Current Pending') {
+                  if (val == 'current_pending'.tr()) {
                     pendingParam = 'is_current_pending';
-                  } else if (val == 'Previous Pending') {
+                  } else if (val == 'previous_pending'.tr()) {
                     pendingParam = 'is_prious_pending';
                   }
                   print("✅ UI DROPDOWN SELECTED: $val -> Dispatching pendingParam: $pendingParam");
@@ -512,7 +512,7 @@ class _AmcScheduleCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Date',
+                          'amc_report_date_label'.tr(),
                           style: AppFont.style(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,

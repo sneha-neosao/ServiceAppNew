@@ -409,5 +409,8 @@
   "enter_technical_remark": "तांत्रिक टिपा टाका",
   "enter_customer_remark": "ग्राहकाच्या टिपा टाका",
   "upload": "अपलोड करा",
-  "capture": "कॅप्चर करा"
+  "capture": "कॅप्चर करा",
+  "select_status": "स्थिती निवडा",
+  "current_pending": "सध्याची प्रलंबित",
+  "previous_pending": "मागील प्रलंबित"
 }

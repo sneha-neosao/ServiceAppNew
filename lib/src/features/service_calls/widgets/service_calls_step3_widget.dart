@@ -1,4 +1,4 @@
-part of '../pages/service_calls_screen.dart';
+part of '../presentation/pages/service_calls_screen.dart';
 
 class ServiceCallsStep3Widget extends StatelessWidget {
   final _ServiceCallsScreenState parent;

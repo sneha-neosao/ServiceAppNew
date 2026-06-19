@@ -19,7 +19,7 @@ import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
 import 'package:service_app/src/remote/models/technician_model/technician_response.dart';
 import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_report_history_usecase.dart';
 import 'package:service_app/src/features/report_history/presentation/pages/feedback_details_screen.dart';
-import 'package:service_app/src/features/service_calls/presentation/widgets/complaint_report_dialog.dart';
+import 'package:service_app/src/features/service_calls/widgets/complaint_report_dialog.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_bloc.dart';
 import 'package:service_app/src/features/my_commissioning/bloc/commissioning_report_details_bloc/commissioning_report_details_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_report_history_bloc/service_call_report_history_bloc.dart';

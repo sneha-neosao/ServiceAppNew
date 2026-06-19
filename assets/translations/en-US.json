@@ -409,8 +409,11 @@
   "service_call_report_feedback": "Service Call Report Feedback",
   "commissioning_work_report_feedback": "Commissioning Work Report Feedback",
   "scan_for_customer_feedback": "Scan for Customer Feedback",
-  "enter_technical_remark": "Enter Technical Remarks",
+  "enter_technical_remark": "Enter Technician Remarks",
   "enter_customer_remark": "Enter Customer Remarks",
   "upload": "Upload",
-  "capture": "Capture"
+  "capture": "Capture",
+  "select_status": "Select Status",
+  "current_pending": "Current Pending",
+  "previous_pending": "Previous Pending"
 }

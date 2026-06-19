@@ -20,20 +20,20 @@ import 'package:service_app/src/features/service_calls/bloc/pending_service_call
 import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/pending_service_calls_bloc/pending_service_calls_state.dart';
 import 'package:service_app/src/remote/models/service_calls_model/pending_serbice_calls_response.dart';
-import 'package:service_app/src/features/service_calls/presentation/widgets/assign_technician_dialog.dart';
+import 'package:service_app/src/features/service_calls/widgets/assign_technician_dialog.dart';
 import 'package:service_app/src/remote/models/active_technicians_service_calls_model/active_technicians_service_calls_reponse.dart';
-import 'package:service_app/src/features/service_calls/presentation/widgets/complaint_report_dialog.dart';
-import 'package:service_app/src/features/service_calls/presentation/widgets/service_call_card.dart';
-import 'package:service_app/src/features/service_calls/presentation/widgets/reassign_technician_dialog.dart';
-import 'package:service_app/src/features/service_calls/presentation/widgets/close_over_call_dialog.dart';
+import 'package:service_app/src/features/service_calls/widgets/complaint_report_dialog.dart';
+import 'package:service_app/src/features/service_calls/widgets/service_call_card.dart';
+import 'package:service_app/src/features/service_calls/widgets/reassign_technician_dialog.dart';
+import 'package:service_app/src/features/service_calls/widgets/close_over_call_dialog.dart';
 
 
-part 'package:service_app/src/features/service_calls/presentation/widgets/service_calls_step1_widget.dart';
-part 'package:service_app/src/features/service_calls/presentation/widgets/service_calls_step2_widget.dart';
-part 'package:service_app/src/features/service_calls/presentation/widgets/service_calls_step3_widget.dart';
-part 'package:service_app/src/features/service_calls/presentation/widgets/service_calls_step4_widget.dart';
-part 'package:service_app/src/features/service_calls/presentation/widgets/service_calls_step5_widget.dart';
-part 'package:service_app/src/features/service_calls/presentation/widgets/service_calls_step6_widget.dart';
+part 'package:service_app/src/features/service_calls/widgets/service_calls_step1_widget.dart';
+part 'package:service_app/src/features/service_calls/widgets/service_calls_step2_widget.dart';
+part 'package:service_app/src/features/service_calls/widgets/service_calls_step3_widget.dart';
+part 'package:service_app/src/features/service_calls/widgets/service_calls_step4_widget.dart';
+part 'package:service_app/src/features/service_calls/widgets/service_calls_step5_widget.dart';
+part 'package:service_app/src/features/service_calls/widgets/service_calls_step6_widget.dart';
 
 class ServiceCallsScreen extends StatefulWidget {
   const ServiceCallsScreen({super.key});

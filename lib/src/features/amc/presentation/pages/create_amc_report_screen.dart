@@ -615,59 +615,60 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         // ── Header Row ────────────────────────────────────────────────────
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF9FAFB),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFE5E7EB)),
-              ),
-              child: const Icon(
-                Icons.business_outlined,
-                color: Color(0xFFCDD0D8),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: BlocBuilder<AmcReportStep1AutofillBloc, AmcReportStep1AutofillState>(
-                bloc: _step1AutofillBloc,
-                builder: (context, state) {
-                  String currentDealer = '';
-                  if (state is AmcReportStep1AutofillSuccessState && state.data.data.dealerName.isNotEmpty) {
-                    currentDealer = state.data.data.dealerName;
-                  }
-                  
-                  final dealerToShow = _loggedInDealerName.isNotEmpty
-                      ? _loggedInDealerName
-                      : (currentDealer.isNotEmpty
-                          ? currentDealer
-                          : 'commissioning_dealer_name_fallback'.tr());
-                  
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (dealerToShow.isNotEmpty)
-                        Text(
-                          dealerToShow,
-                          style: AppFont.style(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFF0D121F),
-                          ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-            ),
+            // Container(
+            //   width: 44,
+            //   height: 44,
+            //   decoration: BoxDecoration(
+            //     color: const Color(0xFFF9FAFB),
+            //     borderRadius: BorderRadius.circular(8),
+            //     border: Border.all(color: const Color(0xFFE5E7EB)),
+            //   ),
+            //   child: const Icon(
+            //     Icons.business_outlined,
+            //     color: Color(0xFFCDD0D8),
+            //   ),
+            // ),
+            // const SizedBox(width: 12),
+            // Expanded(
+            //   child: BlocBuilder<AmcReportStep1AutofillBloc, AmcReportStep1AutofillState>(
+            //     bloc: _step1AutofillBloc,
+            //     builder: (context, state) {
+            //       String currentDealer = '';
+            //       if (state is AmcReportStep1AutofillSuccessState && state.data.data.dealerName.isNotEmpty) {
+            //         currentDealer = state.data.data.dealerName;
+            //       }
+            //
+            //       final dealerToShow = _loggedInDealerName.isNotEmpty
+            //           ? _loggedInDealerName
+            //           : (currentDealer.isNotEmpty
+            //               ? currentDealer
+            //               : 'commissioning_dealer_name_fallback'.tr());
+            //
+            //       return Column(
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         mainAxisAlignment: MainAxisAlignment.center,
+            //         children: [
+            //           if (dealerToShow.isNotEmpty)
+            //             Text(
+            //               dealerToShow,
+            //               style: AppFont.style(
+            //                 fontSize: 16,
+            //                 fontWeight: FontWeight.w900,
+            //                 color: const Color(0xFF0D121F),
+            //               ),
+            //             ),
+            //         ],
+            //       );
+            //     },
+            //   ),
+            // ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  'Date',
+                  'amc_report_date_label'.tr(),
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -675,7 +676,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   ),
                 ),
                 Text(
-                  '29/05/2026',
+                  DateFormat('d MMMM yyyy').format(DateTime.now()),
                   style: AppFont.style(
                     fontSize: 14,
                     fontWeight: FontWeight.w900,
@@ -1231,7 +1232,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
       children: [
         // ── Remarks (Technician Side) ─────────────────────────────────
         Text(
-          'amc_report_remarks_tech'.tr(),
+          'commissioning_remarks_tech'.tr(),
           style: AppFont.style(
             fontSize: 13,
             fontWeight: FontWeight.w800,
@@ -1240,13 +1241,13 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         ),
         const SizedBox(height: 10),
         _buildRemarksBox(
-          'Enter Technician Remarks',
+          'enter_technical_remark'.tr(),
           _technicianRemarksController,
         ),
         const SizedBox(height: 28),
         // ── Remarks (Customer Side) ──────────────────────────────────
         Text(
-          'amc_report_remarks_customer'.tr(),
+          'commissioning_remarks_customer'.tr(),
           style: AppFont.style(
             fontSize: 13,
             fontWeight: FontWeight.w800,
@@ -1255,7 +1256,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         ),
         const SizedBox(height: 10),
         _buildRemarksBox(
-          'Enter Customer Remarks',
+          'enter_customer_remark'.tr(),
           _customerRemarksController,
         ),
         const SizedBox(height: 36),
@@ -1293,7 +1294,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: 'Name',
+                      text: 'commissioning_name'.tr(),
                       style: AppFont.style(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
@@ -1365,7 +1366,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         ),
         const SizedBox(height: 16),
         _buildSignatureBox(
-          label: 'Sign *',
+          label: 'commissioning_sign_star'.tr(),
           placeholder: 'commissioning_tap_sign'.tr(),
           signatureFile: _technicianSignatureFile,
           existingUrl: _existingTechnicianSignatureUrl,
@@ -1407,7 +1408,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: 'Name',
+                      text: 'commissioning_name'.tr(),
                       style: AppFont.style(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
@@ -1462,7 +1463,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         ),
         const SizedBox(height: 16),
         _buildSignatureBox(
-          label: 'Sign *',
+          label: 'commissioning_sign_star'.tr(),
           placeholder: 'commissioning_tap_sign'.tr(),
           signatureFile: _customerSignatureFile,
           existingUrl: _existingCustomerSignatureUrl,
@@ -1623,7 +1624,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       const Icon(Icons.add, size: 28, color: Color(0xFFA5ABB7)),
                       const SizedBox(height: 6),
                       Text(
-                        'Upload',
+                        'upload'.tr(),
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
@@ -1657,7 +1658,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       const Icon(Icons.camera_alt_outlined, size: 28, color: Color(0xFFA5ABB7)),
                       const SizedBox(height: 6),
                       Text(
-                        'Capture',
+                        'capture'.tr(),
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
@@ -2255,8 +2256,8 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       if (selectedTechs.isEmpty) {
                         appSnackBar(
                           context,
-                          const Color(0xFFF44336),
-                          'Please select at least one technician',
+                           Color(0xFFF44336),
+                          'assign_tech_validation_msg'.tr(),
                         );
                         return;
                       }

@@ -1,31 +1,36 @@
-part of '../pages/service_calls_screen.dart';
+part of '../presentation/pages/service_calls_screen.dart';
 
-class ServiceCallsStep5Widget extends StatelessWidget {
+class ServiceCallsStep6Widget extends StatelessWidget {
   final _ServiceCallsScreenState parent;
-  const ServiceCallsStep5Widget({super.key, required this.parent});
+  const ServiceCallsStep6Widget({super.key, required this.parent});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
-      bloc: parent._assignedServiceCallsBloc,
+    return BlocBuilder<PendingServiceCallsBloc, PendingServiceCallsState>(
+      bloc: parent._pendingServiceCallsBloc,
       builder: (context, state) {
-        if (state is AssignedServiceCallsLoadingState ||
-            state is AssignedServiceCallsInitialState) {
+        if (state is PendingServiceCallsLoadingState ||
+            state is PendingServiceCallsInitialState) {
           return ListView.separated(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 292, bottom: 100),
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 292,
+              bottom: 100,
+            ),
             itemCount: 3,
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (_, __) =>
-                const ServiceCallCardShimmer(type: ServiceCallType.ongoing),
+                const ServiceCallCardShimmer(type: ServiceCallType.active),
           );
         }
 
-        AssignedServiceCallsResponse? data;
+        PendingServiceCallsResponse? data;
         bool isPaginationLoading = false;
 
-        if (state is AssignedServiceCallsSuccessState) {
+        if (state is PendingServiceCallsSuccessState) {
           data = state.data;
-        } else if (state is AssignedServiceCallsPaginationLoadingState) {
+        } else if (state is PendingServiceCallsPaginationLoadingState) {
           data = state.currentData;
           isPaginationLoading = true;
         }
@@ -36,7 +41,7 @@ class ServiceCallsStep5Widget extends StatelessWidget {
               padding: const EdgeInsets.only(top: 276),
               child: Center(
                 child: Text(
-                  'service_calls_empty_assigned'.tr(),
+                  'service_calls_empty_pending'.tr(),
                   style: AppFont.style(
                     fontSize: 14,
                     color: const Color(0xFFA5ABB7),
@@ -47,7 +52,12 @@ class ServiceCallsStep5Widget extends StatelessWidget {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 292, bottom: 100),
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 292,
+              bottom: 100,
+            ),
             itemCount: data.data.results.length + (isPaginationLoading ? 1 : 0),
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
@@ -61,9 +71,6 @@ class ServiceCallsStep5Widget extends StatelessWidget {
               }
 
               final item = data.data.results[index];
-              final techs = item.assignedTechnicians
-                  .map((e) => e.name)
-                  .join(', ');
               final dateStr = item.createdAt.isNotEmpty
                   ? DateFormat(
                       'dd-MM-yyyy',
@@ -71,46 +78,45 @@ class ServiceCallsStep5Widget extends StatelessWidget {
                   : null;
 
               return ServiceCallCard(
-                type: ServiceCallType.ongoing,
+                type: ServiceCallType.active,
                 complaintNo: item.complaintNumber,
                 companyName: item.customerName,
                 location: item.siteName,
-                assignedTo: techs.isNotEmpty ? techs : 'UNASSIGNED',
                 dateReceived: dateStr,
                 onView: () => parent._showReportDialog(context, item.id),
-                onEdit: () => parent._showReassignTechDialog(
+                onEdit: () => parent._showAssignTechDialog(
                   context,
                   item.id,
                   item.complaintNumber,
-                  item.customerName,
-                  item.customerId,
-                  item.siteName,
-                  item.siteId,
                   initialTechnicians: item.assignedTechnicians
                       .map(
                         (e) => Technician(id: e.id, name: e.name, code: e.code),
                       )
                       .toList(),
                 ),
-                onSubmit: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CreateCommissioningReportScreen(
-                        isServiceReport: true,
-                        onBack: () => Navigator.pop(context),
-                        commissioningWorkId: item.id,
-                        complaintNo: item.complaintNumber,
-                      ),
-                    ),
-                  );
-                },
+                onCloseOverCall: () => parent._showCloseOverCallDialog(
+                  context,
+                  item.id,
+                  item.complaintNumber,
+                  item.customerName,
+                  item.siteName,
+                ),
+                onSubmit: () => parent._showAssignTechDialog(
+                  context,
+                  item.id,
+                  item.complaintNumber,
+                  initialTechnicians: item.assignedTechnicians
+                      .map(
+                        (e) => Technician(id: e.id, name: e.name, code: e.code),
+                      )
+                      .toList(),
+                ),
               );
             },
           );
         }
 
-        if (state is AssignedServiceCallsFailureState) {
+        if (state is PendingServiceCallsFailureState) {
           return Padding(
             padding: const EdgeInsets.only(top: 276),
             child: Center(
