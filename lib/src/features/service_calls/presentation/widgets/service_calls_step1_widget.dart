@@ -1,0 +1,31 @@
+part of '../pages/service_calls_screen.dart';
+
+class ServiceCallsStep1Widget extends StatelessWidget {
+  final _ServiceCallsScreenState parent;
+  const ServiceCallsStep1Widget({super.key, required this.parent});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Service Calls Header ──────────────────────────────────────────
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 16, 16, 12),
+          child: Row(
+            children: [
+              Text(
+                'service_calls_title'.tr(),
+                style: AppFont.style(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF0D121F),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}

@@ -118,7 +118,7 @@
   "amc_report_add": "जोडा",
   "amc_report_customer_name": "ग्राहकाचे नाव",
   "amc_report_site_name": "प्रकल्प / साइटचे नाव",
-  "amc_report_member_presents": "सदस्य उपस्थित (ग्राहक बाजू) :",
+  "amc_report_member_presents": "सदस्य उपस्थित (ग्राहक बाजू)",
   "amc_report_agenda": "भेटीचा अजेंडा / उद्देश :",
   "amc_report_agenda_hint": "भेटीचा अजेंडा / उद्देश टाका",
   "amc_report_checklist_title": "तपासणी यादी (तपासा आणि योग्य असल्यास टिक करा)",
@@ -217,7 +217,7 @@
   "commissioning_report": "कमिशनिंग अहवाल",
   "service_report": "सेवा अहवाल",
   "commissioning_member_context_label": "सदस्य संदर्भ",
-  "commissioning_customer_members": "सदस्य उपस्थित (ग्राहक बाजू) :",
+  "commissioning_customer_members": "सदस्य उपस्थित (ग्राहक बाजू)",
   "commissioning_representative": "प्रतिनिधी",
   "commissioning_add": "जोडा",
   "commissioning_select_warranty_period_label": "हमी कालावधी निवडा",
@@ -405,5 +405,9 @@
   "delete_work": "काम हटवा",
   "delete_work_subtitle": "तुम्हाला हे कमिशनिंग काम हटवायचे आहे याची खात्री आहे का? ही क्रिया पूर्ववत करता येणार नाही.",
   "delete_now": "आता हटवा",
-  "cancel": "रद्द करा"
+  "cancel": "रद्द करा",
+  "enter_technical_remark": "तांत्रिक टिपा टाका",
+  "enter_customer_remark": "ग्राहकाच्या टिपा टाका",
+  "upload": "अपलोड करा",
+  "capture": "कॅप्चर करा"
 }

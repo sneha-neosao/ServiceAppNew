@@ -27,6 +27,14 @@ import 'package:service_app/src/features/service_calls/presentation/widgets/serv
 import 'package:service_app/src/features/service_calls/presentation/widgets/reassign_technician_dialog.dart';
 import 'package:service_app/src/features/service_calls/presentation/widgets/close_over_call_dialog.dart';
 
+
+part 'package:service_app/src/features/service_calls/presentation/widgets/service_calls_step1_widget.dart';
+part 'package:service_app/src/features/service_calls/presentation/widgets/service_calls_step2_widget.dart';
+part 'package:service_app/src/features/service_calls/presentation/widgets/service_calls_step3_widget.dart';
+part 'package:service_app/src/features/service_calls/presentation/widgets/service_calls_step4_widget.dart';
+part 'package:service_app/src/features/service_calls/presentation/widgets/service_calls_step5_widget.dart';
+part 'package:service_app/src/features/service_calls/presentation/widgets/service_calls_step6_widget.dart';
+
 class ServiceCallsScreen extends StatefulWidget {
   const ServiceCallsScreen({super.key});
 
@@ -110,34 +118,22 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
     super.dispose();
   }
 
+  void updateState(VoidCallback fn) {
+    if (mounted) setState(fn);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
       child: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── Service Calls Header ──────────────────────────────────────────
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 16, 16, 12),
-                    child: Row(
-                      children: [
-                        Text(
-                          'service_calls_title'.tr(),
-                          style: AppFont.style(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF0D121F),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
+                  ServiceCallsStep1Widget(parent: this),
                 ],
               ),
             ),
@@ -148,396 +144,55 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                 delegate: _StickyFilterDelegate(
                   height: 280,
                   child: Column(
-                  children: [
-                    // ── Segmented Tab Control ───────────────────────────────────────────
-          BlocBuilder<AssignedServiceCallsBloc, AssignedServiceCallsState>(
-            bloc: _assignedServiceCallsBloc,
-            builder: (context, assignedState) {
-              return BlocBuilder<
-                PendingServiceCallsBloc,
-                PendingServiceCallsState
-              >(
-                bloc: _pendingServiceCallsBloc,
-                builder: (context, pendingState) {
-                  int assignedCount = 0;
-                  if (assignedState is AssignedServiceCallsSuccessState) {
-                    assignedCount =
-                        assignedState.data.data.pagination.totalItems;
-                  } else if (assignedState
-                      is AssignedServiceCallsPaginationLoadingState) {
-                    assignedCount =
-                        assignedState.currentData.data.pagination.totalItems;
-                  }
-                  int pendingCount = 0;
-                  if (pendingState is PendingServiceCallsSuccessState) {
-                    pendingCount = pendingState.data.data.pagination.totalItems;
-                  } else if (pendingState
-                      is PendingServiceCallsPaginationLoadingState) {
-                    pendingCount =
-                        pendingState.currentData.data.pagination.totalItems;
-                  }
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Container(
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF1F2F6),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Stack(
-                        children: [
-                          AnimatedAlign(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                            alignment: _selectedTab == 0
-                                ? Alignment.centerLeft
-                                : Alignment.centerRight,
-                            child: FractionallySizedBox(
-                              widthFactor: 0.5,
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 2,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.05,
-                                      ),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildSegmentTab(
-                                  0,
-                                  'service_calls_tab_assigned'.tr(),
-                                  count: assignedCount,
-                                  isLoading:
-                                      assignedState
-                                          is AssignedServiceCallsLoadingState ||
-                                      assignedState
-                                          is AssignedServiceCallsInitialState,
-                                ),
-                              ),
-                              Expanded(
-                                child: _buildSegmentTab(
-                                  1,
-                                  'service_calls_tab_pending'.tr(),
-                                  count: pendingCount,
-                                  isLoading:
-                                      pendingState
-                                          is PendingServiceCallsLoadingState ||
-                                      pendingState
-                                          is PendingServiceCallsInitialState,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-
-                    // ── Search & Filters ────────────────────────────────────────────────
-                    Container(
-                      margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFFF1F2F6)),
-            ),
-            child: Column(
-              children: [
-                // Filter Row 1 – customer & site
-                if (_selectedTab == 0) ...[  
-                  // ── Assigned: searchable dropdowns ─────────────────────
-                  Row(
                     children: [
-                      Expanded(
-                        child: BlocBuilder<CustomerBloc, CustomerState>(
-                          bloc: _customerBloc,
-                          builder: (context, state) {
-                            final customers = <Customer>[];
-                            if (state is CustomerSuccessState) {
-                              customers.addAll(state.data.data);
-                            }
-                            return SearchableDropdown<Customer>(
-                              items: customers,
-                              value: _selectedCustomerId != null
-                                  ? customers
-                                            .where(
-                                              (c) => c.id == _selectedCustomerId,
-                                            )
-                                            .isEmpty
-                                        ? null
-                                        : customers.firstWhere(
-                                            (c) => c.id == _selectedCustomerId,
-                                          )
-                                  : null,
-                              hintText: 'service_calls_filter_select_customer'.tr(),
-                              itemAsString: (c) => c.name,
-                              isLoading: state is CustomerLoadingState,
-                              isFilter: true,
-                              filterFn: (item, filter) => true,
-                              onSearchChanged: (v) {
-                                _customerBloc.add(
-                                  CustomerGetEvent(search: v, page: 1, pageSize: 10),
-                                );
-                              },
-                              onLoadMore: (lastSearch) {
-                                _customerBloc.add(
-                                  CustomerGetEvent(search: lastSearch, page: 2, pageSize: 10),
-                                );
-                              },
-                              onChanged: (customer) {
-                                setState(() {
-                                  _selectedCustomerName = customer?.name;
-                                  _selectedCustomerId = customer?.id;
-                                  _selectedSiteName = null;
-                                  _selectedSiteId = null;
-                                });
-                                if (customer != null) {
-                                  _sitesBloc.add(SitesGetEvent(customer_id: customer.id));
-                                }
-                                _fetchServiceCalls(isRefresh: true, isAssignedOnly: true);
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: BlocBuilder<SitesBloc, SitesState>(
-                          bloc: _sitesBloc,
-                          builder: (context, state) {
-                            final sites = <Site>[];
-                            if (state is SitesSuccessState) {
-                              sites.addAll(state.data.data);
-                            }
-
-                            Site? initialValue;
-                            if (_selectedSiteId != null) {
-                              final matches = sites.where((s) => s.id == _selectedSiteId);
-                              if (matches.isNotEmpty) {
-                                initialValue = matches.first;
-                              } else if (_selectedSiteName != null) {
-                                final s = Site(id: _selectedSiteId!, name: _selectedSiteName!);
-                                sites.add(s);
-                                initialValue = s;
-                              }
-                            }
-
-                            Widget siteDropdown = SearchableDropdown<Site>(
-                              items: sites,
-                              value: initialValue,
-                              hintText: 'service_calls_filter_select_site'.tr(),
-                              itemAsString: (s) => s.name,
-                              isLoading: state is SitesLoadingState,
-                              isFilter: true,
-                              filterFn: (item, filter) => true,
-                              onSearchChanged: _selectedCustomerId != null
-                                  ? (v) => _sitesBloc.add(SitesGetEvent(
-                                      customer_id: _selectedCustomerId!, search: v, page: 1, pageSize: 10))
-                                  : null,
-                              onLoadMore: _selectedCustomerId != null
-                                  ? (lastSearch) => _sitesBloc.add(SitesGetEvent(
-                                      customer_id: _selectedCustomerId!, search: lastSearch, page: 2, pageSize: 10))
-                                  : null,
-                              onChanged: (site) {
-                                setState(() {
-                                  _selectedSiteName = site?.name;
-                                  _selectedSiteId = site?.id;
-                                });
-                                _fetchServiceCalls(isRefresh: true, isAssignedOnly: true);
-                              },
-                            );
-
-                            if (_selectedCustomerId == null) {
-                              return IgnorePointer(
-                                child: Opacity(opacity: 0.5, child: siteDropdown),
-                              );
-                            }
-                            return siteDropdown;
-                          },
+                      const SizedBox(height: 16),
+                      ServiceCallsStep2Widget(parent: this),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          children: [
+                            ServiceCallsStep3Widget(parent: this),
+                            const SizedBox(height: 12),
+                            ServiceCallsStep4Widget(parent: this),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ] else ...[  
-                  // ── Pending: plain text inputs ──────────────────────────
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _pendingCustomerController,
-                          style: AppFont.style(fontSize: 13, color: const Color(0xFF0D121F)),
-                          decoration: InputDecoration(
-                            hintText: 'Enter customer name',
-                            hintStyle: AppFont.style(fontSize: 13, color: const Color(0xFFA5ABB7)),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(color: Color(0xFFF1F2F6)),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(color: Color(0xFFF1F2F6)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(color: Color(0xFF0B68B9)),
-                            ),
-                          ),
-                          onSubmitted: (_) => _fetchServiceCalls(isRefresh: true, isPendingOnly: true),
-                          onChanged: (_) => setState(() {}),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextField(
-                          controller: _pendingSiteController,
-                          style: AppFont.style(fontSize: 13, color: const Color(0xFF0D121F)),
-                          decoration: InputDecoration(
-                            hintText: 'Enter site name',
-                            hintStyle: AppFont.style(fontSize: 13, color: const Color(0xFFA5ABB7)),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(color: Color(0xFFF1F2F6)),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(color: Color(0xFFF1F2F6)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(color: Color(0xFF0B68B9)),
-                            ),
-                          ),
-                          onSubmitted: (_) => _fetchServiceCalls(isRefresh: true, isPendingOnly: true),
-                          onChanged: (_) => setState(() {}),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-                const SizedBox(height: 12),
-                // Filter Row 2
-                Row(
-                  children: [
-                    Expanded(child: _buildComplaintInput()),
-                    const SizedBox(width: 12),
-                    Expanded(child: _buildDateInput()),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                // Clear Filters Button
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedCustomerName = null;
-                      _selectedCustomerId = null;
-                      _selectedSiteName = null;
-                      _selectedSiteId = null;
-                      _selectedDate = null;
-                      _complaintController.clear();
-                      _pendingCustomerController.clear();
-                      _pendingSiteController.clear();
-                    });
-                    _fetchServiceCalls(isRefresh: true);
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF3F8FF),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.refresh,
-                          color: Color(0xFF1565C0),
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'service_calls_clear_filters'.tr(),
-                          style: AppFont.style(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF1565C0),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-                  ],
                 ),
               ),
             ),
-            ),
           ];
-      },
-
-      // ── Tab Body ────────────────────────────────────────────────────────
-      body: Container(
-        color: const Color(0xFFF8F9FB),
-        child: RefreshIndicator(
-          color: const Color(0xFF0B68B9),
-          onRefresh: () async {
-            _fetchServiceCalls(isRefresh: true);
-            await Future.delayed(const Duration(seconds: 1));
-          },
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (ScrollNotification scrollInfo) {
-              if (scrollInfo.metrics.pixels >=
-                      scrollInfo.metrics.maxScrollExtent &&
-                  scrollInfo.metrics.axis == Axis.vertical) {
-                if (_selectedTab == 0) {
-                  _fetchServiceCalls(
-                    isRefresh: false,
-                    isAssignedOnly: true,
-                  );
-                } else {
-                  _fetchServiceCalls(isRefresh: false, isPendingOnly: true);
-                }
-              }
-              return false;
+        },
+        body: Container(
+          color: const Color(0xFFF8F9FB),
+          child: RefreshIndicator(
+            color: const Color(0xFF0B68B9),
+            onRefresh: () async {
+              _fetchServiceCalls(isRefresh: true);
+              await Future.delayed(const Duration(seconds: 1));
             },
-            child: _selectedTab == 0
-                ? _buildOngoingList()
-                : _buildActiveList(),
-          ),        // closes NotificationListener
-        ),          // closes RefreshIndicator
-      ),            // closes body: Container
-      ),            // closes NestedScrollView
-    );             // closes return Container
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification scrollInfo) {
+                if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
+                    scrollInfo.metrics.axis == Axis.vertical) {
+                  if (_selectedTab == 0) {
+                    _fetchServiceCalls(isRefresh: false, isAssignedOnly: true);
+                  } else {
+                    _fetchServiceCalls(isRefresh: false, isPendingOnly: true);
+                  }
+                }
+                return false;
+              },
+              child: _selectedTab == 0
+                  ? ServiceCallsStep5Widget(parent: this)
+                  : ServiceCallsStep6Widget(parent: this),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildSegmentTab(

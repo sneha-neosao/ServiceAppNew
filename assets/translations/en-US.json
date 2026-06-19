@@ -405,5 +405,12 @@
   "delete_work": "Delete Work",
   "delete_work_subtitle": "Are you sure you want to delete this\\ncommissioning job? This action cannot be\\nundone.",
   "delete_now": "Delete Now",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "service_call_report_feedback": "Service Call Report Feedback",
+  "commissioning_work_report_feedback": "Commissioning Work Report Feedback",
+  "scan_for_customer_feedback": "Scan for Customer Feedback",
+  "enter_technical_remark": "Enter Technical Remarks",
+  "enter_customer_remark": "Enter Customer Remarks",
+  "upload": "Upload",
+  "capture": "Capture"
 }
