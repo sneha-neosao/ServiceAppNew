@@ -471,7 +471,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   .join(', ');
               final dateStr = item.lastServiceDate != null && item.lastServiceDate!.isNotEmpty
                   ? DateFormat(
-                      'dd-MM-yyyy',
+                      'd MMMM yyyy',
                     ).format(DateTime.parse(item.lastServiceDate!).toLocal())
                   : null;
 
@@ -597,7 +597,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               final item = data.data.results[index];
               final dateStr = item.lastServiceDate != null && item.lastServiceDate!.isNotEmpty
                   ? DateFormat(
-                      'dd-MM-yyyy',
+                      'd MMMM yyyy',
                     ).format(DateTime.parse(item.lastServiceDate!).toLocal())
                   : null;
 

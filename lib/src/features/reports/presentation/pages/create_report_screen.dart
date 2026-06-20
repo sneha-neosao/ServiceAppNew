@@ -2497,44 +2497,45 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFF1F2F6)),
-                    ),
-                    child: const Icon(
-                      Icons.business_outlined,
-                      color: Color(0xFFA5ABB7),
-                    ),
-                  ),
+                  // Container(
+                  //   width: 48,
+                  //   height: 48,
+                  //   decoration: BoxDecoration(
+                  //     color: Colors.white,
+                  //     borderRadius: BorderRadius.circular(12),
+                  //     border: Border.all(color: const Color(0xFFF1F2F6)),
+                  //   ),
+                  //   child: const Icon(
+                  //     Icons.business_outlined,
+                  //     color: Color(0xFFA5ABB7),
+                  //   ),
+                  // ),
                   const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Text(
-                        //   'create_report_service_provider'.tr(),
-                        //   style: AppFont.style(
-                        //     fontSize: 12,
-                        //     fontWeight: FontWeight.w800,
-                        //     color: const Color(0xFFA5ABB7),
-                        //   ),
-                        // ),
-                        Text(
-                          dealerToShow,
-                          style: AppFont.style(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFF0D121F),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Expanded(
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       // Text(
+                  //       //   'create_report_service_provider'.tr(),
+                  //       //   style: AppFont.style(
+                  //       //     fontSize: 12,
+                  //       //     fontWeight: FontWeight.w800,
+                  //       //     color: const Color(0xFFA5ABB7),
+                  //       //   ),
+                  //       // ),
+                  //       // Text(
+                  //       //   dealerToShow,
+                  //       //   style: AppFont.style(
+                  //       //     fontSize: 15,
+                  //       //     fontWeight: FontWeight.w900,
+                  //       //     color: const Color(0xFF0D121F),
+                  //       //   ),
+                  //       // ),
+                  //     ],
+                  //   ),
+                  // ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -2547,7 +2548,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         ),
                       ),
                       Text(
-                        '28/05/2026',
+                        DateFormat('d MMMM yyyy').format(DateTime.now()),
                         style: AppFont.style(
                           fontSize: 14,
                           fontWeight: FontWeight.w900,
