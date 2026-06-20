@@ -261,8 +261,8 @@ class Step6Widget extends StatelessWidget {
                   color: const Color(0xFF0D121F),
                 ),
               ),
-              const TextSpan(
-                text: 'asterisk',
+              TextSpan(
+                text: 'asterisk'.tr(),
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w900,

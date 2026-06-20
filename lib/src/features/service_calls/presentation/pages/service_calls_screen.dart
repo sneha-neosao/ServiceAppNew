@@ -469,10 +469,10 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               final techs = item.assignedTechnicians
                   .map((e) => e.name)
                   .join(', ');
-              final dateStr = item.createdAt.isNotEmpty
+              final dateStr = item.lastServiceDate != null && item.lastServiceDate!.isNotEmpty
                   ? DateFormat(
                       'dd-MM-yyyy',
-                    ).format(DateTime.parse(item.createdAt).toLocal())
+                    ).format(DateTime.parse(item.lastServiceDate!).toLocal())
                   : null;
 
               return ServiceCallCard(
@@ -595,10 +595,10 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               }
 
               final item = data.data.results[index];
-              final dateStr = item.createdAt.isNotEmpty
+              final dateStr = item.lastServiceDate != null && item.lastServiceDate!.isNotEmpty
                   ? DateFormat(
                       'dd-MM-yyyy',
-                    ).format(DateTime.parse(item.createdAt).toLocal())
+                    ).format(DateTime.parse(item.lastServiceDate!).toLocal())
                   : null;
 
               return ServiceCallCard(

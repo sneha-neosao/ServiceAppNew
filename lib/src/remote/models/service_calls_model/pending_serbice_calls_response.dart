@@ -81,6 +81,7 @@ class ServiceCallResult extends Equatable {
   final String siteId;
   final List<AssignedTechnician> assignedTechnicians;
   final String createdAt;
+  final String? lastServiceDate;
 
   const ServiceCallResult({
     required this.id,
@@ -99,6 +100,7 @@ class ServiceCallResult extends Equatable {
     required this.siteId,
     required this.assignedTechnicians,
     required this.createdAt,
+    this.lastServiceDate,
   });
 
   factory ServiceCallResult.fromJson(Map<String, dynamic> json) {
@@ -123,6 +125,7 @@ class ServiceCallResult extends Equatable {
               .toList() ??
           [],
       createdAt: json['created_at'] ?? '',
+      lastServiceDate: json['last_service_date'],
     );
   }
 
@@ -146,6 +149,7 @@ class ServiceCallResult extends Equatable {
           .map((e) => e.toJson())
           .toList(),
       'created_at': createdAt,
+      'last_service_date': lastServiceDate,
     };
   }
 
@@ -167,6 +171,7 @@ class ServiceCallResult extends Equatable {
     siteId,
     assignedTechnicians,
     createdAt,
+    lastServiceDate,
   ];
 }
 

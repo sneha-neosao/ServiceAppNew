@@ -1257,7 +1257,7 @@ class _CreateCommissioningReportScreenState
     showDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor: AppColor.white,
+      barrierColor: Colors.black.withValues(alpha: 0.5),
       builder: (BuildContext context) {
         return Dialog(
           shape: RoundedRectangleBorder(
