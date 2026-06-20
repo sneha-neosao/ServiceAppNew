@@ -111,8 +111,8 @@ import '../models/feedback_model/feedback_response.dart';
 import '../models/servicecalls_report_history_model/servicecalls_report_history_response.dart';
 import '../models/amc_visit_model/amc_visit_list_response.dart';
 import '../models/amc_visit_model/amc_visit_reports_response.dart';
+import '../models/servicecall_complaint_pdf_model/servicecall_complaint_pdf_response.dart';
 
-import '../models/amc_visit_model/amc_visit_list_response.dart';
 import '../models/amc_report_model/delete_amc_report_response.dart';
 import '../models/delete_service_work_report_model/delete_service_work_report_response.dart';
 import '../models/delete_account_model/delete_account_response.dart';
@@ -327,6 +327,9 @@ abstract class Repository {
 
   Future<Either<Failure, CommissioningReportPdfResponse>>
   getServiceCallReportPdf(String reportId);
+
+  Future<Either<Failure, ServiceCallComplaintPdfResponse>>
+  getServiceCallComplaintPdf(String complaintId);
 
   Future<Either<Failure, ServiceCallReportResponse>>
   getServiceCallsReportHistory();
@@ -3094,6 +3097,41 @@ class AuthRepositoryImpl implements Repository {
           }
 
           return Right(response);
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, ServiceCallComplaintPdfResponse>>
+  getServiceCallComplaintPdf(String complaintId) {
+    return _networkInfo.check<ServiceCallComplaintPdfResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.getServiceCallComplaintPdf(
+            complaintId,
+            token,
+          );
+
+          if (respData.status != 200) {
+            return Left(CredentialFailure(respData.message));
+          }
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         } catch (e) {
           if (e is ApiException) {
             return Left(ApiFailure(e.message));

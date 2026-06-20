@@ -102,6 +102,7 @@ import '../models/amc_visit_model/amc_visit_list_response.dart';
 import '../models/amc_visit_model/amc_visit_reports_response.dart';
 import '../models/delete_account_model/delete_account_response.dart';
 import '../models/service_calls_details_model/service_calls_details_response.dart';
+import '../models/servicecall_complaint_pdf_model/servicecall_complaint_pdf_response.dart';
 import '../models/amc_report_model/delete_amc_report_response.dart';
 import '../models/delete_service_work_report_model/delete_service_work_report_response.dart';
 import '../models/notifications_model/notifications_response.dart';
@@ -432,6 +433,11 @@ sealed class RemoteDataSource {
 
   Future<CommissioningReportPdfResponse> getServiceCallReportPdf(
     String reportId,
+    String token,
+  );
+
+  Future<ServiceCallComplaintPdfResponse> getServiceCallComplaintPdf(
+    String complaintId,
     String token,
   );
 
@@ -3033,6 +3039,34 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     } catch (e) {
       if (e.toString() == noElement) throw AuthException();
       if (e is ApiException) throw e;
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<ServiceCallComplaintPdfResponse> getServiceCallComplaintPdf(
+    String complaintId,
+    String token,
+  ) async {
+    try {
+      final response = await _helper.execute(
+        method: Method.get,
+        url: '${ApiUrl.serviceCallComplaintPdf}/$complaintId/pdf',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final respData = ServiceCallComplaintPdfResponse.fromJson(response);
+      return respData;
+    } on EmptyException {
+      throw AuthException();
+    } catch (e) {
+      logger.e(e);
+      if (e.toString() == noElement) {
+        throw AuthException();
+      }
+      if (e is ApiException) {
+        throw e;
+      }
       throw ServerException();
     }
   }

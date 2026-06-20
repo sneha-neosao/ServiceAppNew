@@ -154,6 +154,8 @@ class ApiUrl {
 
   static const  serviceCallDetails = "technician/service-calls/";
 
+  static const  serviceCallComplaintPdf = "technician/service-calls";
+
   static const notifications = "notifications";
 
   static const markAllNotificationsRead = "notifications/mark-all-read";

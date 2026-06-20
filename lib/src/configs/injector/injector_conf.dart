@@ -39,6 +39,8 @@ import '../../features/my_commissioning/domain/usecase/commissioning_report_pdf_
 import '../../features/service_calls/domain/usecase/service_call_report_history_usecase.dart';
 import '../../features/service_calls/domain/usecase/service_call_check_feedback_usecase.dart';
 import '../../features/service_calls/domain/usecase/service_call_report_pdf_usecase.dart';
+import '../../features/service_calls/domain/usecase/service_call_complaint_pdf_usecase.dart';
+import '../../features/service_calls/bloc/service_call_complaint_pdf_bloc/service_call_complaint_pdf_bloc.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_details_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_update_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_work_delete_usecase.dart';
@@ -825,6 +827,16 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => DeleteServiceWorkReportUsecase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => ServiceCallComplaintPdfUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(
+    () => ServiceCallComplaintPdfBloc(
+      usecase: getIt<ServiceCallComplaintPdfUseCase>(),
+    ),
   );
 
   /// API Helper
