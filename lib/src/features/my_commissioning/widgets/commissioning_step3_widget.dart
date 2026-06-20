@@ -85,7 +85,7 @@ class Step3Widget extends StatelessWidget {
                 ),
                 parent._buildTechMultiField(
                   'commissioning_pump_flow'.tr(),
-                  ['LPM', 'M3/HR', 'LPS', 'USGPM'],
+                  ['lpm'.tr(), 'm3_hr'.tr(), 'lps'.tr(), 'usgpm'.tr()],
                   [
                     parent._pumpFlowLPMController,
                     parent._pumpFlowM3HRController,
@@ -95,7 +95,7 @@ class Step3Widget extends StatelessWidget {
                 ),
                 parent._buildTechMultiField(
                   'commissioning_pump_head'.tr(),
-                  ['MTR'],
+                  ['mtr'.tr()],
                   [parent._pumpHeadMTRController],
                 ),
                 parent._buildTechField(
@@ -108,7 +108,7 @@ class Step3Widget extends StatelessWidget {
                 ),
                 parent._buildTechMultiField(
                   'commissioning_rating'.tr(),
-                  ['KW', 'HP'],
+                  ['kw'.tr(), 'hp'.tr()],
                   [parent._ratingKWController, parent._ratingHPController],
                 ),
                 parent._buildTechField('commissioning_rpm'.tr(), parent._rpmController),

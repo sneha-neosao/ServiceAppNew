@@ -80,8 +80,8 @@ class Step6Widget extends StatelessWidget {
                         color: const Color(0xFF8E9BAE),
                       ),
                     ),
-                    const TextSpan(
-                      text: ' *',
+                     TextSpan(
+                      text: 'asterisk'.tr(),
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
@@ -93,7 +93,7 @@ class Step6Widget extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+             Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
             const SizedBox(width: 8),
             Expanded(
               child: parent.widget.isServiceReport
@@ -179,8 +179,8 @@ class Step6Widget extends StatelessWidget {
                         color: const Color(0xFF8E9BAE),
                       ),
                     ),
-                    const TextSpan(
-                      text: ' *',
+                     TextSpan(
+                      text: 'asterisk'.tr(),
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
@@ -262,7 +262,7 @@ class Step6Widget extends StatelessWidget {
                 ),
               ),
               const TextSpan(
-                text: ' *',
+                text: 'asterisk',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w900,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
@@ -121,7 +122,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                           final data = state.response.data?.feedback;
                           if (data == null) {
                             return Center(
-                              child: Text('No feedback found', style: AppFont.style(fontSize: 14, color: Colors.grey)),
+                              child: Text('no_feedback_found'.tr(), style: AppFont.style(fontSize: 14, color: Colors.grey)),
                             );
                           }
                           return _buildFeedbackContent(data);
@@ -142,7 +143,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                               final data = state.data.data?.feedback;
                               if (data == null) {
                                 return Center(
-                                  child: Text('No feedback found', style: AppFont.style(fontSize: 14, color: Colors.grey)),
+                                  child: Text('no_feedback_found'.tr(), style: AppFont.style(fontSize: 14, color: Colors.grey)),
                                 );
                               }
                               return _buildFeedbackContent(data);
@@ -162,7 +163,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                               final data = state.response.data?.feedback;
                               if (data == null) {
                                 return Center(
-                                  child: Text('No feedback found', style: AppFont.style(fontSize: 14, color: Colors.grey)),
+                                  child: Text('no_feedback_found'.tr(), style: AppFont.style(fontSize: 14, color: Colors.grey)),
                                 );
                               }
                               return _buildFeedbackContent(data);
@@ -302,7 +303,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
               _buildRow(
                 icon: Icons.person_outline,
                 iconColor: const Color(0xFF6B4EFF),
-                title: 'Customer Name',
+                title: 'close_call_customer_name_label'.tr(),
                 valueWidget: Text(
                   data.name,
                   style: AppFont.style(
@@ -317,7 +318,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
               _buildRow(
                 icon: Icons.phone_outlined,
                 iconColor: const Color(0xFF00BFA5),
-                title: 'Contact Number',
+                title: 'contact_number'.tr(),
                 valueWidget: Text(
                   data.contactNumber,
                   style: AppFont.style(
@@ -332,7 +333,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
               _buildRow(
                 icon: Icons.verified_user_outlined,
                 iconColor: const Color(0xFF00C853),
-                title: 'Was the issue resolved?',
+                title: 'was_the_issue_resolved'.tr(),
                 valueWidget: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -348,7 +349,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    data.issueResolved ? 'Yes' : 'No',
+                    data.issueResolved ? 'yes'.tr() : 'no'.tr(),
                     style: AppFont.style(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
@@ -364,7 +365,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
               _buildRow(
                 icon: Icons.star_outline,
                 iconColor: const Color(0xFFFF9800),
-                title: 'Customer Rating',
+                title: 'customer_rating'.tr(),
                 valueWidget: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: List.generate(5, (index) {
@@ -383,7 +384,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
               _buildRow(
                 icon: Icons.workspace_premium_outlined,
                 iconColor: const Color(0xFF2962FF),
-                title: 'Technician Behavior',
+                title: 'technician_behaviour'.tr(),
                 valueWidget: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -424,7 +425,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
               _buildCommentRow(
                 icon: Icons.chat_bubble_outline,
                 iconColor: const Color(0xFF9C27B0),
-                title: 'Short Comment',
+                title: 'short_comment'.tr(),
                 comment: data.shortComment,
               ),
             ],
@@ -491,7 +492,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 32),
             child: Text(
-              comment.isNotEmpty ? comment : 'No comment provided',
+              comment.isNotEmpty ? comment : 'no_comment_provided'.tr(),
               style: AppFont.style(
                 fontSize: 14,
                 fontWeight: FontWeight.w900,

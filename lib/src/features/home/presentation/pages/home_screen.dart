@@ -188,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
             if (currentVersion != null && currentVersion != storeVersion) {
               _updateWarningDialog(
                 context,
-                message: updateMessage ?? "New version available",
+                message: updateMessage ?? "new_version_is_available".tr(),
                 isCompulsory: isCompulsory,
                 link: link,
               );
@@ -577,7 +577,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    "App Update",
+                    "app_update".tr(),
                     style: AppFont.style(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -613,7 +613,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: Center(
                         child: Text(
-                          "Update Now",
+                          "update_now".tr(),
                           style: AppFont.style(
                             fontSize: 14,
                             color: Colors.white,
@@ -637,7 +637,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: Center(
                           child: Text(
-                            "Cancel",
+                            "cancel".tr(),
                             style: AppFont.style(
                               fontSize: 14,
                               color: const Color(0xFF1A1A1A),
@@ -705,7 +705,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       // ── Title ───────────────────────────────────────────────────────
                       Text(
-                        'Maintenance Mode',
+                        'maintenance_mode'.tr(),
                         style: AppFont.style(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
@@ -750,7 +750,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: FittedBox(
                                   fit: BoxFit.scaleDown,
                                   child: Text(
-                                    'Exit',
+                                    'exit'.tr(),
                                     maxLines: 1,
                                     style: AppFont.style(
                                       fontSize: 14,
@@ -797,7 +797,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         : FittedBox(
                                             fit: BoxFit.scaleDown,
                                             child: Text(
-                                              'Log Out',
+                                              'logout_dialog_btn_confirm'.tr(),
                                               maxLines: 1,
                                               style: AppFont.style(
                                                 fontSize: 14,

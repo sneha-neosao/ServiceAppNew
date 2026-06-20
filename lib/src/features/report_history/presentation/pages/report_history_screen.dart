@@ -165,7 +165,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       final savePath = '${dir.path}/$fileName';
 
       if (mounted) {
-        appSnackBar(context, const Color(0xFF1565C0), 'Downloading report...');
+        appSnackBar(context, const Color(0xFF1565C0), 'downloading_report'.tr());
       }
 
       await Dio().download(url, savePath);
@@ -174,7 +174,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
         appSnackBar(
           context,
           const Color(0xFF4CAF50),
-          'Downloaded successfully to $savePath',
+          '${'download_to'.tr()} $savePath',
         );
       }
     } catch (e) {
@@ -226,7 +226,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                   _downloadPdf(url);
                 }
               } else {
-                appSnackBar(context, const Color(0xFFF44336), 'PDF URL is empty');
+                appSnackBar(context, const Color(0xFFF44336), 'pdf_url_is_empty'.tr());
               }
             }
           },
@@ -255,7 +255,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                   _downloadPdf(url);
                 }
               } else {
-                appSnackBar(context, const Color(0xFFF44336), 'PDF URL is empty');
+                appSnackBar(context, const Color(0xFFF44336), 'pdf_url_is_empty'.tr());
               }
             }
           },
@@ -438,7 +438,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   height: MediaQuery.of(context).size.height * 0.6,
                                   child: Center(
                                     child: Text(
-                                      'No reports found.',
+                                      'no_reports_found'.tr(),
                                       style: AppFont.style(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
@@ -474,7 +474,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                 date: formattedDate,
                                 technician:
                                     item.technicianRepresentativeName ??
-                                    'No representative',
+                                    'no_representative'.tr(),
                                 technicianId: item.dealerName,
                                 feedbackSubmitted: item.feedbackSubmitted,
                                 qrCodeImage: item.qrCodeImage,
@@ -553,7 +553,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   height: MediaQuery.of(context).size.height * 0.6,
                                   child: Center(
                                     child: Text(
-                                      'No reports found.',
+                                      'no_reports_found'.tr(),
                                       style: AppFont.style(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
@@ -659,7 +659,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   height: MediaQuery.of(context).size.height * 0.6,
                                   child: Center(
                                     child: Text(
-                                      'No reports found.',
+                                      'no_reports_found'.tr(),
                                       style: AppFont.style(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
@@ -705,7 +705,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                         initialVisitId: item.amcVisitId,
                                         initialTitle: item.customerName,
                                         initialLocation: item.siteName,
-                                        initialVisitInfo: 'Visit ${item.visitNumber}',
+                                        initialVisitInfo: '${'visit'.tr()} ${item.visitNumber}',
                                       ),
                                     ),
                                   );
@@ -722,69 +722,6 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
         ),            // closes NestedScrollView
       ),              // closes child Container
     );               // closes MultiBlocListener
-  }
-
-  List<Widget> _buildReportList() {
-    if (_selectedTab == 0) {
-      // Commissioning
-      return [
-        _ReportCard(
-          id: 'COM-7721',
-          type: ReportType.commissioning,
-          companyName: 'Shree Krishna Ind.',
-          location: 'Ahmedabad Plant',
-          date: '28 Apr 2026',
-          technician: 'Pravin Patil',
-          technicianId: 'T-101',
-          feedbackSubmitted: false,
-          status: 'Submitted Report',
-        ),
-      ];
-    } else if (_selectedTab == 1) {
-      // Service
-      return [
-        _ReportCard(
-          id: 'SRV-9901',
-          type: ReportType.service,
-          companyName: 'Global Infotech',
-          location: 'Main Server Room',
-          date: '29 Apr 2026',
-          complaintNo: '#ABC-26-0821',
-          technician: 'Pravin Patil',
-          technicianId: 'T-101',
-          feedbackSubmitted: false,
-          status: 'Submitted Report',
-        ),
-        const SizedBox(height: 16),
-        _ReportCard(
-          id: 'SRV-9902',
-          type: ReportType.service,
-          companyName: 'Tata Motors',
-          location: 'Assembly Line 4',
-          date: '22 Apr 2026',
-          complaintNo: '#ABC-26-0715',
-          technician: 'Pravin Patil',
-          technicianId: 'T-101',
-          feedbackSubmitted: true,
-          status: 'Closed Over Call',
-        ),
-      ];
-    } else {
-      // AMC
-      return [
-        _ReportCard(
-          id: 'AMC-5501',
-          type: ReportType.amc,
-          companyName: 'Reliance Mart',
-          location: 'Chiller Plant',
-          date: '30 Apr 2026',
-          technician: 'Pravin Patil',
-          technicianId: 'T-101',
-          feedbackSubmitted: false,
-          status: 'Submitted Report',
-        ),
-      ];
-    }
   }
 
   Widget _buildSegmentTab(int index, String label,) {
@@ -1209,35 +1146,6 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     );
   }
 
-  Widget _buildFilterInput(String label, IconData icon) {
-    return Container(
-      height: 44,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: const Color(0xFFA5ABB7), size: 18),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              label,
-              style: AppFont.style(
-                fontSize: 14,
-                color: const Color(0xFFA5ABB7),
-                fontWeight: FontWeight.w500,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildFilterInputFull(String label, IconData icon) {
     return Container(
       height: 44,
@@ -1602,10 +1510,10 @@ class _ReportCard extends StatelessWidget {
                                   isServiceCall: type == ReportType.service,
                                   isAmc: type == ReportType.amc,
                                   title: type == ReportType.service
-                                      ? 'Service Call Feedback Details'
+                                      ? 'service_call_feedback_details'.tr()
                                       : type == ReportType.amc
-                                          ? 'AMC Feedback Details'
-                                          : 'Commissioning Feedback Details',
+                                          ? 'amc_feedback_details'.tr()
+                                          : 'commissioning_feedback_details'.tr(),
                                   onBack: () => Navigator.pop(context),
                                 ),
                               ),
@@ -1743,10 +1651,10 @@ class _ReportCard extends StatelessWidget {
                 const SizedBox(height: 24),
                 Text(
                   type == ReportType.service
-                      ? 'Service Call Report Feedback'
+                      ? 'service_call_report_feedback'.tr()
                       : type == ReportType.amc
-                          ? 'AMC Report Feedback'
-                          : 'Commissioning Report Feedback',
+                          ? 'amc_report_feedback'.tr()
+                          : 'commissioning_work_report_feedback'.tr(),
                   textAlign: TextAlign.center,
                   style: AppFont.style(
                     fontSize: 22,

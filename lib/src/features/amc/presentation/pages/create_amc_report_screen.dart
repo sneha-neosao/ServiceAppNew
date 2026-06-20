@@ -218,7 +218,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                           });
                         },
                         decoration: InputDecoration(
-                          hintText: 'Search...',
+                          hintText: 'search'.tr(),
                           hintStyle: AppFont.style(
                             fontSize: 14,
                             color: const Color(0xFFA5ABB7),
@@ -315,7 +315,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               appSnackBar(
                 context,
                 const Color(0xFF4CAF50),
-                state.data.message.isNotEmpty ? state.data.message : 'Step 1 saved successfully',
+                state.data.message,
               );
             } else if (state is AmcReportStep1FailureState) {
               appSnackBar(context, const Color(0xFFF44336), state.message);
@@ -402,7 +402,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               appSnackBar(
                 context,
                 const Color(0xFF4CAF50),
-                state.data.message.isNotEmpty ? state.data.message : 'Step 2 saved successfully',
+                state.data.message,
               );
             } else if (state is AmcReportStep2ErrorState) {
               appSnackBar(context, const Color(0xFFF44336), state.message);
@@ -431,8 +431,8 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     Map<String, dynamic> map = jsonDecode(s);
                     List<String> list = [];
                     map.forEach((key, value) {
-                      if (key == 'Vibration Checked') return; // Handled separately
-                      if (value == 'ok') {
+                      if (key == 'vibration_check'.tr()) return; // Handled separately
+                      if (value == 'ok'.tr()) {
                         list.add('$key :');
                       }
                     });
@@ -445,8 +445,8 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 try {
                   if (state.data.data.mechanicalChecklist.isNotEmpty) {
                     Map<String, dynamic> map = jsonDecode(state.data.data.mechanicalChecklist);
-                    if (map.containsKey('Vibration Checked')) {
-                      _vibrationSelected = map['Vibration Checked'].toString().toUpperCase();
+                    if (map.containsKey('vibration_check'.tr())) {
+                      _vibrationSelected = map['vibration_check'.tr()].toString().toUpperCase();
                     }
                   }
                 } catch (_) {}
@@ -471,7 +471,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             }
 
             if (state is AmcReportStep3SuccessState) {
-              appSnackBar(context, const Color(0xFF4CAF50), 'AMC Report submitted successfully');
+              appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
               widget.onSubmit();
             } else if (state is AmcReportStep3ErrorState) {
               appSnackBar(context, const Color(0xFFF44336), state.message);
@@ -565,7 +565,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'AMC Report',
+              'amc_report_title'.tr(),
               style: AppFont.style(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
@@ -964,42 +964,42 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         const SizedBox(height: 24),
 
         _buildChecklistCard('checklist_mech_title'.tr(), Icons.settings_outlined, [
-          _buildChecklistItem('Pump Foundation Bolts Tight :', _mechanicalSelected),
-          _buildChecklistItem('Coupling / Alignment Checked :', _mechanicalSelected),
-          _buildChecklistItem('Bearing Noise Checked :', _mechanicalSelected),
-          _buildChecklistItem('Abnormal Sound Checked :', _mechanicalSelected),
-          _buildChecklistItem('Mechanical Seal / Gland Leakage Checked :', _mechanicalSelected),
+          _buildChecklistItem('pump_foundation_bolt_tight'.tr(), _mechanicalSelected),
+          _buildChecklistItem('coupling_alignment_checked'.tr(), _mechanicalSelected),
+          _buildChecklistItem('bearing_noise_checked'.tr(), _mechanicalSelected),
+          _buildChecklistItem('abnormal_sound_checked'.tr(), _mechanicalSelected),
+          _buildChecklistItem('mechanical_seal_gland_leakage_checked'.tr(), _mechanicalSelected),
           _buildVibrationItem(),
-          _buildChecklistItem('Pump Cleaned :', _mechanicalSelected),
-          _buildChecklistItem('Pump Not Running Dry :', _mechanicalSelected, isLast: true),
+          _buildChecklistItem('pump_cleaned'.tr(), _mechanicalSelected),
+          _buildChecklistItem('pump_not_running_dry'.tr(), _mechanicalSelected, isLast: true),
         ], _mechNA, () => setState(() => _mechNA = !_mechNA)),
         const SizedBox(height: 32),
 
         _buildChecklistCard('checklist_pipe_title'.tr(), Icons.water_drop_outlined, [
-          _buildChecklistItem('Suction Line (Air & Water) Leakage Checked :', _pipelineSelected),
-          _buildChecklistItem('Delivery Line (Air & Water) Leakage Checked :', _pipelineSelected),
-          _buildChecklistItem('NRV / Butterfly Valve / Gate Valve Working Checked :', _pipelineSelected),
-          _buildChecklistItem('Strainer / Foot Valve Cleaned :', _pipelineSelected),
-          _buildChecklistItem('Suction / Delivery Valve Condition & Operation Checked :', _pipelineSelected),
-          _buildChecklistItem('Pressure Switch / Pressure Transmitter Checked :', _pipelineSelected, isLast: true),
+          _buildChecklistItem("suction_line_leakage_checked".tr(), _pipelineSelected),
+          _buildChecklistItem("delivery_line_leakage_checked".tr(), _pipelineSelected),
+          _buildChecklistItem("valve_working_checked".tr(), _pipelineSelected),
+          _buildChecklistItem("strainer_cleaned".tr(), _pipelineSelected),
+          _buildChecklistItem("valve_condition_checked".tr(), _pipelineSelected),
+          _buildChecklistItem("pressure_switch_checked".tr(), _pipelineSelected, isLast: true),
         ], _pipeNA, () => setState(() => _pipeNA = !_pipeNA)),
         const SizedBox(height: 32),
 
         _buildChecklistCard('checklist_elec_title'.tr(), Icons.bolt_outlined, [
-          _buildChecklistItem('Panel Cleaned :', _electricalSelected),
-          _buildChecklistItem('Contactor / Relay Condition Checked :', _electricalSelected),
-          _buildChecklistItem('Overload Setting Checked :', _electricalSelected),
-          _buildChecklistItem('Loose Wiring / Terminal Tightening Done :', _electricalSelected),
-          _buildChecklistItem('Phase / Voltage / Current Checked :', _electricalSelected),
-          _buildChecklistItem('Earthing Checked :', _electricalSelected, isLast: true),
+          _buildChecklistItem("panel_cleaned".tr(), _electricalSelected),
+          _buildChecklistItem("contactor_relay_checked".tr(), _electricalSelected),
+          _buildChecklistItem("overload_setting_checked".tr(), _electricalSelected),
+          _buildChecklistItem("loose_wiring_checked".tr(), _electricalSelected),
+          _buildChecklistItem("phase_voltage_current_checked".tr(), _electricalSelected),
+          _buildChecklistItem("earthing_checked".tr(), _electricalSelected, isLast: true),
         ], _elecNA, () => setState(() => _elecNA = !_elecNA)),
         const SizedBox(height: 32),
 
         _buildChecklistCard('checklist_pump_title'.tr(), Icons.monitor_heart_outlined, [
-          _buildChecklistItem('Pump Started in Manual Mode :', _operationSelected),
-          _buildChecklistItem('Auto Operation Checked :', _operationSelected),
-          _buildChecklistItem('Water Flow & Pressure Checked :', _operationSelected),
-          _buildChecklistItem('Direction of Rotation Checked :', _operationSelected, isLast: true),
+          _buildChecklistItem("pump_started_manual".tr(), _operationSelected),
+          _buildChecklistItem("auto_operation_checked".tr(), _operationSelected),
+          _buildChecklistItem("water_flow_pressure_checked".tr(), _operationSelected),
+          _buildChecklistItem("rotation_direction_checked".tr(), _operationSelected, isLast: true),
         ], _operationNA, () => setState(() => _operationNA = !_operationNA)),
       ],
     );
@@ -1042,7 +1042,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'NA',
+                    'commissioning_na_paren'.tr(),
                     style: AppFont.style(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
@@ -1089,15 +1089,15 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: text,
+                      text: text.tr(),
                       style: AppFont.style(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF5C6672),
                       ),
                     ),
-                    const TextSpan(
-                      text: ' *',
+                     TextSpan(
+                      text: 'asterisk'.tr(),
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
@@ -1146,8 +1146,8 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       color: const Color(0xFF5C6672),
                     ),
                   ),
-                  const TextSpan(
-                    text: ' *',
+                   TextSpan(
+                    text: 'asterisk'.tr(),
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
@@ -1161,25 +1161,25 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           Row(
             children: [
               GestureDetector(
-                onTap: () => setState(() => _vibrationSelected = 'NORMAL'),
+                onTap: () => setState(() => _vibrationSelected = 'normal'.tr()),
                 child: Row(
                   children: [
                     Container(
                       width: 22,
                       height: 22,
                       decoration: BoxDecoration(
-                        color: _vibrationSelected == 'NORMAL' ? const Color(0xFF1565C0) : Colors.white,
+                        color: _vibrationSelected == 'normal'.tr() ? const Color(0xFF1565C0) : Colors.white,
                         border: Border.all(
-                          color: _vibrationSelected == 'NORMAL' ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
+                          color: _vibrationSelected == 'normal'.tr() ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
                           width: 1.5,
                         ),
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      child: _vibrationSelected == 'NORMAL' ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
+                      child: _vibrationSelected == 'normal'.tr() ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'NORMAL',
+                      'normal'.tr(),
                       style: AppFont.style(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
@@ -1191,25 +1191,25 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               ),
               const SizedBox(width: 24),
               GestureDetector(
-                onTap: () => setState(() => _vibrationSelected = 'HIGH'),
+                onTap: () => setState(() => _vibrationSelected = 'high'.tr()),
                 child: Row(
                   children: [
                     Container(
                       width: 22,
                       height: 22,
                       decoration: BoxDecoration(
-                        color: _vibrationSelected == 'HIGH' ? const Color(0xFF1565C0) : Colors.white,
+                        color: _vibrationSelected == 'high'.tr() ? const Color(0xFF1565C0) : Colors.white,
                         border: Border.all(
-                          color: _vibrationSelected == 'HIGH' ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
+                          color: _vibrationSelected == 'high'.tr() ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
                           width: 1.5,
                         ),
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      child: _vibrationSelected == 'HIGH' ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
+                      child: _vibrationSelected == 'high'.tr() ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'HIGH',
+                      'high'.tr(),
                       style: AppFont.style(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
@@ -1496,8 +1496,8 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   color: const Color(0xFF0D121F),
                 ),
               ),
-              const TextSpan(
-                text: ' *',
+               TextSpan(
+                text: 'asterisk'.tr(),
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w900,
@@ -1894,7 +1894,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     ),
                     children: [
                       TextSpan(
-                        text: ' *',
+                        text: 'asterisk'.tr(),
                         style: AppFont.style(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
@@ -2217,7 +2217,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   ),
                 ] else
                   Text(
-                    'amc_report_btn_cancel'.tr(),
+                    'cancel'.tr(),
                     style: AppFont.style(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
@@ -2271,87 +2271,87 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       )));
                     } else if (_currentStep == 2) {
                       if (_currentReportId == null) {
-                        appSnackBar(context, const Color(0xFFF44336), 'Report ID is missing. Please create step 1 first.');
+                        appSnackBar(context, const Color(0xFFF44336), 'report_id_is_missing'.tr());
                         return;
                       }
 
                       if (!_mechNA) {
-                        if (!_mechanicalSelected.contains('Pump Foundation Bolts Tight :')) {
+                        if (!_mechanicalSelected.contains('pump_foundation_bolt_tight'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_pump_foundation'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains('Coupling / Alignment Checked :')) {
+                        if (!_mechanicalSelected.contains('coupling_alignment_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_coupling'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains('Bearing Noise Checked :')) {
+                        if (!_mechanicalSelected.contains('bearing_noise_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_bearing_noise'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains('Abnormal Sound Checked :')) {
+                        if (!_mechanicalSelected.contains('abnormal_sound_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_abnormal_sound'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains('Mechanical Seal / Gland Leakage Checked :')) {
+                        if (!_mechanicalSelected.contains('mechanical_seal_gland_leakage_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_mech_seal'.tr()); return;
                         }
                         if (_vibrationSelected == null) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_vibration'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains('Pump Cleaned :')) {
+                        if (!_mechanicalSelected.contains('pump_cleaned'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_pump_cleaned'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains('Pump Not Running Dry :')) {
+                        if (!_mechanicalSelected.contains('pump_not_running_dry'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_pump_dry'.tr()); return;
                         }
                       }
                       if (!_pipeNA) {
-                        if (!_pipelineSelected.contains('Suction Line (Air & Water) Leakage Checked :')) {
+                        if (!_pipelineSelected.contains('suction_line_leakage_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_suction_line'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains('Delivery Line (Air & Water) Leakage Checked :')) {
+                        if (!_pipelineSelected.contains('delivery_line_leakage_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_delivery_line'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains('NRV / Butterfly Valve / Gate Valve Working Checked :')) {
+                        if (!_pipelineSelected.contains('valve_working_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_nrv'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains('Strainer / Foot Valve Cleaned :')) {
+                        if (!_pipelineSelected.contains('strainer_cleaned'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_strainer'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains('Suction / Delivery Valve Condition & Operation Checked :')) {
+                        if (!_pipelineSelected.contains('valve_condition_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_suction_del_valve'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains('Pressure Switch / Pressure Transmitter Checked :')) {
+                        if (!_pipelineSelected.contains('pressure_switch_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_pressure_switch'.tr()); return;
                         }
                       }
                       if (!_elecNA) {
-                        if (!_electricalSelected.contains('Panel Cleaned :')) {
+                        if (!_electricalSelected.contains('panel_cleaned'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_panel_cleaned'.tr()); return;
                         }
-                        if (!_electricalSelected.contains('Contactor / Relay Condition Checked :')) {
+                        if (!_electricalSelected.contains('contactor_relay_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_contactor'.tr()); return;
                         }
-                        if (!_electricalSelected.contains('Overload Setting Checked :')) {
+                        if (!_electricalSelected.contains('overload_setting_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_overload'.tr()); return;
                         }
-                        if (!_electricalSelected.contains('Loose Wiring / Terminal Tightening Done :')) {
+                        if (!_electricalSelected.contains('loose_wiring_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_loose_wiring'.tr()); return;
                         }
-                        if (!_electricalSelected.contains('Phase / Voltage / Current Checked :')) {
+                        if (!_electricalSelected.contains('phase_voltage_current_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_phase_voltage'.tr()); return;
                         }
-                        if (!_electricalSelected.contains('Earthing Checked :')) {
+                        if (!_electricalSelected.contains('earthing_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_earthing'.tr()); return;
                         }
                       }
                       if (!_operationNA) {
-                        if (!_operationSelected.contains('Pump Started in Manual Mode :')) {
+                        if (!_operationSelected.contains('pump_started_manual'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_pump_manual'.tr()); return;
                         }
-                        if (!_operationSelected.contains('Auto Operation Checked :')) {
+                        if (!_operationSelected.contains('auto_operation_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_auto_operation'.tr()); return;
                         }
-                        if (!_operationSelected.contains('Water Flow & Pressure Checked :')) {
+                        if (!_operationSelected.contains('water_flow_pressure_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_water_flow'.tr()); return;
                         }
-                        if (!_operationSelected.contains('Direction of Rotation Checked :')) {
+                        if (!_operationSelected.contains('rotation_direction_checked'.tr())) {
                           appSnackBar(context, const Color(0xFFF44336), 'val_amc_rotation'.tr()); return;
                         }
                       }
@@ -2360,14 +2360,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         Map<String, String> map = {};
                         for (var item in list) {
                           String key = item.replaceAll(' :', '');
-                          map[key] = 'ok';
+                          map[key] = 'ok'.tr();
                         }
                         return map;
                       }
 
                       Map<String, String> mechMap = _mechNA ? {} : listToMap(_mechanicalSelected);
                       if (!_mechNA && _vibrationSelected != null) {
-                        mechMap['Vibration Checked'] = _vibrationSelected!.toLowerCase();
+                        mechMap['vibration_checked'.tr()] = _vibrationSelected!.toLowerCase();
                       }
 
                       _step2Bloc.add(PostAmcReportStep2Event(PostAmcReportStep2Params(
@@ -2389,32 +2389,32 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     } else {
                       // Submit action
                       if (_currentReportId == null) {
-                        appSnackBar(context, const Color(0xFFF44336), "Report ID is missing");
+                        appSnackBar(context, const Color(0xFFF44336), "report_id_is_missing".tr());
                         return;
                       }
 
                       if (_customerRepNameController.text.trim().isEmpty) {
-                        appSnackBar(context, const Color(0xFFF44336), "Customer Representative Name is required");
+                        appSnackBar(context, const Color(0xFFF44336), "customer_rep_name_required".tr());
                         return;
                       }
 
                       if (_selectedTechnicianRepId == null) {
-                        appSnackBar(context, const Color(0xFFF44336), "Technician Representative is required");
+                        appSnackBar(context, const Color(0xFFF44336), "technician_rep_required".tr());
                         return;
                       }
 
                       if (_technicianSignatureFile == null && _existingTechnicianSignatureUrl == null) {
-                        appSnackBar(context, const Color(0xFFF44336), "Technician signature is required");
+                        appSnackBar(context, const Color(0xFFF44336), "technician_signature_required".tr());
                         return;
                       }
 
                       if (_customerSignatureFile == null && _existingCustomerSignatureUrl == null) {
-                        appSnackBar(context, const Color(0xFFF44336), "Customer signature is required");
+                        appSnackBar(context, const Color(0xFFF44336), "customer_signature_required".tr());
                         return;
                       }
 
                       if (_workPhotos.isEmpty && _existingWorkPhotosUrls.isEmpty) {
-                        appSnackBar(context, const Color(0xFFF44336), "Work photos are required");
+                        appSnackBar(context, const Color(0xFFF44336), "work_photos_required".tr());
                         return;
                       }
 

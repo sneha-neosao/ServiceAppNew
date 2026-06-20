@@ -58,7 +58,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
           if (url != null && url.isNotEmpty) {
             launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
           } else {
-            appSnackBar(context, const Color(0xFFF44336), 'PDF URL is empty');
+            appSnackBar(context, const Color(0xFFF44336), 'pdf_url_is_empty'.tr());
           }
         }
       },
@@ -153,10 +153,10 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    child: _buildInfoItem('Site Name', data.siteName),
+                                    child: _buildInfoItem('close_call_site_name_label'.tr(), data.siteName),
                                   ),
                                   Expanded(
-                                    child: _buildInfoItem('Contact Person', data.name),
+                                    child: _buildInfoItem('contact_person'.tr(), data.name),
                                   ),
                                 ],
                               ),
@@ -165,10 +165,10 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    child: _buildInfoItem('Equipment Model', data.equipmentModelName),
+                                    child: _buildInfoItem('equipment_model'.tr(), data.equipmentModelName),
                                   ),
                                   Expanded(
-                                    child: _buildInfoItem('Contact Number', data.contactNumber),
+                                    child: _buildInfoItem('contact_number'.tr(), data.contactNumber),
                                   ),
                                 ],
                               ),
@@ -186,7 +186,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Complaint Description',
+                                      'complaint_description'.tr(),
                                       style: AppFont.style(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w800,
@@ -211,7 +211,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                 const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
                                 const SizedBox(height: 16),
                                 Text(
-                                  'Assigned Technicians',
+                                  'assigned_technicians'.tr(),
                                   style: AppFont.style(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w800,
@@ -247,7 +247,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                 const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
                                 const SizedBox(height: 16),
                                 Text(
-                                  'Attachments',
+                                  'attachments'.tr(),
                                   style: AppFont.style(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w800,

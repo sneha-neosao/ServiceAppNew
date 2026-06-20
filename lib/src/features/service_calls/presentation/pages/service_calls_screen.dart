@@ -654,24 +654,6 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
     );
   }
 
-  Widget _buildCompletedList() {
-    return ListView(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 292, bottom: 100),
-      children: [
-        ServiceCallCard(
-          type: ServiceCallType.completed,
-          complaintNo: '#ABC-26-0450',
-          companyName: 'Wipro Tech',
-          location: 'TOWER A',
-          assignedTo: 'RAHUL DESHMUKH',
-          isCompleted: true,
-          onView: () => _showReportDialog(context, 'dummy_id'),
-          onEdit: () {},
-        ),
-      ],
-    );
-  }
-
   void _showReportDialog(BuildContext context, String complaintId) {
     showDialog(
       context: context,

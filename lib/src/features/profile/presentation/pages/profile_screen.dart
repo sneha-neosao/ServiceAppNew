@@ -145,7 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Padding(
                     padding: const EdgeInsets.only(left: 8, bottom: 12),
                     child: Text(
-                      'Select Language',
+                      'select_language'.tr(),
                       style: AppFont.style(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -681,7 +681,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Clipboard.setData(
                                   ClipboardData(text: data!.dealer.code));
                               appSnackBar(
-                                  context, AppColor.green, "Code copied");
+                                  context, AppColor.green, "code_copied".tr());
                             },
                             icon: const Icon(
                               Icons.copy_rounded,

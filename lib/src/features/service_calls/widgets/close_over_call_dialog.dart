@@ -78,8 +78,8 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
   void _submit() {
     if (_resolutionController.text.trim().length < 10) {
       _scaffoldKey.currentState?.showSnackBar(
-        const SnackBar(
-          content: Text('Please enter resolution details (min 10 chars)'),
+        SnackBar(
+          content: Text('please_enter_resolution_details'.tr()),
           backgroundColor: Colors.red,
         ),
       );
@@ -91,8 +91,8 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
 
     if (_selectedCustomer == null) {
       _scaffoldKey.currentState?.showSnackBar(
-        const SnackBar(
-          content: Text('Please select a customer'),
+        SnackBar(
+          content: Text('please_select_customer'.tr()),
           backgroundColor: Colors.red,
         ),
       );
@@ -101,8 +101,8 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
 
     if (_selectedSite == null) {
       _scaffoldKey.currentState?.showSnackBar(
-        const SnackBar(
-          content: Text('Please select a site'),
+        SnackBar(
+          content: Text('please_select_site'.tr()),
           backgroundColor: Colors.red,
         ),
       );
@@ -141,8 +141,8 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
 
     if (customerId.isEmpty || siteId.isEmpty) {
       _scaffoldKey.currentState?.showSnackBar(
-        const SnackBar(
-          content: Text('Invalid customer or site selected'),
+        SnackBar(
+          content: Text('invalid_customer_or_site_selected'.tr()),
           backgroundColor: Colors.red,
         ),
       );
@@ -255,16 +255,16 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
               child: Row(
                 children: [
                   Expanded(
-                    child: _buildInfoColumn('Complaint No', widget.complaintNo),
+                    child: _buildInfoColumn('close_call_complaint_no_label'.tr(), widget.complaintNo),
                   ),
                   Expanded(
                     child: _buildInfoColumn(
-                      'Customer Name',
+                      'close_call_customer_name_label'.tr(),
                       widget.customerName,
                     ),
                   ),
                   Expanded(
-                    child: _buildInfoColumn('Site Name', widget.siteName),
+                    child: _buildInfoColumn('close_call_site_name_label'.tr(), widget.siteName),
                   ),
                 ],
               ),
@@ -277,15 +277,15 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
               children: [
                 RichText(
                   text: TextSpan(
-                    text: 'Customer Name ',
+                    text: 'create_report_customer_name'.tr(),
                     style: AppFont.style(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF424B5C),
                     ),
-                    children: const [
+                    children: [
                       TextSpan(
-                        text: '*',
+                        text: 'asterisk'.tr(),
                         style: TextStyle(color: Colors.red),
                       ),
                     ],
@@ -309,7 +309,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                 return SearchableDropdown<String>(
                   items: _customers,
                   value: _selectedCustomer,
-                  hintText: 'Select Customer',
+                  hintText: 'service_calls_filter_select_customer'.tr(),
                   isLoading: isLoading,
                   itemAsString: (item) => item,
                   onClear: () {
@@ -339,15 +339,15 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
               children: [
                 RichText(
                   text: TextSpan(
-                    text: 'Site Name ',
+                    text: 'close_call_site_name_label'.tr(),
                     style: AppFont.style(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF424B5C),
                     ),
-                    children: const [
+                    children: [
                       TextSpan(
-                        text: '*',
+                        text: 'asterisk'.tr(),
                         style: TextStyle(color: Colors.red),
                       ),
                     ],
@@ -373,7 +373,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                   child: SearchableDropdown<String>(
                     items: _sites,
                     value: _selectedSite,
-                    hintText: 'Select Site',
+                    hintText: 'reports_filter_select_site'.tr(),
                     isLoading: isLoading,
                     readOnly: _selectedCustomer == null,
                     itemAsString: (item) => item,
@@ -482,7 +482,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    'close_call_cancel'.tr(),
+                    'cancel'.tr(),
                     style: AppFont.style(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
@@ -626,7 +626,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     const Icon(Icons.business_outlined, color: Color(0xFF1565C0), size: 24),
                     const SizedBox(width: 12),
                     Text(
-                      'Add Customer',
+                      'add_new_customer'.tr(),
                       style: AppFont.style(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
@@ -644,7 +644,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                 const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
                 const SizedBox(height: 16),
                 Text(
-                  'Customer Name',
+                  'close_call_customer_name_label'.tr(),
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
@@ -655,7 +655,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                 TextField(
                   controller: controller,
                   decoration: InputDecoration(
-                    hintText: 'Enter customer name',
+                    hintText: 'enter_customer_name'.tr(),
                     hintStyle: AppFont.style(
                       fontSize: 14,
                       color: const Color(0xFFA5ABB7),
@@ -682,7 +682,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     TextButton(
                       onPressed: () => Navigator.pop(ctx),
                       child: Text(
-                        'Cancel',
+                        'cancel'.tr(),
                         style: AppFont.style(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
@@ -712,7 +712,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                             _sites.clear();
                           });
                         } else if (state is CreateNewCustomerFailureState) {
-                          if (state.message.contains('merged with the existing record')) {
+                          if (state.message.contains('merged_with_existing'.tr())) {
                             Navigator.pop(ctx);
                             showDialog(
                               context: context,
@@ -753,7 +753,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                           child: isLoading 
                               ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                               : Text(
-                                  'Save',
+                                  'save_entry'.tr(),
                                   style: AppFont.style(
                                     color: Colors.white,
                                     fontSize: 14,
@@ -779,7 +779,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
   Future<void> _showAddSiteDialog() async {
     if (_selectedCustomer == null) {
       _scaffoldKey.currentState?.showSnackBar(
-        const SnackBar(content: Text('Please select a customer first'), backgroundColor: Colors.red),
+        SnackBar(content: Text('please_select_customer'.tr()), backgroundColor: Colors.red),
       );
       return;
     }
@@ -801,7 +801,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
 
     if (customerId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid customer selected'), backgroundColor: Colors.red),
+        SnackBar(content: Text('invalid_customer_or_site_selected'.tr()), backgroundColor: Colors.red),
       );
       return;
     }
@@ -830,7 +830,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     const Icon(Icons.location_on_outlined, color: Color(0xFF1565C0), size: 24),
                     const SizedBox(width: 12),
                     Text(
-                      'Add Site',
+                      'add_new_site'.tr(),
                       style: AppFont.style(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
@@ -848,7 +848,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                 const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
                 const SizedBox(height: 16),
                 Text(
-                  'Customer: $_selectedCustomer',
+                  '${'customer'.tr()} $_selectedCustomer',
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
@@ -857,7 +857,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Site Name',
+                  'close_call_site_name_label'.tr(),
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
@@ -868,7 +868,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                 TextField(
                   controller: controller,
                   decoration: InputDecoration(
-                    hintText: 'Enter site name',
+                    hintText: 'enter_site_name'.tr(),
                     hintStyle: AppFont.style(
                       fontSize: 14,
                       color: const Color(0xFFA5ABB7),
@@ -895,7 +895,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     TextButton(
                       onPressed: () => Navigator.pop(ctx),
                       child: Text(
-                        'Cancel',
+                        'cancel'.tr(),
                         style: AppFont.style(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
@@ -959,7 +959,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                           child: isLoading 
                               ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                               : Text(
-                                  'Save',
+                                  'save_entry'.tr(),
                                   style: AppFont.style(
                                     color: Colors.white,
                                     fontSize: 14,

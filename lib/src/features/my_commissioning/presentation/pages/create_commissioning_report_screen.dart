@@ -2353,7 +2353,7 @@ class _CreateCommissioningReportScreenState
                                                                                                           TextButton(
                                                                                                             onPressed: widget.onBack,
                                                                                                             child: Text(
-                                                                                                              'create_report_btn_cancel'.tr(),
+                                                                                                              'cancel'.tr(),
                                                                                                               style: AppFont.style(
                                                                                                                 fontSize: 14,
                                                                                                                 fontWeight: FontWeight.w800,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/features/amc/presentation/pages/amc_schedule_screen.dart';
 import 'package:service_app/src/features/amc/presentation/pages/amc_visit_details_screen.dart';
@@ -97,7 +98,7 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
               );
             } else if (state is AmcVisitCompleteSuccessState) {
               Navigator.pop(context); // pop loader
-              appSnackBar(context, Colors.green, state.data.message ?? 'Success');
+              appSnackBar(context, Colors.green, state.data.message ?? 'amc_visit_marked_complete_successfully'.tr());
               if (widget.isFromHistory) {
                 Navigator.pop(context);
               } else {

@@ -138,7 +138,7 @@ class EditCommissioningScreen extends StatelessWidget {
               letterSpacing: 0.5,
             ),
           ),
-          if (title.contains('CUSTOMER') || title.contains('SITE'))
+          if (title.contains('customer') || title.contains('site'))
             Container(
               width: 24,
               height: 24,

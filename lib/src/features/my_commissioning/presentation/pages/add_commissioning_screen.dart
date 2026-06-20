@@ -133,7 +133,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                 _sites.clear();
               });
             } else if (state is CreateNewCustomerFailureState) {
-              if (state.message.contains('merged with the existing record')) {
+              if (state.message.contains('merged_with_existing'.tr())) {
                 Navigator.pop(ctx); // Close the bottom sheet immediately
                 _showMergeCustomerDialog(context, _pendingNewCustomerName);
               } else {
@@ -168,7 +168,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
       appSnackBar(
         context,
         const Color(0xFFF44336),
-        'Please select a customer first',
+        'merged_with_existing'.tr(),
       );
       return;
     }
@@ -193,7 +193,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
       appSnackBar(
         context,
         const Color(0xFFF44336),
-        'Invalid customer selected',
+        'invalid_customer_selector'.tr(),
       );
       return;
     }
@@ -257,246 +257,6 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     );
   }
 
-
-
-  // Future<void> _showAddSiteBottomSheet() async {
-  //   if (_selectedCustomer == null) {
-  //     appSnackBar(
-  //       context,
-  //       const Color(0xFFF44336),
-  //       'Please select a customer first',
-  //     );
-  //     return;
-  //   }
-  //
-  //   String customerId = "";
-  //   if (_createdCustomerIds.containsKey(_selectedCustomer)) {
-  //     customerId = _createdCustomerIds[_selectedCustomer]!;
-  //   } else {
-  //     final customerState = _customerBloc.state;
-  //     if (customerState is CustomerSuccessState) {
-  //       for (var c in customerState.data.data) {
-  //         if (c.name == _selectedCustomer) {
-  //           customerId = c.id;
-  //           break;
-  //         }
-  //       }
-  //     }
-  //   }
-  //
-  //   if (customerId.isEmpty) {
-  //     appSnackBar(
-  //       context,
-  //       const Color(0xFFF44336),
-  //       'Invalid customer selected',
-  //     );
-  //     return;
-  //   }
-  //
-  //   final controller = TextEditingController();
-  //   await showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     isDismissible: false,
-  //     enableDrag: false,
-  //     backgroundColor: Colors.white,
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-  //     ),
-  //     builder: (ctx) {
-  //       return BlocConsumer<CreateNewSiteBloc, CreateNewSiteState>(
-  //         bloc: _createNewSiteBloc,
-  //         listener: (ctx, state) {
-  //           if (state is CreateNewSiteSuccessState) {
-  //             appSnackBar(ctx, const Color(0xFF4CAF50), state.data.message);
-  //             final newName = controller.text.trim();
-  //             Navigator.pop(ctx);
-  //             setState(() {
-  //               if (!_sites.contains(newName)) {
-  //                 _sites.insert(0, newName);
-  //               }
-  //               if (state.data.data != null) {
-  //                 for (var s in state.data.data!.sites) {
-  //                   if (s.name == newName) {
-  //                     _createdSiteIds[newName] = s.id;
-  //                     break;
-  //                   }
-  //                 }
-  //               }
-  //               _selectedSite = newName;
-  //             });
-  //           } else if (state is CreateNewSiteFailureState) {
-  //             appSnackBar(ctx, const Color(0xFFF44336), state.message);
-  //           }
-  //         },
-  //         builder: (ctx, state) {
-  //           final isLoading = state is CreateNewSiteLoadingState;
-  //           return SafeArea(
-  //             bottom: true,
-  //             child: SingleChildScrollView(
-  //               padding: EdgeInsets.only(
-  //                 left: 24,
-  //                 right: 24,
-  //                 top: 24,
-  //                 bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-  //               ),
-  //               child: Column(
-  //                 mainAxisSize: MainAxisSize.min,
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 children: [
-  //                   Row(
-  //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                     children: [
-  //                       Text(
-  //                         'Add New Site',
-  //                         style: AppFont.style(
-  //                           fontSize: 18,
-  //                           fontWeight: FontWeight.w900,
-  //                           color: const Color(0xFF0D121F),
-  //                         ),
-  //                       ),
-  //                       GestureDetector(
-  //                         onTap: isLoading ? null : () => Navigator.pop(ctx),
-  //                         child: Container(
-  //                           padding: const EdgeInsets.all(6),
-  //                           decoration: BoxDecoration(
-  //                             color: const Color(0xFFF8F9FB),
-  //                             shape: BoxShape.circle,
-  //                             border: Border.all(
-  //                               color: const Color(0xFFF1F2F6),
-  //                             ),
-  //                           ),
-  //                           child: const Icon(
-  //                             Icons.close,
-  //                             size: 16,
-  //                             color: Color(0xFFA5ABB7),
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                   const SizedBox(height: 24),
-  //                   Text(
-  //                     'Site Name',
-  //                     style: AppFont.style(
-  //                       fontSize: 10,
-  //                       fontWeight: FontWeight.w800,
-  //                       color: const Color(0xFFA5ABB7),
-  //                       letterSpacing: 1.0,
-  //                     ),
-  //                   ),
-  //                   const SizedBox(height: 8),
-  //                   TextField(
-  //                     controller: controller,
-  //                     autofocus: true,
-  //                     enabled: !isLoading,
-  //                     style: AppFont.style(
-  //                       fontSize: 15,
-  //                       fontWeight: FontWeight.w600,
-  //                       color: const Color(0xFF0D121F),
-  //                     ),
-  //                     decoration: InputDecoration(
-  //                       hintText: 'Enter Site Name',
-  //                       hintStyle: AppFont.style(
-  //                         fontSize: 15,
-  //                         fontWeight: FontWeight.w500,
-  //                         color: const Color(0xFFA5ABB7),
-  //                       ),
-  //                       filled: true,
-  //                       fillColor: const Color(0xFFF8F9FB),
-  //                       contentPadding: const EdgeInsets.symmetric(
-  //                         horizontal: 16,
-  //                         vertical: 14,
-  //                       ),
-  //                       border: OutlineInputBorder(
-  //                         borderRadius: BorderRadius.circular(10),
-  //                         borderSide: const BorderSide(
-  //                           color: Color(0xFFE5E7EB),
-  //                         ),
-  //                       ),
-  //                       enabledBorder: OutlineInputBorder(
-  //                         borderRadius: BorderRadius.circular(10),
-  //                         borderSide: const BorderSide(
-  //                           color: Color(0xFFE5E7EB),
-  //                         ),
-  //                       ),
-  //                       focusedBorder: OutlineInputBorder(
-  //                         borderRadius: BorderRadius.circular(10),
-  //                         borderSide: const BorderSide(
-  //                           color: Color(0xFF1565C0),
-  //                           width: 1.5,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //
-  //                   const SizedBox(height: 24),
-  //
-  //                   // Save button
-  //                   SizedBox(
-  //                     width: double.infinity,
-  //                     height: 52,
-  //                     child: ElevatedButton.icon(
-  //                       onPressed: isLoading
-  //                           ? null
-  //                           : () {
-  //                               final text = controller.text.trim();
-  //                               if (text.isNotEmpty) {
-  //                                 _createNewSiteBloc.add(
-  //                                   CreateNewSiteSubmitEvent(
-  //                                     CreateNewSiteParams(
-  //                                       customerId: customerId,
-  //                                       customerName: _selectedCustomer!,
-  //                                       siteName: text,
-  //                                     ),
-  //                                   ),
-  //                                 );
-  //                               }
-  //                             },
-  //                       icon: isLoading
-  //                           ? const SizedBox.shrink()
-  //                           : const Icon(Icons.save_outlined, size: 18),
-  //                       label: isLoading
-  //                           ? const SizedBox(
-  //                               width: 24,
-  //                               height: 24,
-  //                               child: CircularProgressIndicator(
-  //                                 color: Colors.white,
-  //                                 strokeWidth: 2.5,
-  //                               ),
-  //                             )
-  //                           : Text(
-  //                               'Save Entry',
-  //                               style: AppFont.style(
-  //                                 fontSize: 13,
-  //                                 fontWeight: FontWeight.w800,
-  //                                 color: Colors.white,
-  //                                 letterSpacing: 0.5,
-  //                               ),
-  //                             ),
-  //                       style: ElevatedButton.styleFrom(
-  //                         backgroundColor: const Color(0xFF1565C0),
-  //                         foregroundColor: Colors.white,
-  //                         elevation: 0,
-  //                         shape: RoundedRectangleBorder(
-  //                           borderRadius: BorderRadius.circular(10),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           );
-  //         },
-  //       );
-  //     },
-  //   );
-  //   Future.delayed(const Duration(milliseconds: 300), () {
-  //     controller.dispose();
-  //   });
-  // }
-
   // ── Assign button handler ──────────────────────────────────────────────────
   void _onAssign() {
     String customerId = "";
@@ -542,7 +302,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
       appSnackBar(
         context,
         const Color(0xFFF44336),
-        "Please assign at least 1 technician",
+        "assign_tech_validation_msg".tr(),
       );
       return;
     }
@@ -991,7 +751,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                                       child: Text(
                                                         selectedCount == 0
                                                             ? 'select_technician'.tr()
-                                                            : '$selectedCount Selected',
+                                                            : '$selectedCount ${'selected'.tr()}',
                                                         style: AppFont.style(
                                                           fontSize: 16,
                                                           fontWeight: selectedCount == 0
@@ -1147,7 +907,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
               ),
               children: [
                 TextSpan(
-                  text: ' *',
+                  text: 'asterisk'.tr(),
                   style: AppFont.style(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w900,
@@ -1392,7 +1152,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           });
                         },
                         decoration: InputDecoration(
-                          hintText: 'Search here...',
+                          hintText: 'search'.tr(),
                           prefixIcon: const Icon(Icons.search, color: Color(0xFFA5ABB7), size: 20),
                           hintStyle: AppFont.style(
                             fontSize: 14,
@@ -1467,7 +1227,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            'TECH ID: ${item.code ?? item.id}',
+                                            '${'tech_id'.tr()} ${item.code ?? item.id}',
                                             style: AppFont.style(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w700,
@@ -1526,7 +1286,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           ),
                           child: Text(
-                            'DONE',
+                            'create_report_btn_done'.tr(),
                             style: AppFont.style(
                               color: Colors.white,
                               fontSize: 12,

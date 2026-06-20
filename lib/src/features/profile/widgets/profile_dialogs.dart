@@ -105,7 +105,7 @@ class ProfileLogoutDialog extends StatelessWidget {
                               child: FittedBox(
                                 fit: BoxFit.scaleDown,
                                 child: Text(
-                                  'logout_dialog_btn_cancel'.tr(),
+                                  'cancel'.tr(),
                                   maxLines: 1,
                                   style: AppFont.style(
                                     fontSize: 14,
@@ -298,7 +298,7 @@ class ProfileDeleteDialog extends StatelessWidget {
                               child: FittedBox(
                                 fit: BoxFit.scaleDown,
                                 child: Text(
-                                  'delete_dialog_btn_cancel'.tr(),
+                                  'cancel'.tr(),
                                   maxLines: 1,
                                   style: AppFont.style(
                                     fontSize: 14,

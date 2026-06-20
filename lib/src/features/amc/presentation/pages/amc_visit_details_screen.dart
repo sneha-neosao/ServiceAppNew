@@ -96,7 +96,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                 if (url.isNotEmpty) {
                   launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
                 } else {
-                  appSnackBar(context, const Color(0xFFF44336), 'PDF URL is empty');
+                  appSnackBar(context, const Color(0xFFF44336), 'pdf_url_is_empty'.tr());
                 }
               }
             },
@@ -104,7 +104,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
           BlocListener<DeleteAmcReportBloc, DeleteAmcReportState>(
             listener: (context, state) {
               if (state is DeleteAmcReportSuccessState) {
-                appSnackBar(context, const Color(0xFF00A76F), state.data.message ?? 'Report deleted successfully');
+                appSnackBar(context, const Color(0xFF00A76F), state.data.message ?? 'report_deleted_successfully'.tr());
                 _reportsBloc.add(AmcVisitReportsGetEvent(visitId: widget.visitId));
               } else if (state is DeleteAmcReportFailureState) {
                 appSnackBar(context, const Color(0xFFF44336), state.message);
@@ -136,7 +136,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
             if (fDate.isNotEmpty && tDate.isNotEmpty) {
               final fDt = DateTime.parse(fDate).toLocal();
               final tDt = DateTime.parse(tDate).toLocal();
-              visitRangeStr = '${DateFormat('d MMM yyyy').format(fDt)} to ${DateFormat('d MMM yyyy').format(tDt)}';
+              visitRangeStr = '${DateFormat('d MMM yyyy').format(fDt)} ${'to'.tr()} ${DateFormat('d MMM yyyy').format(tDt)}';
             } else if (fDate.isNotEmpty) {
               final fDt = DateTime.parse(fDate).toLocal();
               visitRangeStr = DateFormat('d MMM yyyy').format(fDt);
@@ -144,12 +144,12 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
           } catch (_) {}
           
           if (statusString == 'pending') {
-            visitStatus = 'Pending';
+            visitStatus = 'pending'.tr();
             badgeBorderColor = const Color(0xFFE65100);
             badgeTextColor = const Color(0xFFE65100);
             badgeBgColor = const Color(0xFFFFE0B2);
           } else if (statusString == 'completed') {
-            visitStatus = 'Completed';
+            visitStatus = 'completed'.tr();
             badgeBorderColor = const Color(0xFF1B5E20);
             badgeTextColor = const Color(0xFF1B5E20);
             badgeBgColor = const Color(0xFFC8E6C9);
@@ -441,7 +441,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Report ${reportsCount - index}',
+                                  '${'report'.tr()} ${reportsCount - index}',
                                   style: AppFont.style(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w800,
@@ -449,7 +449,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                   ),
                                 ),
                                 Text(
-                                  submittedDateStr ?? 'Not submitted',
+                                  submittedDateStr ?? 'not_submitted'.tr(),
                                   style: AppFont.style(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w800,
@@ -507,7 +507,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        report?.technicianRepresentativeName ?? 'Unknown Technician',
+                                        report?.technicianRepresentativeName ?? 'unknown_technician'.tr(),
                                         style: AppFont.style(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w800,
@@ -537,7 +537,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
-                                    isSubmitted ? 'SUBMITTED' : 'DRAFT',
+                                    isSubmitted ? 'submitted'.tr() : 'draft'.tr(),
                                     style: AppFont.style(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w800,
@@ -568,7 +568,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'View Report ${reportsCount - index}',
+                                      '${'view_report'.tr()} ${reportsCount - index}',
                                       style: AppFont.style(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w900,
@@ -627,7 +627,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                 Row(
                                   children: [
                                     Text(
-                                      'Report ${reportsCount - index}',
+                                      '${'report'.tr()} ${reportsCount - index}',
                                       style: AppFont.style(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w900,
@@ -642,7 +642,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
-                                        isSubmitted ? 'SUBMITTED' : 'DRAFT',
+                                        isSubmitted ? 'submitted'.tr() : 'draft'.tr(),
                                         style: AppFont.style(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w800,
@@ -678,8 +678,8 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                 const SizedBox(height: 4),
                                 Text(
                                   isSubmitted && submittedDateStr != null
-                                      ? 'Submitted on $submittedDateStr'
-                                      : 'Not submitted',
+                                      ? '${'submitted_on'.tr()} $submittedDateStr'
+                                      : 'not_submitted'.tr(),
                                   style: AppFont.style(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
@@ -717,7 +717,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                           const SizedBox(width: 8),
                           Flexible(
                             child: Text(
-                              'Create Another Report',
+                              'create_another_report'.tr(),
                               style: AppFont.style(
                                 fontSize: 12,
                               fontWeight: FontWeight.w800,
@@ -829,7 +829,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Finish AMC Work?',
+                  'finish_amc_work'.tr(),
                   style: AppFont.style(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
@@ -838,7 +838,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Have you serviced all pumps covered under this AMC at this site?',
+                  'finish_amc_subtitle'.tr(),
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   style: AppFont.style(
@@ -863,7 +863,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                       ),
                       child: Center(
                         child: Text(
-                          'Yes, Complete',
+                          'yes_complete'.tr(),
                           style: AppFont.style(
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
@@ -882,7 +882,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                     color: Colors.transparent,
                     alignment: Alignment.center,
                     child: Text(
-                      'Cancel',
+                      'cancel'.tr(),
                       style: AppFont.style(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
@@ -941,7 +941,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
 
                     // ── Title ───────────────────────────────────────────────────────
                     Text(
-                      'Delete Draft Report',
+                      'delete_draft_report'.tr(),
                       style: AppFont.style(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
@@ -953,7 +953,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
 
                     // ── Subtitle ────────────────────────────────────────────────────
                     Text(
-                      'Are you sure you want to delete this\ndraft report? This action cannot be\nundone.',
+                      'delete_draft_subtitle'.tr(),
                       textAlign: TextAlign.center,
                       style: AppFont.style(
                         fontSize: 14,
@@ -981,7 +981,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                 ),
                               ),
                               child: Text(
-                                'Cancel',
+                                'cancel'.tr(),
                                 style: AppFont.style(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w800,
@@ -1024,7 +1024,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                           ),
                                         )
                                       : Text(
-                                          'Delete',
+                                          'Delete'.tr(),
                                           style: AppFont.style(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w800,

@@ -210,13 +210,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 children: [
                   _buildTextInputField(
                     controller: _customerController,
-                    hintText: 'Enter Customer Name',
+                    hintText: 'enter_customer_name'.tr(),
                     onSubmitted: () => _fetchNotifications(page: 1),
                   ),
                   const SizedBox(height: 12),
                   _buildTextInputField(
                     controller: _siteController,
-                    hintText: 'Enter Site Name',
+                    hintText: 'enter_site_name'.tr(),
                     onSubmitted: () => _fetchNotifications(page: 1),
                   ),
                   const SizedBox(height: 12),
@@ -269,7 +269,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           child: Container(
                             height: MediaQuery.of(context).size.height * 0.5,
                             alignment: Alignment.center,
-                            child: const Text("No notifications found"),
+                            child: Text("no_notification".tr()),
                           ),
                         ),
                       );
@@ -307,7 +307,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           try {
                             final dt = DateTime.parse(notification.createdAt!).toLocal();
                             formattedTime = DateFormat('hh:mm a').format(dt);
-                            formattedDate = DateFormat('yyyy-MM-dd').format(dt);
+                            formattedDate = DateFormat('d MMMM yyyy').format(dt);
                           } catch (e) {}
                         }
 

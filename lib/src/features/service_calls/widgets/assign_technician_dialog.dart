@@ -128,7 +128,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                'Add Customer',
+                                'add_new_customer'.tr(),
                                 style: AppFont.style(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w900,
@@ -154,7 +154,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Customer Name',
+                            'create_report_customer_name'.tr(),
                             style: AppFont.style(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
@@ -165,7 +165,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           TextField(
                             controller: controller,
                             decoration: InputDecoration(
-                              hintText: 'Enter customer name',
+                              hintText: 'enter_customer_name'.tr(),
                               hintStyle: AppFont.style(
                                 fontSize: 14,
                                 color: const Color(0xFFA5ABB7),
@@ -242,7 +242,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                   } else if (state
                                       is CreateNewCustomerFailureState) {
                                     if (state.message.contains(
-                                      'merged with the existing record',
+                                      'merged_with_existing'.tr(),
                                     )) {
                                       Navigator.pop(ctx);
                                       showDialog(
@@ -306,7 +306,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                             ),
                                           )
                                         : Text(
-                                            'Save',
+                                            'save_entry'.tr(),
                                             style: AppFont.style(
                                               color: Colors.white,
                                               fontSize: 14,
@@ -334,8 +334,8 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
   Future<void> _showAddSiteDialog() async {
     if (_selectedCustomer == null) {
       _scaffoldKey.currentState?.showSnackBar(
-        const SnackBar(
-          content: Text('Please select a customer first'),
+        SnackBar(
+          content: Text('please_select_customer'.tr()),
           backgroundColor: Colors.red,
         ),
       );
@@ -359,8 +359,8 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
 
     if (customerId.isEmpty) {
       _scaffoldKey.currentState?.showSnackBar(
-        const SnackBar(
-          content: Text('Error finding customer ID'),
+        SnackBar(
+          content: Text('error_finding_customer_id'.tr()),
           backgroundColor: Colors.red,
         ),
       );
@@ -423,7 +423,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Customer: $_selectedCustomer',
+                        '${'customer'.tr()} $_selectedCustomer',
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
@@ -432,7 +432,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Site Name',
+                        'close_call_site_name_label'.tr(),
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
@@ -443,7 +443,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                       TextField(
                         controller: controller,
                         decoration: InputDecoration(
-                          hintText: 'Enter site name',
+                          hintText: 'enter_site_name'.tr(),
                           hintStyle: AppFont.style(
                             fontSize: 14,
                             color: const Color(0xFFA5ABB7),
@@ -479,7 +479,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           TextButton(
                             onPressed: () => Navigator.pop(ctx),
                             child: Text(
-                              'Cancel',
+                              'cancel'.tr(),
                               style: AppFont.style(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w800,
@@ -565,7 +565,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                         ),
                                       )
                                     : Text(
-                                        'Save',
+                                        'save_entry'.tr(),
                                         style: AppFont.style(
                                           color: Colors.white,
                                           fontSize: 14,
@@ -629,7 +629,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           });
                         },
                         decoration: InputDecoration(
-                          hintText: 'Search here...',
+                          hintText: 'search'.tr(),
                           prefixIcon: const Icon(
                             Icons.search,
                             color: Color(0xFFA5ABB7),
@@ -730,7 +730,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            'TECH ID: ${item.code.isNotEmpty ? item.code : item.id}',
+                                            '${'tech_id'.tr()} ${item.code.isNotEmpty ? item.code : item.id}',
                                             style: AppFont.style(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w700,
@@ -795,7 +795,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             ),
                           ),
                           child: Text(
-                            'DONE',
+                            'create_report_btn_done'.tr(),
                             style: AppFont.style(
                               color: Colors.white,
                               fontSize: 12,
@@ -844,7 +844,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Assign Service Technician',
+                          'assign_tech_dialog_title'.tr(),
                           style: AppFont.style(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
@@ -899,15 +899,15 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           children: [
                             RichText(
                               text: TextSpan(
-                                text: 'Customer Name ',
+                                text: 'close_call_customer_name_label'.tr(),
                                 style: AppFont.style(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF424B5C),
                                 ),
-                                children: const [
+                                children: [
                                   TextSpan(
-                                    text: '*',
+                                    text: 'asterisk'.tr(),
                                     style: TextStyle(color: Colors.red),
                                   ),
                                 ],
@@ -933,7 +933,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             return SearchableDropdown<String>(
                               items: _customers,
                               value: _selectedCustomer,
-                              hintText: 'Select Customer',
+                              hintText: 'service_calls_filter_select_customer'.tr(),
                               isLoading: isLoading,
                               itemAsString: (item) => item,
                               onClear: () {
@@ -968,15 +968,15 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           children: [
                             RichText(
                               text: TextSpan(
-                                text: 'Site Name ',
+                                text: 'close_call_site_name_label'.tr(),
                                 style: AppFont.style(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF424B5C),
                                 ),
-                                children: const [
+                                children: [
                                   TextSpan(
-                                    text: '*',
+                                    text: 'asterisk'.tr(),
                                     style: TextStyle(color: Colors.red),
                                   ),
                                 ],
@@ -1004,7 +1004,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                               child: SearchableDropdown<String>(
                                 items: _sites,
                                 value: _selectedSite,
-                                hintText: 'Select Site',
+                                hintText: 'service_calls_filter_select_site'.tr(),
                                 isLoading: isLoading,
                                 readOnly: _selectedCustomer == null,
                                 itemAsString: (item) => item,
@@ -1031,9 +1031,9 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFF424B5C),
                             ),
-                            children: const [
+                            children: [
                               TextSpan(
-                                text: '*',
+                                text: 'asterisk'.tr(),
                                 style: TextStyle(color: Colors.red),
                               ),
                             ],
@@ -1116,8 +1116,8 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                     Expanded(
                                       child: Text(
                                         selectedCount == 0
-                                            ? 'Select Technicians'
-                                            : '$selectedCount Selected',
+                                            ? 'reports_filter_select_technician'.tr()
+                                            : '$selectedCount ${'selected'.tr()}',
                                         style: AppFont.style(
                                           fontSize: 16,
                                           fontWeight: selectedCount == 0
@@ -1160,7 +1160,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                       TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text(
-                          'assign_tech_dialog_cancel'.tr(),
+                          'cancel'.tr(),
                           style: AppFont.style(
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
@@ -1181,8 +1181,8 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
 
                             // Show success snackbar
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('assign_tech_success_msg'),
+                              SnackBar(
+                                content: Text('assign_tech_success_msg'.tr()),
                                 backgroundColor: Colors.green,
                               ),
                             );
@@ -1220,8 +1220,8 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
 
                               if (_selectedCustomer == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Please select a customer'),
+                                  SnackBar(
+                                    content: Text('please_select_customer'.tr()),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -1229,8 +1229,8 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                               }
                               if (_selectedSite == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Please select a site'),
+                                  SnackBar(
+                                    content: Text('please_select_site'.tr()),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -1272,9 +1272,9 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
 
                               if (customerId.isEmpty || siteId.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                  SnackBar(
                                     content: Text(
-                                      'Invalid customer or site selected',
+                                      'invalid_customer_or_site_selected'.tr(),
                                     ),
                                     backgroundColor: Colors.red,
                                   ),

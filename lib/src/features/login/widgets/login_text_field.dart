@@ -118,17 +118,17 @@ class _LoginTextFieldState<T> extends State<LoginTextField<T>> {
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
-            color: Colors.yellowAccent.withOpacity(0.8),
+            color: Colors.blue.withOpacity(0.8),
             width: 1.2,
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.yellowAccent, width: 1.6),
+          borderSide: const BorderSide(color: Colors.blue, width: 1.6),
         ),
         errorStyle: AppFont.style(
           fontSize: 10,
-          color: Colors.yellowAccent,
+          color: Colors.blue,
           fontWeight: FontWeight.w400,
         ),
       ),

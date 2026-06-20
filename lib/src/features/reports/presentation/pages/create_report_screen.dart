@@ -1610,7 +1610,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                             TextButton(
                                               onPressed: _handleBack,
                                               child: Text(
-                                                'create_report_btn_cancel'.tr(),
+                                                'cancel'.tr(),
                                                 style: AppFont.style(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.w800,
