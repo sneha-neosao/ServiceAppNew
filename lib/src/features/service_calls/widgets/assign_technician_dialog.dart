@@ -999,26 +999,24 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                   .toList();
                               _sites.addAll(apiNames);
                             }
-                            return Opacity(
-                              opacity: _selectedCustomer == null ? 0.5 : 1.0,
-                              child: SearchableDropdown<String>(
-                                items: _sites,
-                                value: _selectedSite,
-                                hintText: 'service_calls_filter_select_site'.tr(),
-                                isLoading: isLoading,
-                                readOnly: _selectedCustomer == null,
-                                itemAsString: (item) => item,
-                                onClear: () {
-                                  setState(() {
-                                    _selectedSite = null;
-                                  });
-                                },
-                                onChanged: (val) {
-                                  setState(() {
-                                    _selectedSite = val;
-                                  });
-                                },
-                              ),
+                            return SearchableDropdown<String>(
+                              items: _sites,
+                              value: _selectedSite,
+                              hintText: 'service_calls_filter_select_site'.tr(),
+                              isLoading: isLoading,
+                              readOnly: _selectedCustomer == null,
+                              enabled: _selectedCustomer != null,
+                              itemAsString: (item) => item,
+                              onClear: () {
+                                setState(() {
+                                  _selectedSite = null;
+                                });
+                              },
+                              onChanged: (val) {
+                                setState(() {
+                                  _selectedSite = val;
+                                });
+                              },
                             );
                           },
                         ),

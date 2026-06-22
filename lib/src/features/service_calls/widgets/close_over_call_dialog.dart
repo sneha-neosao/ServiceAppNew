@@ -244,32 +244,32 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
             ),
             const SizedBox(height: 20),
 
-            // Info Container
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF9FAFB),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFF1F2F6)),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _buildInfoColumn('close_call_complaint_no_label'.tr(), widget.complaintNo),
-                  ),
-                  Expanded(
-                    child: _buildInfoColumn(
-                      'close_call_customer_name_label'.tr(),
-                      widget.customerName,
-                    ),
-                  ),
-                  Expanded(
-                    child: _buildInfoColumn('close_call_site_name_label'.tr(), widget.siteName),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
+            // Info Container (hidden)
+            // Container(
+            //   padding: const EdgeInsets.all(16),
+            //   decoration: BoxDecoration(
+            //     color: const Color(0xFFF9FAFB),
+            //     borderRadius: BorderRadius.circular(12),
+            //     border: Border.all(color: const Color(0xFFF1F2F6)),
+            //   ),
+            //   child: Row(
+            //     children: [
+            //       Expanded(
+            //         child: _buildInfoColumn('close_call_complaint_no_label'.tr(), widget.complaintNo),
+            //       ),
+            //       Expanded(
+            //         child: _buildInfoColumn(
+            //           'close_call_customer_name_label'.tr(),
+            //           widget.customerName,
+            //         ),
+            //       ),
+            //       Expanded(
+            //         child: _buildInfoColumn('close_call_site_name_label'.tr(), widget.siteName),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            // const SizedBox(height: 24),
 
             // Dropdowns
             Row(
@@ -368,26 +368,24 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                   final apiNames = state.data.data.map((e) => e.name).toList();
                   _sites.addAll(apiNames);
                 }
-                return Opacity(
-                  opacity: _selectedCustomer == null ? 0.5 : 1.0,
-                  child: SearchableDropdown<String>(
-                    items: _sites,
-                    value: _selectedSite,
-                    hintText: 'reports_filter_select_site'.tr(),
-                    isLoading: isLoading,
-                    readOnly: _selectedCustomer == null,
-                    itemAsString: (item) => item,
-                    onClear: () {
-                      setState(() {
-                        _selectedSite = null;
-                      });
-                    },
-                    onChanged: (val) {
-                      setState(() {
-                        _selectedSite = val;
-                      });
-                    },
-                  ),
+                return SearchableDropdown<String>(
+                  items: _sites,
+                  value: _selectedSite,
+                  hintText: 'reports_filter_select_site'.tr(),
+                  isLoading: isLoading,
+                  readOnly: _selectedCustomer == null,
+                  enabled: _selectedCustomer != null,
+                  itemAsString: (item) => item,
+                  onClear: () {
+                    setState(() {
+                      _selectedSite = null;
+                    });
+                  },
+                  onChanged: (val) {
+                    setState(() {
+                      _selectedSite = val;
+                    });
+                  },
                 );
               },
             ),
