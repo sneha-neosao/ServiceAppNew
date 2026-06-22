@@ -44,7 +44,7 @@ class UpcomingAmcCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
-                  Icons.receipt_long_outlined,
+                  Icons.description_outlined,
                   color: Color(0xFFD38C22),
                   size: 24,
                 ),

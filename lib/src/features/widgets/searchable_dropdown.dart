@@ -17,6 +17,7 @@ class SearchableDropdown<T> extends StatefulWidget {
   final bool isSearchable;
   final bool showArrow;
   final bool readOnly;
+  final bool enabled;
 
   const SearchableDropdown({
     super.key,
@@ -35,6 +36,7 @@ class SearchableDropdown<T> extends StatefulWidget {
     this.isSearchable = true,
     this.showArrow = true,
     this.readOnly = false,
+    this.enabled = true,
   });
 
   @override
@@ -256,7 +258,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
       child: Container(
         height: widget.isFilter ? 44 : 56,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: widget.enabled ? Colors.white : const Color(0xFFF1F2F6),
           borderRadius: BorderRadius.circular(widget.isFilter ? 10 : 12),
           border: Border.all(color: const Color(0xFFE5E7EB)),
         ),
@@ -276,10 +278,10 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                     ? widget.itemAsString(widget.value as T)
                     : widget.hintText,
                 style: AppFont.style(
-                  fontSize: widget.isFilter ? 14 : 16,
+                  fontSize: widget.isFilter ? 14 : 15,
                   fontWeight: widget.value != null
                       ? (widget.isFilter ? FontWeight.w500 : FontWeight.w900)
-                      : (widget.isFilter ? FontWeight.w500 : FontWeight.w700),
+                      : FontWeight.w500,
                   color: widget.value != null
                       ? (widget.isFilter
                             ? const Color(0xFFA5ABB7)

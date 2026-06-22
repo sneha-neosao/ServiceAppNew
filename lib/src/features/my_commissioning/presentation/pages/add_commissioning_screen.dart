@@ -692,86 +692,78 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                             const SizedBox(height: 32),
 
                             // ── STEP 4: ASSIGN TECHNICIANS ───────────────────────
+                            _buildSectionHeader(
+                              label: 'commissioning_step_4',
+                              showAdd: false,
+                            ),
                             ValueListenableBuilder<TextEditingValue>(
                               valueListenable: _equipmentController,
                               builder: (context, equipmentValue, _) {
                                 final bool isTechnicianEnabled = equipmentValue.text.trim().isNotEmpty;
                                 return IgnorePointer(
                                   ignoring: !isTechnicianEnabled,
-                                  child: Opacity(
-                                    opacity: isTechnicianEnabled ? 1.0 : 0.5,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        _buildSectionHeader(
-                                          label: 'commissioning_step_4',
-                                          showAdd: false,
-                                        ),
-                                        BlocBuilder<TechnicianBloc, TechnicianState>(
-                                          bloc: _technicianBloc,
-                                          builder: (context, state) {
-                                            bool isLoading = state is TechnicianLoadingState;
-                                            
-                                            if (isLoading) {
-                                              return Shimmer.fromColors(
-                                                baseColor: Colors.grey[200]!,
-                                                highlightColor: Colors.grey[50]!,
-                                                child: Container(
-                                                  height: 56,
-                                                  width: double.infinity,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius: BorderRadius.circular(12),
-                                                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                                  child: BlocBuilder<TechnicianBloc, TechnicianState>(
+                                    bloc: _technicianBloc,
+                                    builder: (context, state) {
+                                      bool isLoading = state is TechnicianLoadingState;
+
+                                      if (isLoading) {
+                                        return Shimmer.fromColors(
+                                          baseColor: Colors.grey[200]!,
+                                          highlightColor: Colors.grey[50]!,
+                                          child: Container(
+                                            height: 56,
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(12),
+                                              border: Border.all(color: const Color(0xFFE5E7EB)),
+                                            ),
+                                          ),
+                                        );
+                                      }
+
+                                      int selectedCount = _technicianControllers.where((c) => c.text.isNotEmpty).length;
+
+                                      return GestureDetector(
+                                        onTap: () {
+                                          FocusManager.instance.primaryFocus?.unfocus();
+                                          if (state is TechnicianSuccessState) {
+                                            _showMultiSelectTechnicianBottomSheet(state.data.data);
+                                          }
+                                        },
+                                        child: Container(
+                                          height: 56,
+                                          decoration: BoxDecoration(
+                                            color: isTechnicianEnabled ? Colors.white : const Color(0xFFF1F2F6),
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(color: const Color(0xFFE5E7EB)),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  selectedCount == 0
+                                                      ? 'select_technician'.tr()
+                                                      : '$selectedCount ${'selected'.tr()}',
+                                                  style: AppFont.style(
+                                                    fontSize: 15,
+                                                    fontWeight: selectedCount == 0
+                                                        ? FontWeight.w500
+                                                        : FontWeight.w900,
+                                                    color: selectedCount == 0
+                                                        ? const Color(0xFFA5ABB7)
+                                                        : const Color(0xFF0D121F),
                                                   ),
                                                 ),
-                                              );
-                                            }
-
-                                            int selectedCount = _technicianControllers.where((c) => c.text.isNotEmpty).length;
-
-                                            return GestureDetector(
-                                              onTap: () {
-                                                FocusManager.instance.primaryFocus?.unfocus();
-                                                if (state is TechnicianSuccessState) {
-                                                  _showMultiSelectTechnicianBottomSheet(state.data.data);
-                                                }
-                                              },
-                                              child: Container(
-                                                height: 56,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius: BorderRadius.circular(12),
-                                                  border: Border.all(color: const Color(0xFFE5E7EB)),
-                                                ),
-                                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        selectedCount == 0
-                                                            ? 'select_technician'.tr()
-                                                            : '$selectedCount ${'selected'.tr()}',
-                                                        style: AppFont.style(
-                                                          fontSize: 16,
-                                                          fontWeight: selectedCount == 0
-                                                              ? FontWeight.w700
-                                                              : FontWeight.w900,
-                                                          color: selectedCount == 0
-                                                              ? const Color(0xFFA5ABB7)
-                                                              : const Color(0xFF0D121F),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7), size: 18),
-                                                  ],
-                                                ),
                                               ),
-                                            );
-                                          },
+                                              const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7), size: 18),
+                                            ],
+                                          ),
                                         ),
-                                      ],
-                                    ),
+                                      );
+                                    },
                                   ),
                                 );
                               },
@@ -948,24 +940,18 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
     return IgnorePointer(
       ignoring: !isEnabled,
-      child: Opacity(
-        opacity: isEnabled ? 1.0 : 0.5,
-        child: SearchableDropdown<String>(
-          items: validItems,
-          value: value,
-          hintText: hint,
-          itemAsString: (item) => item,
-          onChanged: onChanged,
-          onSearchChanged: onSearchChanged,
-          onLoadMore: onLoadMore,
-          filterFn: filterFn,
-          isLoading: isLoading,
-          onClear: onClear,
-          // icon: Icon(
-          //   Icons.keyboard_arrow_down,
-          //   color: isEnabled ? const Color(0xFFA5ABB7) : const Color(0xFFCBD5E1),
-          // ),
-        ),
+      child: SearchableDropdown<String>(
+        items: validItems,
+        value: value,
+        hintText: hint,
+        itemAsString: (item) => item,
+        onChanged: onChanged,
+        onSearchChanged: onSearchChanged,
+        onLoadMore: onLoadMore,
+        filterFn: filterFn,
+        isLoading: isLoading,
+        onClear: onClear,
+        enabled: isEnabled,
       ),
     );
   }
@@ -978,34 +964,31 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   }) {
     return IgnorePointer(
       ignoring: !enabled,
-      child: Opacity(
-        opacity: enabled ? 1.0 : 0.5,
-        child: Container(
-          height: 56,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF8F9FB),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFF1F2F6)),
+      child: Container(
+        height: 56,
+        decoration: BoxDecoration(
+          color: enabled ? Colors.white : const Color(0xFFF1F2F6),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFF1F2F6)),
+        ),
+        child: TextField(
+          controller: controller,
+          style: AppFont.style(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFF0D121F),
           ),
-          child: TextField(
-            controller: controller,
-            style: AppFont.style(
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: AppFont.style(
               fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF0D121F),
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFFA5ABB7),
             ),
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: AppFont.style(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFFA5ABB7),
-              ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
             ),
           ),
         ),
