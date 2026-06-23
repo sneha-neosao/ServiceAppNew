@@ -217,6 +217,7 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
                                 builder: (context) =>
                                     CreateCommissioningReportScreen(
                                       commissioningWorkId: item.id,
+                                      initialStepNo: item.stepNo,
                                       onBack: () => Navigator.pop(context),
                                     ),
                               ),

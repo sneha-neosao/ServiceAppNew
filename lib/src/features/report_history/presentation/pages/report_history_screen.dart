@@ -266,23 +266,23 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
         child: NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               return [
-                SliverToBoxAdapter(
-                  child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 16, 16, 12),
-                  child: Row(
-                    children: [
-                      Text(
-                        'reports_title'.tr(),
-                        style: AppFont.style(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF0D121F),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              //   SliverToBoxAdapter(
+              //     child: Padding(
+              //     padding: const EdgeInsets.fromLTRB(24, 16, 16, 12),
+              //     child: Row(
+              //       children: [
+              //         Text(
+              //           'reports_title'.tr(),
+              //           style: AppFont.style(
+              //             fontSize: 18,
+              //             fontWeight: FontWeight.w800,
+              //             color: const Color(0xFF0D121F),
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
               SliverPersistentHeader(
                 pinned: true,
                 delegate: _StickyReportFilterDelegate(
@@ -1256,13 +1256,13 @@ class _ReportCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (status != null && status!.isNotEmpty && type == ReportType.service) ...[
-              Align(
-                alignment: Alignment.centerRight,
-                child: _buildStatusPill(status!),
-              ),
-              const SizedBox(height: 12),
-            ],
+            // if (status != null && status!.isNotEmpty && type == ReportType.service) ...[
+            //   Align(
+            //     alignment: Alignment.centerRight,
+            //     child: _buildStatusPill(status!),
+            //   ),
+            //   const SizedBox(height: 12),
+            // ],
             // Company & Date Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1315,7 +1315,7 @@ class _ReportCard extends StatelessWidget {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFFBF2),
+                  color: const Color(0xFFF0F7FF),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
@@ -1325,7 +1325,7 @@ class _ReportCard extends StatelessWidget {
                       style: AppFont.style(
                         fontSize: 13,
                         fontWeight: FontWeight.w900,
-                        color: const Color(0xFFE65100),
+                        color: const Color(0xFF1565C0),
                       ),
                     ),
                     const Spacer(),
@@ -1369,48 +1369,55 @@ class _ReportCard extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 16),
-            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-            const SizedBox(height: 16),
             // Technician Row
-            Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF9FAFB),
-                    shape: BoxShape.circle,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5F6F9),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    technician.contains(',')
+                        ? Icons.people_outline
+                        : Icons.person_outline,
+                    size: 16,
+                    color: const Color(0xFF1565C0),
                   ),
-                  child: const Icon(
-                    Icons.person_outline,
-                    size: 20,
-                    color: Color(0xFFCDD0D8),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          technician,
+                          style: AppFont.style(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF424B5C),
+                          ),
+                        ),
+                        if (technicianId.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            technicianId,
+                            style: AppFont.style(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFFA5ABB7),
+                            ),
+                          ),
+                        ]
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      technician,
-                      style: AppFont.style(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF0D121F),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      technicianId,
-                      style: AppFont.style(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFFA5ABB7),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: 16),
             _buildViewButton(context),

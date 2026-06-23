@@ -145,14 +145,14 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
           
           if (statusString == 'pending') {
             visitStatus = 'pending'.tr();
-            badgeBorderColor = const Color(0xFFE65100);
-            badgeTextColor = const Color(0xFFE65100);
-            badgeBgColor = const Color(0xFFFFE0B2);
+            badgeBorderColor = Colors.transparent;
+            badgeTextColor = const Color(0xFFF44336);
+            badgeBgColor = const Color(0xFFFFEBEE);
           } else if (statusString == 'completed') {
             visitStatus = 'completed'.tr();
-            badgeBorderColor = const Color(0xFF1B5E20);
-            badgeTextColor = const Color(0xFF1B5E20);
-            badgeBgColor = const Color(0xFFC8E6C9);
+            badgeBorderColor = Colors.transparent;
+            badgeTextColor = const Color(0xFF00A76F);
+            badgeBgColor = const Color(0xFFE8F5E9);
           } else {
             visitStatus = state.data.data.visit.status;
             if (visitStatus.isNotEmpty) {
@@ -163,68 +163,176 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
     return Column(
       children: [
         // ── Header ────────────────────────────────────────────────
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-          child: Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    size: 20,
-                    color: Color(0xFF5C616E),
-                  ),
-                  onPressed: widget.onBack,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.title,
-                    style: AppFont.style(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0D121F),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on_outlined,
-                        size: 14,
-                        color: Color(0xFF1565C0),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        widget.location,
-                        style: AppFont.style(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFFA5ABB7),
-                        ),
+        if (widget.isFromHistory)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                ],
-              ),
-            ],
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      size: 20,
+                      color: Color(0xFF5C616E),
+                    ),
+                    onPressed: widget.onBack,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Total Visits ($reportsCount)',
+                        style: AppFont.style(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        visitRangeStr,
+                        style: AppFont.style(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        widget.title,
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF7A8699),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            size: 14,
+                            color: Color(0xFF1565C0),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              widget.location,
+                              style: AppFont.style(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFFA5ABB7),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: badgeBgColor,
+                    borderRadius: BorderRadius.circular(8),
+                    border: badgeBorderColor != Colors.transparent ? Border.all(color: badgeBorderColor) : null,
+                  ),
+                  child: Text(
+                    visitStatus,
+                    style: AppFont.style(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: badgeTextColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      size: 20,
+                      color: Color(0xFF5C616E),
+                    ),
+                    onPressed: widget.onBack,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.title,
+                        style: AppFont.style(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF0D121F),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            size: 14,
+                            color: Color(0xFF1565C0),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              widget.location,
+                              style: AppFont.style(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFFA5ABB7),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
 
         // ── Scrollable body ──────────────────────────────────────────────────
         Expanded(
@@ -1087,7 +1195,7 @@ class _OutlineBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: borderColor, width: 1.5),
+        border: borderColor != Colors.transparent ? Border.all(color: borderColor, width: 1.5) : null,
       ),
       child: Text(
         label,

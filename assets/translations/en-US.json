@@ -145,7 +145,7 @@
   "checklist_vibration": "Vibration Checked:",
   "checklist_vibration_normal": "Normal",
   "checklist_vibration_high": "High",
-  "notif_header_title": "Notifications",
+  "notif_header_title": "Notifications / Reminders",
   "notif_clear_filters": "Clear Filters",
   "notif_filter_customer": "Select Customer",
   "notif_filter_site": "Select Site",
@@ -399,8 +399,8 @@
   "delete_work_subtitle": "Are you sure you want to delete this\\ncommissioning job? This action cannot be\\nundone.",
   "delete_now": "Delete Now",
   "cancel": "Cancel",
-  "service_call_report_feedback": "Service Call Report Feedback",
-  "commissioning_work_report_feedback": "Commissioning Work Report Feedback",
+  "service_call_report_feedback": "Service Work Feedback",
+  "commissioning_work_report_feedback": "Commissioning Work Feedback",
   "scan_for_customer_feedback": "Scan for Customer Feedback",
   "enter_technical_remark": "Enter Technician Remarks",
   "enter_customer_remark": "Enter Customer Remarks",
@@ -509,5 +509,6 @@
   "equipment_model": "Equipment Model",
   "complaint_description": "Complaint Description",
   "assigned_technicians": "Assigned Technicians",
-  "attachments": "Attachments"
+  "attachments": "Attachments",
+  "amc_report_feedback": "AMC Work Feedback"
 }

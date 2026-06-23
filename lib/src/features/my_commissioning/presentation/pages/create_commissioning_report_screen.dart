@@ -121,12 +121,14 @@ class CreateCommissioningReportScreen extends StatefulWidget {
   final bool isServiceReport;
   final String commissioningWorkId;
   final String? complaintNo;
+  final int initialStepNo;
   const CreateCommissioningReportScreen({
     super.key,
     required this.onBack,
     required this.commissioningWorkId,
     this.isServiceReport = false,
     this.complaintNo,
+    this.initialStepNo = 0,
   });
   @override
   State<CreateCommissioningReportScreen> createState() =>
@@ -135,7 +137,8 @@ class CreateCommissioningReportScreen extends StatefulWidget {
 
 class _CreateCommissioningReportScreenState
     extends State<CreateCommissioningReportScreen> {
-  int _currentStep = 1;
+  late int _currentStep = widget.initialStepNo > 0 ? widget.initialStepNo : 1;
+  bool _hasAppliedInitialStep = false;
   String? _commissioningReportId;
   late List<TextEditingController> _technicians;
   late List<String?> _technicianIds;
@@ -402,15 +405,6 @@ class _CreateCommissioningReportScreenState
     _submitStep2Bloc = getIt<CommissioningStep2Bloc>();
     _step1Bloc = getIt<CommissioningStep1AutoFillBloc>();
     _serviceCallStep1AutoFillBloc = getIt<ServiceCallReportStep1AutoFillBloc>();
-    if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
-      _serviceCallStep1AutoFillBloc.add(
-        ServiceCallReportStep1AutoFillGetEvent(widget.commissioningWorkId),
-      );
-    } else {
-      _step1Bloc.add(
-        CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId),
-      );
-    }
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
     _step2Bloc = getIt<CommissioningStep2AutoFillBloc>();
     _serviceCallStep2AutoFillBloc = getIt<ServiceCallReportStep2AutoFillBloc>();
@@ -440,6 +434,68 @@ class _CreateCommissioningReportScreenState
     _technicians = [TextEditingController()];
     _technicianIds = [null];
     _representatives = [TextEditingController()];
+
+    if (_currentStep == 1) {
+      if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
+        _serviceCallStep1AutoFillBloc.add(
+          ServiceCallReportStep1AutoFillGetEvent(widget.commissioningWorkId),
+        );
+      } else {
+        _step1Bloc.add(
+          CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId),
+        );
+      }
+    } else if (_currentStep == 2) {
+      if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
+        _serviceCallStep2AutoFillBloc.add(
+          ServiceCallReportStep2AutoFillGetEvent(widget.commissioningWorkId),
+        );
+      } else {
+        _step2Bloc.add(
+          CommissioningStep2AutoFillGetEvent(widget.commissioningWorkId),
+        );
+      }
+    } else if (_currentStep == 3) {
+      if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
+        _serviceCallStep3AutoFillBloc.add(
+          ServiceCallReportStep3AutoFillGetEvent(widget.commissioningWorkId),
+        );
+      } else {
+        _step3Bloc.add(
+          CommissioningStep3AutoFillGetEvent(widget.commissioningWorkId),
+        );
+      }
+    } else if (_currentStep == 4) {
+      if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
+        _serviceCallStep4AutoFillBloc.add(
+          ServiceCallReportStep4AutoFillGetEvent(widget.commissioningWorkId),
+        );
+      } else {
+        _step4Bloc.add(
+          CommissioningStep4AutoFillGetEvent(widget.commissioningWorkId),
+        );
+      }
+    } else if (_currentStep == 5) {
+      if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
+        _serviceCallStep5AutoFillBloc.add(
+          ServiceCallReportStep5AutoFillGetEvent(widget.commissioningWorkId),
+        );
+      } else {
+        _step5Bloc.add(
+          CommissioningStep5AutoFillGetEvent(widget.commissioningWorkId),
+        );
+      }
+    } else if (_currentStep == 6) {
+      if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
+        _serviceCallStep6AutoFillBloc.add(
+          ServiceCallReportStep6AutoFillGetEvent(widget.commissioningWorkId),
+        );
+      } else {
+        _step6Bloc.add(
+          CommissioningStep6AutoFillGetEvent(widget.commissioningWorkId),
+        );
+      }
+    }
   }
 
   @override
@@ -2713,35 +2769,41 @@ class _CreateCommissioningReportScreenState
                     }
                   }
 
-                  // Smart routing logic
-                  final completedStep = state.data.data.lastCompletedStep;
-                  if (completedStep > 0 && completedStep < 6 && _currentStep == 1) {
-                    _currentStep = completedStep + 1;
-                    
-                    if (_commissioningReportId != null) {
-                      if (_currentStep == 2) {
-                        _serviceCallStep2AutoFillBloc.add(
-                          ServiceCallReportStep2AutoFillGetEvent(_commissioningReportId!),
-                        );
-                      } else if (_currentStep == 3) {
-                        _serviceCallStep3AutoFillBloc.add(
-                          ServiceCallReportStep3AutoFillGetEvent(_commissioningReportId!),
-                        );
-                      } else if (_currentStep == 4) {
-                        _serviceCallStep4AutoFillBloc.add(
-                          ServiceCallReportStep4AutoFillGetEvent(_commissioningReportId!),
-                        );
-                      } else if (_currentStep == 5) {
-                        _serviceCallStep5AutoFillBloc.add(
-                          ServiceCallReportStep5AutoFillGetEvent(_commissioningReportId!),
-                        );
-                      } else if (_currentStep == 6) {
-                        _serviceCallStep6AutoFillBloc.add(
-                          ServiceCallReportStep6AutoFillGetEvent(_commissioningReportId!),
-                        );
-                        _assignedServiceCallTechnicianBloc.add(
-                          AssignedServicecallTechnicianGetEvent(_commissioningReportId!),
-                        );
+                  // Navigate to the correct step using step_no passed from the list.
+                  // Only do this once (on first load), not when going back to step 1.
+                  if (!_hasAppliedInitialStep) {
+                    _hasAppliedInitialStep = true;
+                    final targetStep = widget.initialStepNo > 0 && widget.initialStepNo <= 6
+                        ? widget.initialStepNo
+                        : 1;
+                    if (targetStep > 1 && _currentStep == 1) {
+                      _currentStep = targetStep;
+
+                      if (_commissioningReportId != null) {
+                        if (_currentStep == 2) {
+                          _serviceCallStep2AutoFillBloc.add(
+                            ServiceCallReportStep2AutoFillGetEvent(_commissioningReportId!),
+                          );
+                        } else if (_currentStep == 3) {
+                          _serviceCallStep3AutoFillBloc.add(
+                            ServiceCallReportStep3AutoFillGetEvent(_commissioningReportId!),
+                          );
+                        } else if (_currentStep == 4) {
+                          _serviceCallStep4AutoFillBloc.add(
+                            ServiceCallReportStep4AutoFillGetEvent(_commissioningReportId!),
+                          );
+                        } else if (_currentStep == 5) {
+                          _serviceCallStep5AutoFillBloc.add(
+                            ServiceCallReportStep5AutoFillGetEvent(_commissioningReportId!),
+                          );
+                        } else if (_currentStep == 6) {
+                          _serviceCallStep6AutoFillBloc.add(
+                            ServiceCallReportStep6AutoFillGetEvent(_commissioningReportId!),
+                          );
+                          _assignedServiceCallTechnicianBloc.add(
+                            AssignedServicecallTechnicianGetEvent(_commissioningReportId!),
+                          );
+                        }
                       }
                     }
                   }
@@ -2781,35 +2843,41 @@ class _CreateCommissioningReportScreenState
                     }
                   }
 
-                  // Smart routing logic
-                  final completedStep = state.data.data.lastCompletedStep;
-                  if (completedStep > 0 && completedStep < 6 && _currentStep == 1) {
-                    _currentStep = completedStep + 1;
-                    
-                    if (_commissioningReportId != null) {
-                      if (_currentStep == 2) {
-                        _step2Bloc.add(
-                          CommissioningStep2AutoFillGetEvent(_commissioningReportId!),
-                        );
-                      } else if (_currentStep == 3) {
-                        _step3Bloc.add(
-                          CommissioningStep3AutoFillGetEvent(_commissioningReportId!),
-                        );
-                      } else if (_currentStep == 4) {
-                        _step4Bloc.add(
-                          CommissioningStep4AutoFillGetEvent(_commissioningReportId!),
-                        );
-                      } else if (_currentStep == 5) {
-                        _step5Bloc.add(
-                          CommissioningStep5AutoFillGetEvent(_commissioningReportId!),
-                        );
-                      } else if (_currentStep == 6) {
-                        _step6Bloc.add(
-                          CommissioningStep6AutoFillGetEvent(_commissioningReportId!),
-                        );
-                        _assignedTechniciansBloc.add(
-                          AssignedTechnicianRepresentativeGetEvent(_commissioningReportId!),
-                        );
+                  // Navigate to the correct step using step_no passed from the list.
+                  // Only do this once (on first load), not when going back to step 1.
+                  if (!_hasAppliedInitialStep) {
+                    _hasAppliedInitialStep = true;
+                    final targetStep = widget.initialStepNo > 0 && widget.initialStepNo <= 6
+                        ? widget.initialStepNo
+                        : 1;
+                    if (targetStep > 1 && _currentStep == 1) {
+                      _currentStep = targetStep;
+
+                      if (_commissioningReportId != null) {
+                        if (_currentStep == 2) {
+                          _step2Bloc.add(
+                            CommissioningStep2AutoFillGetEvent(_commissioningReportId!),
+                          );
+                        } else if (_currentStep == 3) {
+                          _step3Bloc.add(
+                            CommissioningStep3AutoFillGetEvent(_commissioningReportId!),
+                          );
+                        } else if (_currentStep == 4) {
+                          _step4Bloc.add(
+                            CommissioningStep4AutoFillGetEvent(_commissioningReportId!),
+                          );
+                        } else if (_currentStep == 5) {
+                          _step5Bloc.add(
+                            CommissioningStep5AutoFillGetEvent(_commissioningReportId!),
+                          );
+                        } else if (_currentStep == 6) {
+                          _step6Bloc.add(
+                            CommissioningStep6AutoFillGetEvent(_commissioningReportId!),
+                          );
+                          _assignedTechniciansBloc.add(
+                            AssignedTechnicianRepresentativeGetEvent(_commissioningReportId!),
+                          );
+                        }
                       }
                     }
                   }

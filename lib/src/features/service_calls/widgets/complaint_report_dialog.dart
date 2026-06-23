@@ -124,7 +124,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                       } else if (state is ServiceCallDetailsSuccessState) {
                         final data = state.data.data;
                         final dateStr = data.createdAt.isNotEmpty
-                            ? DateFormat('M/d/yyyy, h:mm:ss a').format(DateTime.parse(data.createdAt).toLocal())
+                            ? DateFormat('dd MMM yyyy (hh:mm a)').format(DateTime.parse(data.createdAt).toLocal())
                             : '-';
 
                         return SingleChildScrollView(
@@ -144,7 +144,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                     child: _buildInfoItem('complaint_report_client_label'.tr(), data.customerName),
                                   ),
                                   Expanded(
-                                    child: _buildInfoItem('complaint_report_received_label'.tr(), dateStr),
+                                    child: _buildInfoItem('Complaint Date & Time', dateStr),
                                   ),
                                 ],
                               ),

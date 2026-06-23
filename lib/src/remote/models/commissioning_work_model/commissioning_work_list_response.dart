@@ -42,6 +42,7 @@ class CommissioningWork {
   final List<Technician> assignedTechnicians;
   final String? createdByDealerUser;
   final String? createdByTechnician;
+  final int stepNo;
 
   CommissioningWork({
     required this.id,
@@ -51,6 +52,7 @@ class CommissioningWork {
     required this.assignedTechnicians,
     this.createdByDealerUser,
     this.createdByTechnician,
+    this.stepNo = 0,
   });
 
   factory CommissioningWork.fromJson(Map<String, dynamic> json) {
@@ -66,6 +68,7 @@ class CommissioningWork {
           [],
       createdByDealerUser: json['created_by_dealer_user'],
       createdByTechnician: json['created_by_technician'],
+      stepNo: json['step_no'] ?? 0,
     );
   }
 
@@ -80,6 +83,7 @@ class CommissioningWork {
           .toList(),
       'created_by_dealer_user': createdByDealerUser,
       'created_by_technician': createdByTechnician,
+      'step_no': stepNo,
     };
   }
 }
