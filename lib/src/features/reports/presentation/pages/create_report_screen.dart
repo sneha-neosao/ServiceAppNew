@@ -2831,6 +2831,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 }
 
                 return SearchableDropdown<String>(
+                  enabled: _selectedCustomer != 'select_customer'.tr(),
                   items: validItems,
                   value: _selectedSite == 'select_site'.tr() ? null : _selectedSite,
                   hintText: 'select_site'.tr(),

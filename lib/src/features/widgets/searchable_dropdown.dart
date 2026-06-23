@@ -254,7 +254,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
     _hasRenderedOnce = true;
 
     return GestureDetector(
-      onTap: widget.readOnly ? null : _showBottomSheet,
+      onTap: (widget.readOnly || !widget.enabled) ? null : _showBottomSheet,
       child: Container(
         height: widget.isFilter ? 44 : 56,
         decoration: BoxDecoration(

@@ -242,6 +242,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                   }
 
                   Widget siteDropdown = SearchableDropdown<Site>(
+                    enabled: _selectedCustomer != null,
                     items: validItems,
                     value: _selectedSite,
                     hintText: 'amc_schedule_filter_select_site'.tr(),
@@ -271,15 +272,6 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                       });
                     },
                   );
-
-                  if (_selectedCustomer == null) {
-                    return IgnorePointer(
-                      child: Opacity(
-                        opacity: 0.5,
-                        child: siteDropdown,
-                      ),
-                    );
-                  }
 
                   return siteDropdown;
                 },

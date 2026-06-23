@@ -74,6 +74,7 @@ class ServiceCallsStep3Widget extends StatelessWidget {
                 }
 
                 Widget siteDropdown = SearchableDropdown<Site>(
+                  enabled: parent._selectedCustomerId != null,
                   items: sites,
                   value: initialValue,
                   hintText: 'service_calls_filter_select_site'.tr(),
@@ -96,11 +97,6 @@ class ServiceCallsStep3Widget extends StatelessWidget {
                   },
                 );
 
-                if (parent._selectedCustomerId == null) {
-                  return IgnorePointer(
-                    child: Opacity(opacity: 0.5, child: siteDropdown),
-                  );
-                }
                 return siteDropdown;
               },
             ),

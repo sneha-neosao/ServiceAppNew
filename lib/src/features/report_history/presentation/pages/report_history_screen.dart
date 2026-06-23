@@ -877,6 +877,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         }
 
                         Widget siteDropdown = SearchableDropdown<Site>(
+                          enabled: _selectedCustomerId != null,
                           items: sites,
                           value: initialValue,
                           hintText: 'reports_filter_select_site'.tr(),
@@ -912,15 +913,6 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                             _fetchReportHistory();
                           },
                         );
-
-                        if (_selectedCustomerId == null) {
-                          return IgnorePointer(
-                            child: Opacity(
-                              opacity: 0.5,
-                              child: siteDropdown,
-                            ),
-                          );
-                        }
 
                         return siteDropdown;
                       },
