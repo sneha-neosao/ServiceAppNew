@@ -10,3 +10,9 @@ sealed class TranslateEvent extends Equatable {
 class TrMarathiEvent extends TranslateEvent {}
 
 class TrEnglishEvent extends TranslateEvent {}
+
+class TrHindiEvent extends TranslateEvent {}
+
+class TrGujaratiEvent extends TranslateEvent {}
+
+class TrKannadaEvent extends TranslateEvent {}

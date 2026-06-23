@@ -74,7 +74,13 @@ class _MyAppState extends State<MyApp> {
             listener: (ctx, translateState) {
               final newLocale = translateState.isMarathi
                   ? marathiLocale
-                  : englishLocale;
+                  : translateState.isHindi
+                      ? hindiLocale
+                      : translateState.isGujarati
+                          ? gujaratiLocale
+                          : translateState.isKannada
+                              ? kannadaLocale
+                              : englishLocale;
               ctx.setLocale(newLocale);
             },
             child: BlocBuilder<ThemeBloc, ThemeState>(

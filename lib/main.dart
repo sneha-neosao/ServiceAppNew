@@ -79,7 +79,7 @@ Future<void> main() async {
 
   runApp(
     EasyLocalization(
-      supportedLocales: const [englishLocale, marathiLocale],
+      supportedLocales: const [englishLocale, marathiLocale, hindiLocale, gujaratiLocale, kannadaLocale],
       path: "assets/translations",
       startLocale: englishLocale,
       child: const MyApp(),

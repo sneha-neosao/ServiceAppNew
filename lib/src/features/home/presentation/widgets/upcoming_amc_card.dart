@@ -168,7 +168,7 @@ class UpcomingAmcDropdownPill extends StatefulWidget {
 }
 
 class _UpcomingAmcDropdownPillState extends State<UpcomingAmcDropdownPill> {
-  late String _selectedLabel;
+  String? _selectedOption;
   final List<String> _options = ['Today', 'Tomorrow', 'Week', 'Month'];
   
   String _getTranslation(String opt) {
@@ -182,18 +182,12 @@ class _UpcomingAmcDropdownPillState extends State<UpcomingAmcDropdownPill> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _selectedLabel = widget.label;
-  }
-
-  @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
       color: Colors.white,
       surfaceTintColor: Colors.white,
       onSelected: (val) {
-        setState(() => _selectedLabel = _getTranslation(val));
+        setState(() => _selectedOption = val);
         if (widget.onChanged != null) {
           widget.onChanged!(val);
         }
@@ -218,7 +212,7 @@ class _UpcomingAmcDropdownPillState extends State<UpcomingAmcDropdownPill> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              _selectedLabel,
+              _selectedOption == null ? widget.label : _getTranslation(_selectedOption!),
               style: AppFont.style(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,

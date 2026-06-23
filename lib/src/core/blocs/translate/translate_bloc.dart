@@ -12,6 +12,9 @@ class TranslateBloc extends HydratedBloc<TranslateEvent, TranslateState> {
   TranslateBloc() : super(const TranslateState("en", "US")) {
     on<TrMarathiEvent>(_trMarathi);
     on<TrEnglishEvent>(_trEnglish);
+    on<TrHindiEvent>(_trHindi);
+    on<TrGujaratiEvent>(_trGujarati);
+    on<TrKannadaEvent>(_trKannada);
   }
 
   Future<void> _trMarathi(TrMarathiEvent event, Emitter<TranslateState> emit) async {
@@ -20,6 +23,18 @@ class TranslateBloc extends HydratedBloc<TranslateEvent, TranslateState> {
 
   Future<void> _trEnglish(TrEnglishEvent event, Emitter<TranslateState> emit) async {
     emit(const TranslateState("en", "US"));
+  }
+
+  Future<void> _trHindi(TrHindiEvent event, Emitter<TranslateState> emit) async {
+    emit(const TranslateState("hi", "IN"));
+  }
+
+  Future<void> _trGujarati(TrGujaratiEvent event, Emitter<TranslateState> emit) async {
+    emit(const TranslateState("gu", "IN"));
+  }
+
+  Future<void> _trKannada(TrKannadaEvent event, Emitter<TranslateState> emit) async {
+    emit(const TranslateState("kn", "IN"));
   }
 
   @override

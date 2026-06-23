@@ -7,6 +7,9 @@ class TranslateState extends Equatable {
   const TranslateState(this.languageCode, this.countryCode);
 
   bool get isMarathi => languageCode == 'mr';
+  bool get isHindi => languageCode == 'hi';
+  bool get isGujarati => languageCode == 'gu';
+  bool get isKannada => languageCode == 'kn';
 
   @override
   List<Object> get props => [languageCode, countryCode];

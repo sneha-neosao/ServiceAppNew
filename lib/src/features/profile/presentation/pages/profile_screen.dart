@@ -30,7 +30,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     final translateState = context.read<TranslateBloc>().state;
-    _selectedLanguage = translateState.isMarathi ? 'Marathi' : 'English';
+    _selectedLanguage = translateState.isMarathi
+        ? 'Marathi'
+        : translateState.isHindi
+            ? 'Hindi'
+            : translateState.isGujarati
+                ? 'Gujarati'
+                : translateState.isKannada
+                    ? 'Kannada'
+                    : 'English';
   }
 
   String _getInitials(String? name) {
@@ -67,6 +75,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     context.read<TranslateBloc>().add(TrMarathiEvent());
                   } else if (lang == 'ENGLISH') {
                     context.read<TranslateBloc>().add(TrEnglishEvent());
+                  } else if (lang == 'HINDI') {
+                    context.read<TranslateBloc>().add(TrHindiEvent());
+                  } else if (lang == 'GUJARATI') {
+                    context.read<TranslateBloc>().add(TrGujaratiEvent());
+                  } else if (lang == 'KANNADA') {
+                    context.read<TranslateBloc>().add(TrKannadaEvent());
                   }
 
                   Future.delayed(const Duration(milliseconds: 180), () {
