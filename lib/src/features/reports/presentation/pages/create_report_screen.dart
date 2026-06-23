@@ -109,8 +109,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _pumpFlowM3hrCtrl.addListener(() => _calculateFlow('M3HR'));
     _pumpFlowUsgpmCtrl.addListener(() => _calculateFlow('USGPM'));
 
-    _ratingKwCtrl.addListener(() => _calculateRating('KW'));
-    _ratingHpCtrl.addListener(() => _calculateRating('HP'));
+    // _ratingKwCtrl.addListener(() => _calculateRating('KW'));
+    // _ratingHpCtrl.addListener(() => _calculateRating('HP'));
   }
 
   void _calculateFlow(String source) {
@@ -177,6 +177,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   }
 
   void _calculateRating(String source) {
+    /*
     if (_isAutoCalculatingRating) return;
     String text = source == 'KW' ? _ratingKwCtrl.text : _ratingHpCtrl.text;
 
@@ -205,6 +206,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     }
 
     _isAutoCalculatingRating = false;
+    */
   }
 
   late ServiceWorkReportStep1Bloc _serviceWorkReportStep1Bloc;

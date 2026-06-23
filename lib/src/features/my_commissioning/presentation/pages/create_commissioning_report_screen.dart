@@ -269,8 +269,8 @@ class _CreateCommissioningReportScreenState
     _pumpFlowM3HRController.addListener(() => _calculateFlow('M3HR'));
     _pumpFlowUSGPMController.addListener(() => _calculateFlow('USGPM'));
 
-    _ratingKWController.addListener(() => _calculateRating('KW'));
-    _ratingHPController.addListener(() => _calculateRating('HP'));
+    // _ratingKWController.addListener(() => _calculateRating('KW'));
+    // _ratingHPController.addListener(() => _calculateRating('HP'));
   }
 
   void _calculateFlow(String source) {
@@ -341,6 +341,7 @@ class _CreateCommissioningReportScreenState
   }
 
   void _calculateRating(String source) {
+    /*
     if (_isAutoCalculatingRating) return;
     String text = source == 'KW'
         ? _ratingKWController.text
@@ -373,6 +374,7 @@ class _CreateCommissioningReportScreenState
     }
 
     _isAutoCalculatingRating = false;
+    */
   }
 
   Future<void> _fetchLoggedInTechnician() async {
