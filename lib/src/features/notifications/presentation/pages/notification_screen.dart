@@ -263,6 +263,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         color: const Color(0xFF0B68B9),
                         onRefresh: () async {
                           _fetchNotifications(page: 1);
+                          await Future.delayed(const Duration(seconds: 1));
                         },
                         child: SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
@@ -278,6 +279,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       color: const Color(0xFF0B68B9),
                       onRefresh: () async {
                         _fetchNotifications(page: 1);
+                        await Future.delayed(const Duration(seconds: 1));
                       },
                       child: ListView.builder(
                         physics: const AlwaysScrollableScrollPhysics(),

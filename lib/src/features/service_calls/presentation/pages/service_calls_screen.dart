@@ -168,6 +168,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
         body: Container(
           color: const Color(0xFFF8F9FB),
           child: RefreshIndicator(
+            edgeOffset: 280.0,
             color: const Color(0xFF0B68B9),
             onRefresh: () async {
               _fetchServiceCalls(isRefresh: true);

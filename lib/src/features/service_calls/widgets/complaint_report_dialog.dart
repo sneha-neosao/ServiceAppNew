@@ -344,7 +344,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                             )
                                           : const Icon(Icons.download, size: 20),
                                       label: Text(
-                                        isLoading ? 'Generating PDF...' : 'View Complaint Report',
+                                        isLoading ? 'generating_pdf'.tr() : 'reports_view_complaint'.tr(),
                                         style: AppFont.style(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w800,

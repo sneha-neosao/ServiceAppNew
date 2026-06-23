@@ -510,5 +510,10 @@
   "complaint_description": "Complaint Description",
   "assigned_technicians": "Assigned Technicians",
   "attachments": "Attachments",
-  "amc_report_feedback": "AMC Work Feedback"
+  "amc_report_feedback": "AMC Work Feedback",
+  "generating_pdf": "Generating PDF...",
+  "service_work_report": "Service / Work Report",
+  "enter_member_name": "Enter Member name",
+  "coming_soon": "Coming Soon",
+  "preventive_maintenance_checklist_title": "Preventive Maintenance Checklist\\n(Check & Tick if Found OK / NOT OK)"
 }

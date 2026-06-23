@@ -80,8 +80,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   bool _isCustomerDropdownOpen = false;
   bool _isSiteDropdownOpen = false;
-  String _selectedCustomer = 'Select Customer';
-  String _selectedSite = 'Select Site';
+  String _selectedCustomer = 'select_customer'.tr();
+  String _selectedSite = 'select_site'.tr();
   String? _selectedCustomerId;
   String? _selectedSiteId;
   String? _reportId;
@@ -104,33 +104,33 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   bool _isAutoCalculatingRating = false;
 
   void _setupAutoCalculateListeners() {
-    _pumpFlowLpmCtrl.addListener(() => _calculateFlow('LPM'));
-    _pumpFlowLpsCtrl.addListener(() => _calculateFlow('LPS'));
+    _pumpFlowLpmCtrl.addListener(() => _calculateFlow('lpm'.tr()));
+    _pumpFlowLpsCtrl.addListener(() => _calculateFlow('lps'.tr()));
     _pumpFlowM3hrCtrl.addListener(() => _calculateFlow('M3HR'));
-    _pumpFlowUsgpmCtrl.addListener(() => _calculateFlow('USGPM'));
+    _pumpFlowUsgpmCtrl.addListener(() => _calculateFlow('usgpm'.tr()));
 
-    // _ratingKwCtrl.addListener(() => _calculateRating('KW'));
-    // _ratingHpCtrl.addListener(() => _calculateRating('HP'));
+    // _ratingKwCtrl.addListener(() => _calculateRating('kw'.tr()));
+    // _ratingHpCtrl.addListener(() => _calculateRating('hp'.tr()));
   }
 
   void _calculateFlow(String source) {
     if (_isAutoCalculatingFlow) return;
     String text = "";
-    if (source == 'LPM')
+    if (source == 'lpm'.tr())
       text = _pumpFlowLpmCtrl.text;
-    else if (source == 'LPS')
+    else if (source == 'lps'.tr())
       text = _pumpFlowLpsCtrl.text;
     else if (source == 'M3HR')
       text = _pumpFlowM3hrCtrl.text;
-    else if (source == 'USGPM')
+    else if (source == 'usgpm'.tr())
       text = _pumpFlowUsgpmCtrl.text;
 
     if (text.isEmpty) {
       _isAutoCalculatingFlow = true;
-      if (source != 'LPM') _pumpFlowLpmCtrl.text = "";
-      if (source != 'LPS') _pumpFlowLpsCtrl.text = "";
+      if (source != 'lpm'.tr()) _pumpFlowLpmCtrl.text = "";
+      if (source != 'lps'.tr()) _pumpFlowLpsCtrl.text = "";
       if (source != 'M3HR') _pumpFlowM3hrCtrl.text = "";
-      if (source != 'USGPM') _pumpFlowUsgpmCtrl.text = "";
+      if (source != 'usgpm'.tr()) _pumpFlowUsgpmCtrl.text = "";
       _isAutoCalculatingFlow = false;
       return;
     }
@@ -141,37 +141,32 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _isAutoCalculatingFlow = true;
     double lpm = 0, lps = 0, m3hr = 0, usgpm = 0;
 
-    switch (source) {
-      case 'LPM':
+    if (source == 'lpm'.tr()) {
         lpm = value;
         lps = lpm / 60;
         m3hr = lpm * 0.06;
         usgpm = lpm / 3.78541;
-        break;
-      case 'LPS':
+    } else if (source == 'lps'.tr()) {
         lps = value;
         lpm = lps * 60;
         m3hr = lps * 3.6;
         usgpm = lps * 15.8503;
-        break;
-      case 'M3HR':
+    } else if (source == 'M3HR') {
         m3hr = value;
         lpm = m3hr * 16.6667;
         lps = m3hr / 3.6;
         usgpm = m3hr * 4.40287;
-        break;
-      case 'USGPM':
+    } else if (source == 'usgpm'.tr()) {
         usgpm = value;
         lpm = usgpm * 3.78541;
         lps = usgpm * 0.0630902;
         m3hr = usgpm * 0.227125;
-        break;
     }
 
-    if (source != 'LPM') _pumpFlowLpmCtrl.text = lpm.round().toString();
-    if (source != 'LPS') _pumpFlowLpsCtrl.text = lps.round().toString();
+    if (source != 'lpm'.tr()) _pumpFlowLpmCtrl.text = lpm.round().toString();
+    if (source != 'lps'.tr()) _pumpFlowLpsCtrl.text = lps.round().toString();
     if (source != 'M3HR') _pumpFlowM3hrCtrl.text = m3hr.round().toString();
-    if (source != 'USGPM') _pumpFlowUsgpmCtrl.text = usgpm.round().toString();
+    if (source != 'usgpm'.tr()) _pumpFlowUsgpmCtrl.text = usgpm.round().toString();
 
     _isAutoCalculatingFlow = false;
   }
@@ -179,12 +174,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   void _calculateRating(String source) {
     /*
     if (_isAutoCalculatingRating) return;
-    String text = source == 'KW' ? _ratingKwCtrl.text : _ratingHpCtrl.text;
+    String text = source == 'kw'.tr() ? _ratingKwCtrl.text : _ratingHpCtrl.text;
 
     if (text.isEmpty) {
       _isAutoCalculatingRating = true;
-      if (source != 'KW') _ratingKwCtrl.text = "";
-      if (source != 'HP') _ratingHpCtrl.text = "";
+      if (source != 'kw'.tr()) _ratingKwCtrl.text = "";
+      if (source != 'hp'.tr()) _ratingHpCtrl.text = "";
       _isAutoCalculatingRating = false;
       return;
     }
@@ -195,14 +190,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _isAutoCalculatingRating = true;
     double kw = 0, hp = 0;
 
-    if (source == 'KW') {
+    if (source == 'kw'.tr()) {
       kw = value;
       hp = kw / 0.746;
-      if (source != 'HP') _ratingHpCtrl.text = hp.round().toString();
+      if (source != 'hp'.tr()) _ratingHpCtrl.text = hp.round().toString();
     } else {
       hp = value;
       kw = hp * 0.746;
-      if (source != 'KW') _ratingKwCtrl.text = kw.round().toString();
+      if (source != 'kw'.tr()) _ratingKwCtrl.text = kw.round().toString();
     }
 
     _isAutoCalculatingRating = false;
@@ -457,17 +452,17 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         appSnackBar(
           context,
           const Color(0xFFF44336),
-          "Please add at least one technician",
+          "assign_tech_validation_msg".tr(),
         );
         return;
       }
 
       if (_selectedCustomerId == null) {
-        appSnackBar(context, const Color(0xFFF44336), "Please select customer");
+        appSnackBar(context, const Color(0xFFF44336), "please_select_customer".tr());
         return;
       }
       if (_selectedSiteId == null) {
-        appSnackBar(context, const Color(0xFFF44336), "Please select site");
+        appSnackBar(context, const Color(0xFFF44336), "please_select_site".tr());
         return;
       }
 
@@ -491,7 +486,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         appSnackBar(
           context,
           const Color(0xFFF44336),
-          "Missing report ID. Please save step 1 first.",
+          "report_id_is_missing".tr(),
         );
         return;
       }
@@ -879,7 +874,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
                       // ── Title ───────────────────────────────────────────────────────
                       Text(
-                        'Delete Draft Report?',
+                        'delete_draft_report'.tr(),
                         style: AppFont.style(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
@@ -891,7 +886,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
                       // ── Subtitle ────────────────────────────────────────────────────
                       Text(
-                        'Are you sure you want to go back?\nThis draft report will be permanently\ndeleted.',
+                        'delete_draft_subtitle'.tr(),
                         textAlign: TextAlign.center,
                         style: AppFont.style(
                           fontSize: 14,
@@ -919,7 +914,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                   ),
                                 ),
                                 child: Text(
-                                  'Cancel',
+                                  'cancel'.tr(),
                                   style: AppFont.style(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w800,
@@ -997,7 +992,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                                     ),
                                               )
                                             : Text(
-                                                'Delete Now',
+                                                'delete_now'.tr(),
                                                 style: AppFont.style(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.w800,
@@ -1084,7 +1079,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Service Call Report Feedback',
+                  'service_call_report_feedback'.tr(),
                   textAlign: TextAlign.center,
                   style: AppFont.style(
                     fontSize: 22,
@@ -1121,7 +1116,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Scan for Customer Feedback',
+                  'scan_for_customer_feedback'.tr(),
                   textAlign: TextAlign.center,
                   style: AppFont.style(
                     fontSize: 14,
@@ -1379,7 +1374,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             if (state is CustomerSuccessState) {
               if ((_selectedCustomerId == null ||
                       _selectedCustomerId!.isEmpty) &&
-                  _selectedCustomer != 'Select Customer') {
+                  _selectedCustomer != 'select_customer'.tr()) {
                 final matches = state.data.data.where(
                   (x) => x.name == _selectedCustomer,
                 );
@@ -1398,7 +1393,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           listener: (context, state) {
             if (state is SitesSuccessState) {
               if ((_selectedSiteId == null || _selectedSiteId!.isEmpty) &&
-                  _selectedSite != 'Select Site') {
+                  _selectedSite != 'select_site'.tr()) {
                 final matches = state.data.data.where(
                   (x) => x.name == _selectedSite,
                 );
@@ -1507,7 +1502,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                               const SizedBox(width: 12),
                                               Expanded(
                                                 child: Text(
-                                                  'Service / Work Report',
+                                                  'service_work_report'.tr(),
                                                   style: AppFont.style(
                                                     fontSize: 17,
                                                     fontWeight: FontWeight.w900,
@@ -1933,7 +1928,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           child: Padding(
             padding: const EdgeInsets.only(top: 60),
             child: Text(
-              "Coming Soon",
+              'coming_soon'.tr(),
               style: AppFont.style(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
@@ -1972,7 +1967,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   _selectedCustomerId = state.data.data!.id;
                 }
                 _selectedCustomer = newName;
-                _selectedSite = 'Select Site';
+                _selectedSite = 'select_site'.tr();
                 _selectedSiteId = null;
                 _sitesList.clear();
               });
@@ -2010,7 +2005,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Add New Customer',
+                          'add_new_customer'.tr(),
                           style: AppFont.style(
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
@@ -2039,7 +2034,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Customer Name',
+                      'create_report_customer_name'.tr(),
                       style: AppFont.style(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
@@ -2058,7 +2053,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         color: const Color(0xFF0D121F),
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Enter Customer Name',
+                        hintText: 'enter_customer_name'.tr(),
                         hintStyle: AppFont.style(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -2124,7 +2119,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                 ),
                               )
                             : Text(
-                                'Save Entry',
+                                'save_entry'.tr(),
                                 style: AppFont.style(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
@@ -2174,7 +2169,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       appSnackBar(
         context,
         const Color(0xFFF44336),
-        'Please select a customer first',
+        'please_select_customer'.tr(),
       );
       return;
     }
@@ -2235,7 +2230,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Add New Site',
+                          'add_new_site'.tr(),
                           style: AppFont.style(
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
@@ -2264,7 +2259,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Site Name',
+                      'site_name'.tr(),
                       style: AppFont.style(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
@@ -2283,7 +2278,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         color: const Color(0xFF0D121F),
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Enter Site Name',
+                        hintText: 'enter_site_name'.tr(),
                         hintStyle: AppFont.style(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -2353,7 +2348,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                 ),
                               )
                             : Text(
-                                'Save Entry',
+                                'save_entry'.tr(),
                                 style: AppFont.style(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
@@ -2397,11 +2392,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             _selectedCustomerId = data.customerId;
             _selectedCustomer = data.customerName.isNotEmpty
                 ? data.customerName
-                : 'Select Customer';
+                : 'service_calls_filter_select_customer'.tr();
             _selectedSiteId = data.siteId;
             _selectedSite = data.siteName.isNotEmpty
                 ? data.siteName
-                : 'Select Site';
+                : 'service_calls_filter_select_site'.tr();
 
             if (data.memberPresentsCustomerSide.isNotEmpty) {
               final members = data.memberPresentsCustomerSide.split(',');
@@ -2437,7 +2432,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           });
 
           if ((_selectedCustomerId == null || _selectedCustomerId!.isEmpty) &&
-              _selectedCustomer != 'Select Customer') {
+              _selectedCustomer != 'select_customer'.tr()) {
             final custState = _customerBloc.state;
             if (custState is CustomerSuccessState) {
               final matches = custState.data.data.where(
@@ -2455,7 +2450,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             _sitesBloc.add(SitesGetEvent(customer_id: _selectedCustomerId!));
 
             if ((_selectedSiteId == null || _selectedSiteId!.isEmpty) &&
-                _selectedSite != 'Select Site') {
+                _selectedSite != 'select_site'.tr()) {
               final sitesState = _sitesBloc.state;
               if (sitesState is SitesSuccessState) {
                 final siteMatches = sitesState.data.data.where(
@@ -2753,17 +2748,17 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 }
 
                 List<String> validItems = List.from(_customersList);
-                if (_selectedCustomer != 'Select Customer' &&
+                if (_selectedCustomer != 'select_customer'.tr() &&
                     !validItems.contains(_selectedCustomer)) {
                   validItems.add(_selectedCustomer);
                 }
 
                 return SearchableDropdown<String>(
                   items: validItems,
-                  value: _selectedCustomer == 'Select Customer'
+                  value: _selectedCustomer == 'select_customer'.tr()
                       ? null
                       : _selectedCustomer,
-                  hintText: 'Select Customer',
+                  hintText: 'select_customer'.tr(),
                   itemAsString: (item) => item,
                   isLoading: isLoading,
                   filterFn: (item, filter) => true,
@@ -2786,7 +2781,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   },
                   onChanged: (val) {
                     setState(() {
-                      _selectedCustomer = val ?? 'Select Customer';
+                      _selectedCustomer = val ?? 'select_customer'.tr();
                       if (val == null) {
                         _selectedCustomerId = null;
                       }
@@ -2830,19 +2825,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 }
 
                 List<String> validItems = List.from(_sitesList);
-                if (_selectedSite != 'Select Site' &&
+                if (_selectedSite != 'select_site'.tr() &&
                     !validItems.contains(_selectedSite)) {
                   validItems.add(_selectedSite);
                 }
 
                 return SearchableDropdown<String>(
                   items: validItems,
-                  value: _selectedSite == 'Select Site' ? null : _selectedSite,
-                  hintText: 'Select Site',
+                  value: _selectedSite == 'select_site'.tr() ? null : _selectedSite,
+                  hintText: 'select_site'.tr(),
                   itemAsString: (item) => item,
                   isLoading: isLoading,
                   filterFn: (item, filter) => true,
-                  onSearchChanged: _selectedCustomer != 'Select Customer'
+                  onSearchChanged: _selectedCustomer != 'select_customer'.tr()
                       ? (v) {
                           String? customerId = _selectedCustomerId;
                           if ((customerId == null || customerId.isEmpty) &&
@@ -2866,7 +2861,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           }
                         }
                       : null,
-                  onLoadMore: _selectedCustomer != 'Select Customer'
+                  onLoadMore: _selectedCustomer != 'select_customer'.tr()
                       ? (lastSearch) {
                           // Only fetch page 2 if we actually have a full page 1
                           if (state is SitesSuccessState &&
@@ -2899,7 +2894,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       : null,
                   onChanged: (val) {
                     setState(() {
-                      _selectedSite = val ?? 'Select Site';
+                      _selectedSite = val ?? 'select_site'.tr();
                       if (val == null) {
                         _selectedSiteId = null;
                       }
@@ -2960,7 +2955,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                   color: const Color(0xFF0D121F),
                                 ),
                                 decoration: InputDecoration(
-                                  hintText: 'Enter Member name',
+                                  hintText: 'enter_member_name'.tr(),
                                   hintStyle: AppFont.style(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w800,
@@ -3007,7 +3002,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             const SizedBox(height: 4),
 
             // Agenda / Purpose
-            _buildLabel('Agenda / Purpose Of Visit'),
+            _buildLabel('commissioning_agenda_title'.tr()),
             const SizedBox(height: 16),
             Container(
               height: 150,
@@ -3030,7 +3025,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         color: const Color(0xFF0D121F),
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Enter Agenda / Purpose Of Visit',
+                        hintText: 'amc_report_agenda'.tr(),
                         hintStyle: AppFont.style(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
@@ -3066,7 +3061,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Technical Details',
+              'commissioning_technical_details'.tr(),
               style: AppFont.style(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
@@ -3099,7 +3094,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  'NA',
+                  'commissioning_na'.tr(),
                   style: AppFont.style(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
@@ -3123,52 +3118,52 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 const SizedBox(height: 24),
 
                 // ── Pump Make ──────────────────────────────────────────────
-                _buildTechLabel('Pump Make'),
+                _buildTechLabel('commissioning_pump_make'.tr()),
                 _buildUnderlineField(_pumpMakeCtrl),
                 const SizedBox(height: 20),
 
                 // ── Pump Model ─────────────────────────────────────────────
-                _buildTechLabel('Pump Model'),
+                _buildTechLabel('commissioning_pump_model'.tr()),
                 _buildUnderlineField(_pumpModelCtrl),
                 const SizedBox(height: 20),
 
                 // ── Pump Serial Number ─────────────────────────────────────
-                _buildTechLabel('Pump Serial Number'),
+                _buildTechLabel('commissioning_pump_serial_number'.tr()),
                 _buildUnderlineField(_pumpSerialCtrl),
                 const SizedBox(height: 20),
 
                 // ── Pump Flow (2×2 grid) ───────────────────────────────────
-                _buildTechLabel('Pump Flow'),
+                _buildTechLabel('commissioning_pump_flow'.tr()),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Expanded(child: _buildUnitField(_pumpFlowLpmCtrl, 'LPM')),
+                    Expanded(child: _buildUnitField(_pumpFlowLpmCtrl, 'lpm'.tr())),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: _buildUnitField(_pumpFlowM3hrCtrl, 'M3/HR'),
+                      child: _buildUnitField(_pumpFlowM3hrCtrl, 'm3_hr'.tr()),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Expanded(child: _buildUnitField(_pumpFlowLpsCtrl, 'LPS')),
+                    Expanded(child: _buildUnitField(_pumpFlowLpsCtrl, 'lps'.tr())),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: _buildUnitField(_pumpFlowUsgpmCtrl, 'USGPM'),
+                      child: _buildUnitField(_pumpFlowUsgpmCtrl, 'usgpm'.tr()),
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
 
                 // ── Pump Head ──────────────────────────────────────────────
-                _buildTechLabel('Pump Head'),
+                _buildTechLabel('commissioning_pump_head'.tr()),
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(
                       flex: 5,
-                      child: _buildUnitField(_pumpHeadMtrCtrl, 'MTR'),
+                      child: _buildUnitField(_pumpHeadMtrCtrl, 'mtr'.tr()),
                     ),
                     const Spacer(flex: 5),
                   ],
@@ -3182,29 +3177,29 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 const SizedBox(height: 24),
 
                 // ── Driver Make ────────────────────────────────────────────
-                _buildTechLabel('Driver Make'),
+                _buildTechLabel('commissioning_driver_make'.tr()),
                 _buildUnderlineField(_driverMakeCtrl),
                 const SizedBox(height: 20),
 
                 // ── Driver Serial Number ───────────────────────────────────
-                _buildTechLabel('Driver Serial Number'),
+                _buildTechLabel('commissioning_driver_serial_number'.tr()),
                 _buildUnderlineField(_driverSerialCtrl),
                 const SizedBox(height: 20),
 
                 // ── Rating (KW / HP) ───────────────────────────────────────
-                _buildTechLabel('Rating (KW/HP)'),
+                _buildTechLabel('commissioning_rating'.tr()),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Expanded(child: _buildUnitField(_ratingKwCtrl, 'KW')),
+                    Expanded(child: _buildUnitField(_ratingKwCtrl, 'kw'.tr())),
                     const SizedBox(width: 16),
-                    Expanded(child: _buildUnitField(_ratingHpCtrl, 'HP')),
+                    Expanded(child: _buildUnitField(_ratingHpCtrl, 'hp'.tr())),
                   ],
                 ),
                 const SizedBox(height: 20),
 
                 // ── RPM ────────────────────────────────────────────────────
-                _buildTechLabel('RPM'),
+                _buildTechLabel('commissioning_rpm'.tr()),
                 _buildUnderlineField(_rpmCtrl),
                 const SizedBox(height: 32),
                 const Divider(
@@ -3215,19 +3210,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 const SizedBox(height: 24),
 
                 // ── Control Panel Make ─────────────────────────────────────
-                _buildTechLabel('Control Panel Make'),
+                _buildTechLabel('commissioning_control_panel_make'.tr()),
                 _buildUnderlineField(_panelMakeCtrl),
                 const SizedBox(height: 20),
 
                 // ── Panel Serial / Model ───────────────────────────────────
-                _buildTechLabel('Panel Serial / Model'),
+                _buildTechLabel('commissioning_panel_serial_model'.tr()),
                 _buildUnderlineField(_panelSerialCtrl),
                 const SizedBox(height: 40),
 
                 // ── Work Description ───────────────────────────────────────
                 Center(
                   child: Text(
-                    'Work Description',
+                    'service_work_description'.tr(),
                     style: AppFont.style(
                       fontSize: 15,
                       fontWeight: FontWeight.w900,
@@ -3292,7 +3287,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                             color: const Color(0xFF0D121F),
                                           ),
                                           decoration: InputDecoration(
-                                            hintText: 'Enter Work Description',
+                                            hintText: 'commissioning_work_description_hint'.tr(),
                                             hintStyle: AppFont.style(
                                               fontSize: 15,
                                               fontWeight: FontWeight.w700,
@@ -3418,7 +3413,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       children: [
         // ── Title ─────────────────────────────────────────────────────────────
         Text(
-          'Preventive Maintenance Checklist\n(Check & Tick if Found OK / NOT OK)',
+          'preventive_maintenance_checklist_title'.tr(),
           textAlign: TextAlign.center,
           style: AppFont.style(
             fontSize: 14,
@@ -3431,36 +3426,36 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         // ── Mechanical Checklist ───────────────────────────────────────────────
         _buildCheckSection(
           icon: Icons.settings_outlined,
-          title: 'Mechanical Checklist',
+          title: 'commissioning_mechanical_checklist'.tr(),
           isNA: _mechNA,
           onNATap: () => setState(() => _mechNA = !_mechNA),
           items: [
             _buildCheckItem(
-              label: 'Bearing Noise / Abnormal Sound Checked:',
+              label: 'chk_bearing_noise'.tr(),
               selected: _bearingNoise,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _bearingNoise = v),
             ),
             _buildCheckItem(
-              label: 'Vibration Checked:',
+              label: 'chk_vibration'.tr(),
               selected: _vibration,
               options: const ['normal', 'high'],
-              labels: const ['NORMAL', 'HIGH'],
+              labels: ['commissioning_normal'.tr(), 'commissioning_high'.tr()],
               onSelect: (v) => setState(() => _vibration = v),
             ),
             _buildCheckItem(
-              label: 'Mechanical Seal / Gland Leakage Checked:',
+              label: 'chk_mech_seal'.tr(),
               selected: _mechSeal,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _mechSeal = v),
             ),
             _buildCheckItem(
-              label: 'Pump Not Running Dry:',
+              label: 'chk_pump_dry'.tr(),
               selected: _pumpDry,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _pumpDry = v),
             ),
           ],
@@ -3471,50 +3466,50 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         // ── Pipeline / Hydraulic Checklist ────────────────────────────────────
         _buildCheckSection(
           icon: Icons.water_drop_outlined,
-          title: 'Pipeline / Hydraulic Checklist',
+          title: 'commissioning_pipeline_hydraulic_checklist'.tr(),
           isNA: _pipeNA,
           onNATap: () => setState(() => _pipeNA = !_pipeNA),
           items: [
             _buildCheckItem(
-              label: 'NRV / Butterfly Valve / Gate Valve Condition Checked:',
+              label: 'chk_nrv'.tr(),
               selected: _nrvValve,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _nrvValve = v),
             ),
             _buildCheckItem(
-              label: 'Strainer / Foot Valve Condition Checked:',
+              label: 'chk_strainer'.tr(),
               selected: _strainerValve,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _strainerValve = v),
             ),
             _buildCheckItem(
-              label: 'Suction Line (Air Leakage & Water Leakage Checked):',
+              label: 'chk_suction_line'.tr(),
               selected: _suctionLine,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _suctionLine = v),
             ),
             _buildCheckItem(
-              label: 'Delivery Line (Air Leakage & Water Leakage Checked):',
+              label: 'chk_delivery_line'.tr(),
               selected: _deliveryLine,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _deliveryLine = v),
             ),
             _buildCheckItem(
-              label: 'Suction / Delivery Valve Condition Checked:',
+              label: 'chk_suction_del_valve'.tr(),
               selected: _suctionDelivery,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _suctionDelivery = v),
             ),
             _buildCheckItem(
-              label: 'Pressure Switch / Pressure Transmitter Checked:',
+              label: 'chk_pressure_switch'.tr(),
               selected: _pressureSwitch,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _pressureSwitch = v),
             ),
           ],
@@ -3525,43 +3520,43 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         // ── Electrical Checklist ───────────────────────────────────────────────
         _buildCheckSection(
           icon: Icons.bolt_outlined,
-          title: 'Electrical Checklist',
+          title: 'commissioning_electrical_checklist'.tr(),
           isNA: _elecNA,
           onNATap: () => setState(() => _elecNA = !_elecNA),
           items: [
             _buildCheckItem(
-              label: 'Electrical Faults Checked:',
+              label: 'chk_elec_faults'.tr(),
               selected: _elecFaults,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _elecFaults = v),
             ),
             _buildCheckItem(
-              label: 'Voltage Checked:',
+              label: 'chk_voltage'.tr(),
               selected: _voltage,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _voltage = v),
             ),
             _buildCheckItem(
-              label: 'Phase Checked:',
+              label: 'chk_phase'.tr(),
               selected: _phase,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _phase = v),
             ),
             _buildCheckItem(
-              label: 'Current Checked:',
+              label: 'chk_current'.tr(),
               selected: _current,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _current = v),
             ),
             _buildCheckItem(
-              label: 'Control Panel Wiring Checked:',
+              label: 'chk_panel_wiring'.tr(),
               selected: _panelWiring,
               options: const ['ok', 'not_ok'],
-              labels: const ['OK', 'NOT OK'],
+              labels: ['commissioning_ok'.tr(), 'commissioning_not_ok'.tr()],
               onSelect: (v) => setState(() => _panelWiring = v),
             ),
           ],
@@ -3622,7 +3617,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    'NA',
+                    'commissioning_na'.tr(),
                     style: AppFont.style(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
@@ -3754,7 +3749,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       children: [
         // ── Remarks (Technician Side) ─────────────────────────────────
         Text(
-          'Remarks (Technician Side) :',
+          'commissioning_remarks_tech'.tr(),
           style: AppFont.style(
             fontSize: 13,
             fontWeight: FontWeight.w800,
@@ -3764,14 +3759,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         const SizedBox(height: 10),
         _buildRemarksBox(
           controller: _remarksTechCtrl,
-          hint: 'Enter Technician Remarks',
+          hint: 'commissioning_remarks_tech_hint'.tr(),
         ),
 
         const SizedBox(height: 28),
 
         // ── Remarks (Customer Side) ──────────────────────────────────
         Text(
-          'Remarks (Customer Side) :',
+          'commissioning_remarks_customer'.tr(),
           style: AppFont.style(
             fontSize: 13,
             fontWeight: FontWeight.w800,
@@ -3781,7 +3776,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         const SizedBox(height: 10),
         _buildRemarksBox(
           controller: _remarksCustomerCtrl,
-          hint: 'Enter Customer Remarks',
+          hint: 'commissioning_remarks_customer_hint'.tr(),
         ),
 
         const SizedBox(height: 36),
@@ -3790,7 +3785,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
         // ── Recorded By ────────────────────────────────────────────
         Text(
-          'Recorded By:',
+          'commissioning_recorded_by'.tr(),
           style: AppFont.style(
             fontSize: 16,
             fontWeight: FontWeight.w900,
@@ -4111,7 +4106,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       const Icon(Icons.add, size: 28, color: Color(0xFFA5ABB7)),
                       const SizedBox(height: 6),
                       Text(
-                        'Upload',
+                        'upload'.tr(),
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
@@ -4151,7 +4146,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Capture',
+                        'capture'.tr(),
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
@@ -4567,3 +4562,4 @@ class _DashedBorderPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+

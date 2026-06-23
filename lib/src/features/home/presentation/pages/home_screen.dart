@@ -66,15 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _checkAndRegisterFcmToken();
   }
 
-  String _getInitials(String? name) {
-    if (name == null || name.trim().isEmpty) return '';
-    List<String> nameParts = name.trim().split(RegExp(r'\s+'));
-    if (nameParts.length >= 2) {
-      return '${nameParts[0][0]}${nameParts[1][0]}'.toUpperCase();
-    } else {
-      return nameParts[0].substring(0, 1).toUpperCase();
-    }
-  }
+
 
   Future<void> _checkAndRegisterFcmToken() async {
     final String? newToken = await NoficationService.getToken();
@@ -415,18 +407,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         ),
                                       )
-                                    : state is ProfileDetailsSuccessState && state.data.data.name.isNotEmpty
-                                        ? Center(
-                                            child: Text(
-                                              _getInitials(state.data.data.name),
-                                              style: AppFont.style(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          )
-                                        : Image.asset('assets/icons/profile_icon.png'),
+                                    : const Icon(
+                                        Icons.person_outline,
+                                        color: Colors.white,
+                                        size: 26,
+                                      ),
                               ),
                             ),
                           ],
