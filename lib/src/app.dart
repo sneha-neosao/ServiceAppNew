@@ -79,12 +79,6 @@ class _MyAppState extends State<MyApp> {
             },
             child: BlocBuilder<ThemeBloc, ThemeState>(
               builder: (_, state) {
-                final platformBrightness = MediaQuery.platformBrightnessOf(
-                  context,
-                );
-                final isDark =
-                    state.isDarkMode ?? (platformBrightness == Brightness.dark);
-
                 return MaterialApp.router(
                   debugShowCheckedModeBanner: false,
                   localizationsDelegates: context.localizationDelegates,
@@ -92,7 +86,7 @@ class _MyAppState extends State<MyApp> {
                   locale: context.locale,
                   theme: AppTheme.data(false),
                   darkTheme: AppTheme.data(true),
-                  themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+                  themeMode: ThemeMode.light,
                   routerConfig: _router,
                 );
               },
