@@ -60,7 +60,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
   Customer? _selectedCustomer;
   Site? _selectedSite;
   late String _selectedFilter;
-  String? _selectedStatus;
+  bool _isMissedAmcVisitsChecked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -127,9 +127,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
             color: const Color(0xFF0B68B9),
             onRefresh: () async {
               String? pendingParam;
-              if (_selectedStatus == 'Current Pending') {
-                pendingParam = 'is_current_pending';
-              } else if (_selectedStatus == 'Previous Pending') {
+              if (_isMissedAmcVisitsChecked) {
                 pendingParam = 'is_prious_pending';
               }
               _upcomingAmcBloc.add(UpcomingAmcGetEvent(_selectedFilter, pending: pendingParam));
@@ -165,9 +163,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                       _selectedFilter = val;
                     });
                     String? pendingParam;
-                    if (_selectedStatus == 'Current Pending') {
-                      pendingParam = 'is_current_pending';
-                    } else if (_selectedStatus == 'Previous Pending') {
+                    if (_isMissedAmcVisitsChecked) {
                       pendingParam = 'is_prious_pending';
                     }
                     _upcomingAmcBloc.add(UpcomingAmcGetEvent(val, pending: pendingParam));
@@ -279,32 +275,62 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
 
               const SizedBox(height: 12),
 
-              // ── Status dropdown ──────────────────────────────────────────
-              SearchableDropdown<String>(
-                items:  ['current_pending'.tr(), 'previous_pending'.tr()],
-                value: _selectedStatus,
-                hintText: 'select_status'.tr(),
-                itemAsString: (item) => item,
-                isSearchable: false,
-                onChanged: (val) {
+              // ── Missed AMC Visits Checkbox ──────────────────────────────────────────
+              GestureDetector(
+                onTap: () {
                   setState(() {
-                    _selectedStatus = val;
+                    _isMissedAmcVisitsChecked = !_isMissedAmcVisitsChecked;
                   });
                   String? pendingParam;
-                  if (val == 'current_pending'.tr()) {
-                    pendingParam = 'is_current_pending';
-                  } else if (val == 'previous_pending'.tr()) {
+                  if (_isMissedAmcVisitsChecked) {
                     pendingParam = 'is_prious_pending';
                   }
-                  print("✅ UI DROPDOWN SELECTED: $val -> Dispatching pendingParam: $pendingParam");
                   _upcomingAmcBloc.add(UpcomingAmcGetEvent(_selectedFilter, pending: pendingParam));
                 },
-                onClear: () {
-                  setState(() {
-                    _selectedStatus = null;
-                  });
-                  _upcomingAmcBloc.add(UpcomingAmcGetEvent(_selectedFilter));
-                },
+                child: Container(
+                  height: 56,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                    border: Border.all(color: const Color(0xFFF1F2F6)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: _isMissedAmcVisitsChecked ? const Color(0xFFA86F4B) : Colors.transparent,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                            color: _isMissedAmcVisitsChecked ? const Color(0xFFA86F4B) : const Color(0xFFD1D5DB),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: _isMissedAmcVisitsChecked
+                            ? const Icon(Icons.check, size: 16, color: Colors.white)
+                            : null,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Missed AMC Visits',
+                        style: AppFont.style(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF4A6581),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
 
               const SizedBox(height: 20),

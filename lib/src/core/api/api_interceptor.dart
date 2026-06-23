@@ -41,13 +41,10 @@ class ApiInterceptor extends Interceptor {
 
     options.baseUrl = ApiUrl.baseUrl;
 
-    // final isAuthRequest =
-    // options.uri.path.startsWith('/api/v1/auth');
+    bool skipAuth = options.path.contains('login') || options.path.contains('/token/refresh');
 
-    if (!options.baseUrl.contains('/auth')) {
-      if (token != null) {
-        options.headers['Authorization'] = 'Bearer $token';
-      }
+    if (!skipAuth && token != null) {
+      options.headers['Authorization'] = 'Bearer $token';
     }
 
     // 🔥 FULL REQUEST LOG
@@ -107,14 +104,12 @@ class ApiInterceptor extends Interceptor {
         }
 
         try {
-          final token = await SessionManager.getAuthToken();
           final refreshResponse = await dio.post(
-            "${ApiUrl.baseUrl}/technician/token/refresh",
+            "${ApiUrl.baseUrl}technician/token/refresh",
             data: {'refresh_token': refreshToken},
             options: Options(headers: {
               'accept': 'application/json',
               'Content-Type': 'application/json',
-              if (token != null) 'Authorization': 'Bearer $token',
             }),
           );
 
