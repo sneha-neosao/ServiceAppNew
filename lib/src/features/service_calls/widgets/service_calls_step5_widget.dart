@@ -101,6 +101,8 @@ class ServiceCallsStep5Widget extends StatelessWidget {
                         onBack: () => Navigator.pop(context),
                         commissioningWorkId: item.id,
                         complaintNo: item.complaintNumber,
+                        initialStepNo: item.step_no ?? 0,
+                        reportId: item.reportId,
                       ),
                     ),
                   );

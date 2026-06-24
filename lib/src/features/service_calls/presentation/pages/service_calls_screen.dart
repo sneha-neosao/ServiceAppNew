@@ -508,6 +508,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         commissioningWorkId: item.id,
                         complaintNo: item.complaintNumber,
                         initialStepNo: item.step_no ?? 0,
+                        reportId: item.reportId,
                       ),
                     ),
                   );
