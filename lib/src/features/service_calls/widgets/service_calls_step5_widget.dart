@@ -66,7 +66,7 @@ class ServiceCallsStep5Widget extends StatelessWidget {
                   .join(', ');
               final dateStr = item.createdAt.isNotEmpty
                   ? DateFormat(
-                      'dd-MM-yyyy',
+                      'd MMMM yyyy', context.locale.languageCode
                     ).format(DateTime.parse(item.createdAt).toLocal())
                   : null;
 

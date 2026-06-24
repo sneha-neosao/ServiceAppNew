@@ -47,6 +47,7 @@ class CreateAmcReportScreen extends StatefulWidget {
   final String? reportId;
   final String customerName;
   final String siteName;
+  final int initialStepNo;
 
   const CreateAmcReportScreen({
     super.key,
@@ -56,6 +57,7 @@ class CreateAmcReportScreen extends StatefulWidget {
     this.reportId,
     this.customerName = '',
     this.siteName = '',
+    this.initialStepNo = 0,
   });
 
   @override
@@ -63,7 +65,7 @@ class CreateAmcReportScreen extends StatefulWidget {
 }
 
 class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
-  int _currentStep = 1;
+  late int _currentStep;
   bool _isLoading = false;
   bool _isAutofillLoading = false;
   bool _hasFetchedStep2Autofill = false;
@@ -125,7 +127,17 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
     _assignedTechniciansBloc = getIt<AmcAssignedTechniciansBloc>();
 
+    _currentStep = widget.initialStepNo > 0 ? (widget.initialStepNo < 3 ? widget.initialStepNo + 1 : 3) : 1;
+
     if (widget.reportId != null) {
+      if (_currentStep == 1) {
+        _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
+      } else if (_currentStep == 2) {
+        _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
+      } else if (_currentStep == 3) {
+        _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
+      }
+    } else {
       _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
     }
   }
@@ -368,18 +380,6 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 _currentReportId = state.data.data.id;
               }
 
-              // Smart routing logic
-              final completedStep = state.data.data.lastCompletedStep;
-              if (completedStep > 0 && completedStep < 3 && _currentStep == 1) {
-                _currentStep = completedStep + 1;
-                if (_currentReportId != null) {
-                  if (_currentStep == 2) {
-                    _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
-                  } else if (_currentStep == 3) {
-                    _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
-                  }
-                }
-              }
             } else if (state is AmcReportStep1AutofillFailureState) {
               appSnackBar(context, const Color(0xFFF44336), state.message);
             }
@@ -676,7 +676,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   ),
                 ),
                 Text(
-                  DateFormat('d MMMM yyyy').format(DateTime.now()),
+                  DateFormat('d MMMM yyyy', context.locale.languageCode).format(DateTime.now()),
                   style: AppFont.style(
                     fontSize: 14,
                     fontWeight: FontWeight.w900,

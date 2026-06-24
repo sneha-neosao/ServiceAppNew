@@ -461,7 +461,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                               try {
                                 final dt = DateTime.parse(item.submittedAt);
                                 formattedDate = DateFormat(
-                                  'd MMMM yyyy',
+                                  'd MMMM yyyy', context.locale.languageCode
                                 ).format(dt);
                               } catch (_) {}
 
@@ -576,7 +576,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                               try {
                                 final dt = DateTime.parse(item.submittedAt);
                                 formattedDate = DateFormat(
-                                  'd MMMM yyyy',
+                                  'd MMMM yyyy', context.locale.languageCode
                                 ).format(dt);
                               } catch (_) {}
 
@@ -681,7 +681,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                               String formattedDate = item.submittedAt;
                               try {
                                 final dt = DateTime.parse(item.submittedAt);
-                                formattedDate = DateFormat('d MMMM yyyy').format(dt);
+                                formattedDate = DateFormat('d MMMM yyyy', context.locale.languageCode).format(dt);
                               } catch (_) {}
 
                               return _ReportCard(

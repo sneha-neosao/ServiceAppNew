@@ -515,5 +515,6 @@
   "service_work_report": "सेवा / कार्य रिपोर्ट",
   "enter_member_name": "सदस्य का नाम दर्ज करें",
   "coming_soon": "जल्द आ रहा है",
-  "preventive_maintenance_checklist_title": "निवारक रखरखाव चेकलिस्ट\n(जाँचें और टिक करें यदि ठीक / ठीक नहीं पाया गया)"
+  "preventive_maintenance_checklist_title": "निवारक रखरखाव चेकलिस्ट\n(जाँचें और टिक करें यदि ठीक / ठीक नहीं पाया गया)",
+  "total_visits": "कुल विज़िट्स"
 }

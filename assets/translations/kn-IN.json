@@ -515,5 +515,6 @@
   "service_work_report": "ಸೇವಾ / ಕೆಲಸದ ವರದಿ",
   "enter_member_name": "ಸದಸ್ಯರ ಹೆಸರನ್ನು ನಮೂದಿಸಿ",
   "coming_soon": "ಶೀಘ್ರದಲ್ಲೇ ಬರುತ್ತಿದೆ",
-  "preventive_maintenance_checklist_title": "ತಡೆಗಟ್ಟುವ ನಿರ್ವಹಣಾ ಪರಿಶೀಲನಾ ಪಟ್ಟಿ\n(ಸರಿಯಾಗಿದೆ / ಸರಿಯಿಲ್ಲ ಎಂದು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಟಿಕ್ ಮಾಡಿ)"
+  "preventive_maintenance_checklist_title": "ತಡೆಗಟ್ಟುವ ನಿರ್ವಹಣಾ ಪರಿಶೀಲನಾ ಪಟ್ಟಿ\n(ಸರಿಯಾಗಿದೆ / ಸರಿಯಿಲ್ಲ ಎಂದು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಟಿಕ್ ಮಾಡಿ)",
+  "total_visits": "ಒಟ್ಟು ಭೇಟಿಗಳು"
 }

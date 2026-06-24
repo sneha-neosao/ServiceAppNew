@@ -50,6 +50,7 @@ class AmcVisitData {
   final String? qrCodeImage;
   final String? fromDate;
   final String? toDate;
+  final int stepNo;
 
   AmcVisitData({
     required this.id,
@@ -68,6 +69,7 @@ class AmcVisitData {
     this.qrCodeImage,
     this.fromDate,
     this.toDate,
+    this.stepNo = 0,
   });
 
   factory AmcVisitData.fromJson(Map<String, dynamic> json) {
@@ -88,6 +90,7 @@ class AmcVisitData {
       qrCodeImage: json['qr_code_image'],
       fromDate: json['visit_from_date'],
       toDate: json['visit_to_date'],
+      stepNo: json['step_no'] ?? 0,
     );
   }
 
@@ -109,6 +112,7 @@ class AmcVisitData {
       'qr_code_image': qrCodeImage,
       'from_date': fromDate,
       'to_date': toDate,
+      'step_no': stepNo,
     };
   }
 }

@@ -397,7 +397,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                           location: visit.siteName,
                           visitInfo: "${'visit'.tr()} ${visit.visitNumber}/${visit.totalVisits}",
                           date: visit.fromDate != null
-                              ? DateFormat('d MMM yyyy').format(DateTime.parse(visit.fromDate!).toLocal())
+                              ? DateFormat('d MMMM yyyy', context.locale.languageCode).format(DateTime.parse(visit.fromDate!).toLocal())
                               : '-',
                           onTap: () => widget.onItemTap(
                             visit.id,

@@ -17,7 +17,7 @@ import 'package:service_app/src/features/amc/bloc/delete_amc_report_bloc/delete_
 class AmcVisitDetailsScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSubmit;
-  final Function(String) onEditReport;
+  final Function(String, int) onEditReport;
   final VoidCallback? onCompleteAmcWork;
   final String visitId;
   final String title;
@@ -136,10 +136,10 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
             if (fDate.isNotEmpty && tDate.isNotEmpty) {
               final fDt = DateTime.parse(fDate).toLocal();
               final tDt = DateTime.parse(tDate).toLocal();
-              visitRangeStr = '${DateFormat('d MMM yyyy').format(fDt)} ${'to'.tr()} ${DateFormat('d MMM yyyy').format(tDt)}';
+              visitRangeStr = '${DateFormat('d MMM yyyy', context.locale.languageCode).format(fDt)} ${'to'.tr()} ${DateFormat('d MMM yyyy', context.locale.languageCode).format(tDt)}';
             } else if (fDate.isNotEmpty) {
               final fDt = DateTime.parse(fDate).toLocal();
-              visitRangeStr = DateFormat('d MMM yyyy').format(fDt);
+              visitRangeStr = DateFormat('d MMM yyyy', context.locale.languageCode).format(fDt);
             }
           } catch (_) {}
           
@@ -198,7 +198,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Total Visits ($reportsCount)',
+                        '${'total_visits'.tr()} ($reportsCount)',
                         style: AppFont.style(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
@@ -512,7 +512,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                       if (report.submittedAt != null && report.submittedAt!.isNotEmpty) {
                         try {
                           final dt = DateTime.parse(report.submittedAt!).toLocal();
-                          submittedDateStr = DateFormat('d MMM yyyy').format(dt);
+                          submittedDateStr = DateFormat('d MMM yyyy', context.locale.languageCode).format(dt);
                         } catch (e) {
                           submittedDateStr = report.submittedAt;
                         }
@@ -763,8 +763,9 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                       IconButton(
                                         icon: const Icon(Icons.edit_outlined, color: Color(0xFF1565C0), size: 20),
                                         onPressed: () {
-                                          if (reportId != null) {
-                                            widget.onEditReport(reportId);
+                                          if (reportId != null && state is AmcVisitReportsSuccessState) {
+                                            final r = state.data.data.reports[index];
+                                            widget.onEditReport(reportId, r.stepNo);
                                           }
                                         },
                                         constraints: const BoxConstraints(),

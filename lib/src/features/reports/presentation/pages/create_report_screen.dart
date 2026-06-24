@@ -2545,7 +2545,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         ),
                       ),
                       Text(
-                        DateFormat('d MMMM yyyy').format(DateTime.now()),
+                        DateFormat('d MMMM yyyy', context.locale.languageCode).format(DateTime.now()),
                         style: AppFont.style(
                           fontSize: 14,
                           fontWeight: FontWeight.w900,

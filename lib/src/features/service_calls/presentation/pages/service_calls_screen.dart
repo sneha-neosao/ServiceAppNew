@@ -472,7 +472,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   .join(', ');
               final dateStr = item.lastServiceDate != null && item.lastServiceDate!.isNotEmpty
                   ? DateFormat(
-                      'd MMMM yyyy',
+                      'd MMMM yyyy', context.locale.languageCode
                     ).format(DateTime.parse(item.lastServiceDate!).toLocal())
                   : null;
 
@@ -600,7 +600,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               final item = data.data.results[index];
               final dateStr = item.lastServiceDate != null && item.lastServiceDate!.isNotEmpty
                   ? DateFormat(
-                      'd MMMM yyyy',
+                      'd MMMM yyyy', context.locale.languageCode
                     ).format(DateTime.parse(item.lastServiceDate!).toLocal())
                   : null;
 

@@ -44,6 +44,7 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
   String? _selectedAmcWindow;
   String? _selectedAmcVisitId;
   String? _selectedReportId;
+  int? _selectedStepNo;
   late AmcVisitCompleteBloc _amcVisitCompleteBloc;
 
   @override
@@ -137,6 +138,7 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
               _selectedAmcWindow = window;
               _amcReportsCreated = 0;
               _selectedReportId = null;
+              _selectedStepNo = null;
               _viewState = AmcViewState.details;
             });
           },
@@ -159,10 +161,12 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
           },
           onSubmit: () => setState(() {
             _selectedReportId = null;
+            _selectedStepNo = null;
             _viewState = AmcViewState.createReport;
           }),
-          onEditReport: (String reportId) => setState(() {
+          onEditReport: (String reportId, int stepNo) => setState(() {
             _selectedReportId = reportId;
+            _selectedStepNo = stepNo;
             _viewState = AmcViewState.createReport;
           }),
           onCompleteAmcWork: () {
@@ -175,6 +179,7 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
         return CreateAmcReportScreen(
           visitId: _selectedAmcVisitId ?? '',
           reportId: _selectedReportId,
+          initialStepNo: _selectedStepNo ?? 0,
           customerName: _selectedAmcTitle ?? '',
           siteName: _selectedAmcLocation ?? '',
           onBack: () => setState(() => _viewState = AmcViewState.details),

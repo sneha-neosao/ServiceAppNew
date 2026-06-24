@@ -515,5 +515,6 @@
   "service_work_report": "સર્વિસ / કામ રિપોર્ટ",
   "enter_member_name": "સભ્યનું નામ દાખલ કરો",
   "coming_soon": "જલ્દી જ આવી રહ્યું છે",
-  "preventive_maintenance_checklist_title": "પ્રિવેન્ટિવ મેન્ટેનન્સ ચેકલિસ્ટ\n(જો ઠીક / ઠીક નથી તો ચેક કરો અને ટિક કરો)"
+  "preventive_maintenance_checklist_title": "પ્રિવેન્ટિવ મેન્ટેનન્સ ચેકલિસ્ટ\n(જો ઠીક / ઠીક નથી તો ચેક કરો અને ટિક કરો)",
+  "total_visits": "કુલ મુલાકાતો"
 }

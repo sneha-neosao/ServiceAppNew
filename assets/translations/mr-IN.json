@@ -515,5 +515,6 @@
   "service_work_report": "सेवा / कामाचा अहवाल",
   "enter_member_name": "सदस्याचे नाव टाका",
   "coming_soon": "लवकरच येत आहे",
-  "preventive_maintenance_checklist_title": "प्रतिबंधात्मक देखभाल तपासणी यादी\\n(तपासा आणि योग्य असल्यास टिक करा)"
+  "preventive_maintenance_checklist_title": "प्रतिबंधात्मक देखभाल तपासणी यादी\\n(तपासा आणि योग्य असल्यास टिक करा)",
+  "total_visits": "एकूण भेटी"
 }

@@ -65,7 +65,7 @@ class Step1Widget extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    DateFormat('d MMMM yyyy').format(DateTime.now()),
+                    DateFormat('d MMMM yyyy', context.locale.languageCode).format(DateTime.now()),
                     style: AppFont.style(
                       fontSize: 16,
                       fontWeight: FontWeight.w900,

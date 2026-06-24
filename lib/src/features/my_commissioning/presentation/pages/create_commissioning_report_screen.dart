@@ -149,7 +149,7 @@ class _CreateCommissioningReportScreenState
   bool _isTechnicalDetailsNA = false;
   int _workDescriptionRows = 5;
   String _warrantySearchQuery = '';
-  // â”€â”€ Step 5: Preventive Maintenance Checklist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Step 5: Preventive Maintenance Checklist Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   // NA toggles per section
   bool _mechNA = false;
   bool _pipeNA = false;
@@ -1087,7 +1087,7 @@ class _CreateCommissioningReportScreenState
               is ServiceCallReportStep6LoadingState)
         return;
       print(
-        "ðŸš€ Submitting Step 6: technicianRepresentative = '$_selectedTechnicianRepId'",
+        "Ã°Å¸Å¡â‚¬ Submitting Step 6: technicianRepresentative = '$_selectedTechnicianRepId'",
       );
       if (widget.isServiceReport) {
         String? techSignaturePath = _technicianSignatureFile?.path;
@@ -2199,7 +2199,7 @@ class _CreateCommissioningReportScreenState
                                                                                             body: SafeArea(
                                                                                               child: Column(
                                                                                                 children: [
-                                                                                                  // â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                                                                                                  // Ã¢â€â‚¬Ã¢â€â‚¬ Header Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
                                                                                                   Padding(
                                                                                                     padding: const EdgeInsets.fromLTRB(
                                                                                                       20,
@@ -2333,7 +2333,7 @@ class _CreateCommissioningReportScreenState
                                                                                                       0xFFF1F2F6,
                                                                                                     ),
                                                                                                   ),
-                                                                                                  // â”€â”€ Body â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                                                                                                  // Ã¢â€â‚¬Ã¢â€â‚¬ Body Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
                                                                                                   Expanded(
                                                                                                     child: SingleChildScrollView(
                                                                                                       padding: const EdgeInsets.symmetric(
@@ -2343,7 +2343,7 @@ class _CreateCommissioningReportScreenState
                                                                                                       child: _buildBodyContent(),
                                                                                                     ),
                                                                                                   ),
-                                                                                                  // â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                                                                                                  // Ã¢â€â‚¬Ã¢â€â‚¬ Footer Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
                                                                                                   Container(
                                                                                                     padding: const EdgeInsets.symmetric(
                                                                                                       horizontal: 20,
@@ -2753,45 +2753,6 @@ class _CreateCommissioningReportScreenState
                       _technicianIds.add(t.id);
                     }
                   }
-
-                  // Navigate to the correct step using step_no passed from the list.
-                  // Only do this once (on first load), not when going back to step 1.
-                  if (!_hasAppliedInitialStep) {
-                    _hasAppliedInitialStep = true;
-                    final targetStep = widget.initialStepNo > 0 && widget.initialStepNo <= 6
-                        ? widget.initialStepNo
-                        : 1;
-                    if (targetStep > 1 && _currentStep == 1) {
-                      _currentStep = targetStep;
-
-                      if (_commissioningReportId != null) {
-                        if (_currentStep == 2) {
-                          _serviceCallStep2AutoFillBloc.add(
-                            ServiceCallReportStep2AutoFillGetEvent(_commissioningReportId ?? ""),
-                          );
-                        } else if (_currentStep == 3) {
-                          _serviceCallStep3AutoFillBloc.add(
-                            ServiceCallReportStep3AutoFillGetEvent(_commissioningReportId ?? ""),
-                          );
-                        } else if (_currentStep == 4) {
-                          _serviceCallStep4AutoFillBloc.add(
-                            ServiceCallReportStep4AutoFillGetEvent(_commissioningReportId ?? ""),
-                          );
-                        } else if (_currentStep == 5) {
-                          _serviceCallStep5AutoFillBloc.add(
-                            ServiceCallReportStep5AutoFillGetEvent(_commissioningReportId ?? ""),
-                          );
-                        } else if (_currentStep == 6) {
-                          _serviceCallStep6AutoFillBloc.add(
-                            ServiceCallReportStep6AutoFillGetEvent(_commissioningReportId ?? ""),
-                          );
-                          _assignedServiceCallTechnicianBloc.add(
-                            AssignedServicecallTechnicianGetEvent(_commissioningReportId!),
-                          );
-                        }
-                      }
-                    }
-                  }
                 });
               }
             },
@@ -2800,9 +2761,6 @@ class _CreateCommissioningReportScreenState
                   state is ServiceCallReportStep1AutoFillInitialState) {
                 return const StepShimmer(step: 1);
               }
-              // Since _buildStep1 expects CommissioningWorkData, and ServiceCallData has different fields,
-              // we might need to handle this. But wait, _buildStep1 takes 'data' as dynamic or specific type?
-              // Let's pass the data as it is.
               final data = state is ServiceCallReportStep1AutoFillSuccessState
                   ? state.data.data
                   : null;
@@ -2825,45 +2783,6 @@ class _CreateCommissioningReportScreenState
                     for (var t in state.data.data.assignedTechnicians) {
                       _technicians.add(TextEditingController(text: t.name));
                       _technicianIds.add(t.id);
-                    }
-                  }
-
-                  // Navigate to the correct step using step_no passed from the list.
-                  // Only do this once (on first load), not when going back to step 1.
-                  if (!_hasAppliedInitialStep) {
-                    _hasAppliedInitialStep = true;
-                    final targetStep = widget.initialStepNo > 0 && widget.initialStepNo <= 6
-                        ? widget.initialStepNo
-                        : 1;
-                    if (targetStep > 1 && _currentStep == 1) {
-                      _currentStep = targetStep;
-
-                      if (_commissioningReportId != null) {
-                        if (_currentStep == 2) {
-                          _step2Bloc.add(
-                            CommissioningStep2AutoFillGetEvent(_commissioningReportId ?? ""),
-                          );
-                        } else if (_currentStep == 3) {
-                          _step3Bloc.add(
-                            CommissioningStep3AutoFillGetEvent(_commissioningReportId ?? ""),
-                          );
-                        } else if (_currentStep == 4) {
-                          _step4Bloc.add(
-                            CommissioningStep4AutoFillGetEvent(_commissioningReportId ?? ""),
-                          );
-                        } else if (_currentStep == 5) {
-                          _step5Bloc.add(
-                            CommissioningStep5AutoFillGetEvent(_commissioningReportId ?? ""),
-                          );
-                        } else if (_currentStep == 6) {
-                          _step6Bloc.add(
-                            CommissioningStep6AutoFillGetEvent(_commissioningReportId ?? ""),
-                          );
-                          _assignedTechniciansBloc.add(
-                            AssignedTechnicianRepresentativeGetEvent(_commissioningReportId!),
-                          );
-                        }
-                      }
                     }
                   }
                 });
@@ -3052,7 +2971,7 @@ class _CreateCommissioningReportScreenState
                 setState(() {
                   _assignedServiceCallTechniciansList = techState.data.data;
                   print(
-                    "ðŸ‘¤ Service Call Assigned technicians loaded: ${_assignedServiceCallTechniciansList.map((t) => '${t.name} (assignId: ${t.assignId}, technicianId: ${t.technicianId})').toList()}",
+                    "Ã°Å¸â€˜Â¤ Service Call Assigned technicians loaded: ${_assignedServiceCallTechniciansList.map((t) => '${t.name} (assignId: ${t.assignId}, technicianId: ${t.technicianId})').toList()}",
                   );
                   if (_assignedServiceCallTechniciansList.isNotEmpty) {
                     final matchedSession = _loggedInTechnicianId != null ? _assignedServiceCallTechniciansList.where((t) => t.technicianId == _loggedInTechnicianId).firstOrNull : null;
@@ -3092,7 +3011,7 @@ class _CreateCommissioningReportScreenState
                 setState(() {
                   _assignedTechniciansList = techState.data.data;
                   print(
-                    "ðŸ‘¤ Assigned technicians loaded: ${_assignedTechniciansList.map((t) => '${t.name} (assignId: ${t.assignId}, technicianId: ${t.technicianId})').toList()}",
+                    "Ã°Å¸â€˜Â¤ Assigned technicians loaded: ${_assignedTechniciansList.map((t) => '${t.name} (assignId: ${t.assignId}, technicianId: ${t.technicianId})').toList()}",
                   );
                   if (_assignedTechniciansList.isNotEmpty) {
                     final matchedSession = _loggedInTechnicianId != null ? _assignedTechniciansList.where((t) => t.technicianId == _loggedInTechnicianId).firstOrNull : null;
@@ -3107,7 +3026,7 @@ class _CreateCommissioningReportScreenState
                       );
                       _selectedTechnicianRepId = matched.assignId;
                       print(
-                        "ðŸŽ¯ _selectedTechnicianRepId set via _autofilledTechRepName to: $_selectedTechnicianRepId",
+                        "Ã°Å¸Å½Â¯ _selectedTechnicianRepId set via _autofilledTechRepName to: $_selectedTechnicianRepId",
                       );
                     }
                   }
@@ -3139,7 +3058,7 @@ class _CreateCommissioningReportScreenState
                         _autofilledTechRepName =
                             data.technicianRepresentativeName;
                         print(
-                          "ðŸ“‹ Autofilled tech rep name: $_autofilledTechRepName",
+                          "Ã°Å¸â€œâ€¹ Autofilled tech rep name: $_autofilledTechRepName",
                         );
                         if (_assignedTechniciansList.isNotEmpty) {
                           final matched = _assignedTechniciansList.firstWhere(
@@ -3150,7 +3069,7 @@ class _CreateCommissioningReportScreenState
                           );
                           _selectedTechnicianRepId = matched.assignId;
                           print(
-                            "ðŸŽ¯ _selectedTechnicianRepId set via autofill match to: $_selectedTechnicianRepId",
+                            "Ã°Å¸Å½Â¯ _selectedTechnicianRepId set via autofill match to: $_selectedTechnicianRepId",
                           );
                         }
                       }
@@ -3565,7 +3484,7 @@ class _CreateCommissioningReportScreenState
 
   
 
-  // â”€â”€ Checklist section wrapper (header + NA + items with disable support) â”€â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Checklist section wrapper (header + NA + items with disable support) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   Widget _buildCheckSection({
     required IconData icon,
     required String title,
@@ -3630,7 +3549,7 @@ class _CreateCommissioningReportScreenState
         const SizedBox(height: 4),
         const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 12),
-        // Items â€” disabled when NA is checked
+        // Items Ã¢â‚¬â€ disabled when NA is checked
         IgnorePointer(
           ignoring: isNA,
           child: AnimatedOpacity(
@@ -3646,7 +3565,7 @@ class _CreateCommissioningReportScreenState
     );
   }
 
-  // â”€â”€ Single checklist item: label + radio-style option boxes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Single checklist item: label + radio-style option boxes Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   Widget _buildCheckItem({
     required String label,
     required String? selected,

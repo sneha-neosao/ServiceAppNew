@@ -182,7 +182,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   _buildFilterField(
                     _selectedDate == null 
                         ? 'notif_filter_date'.tr() 
-                        : DateFormat('dd MMM yyyy').format(_selectedDate!),
+                        : DateFormat('dd MMM yyyy', context.locale.languageCode).format(_selectedDate!),
                     Icons.calendar_today_outlined,
                     onTap: () => _selectDate(context),
                   ),
@@ -305,8 +305,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         if (notification.createdAt != null) {
                           try {
                             final dt = DateTime.parse(notification.createdAt!).toLocal();
-                            formattedTime = DateFormat('hh:mm a').format(dt);
-                            formattedDate = DateFormat('d MMMM yyyy').format(dt);
+                            formattedTime = DateFormat('hh:mm a', context.locale.languageCode).format(dt);
+                            formattedDate = DateFormat('d MMMM yyyy', context.locale.languageCode).format(dt);
                           } catch (e) {}
                         }
 
