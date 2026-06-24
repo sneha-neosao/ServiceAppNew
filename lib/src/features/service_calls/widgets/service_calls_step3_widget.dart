@@ -111,7 +111,7 @@ class ServiceCallsStep3Widget extends StatelessWidget {
               controller: parent._pendingCustomerController,
               style: AppFont.style(fontSize: 13, color: const Color(0xFF0D121F)),
               decoration: InputDecoration(
-                hintText: 'Enter customer name',
+                hintText: 'enter_customer_name'.tr(),
                 hintStyle: AppFont.style(fontSize: 13, color: const Color(0xFFA5ABB7)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 filled: true,
@@ -139,7 +139,7 @@ class ServiceCallsStep3Widget extends StatelessWidget {
               controller: parent._pendingSiteController,
               style: AppFont.style(fontSize: 13, color: const Color(0xFF0D121F)),
               decoration: InputDecoration(
-                hintText: 'Enter site name',
+                hintText: 'enter_site_name'.tr(),
                 hintStyle: AppFont.style(fontSize: 13, color: const Color(0xFFA5ABB7)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 filled: true,

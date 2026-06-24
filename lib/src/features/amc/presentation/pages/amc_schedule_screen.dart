@@ -321,7 +321,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'Missed AMC Visits',
+                        'missed_amc_visits'.tr(),
                         style: AppFont.style(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,

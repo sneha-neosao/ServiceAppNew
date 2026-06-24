@@ -108,10 +108,10 @@ class CommissioningCard extends StatelessWidget {
                 const SizedBox(width: 12),
 
                 // Edit icon button
-                _buildIconBtn(icon: Icons.edit_outlined, onTap: onEdit),
+                _buildIconBtn(icon: Icons.edit_outlined, onTap: onEdit, icon_color: Colors.blue),
                 const SizedBox(width: 8),
                 // Delete icon button
-                _buildIconBtn(icon: Icons.delete_outline, onTap: onDelete),
+                _buildIconBtn(icon: Icons.delete_outline, onTap: onDelete, icon_color: Colors.red),
               ],
             ),
 
@@ -191,7 +191,7 @@ class CommissioningCard extends StatelessWidget {
     );
   }
 
-  Widget _buildIconBtn({required IconData icon, required VoidCallback onTap}) {
+  Widget _buildIconBtn({required IconData icon, required VoidCallback onTap, required Color icon_color}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -202,7 +202,7 @@ class CommissioningCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: const Color(0xFFF1F2F6), width: 1),
         ),
-        child: Icon(icon, size: 18, color: const Color(0xFF6B7280)),
+        child: Icon(icon, size: 18, color: icon_color),
       ),
     );
   }

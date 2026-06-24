@@ -157,7 +157,7 @@ class ServiceCallCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 if (type == ServiceCallType.ongoing) ...[
-                  _buildIconButton(Icons.edit_outlined, onTap: onEdit),
+                  _buildIconButton(Icons.edit_outlined, onTap: onEdit, icon_color: Colors.blue),
                   const SizedBox(width: 8),
                 ],
                 _buildIconButton(Icons.visibility_outlined, onTap: onView),
@@ -239,7 +239,7 @@ class ServiceCallCard extends StatelessWidget {
     );
   }
 
-  Widget _buildIconButton(IconData icon, {VoidCallback? onTap}) {
+  Widget _buildIconButton(IconData icon, {VoidCallback? onTap, Color? icon_color}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -249,7 +249,7 @@ class ServiceCallCard extends StatelessWidget {
           color: const Color(0xFFF5F6F9),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, size: 18, color: const Color(0xFFA5ABB7)),
+        child: Icon(icon, size: 18, color: icon_color ?? const Color(0xFFA5ABB7)),
       ),
     );
   }

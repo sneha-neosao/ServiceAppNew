@@ -41,6 +41,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     : 'English';
   }
 
+  String _getLanguageDisplay() {
+    switch (_selectedLanguage) {
+      case 'Marathi': return 'Marathi (मराठी)';
+      case 'Hindi': return 'Hindi (हिंदी)';
+      case 'Gujarati': return 'Gujarati (ગુજરાતી)';
+      case 'Kannada': return 'Kannada (ಕನ್ನಡ)';
+      case 'English':
+      default: return 'English';
+    }
+  }
+
   String _getInitials(String? name) {
     if (name == null || name.trim().isEmpty) return '';
     List<String> nameParts = name.trim().split(RegExp(r'\s+'));
@@ -145,36 +156,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             }
 
-            return Padding(
-              padding: EdgeInsets.fromLTRB(
-                16,
-                24,
-                16,
-                MediaQuery.of(ctx).viewInsets.bottom + 32,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8, bottom: 12),
-                    child: Text(
-                      'select_language'.tr(),
-                      style: AppFont.style(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF9CA3AF),
+            return SafeArea(
+              bottom: true,
+              top: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  24,
+                  16,
+                  MediaQuery.of(ctx).viewInsets.bottom + 32,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8, bottom: 12),
+                      child: Text(
+                        'select_language'.tr(),
+                        style: AppFont.style(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF9CA3AF),
+                        ),
                       ),
                     ),
-                  ),
-                  const Divider(color: Color(0xFFF1F2F6), thickness: 1),
-                  const SizedBox(height: 12),
-                  option('ENGLISH', 'English', 'English'),
-                  option('MARATHI', 'मराठी', 'Marathi'),
-                  option('HINDI', 'हिंदी', 'Hindi'),
-                  option('GUJARATI', 'ગુજરાતી', 'Gujarati'),
-                  option('KANNADA', 'ಕನ್ನಡ', 'Kannada'),
-                ],
+                    const Divider(color: Color(0xFFF1F2F6), thickness: 1),
+                    const SizedBox(height: 12),
+                    option('ENGLISH', 'English', 'English'),
+                    option('MARATHI', 'मराठी', 'Marathi'),
+                    option('HINDI', 'हिंदी', 'Hindi'),
+                    option('GUJARATI', 'ગુજરાતી', 'Gujarati'),
+                    option('KANNADA', 'ಕನ್ನಡ', 'Kannada'),
+                  ],
+                ),
               ),
             );
           },
@@ -292,7 +307,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       _prefRow(
                         "assets/icons/language.png",
                         'profile_language_label'.tr(),
-                        _selectedLanguage,
+                        _getLanguageDisplay(),
                         onTap: _showLanguageBottomSheet,
                       ),
                       // _divider(),

@@ -288,7 +288,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 delegate: _StickyReportFilterDelegate(
                   height: _selectedTab == -1 
                       ? 64.0 
-                      : (_selectedTab == 1 ? 386.0 : 330.0),
+                      : (_selectedTab == 1 ? 390.0 : 335.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -363,10 +363,10 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 ? const SizedBox.shrink()
                 : _buildFilterSection(
                     _selectedTab == 0
-                        ? 'Commissioning Report History'
+                        ? '${'reports_tab_commissioning'.tr()} ${'home_nav_reports'.tr()}'
                         : _selectedTab == 1
-                            ? 'Service Report History'
-                            : 'AMC Report History',
+                            ? '${'reports_tab_service'.tr()} ${'home_nav_reports'.tr()}'
+                            : '${'reports_tab_amc'.tr()} ${'home_nav_reports'.tr()}',
                   ),
 
                     ],
@@ -764,7 +764,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           child: Row(
             children: [
               Text(
-                title.tr(),
+                title,
                 style: AppFont.style(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
