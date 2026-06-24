@@ -693,9 +693,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                 date: formattedDate,
                                 technician: item.technicianRepresentativeName,
                                 technicianId: item.dealerName,
-                                feedbackSubmitted: item.feedbackSubmitted,
-                                qrCodeImage: item.qrCodeImage,
+                                feedbackSubmitted: false, // item.feedbackSubmitted not in AmcHistoryData
+                                qrCodeImage: null, // item.qrCodeImage not in AmcHistoryData
                                 status: item.status,
+                                totalVisits: item.totalVisits,
+                                completedVisits: item.completedVisits,
                                 onViewTap: (_) {
                                   Navigator.push(
                                     context,
@@ -1187,6 +1189,8 @@ class _ReportCard extends StatelessWidget {
   final void Function(String reportId)? onViewTap;
   final void Function(String reportId)? onViewPdfTap;
   final void Function(String reportId)? onDownloadPdfTap;
+  final int? totalVisits;
+  final int? completedVisits;
 
   const _ReportCard({
     required this.id,
@@ -1205,6 +1209,8 @@ class _ReportCard extends StatelessWidget {
     this.onViewTap,
     this.onViewPdfTap,
     this.onDownloadPdfTap,
+    this.totalVisits,
+    this.completedVisits,
   });
 
   @override
@@ -1361,56 +1367,121 @@ class _ReportCard extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 16),
-            // Technician Row
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 10,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF5F6F9),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    technician.contains(',')
-                        ? Icons.people_outline
-                        : Icons.person_outline,
-                    size: 16,
-                    color: const Color(0xFF1565C0),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          technician,
-                          style: AppFont.style(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF424B5C),
-                          ),
-                        ),
-                        if (technicianId.isNotEmpty) ...[
-                          const SizedBox(height: 2),
+            if (type == ReportType.amc)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F6F9),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            technicianId,
+                            'total_visits'.tr(),
                             style: AppFont.style(
                               fontSize: 11,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFFA5ABB7),
                             ),
                           ),
-                        ]
-                      ],
+                          const SizedBox(height: 4),
+                          Text(
+                            '${totalVisits ?? 0}',
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF424B5C),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Completed Visits',
+                            style: AppFont.style(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFFA5ABB7),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${completedVisits ?? 0}',
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF424B5C),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              // Technician Row
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F6F9),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      technician.contains(',')
+                          ? Icons.people_outline
+                          : Icons.person_outline,
+                      size: 16,
+                      color: const Color(0xFF1565C0),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            technician,
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF424B5C),
+                            ),
+                          ),
+                          if (technicianId.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              technicianId,
+                              style: AppFont.style(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFFA5ABB7),
+                              ),
+                            ),
+                          ]
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: 16),
             _buildViewButton(context),
           ],
@@ -1424,7 +1495,7 @@ class _ReportCard extends StatelessWidget {
     if (type == ReportType.commissioning) {
       btnText = 'reports_btn_view_commissioning'.tr();
     } else if (type == ReportType.amc) {
-      btnText = 'reports_btn_view_amc'.tr();
+      btnText = 'View all visits';
     }
     return Row(
       children: [
@@ -1463,7 +1534,7 @@ class _ReportCard extends StatelessWidget {
             ),
           ),
         ),
-        if (type == ReportType.commissioning || type == ReportType.service || type == ReportType.amc) ...[
+        if (type == ReportType.commissioning || type == ReportType.service || (type == ReportType.amc && feedbackSubmitted)) ...[
           const SizedBox(width: 12),
           // if (type == ReportType.service) ...[
           //   SizedBox(
