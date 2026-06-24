@@ -11,6 +11,7 @@ import 'package:service_app/src/features/my_commissioning/bloc/commissioning_rep
 import 'package:service_app/src/features/amc/bloc/amc_reports_history_bloc/amc_reports_history_bloc.dart';
 import 'package:service_app/src/features/amc/bloc/amc_reports_history_bloc/amc_reports_history_event.dart';
 import 'package:service_app/src/features/amc/bloc/amc_reports_history_bloc/amc_reports_history_state.dart';
+import 'package:service_app/src/features/amc/presentation/pages/customer_amc_visits_screen.dart';
 import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
 import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart';
 import 'package:service_app/src/features/common/bloc/technician_bloc/technician_bloc.dart';
@@ -702,12 +703,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => AmcWorkflowScreen(
-                                        isFromHistory: true,
-                                        initialVisitId: item.amcVisitId,
-                                        initialTitle: item.customerName,
-                                        initialLocation: item.siteName,
-                                        initialVisitInfo: '${'visit'.tr()} ${item.visitNumber}',
+                                      builder: (context) => CustomerAmcVisitsScreen(
+                                        customerId: item.customerId,
                                       ),
                                     ),
                                   );

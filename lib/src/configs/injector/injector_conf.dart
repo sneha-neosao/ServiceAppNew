@@ -66,6 +66,8 @@ import '../../features/service_calls/domain/usecase/service_call_details_usecase
 import '../../features/common/domain/usecase/create_new_customer_usecase.dart';
 import '../../features/common/domain/usecase/create_new_site_usecase.dart';
 import '../../features/amc/domain/usecase/amc_visits_list_usecase.dart';
+import '../../features/amc/domain/usecase/get_customer_amc_visits_usecase.dart';
+import '../../features/amc/bloc/customer_amc_visits_bloc/customer_amc_visits_bloc.dart';
 import '../../features/amc/domain/usecase/amc_visit_reports_usecase.dart';
 import '../../features/amc/domain/usecase/delete_amc_report_usecase.dart';
 import '../../features/reports/domain/usecases/service_work_report_step1_usecase.dart';
@@ -670,6 +672,12 @@ void configureDepedencies() {
 
   getIt.registerLazySingleton(
     () => AmcVisitsListUseCase(getIt<AuthRepositoryImpl>()),
+  );
+
+  getIt.registerFactory(() => CustomerAmcVisitsBloc(getCustomerAmcVisitsUseCase: getIt<GetCustomerAmcVisitsUseCase>()));
+
+  getIt.registerLazySingleton(
+    () => GetCustomerAmcVisitsUseCase(repository: getIt<AuthRepositoryImpl>()),
   );
 
   getIt.registerFactory(() => AmcVisitReportsBloc(getIt<AmcVisitReportsUsecase>()));

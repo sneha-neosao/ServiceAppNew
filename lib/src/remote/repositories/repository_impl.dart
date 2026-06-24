@@ -110,6 +110,7 @@ import '../models/create_new_site_model/create_new_site_response.dart';
 import '../models/feedback_model/feedback_response.dart';
 import '../models/servicecalls_report_history_model/servicecalls_report_history_response.dart';
 import '../models/amc_visit_model/amc_visit_list_response.dart';
+import '../models/amc_visit_model/customer_amc_visits_response.dart';
 import '../models/amc_visit_model/amc_visit_reports_response.dart';
 import '../models/servicecall_complaint_pdf_model/servicecall_complaint_pdf_response.dart';
 
@@ -340,6 +341,10 @@ abstract class Repository {
 
   Future<Either<Failure, AmcVisitReportsResponse>> amcVisitReports(
     String visitId,
+  );
+
+  Future<Either<Failure, CustomerAmcVisitsResponse>> getCustomerAmcVisits(
+    String customerId,
   );
 
   Future<Either<Failure, ServiceCallDetailsResponse>> serviceCallDetails(
@@ -2560,6 +2565,40 @@ class AuthRepositoryImpl implements Repository {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           final respData = await _remoteDataSource.amcVisitReports(visitId, token);
+
+          if (respData.status != 200) {
+            return Left(CredentialFailure(respData.message));
+          }
+
+          return Right(respData);
+        } on ServerException {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } catch (e) {
+          if (e is ApiException) {
+            return Left(ApiFailure(e.message));
+          }
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        }
+      },
+      notConnected: () async {
+        try {
+          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+        } on CacheException {
+          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
+        }
+      },
+    );
+  }
+
+  @override
+  Future<Either<Failure, CustomerAmcVisitsResponse>> getCustomerAmcVisits(
+    String customerId,
+  ) {
+    return _networkInfo.check<CustomerAmcVisitsResponse>(
+      connected: () async {
+        try {
+          String token = await SessionManager.getAuthToken() ?? "";
+          final respData = await _remoteDataSource.getCustomerAmcVisits(customerId, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message));

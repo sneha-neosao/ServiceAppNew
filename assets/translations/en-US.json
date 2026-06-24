@@ -517,5 +517,6 @@
   "coming_soon": "Coming Soon",
   "preventive_maintenance_checklist_title": "Preventive Maintenance Checklist\\n(Check & Tick if Found OK / NOT OK)",
   "total_visits": "Total Visits",
-  "missed_amc_visits": "Missed AMC Visits"
+  "missed_amc_visits": "Missed AMC Visits",
+  "view_all_visits": "All Visits"
 }

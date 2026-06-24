@@ -517,5 +517,6 @@
   "coming_soon": "जल्द आ रहा है",
   "preventive_maintenance_checklist_title": "निवारक रखरखाव चेकलिस्ट\n(जाँचें और टिक करें यदि ठीक / ठीक नहीं पाया गया)",
   "total_visits": "कुल विज़िट्स",
-  "missed_amc_visits": "छूटे हुए AMC विज़िट्स"
+  "missed_amc_visits": "छूटे हुए AMC विज़िट्स",
+  "view_all_visits": "सभी विज़िट्स"
 }
