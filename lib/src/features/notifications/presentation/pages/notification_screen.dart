@@ -150,55 +150,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       color: const Color(0xFF0D121F),
                     ),
                   ),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1F8FF),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _customerController.clear();
-                              _siteController.clear();
-                              _selectedDate = null;
-                            });
-                            _fetchNotifications(page: 1);
-                          },
-                          child: const Icon(
-                            Icons.refresh,
-                            size: 16,
-                            color: Color(0xFF1565C0),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _customerController.clear();
-                              _siteController.clear();
-                              _selectedDate = null;
-                            });
-                            _fetchNotifications(page: 1);
-                          },
-                          child: Text(
-                            'notif_clear_filters'.tr(),
-                            style: AppFont.style(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFF1565C0),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -208,16 +159,24 @@ class _NotificationScreenState extends State<NotificationScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  _buildTextInputField(
-                    controller: _customerController,
-                    hintText: 'enter_customer_name'.tr(),
-                    onSubmitted: () => _fetchNotifications(page: 1),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildTextInputField(
-                    controller: _siteController,
-                    hintText: 'enter_site_name'.tr(),
-                    onSubmitted: () => _fetchNotifications(page: 1),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildTextInputField(
+                          controller: _customerController,
+                          hintText: 'close_call_customer_name_label'.tr(),
+                          onSubmitted: () => _fetchNotifications(page: 1),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildTextInputField(
+                          controller: _siteController,
+                          hintText: 'site_name'.tr(),
+                          onSubmitted: () => _fetchNotifications(page: 1),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   _buildFilterField(
@@ -226,6 +185,44 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         : DateFormat('dd MMM yyyy').format(_selectedDate!),
                     Icons.calendar_today_outlined,
                     onTap: () => _selectDate(context),
+                  ),
+                  const SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _customerController.clear();
+                        _siteController.clear();
+                        _selectedDate = null;
+                      });
+                      _fetchNotifications(page: 1);
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF3F8FF),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.refresh,
+                            color: Color(0xFF1565C0),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'notif_clear_filters'.tr(),
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF1565C0),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

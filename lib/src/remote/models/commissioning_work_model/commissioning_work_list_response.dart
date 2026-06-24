@@ -43,6 +43,7 @@ class CommissioningWork {
   final String? createdByDealerUser;
   final String? createdByTechnician;
   final int stepNo;
+  final String? reportId;
 
   CommissioningWork({
     required this.id,
@@ -53,6 +54,7 @@ class CommissioningWork {
     this.createdByDealerUser,
     this.createdByTechnician,
     this.stepNo = 0,
+    this.reportId,
   });
 
   factory CommissioningWork.fromJson(Map<String, dynamic> json) {
@@ -69,6 +71,7 @@ class CommissioningWork {
       createdByDealerUser: json['created_by_dealer_user'],
       createdByTechnician: json['created_by_technician'],
       stepNo: json['step_no'] ?? 0,
+      reportId: json['report_id'],
     );
   }
 
@@ -84,6 +87,7 @@ class CommissioningWork {
       'created_by_dealer_user': createdByDealerUser,
       'created_by_technician': createdByTechnician,
       'step_no': stepNo,
+      'report_id': reportId,
     };
   }
 }

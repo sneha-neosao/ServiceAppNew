@@ -122,6 +122,7 @@ class CreateCommissioningReportScreen extends StatefulWidget {
   final String commissioningWorkId;
   final String? complaintNo;
   final int initialStepNo;
+  final String? reportId;
   const CreateCommissioningReportScreen({
     super.key,
     required this.onBack,
@@ -129,6 +130,7 @@ class CreateCommissioningReportScreen extends StatefulWidget {
     this.isServiceReport = false,
     this.complaintNo,
     this.initialStepNo = 0,
+    this.reportId,
   });
   @override
   State<CreateCommissioningReportScreen> createState() =>
@@ -401,6 +403,7 @@ class _CreateCommissioningReportScreenState
   @override
   void initState() {
     super.initState();
+    _commissioningReportId = widget.reportId;
     _fetchLoggedInTechnician();
     _setupAutoCalculateListeners();
     _submitStep1Bloc = getIt<CommissioningStep1Bloc>();
@@ -454,7 +457,7 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         _step2Bloc.add(
-          CommissioningStep2AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+          CommissioningStep2AutoFillGetEvent(_commissioningReportId ?? ""),
         );
       }
     } else if (_currentStep == 3) {
@@ -464,7 +467,7 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         _step3Bloc.add(
-          CommissioningStep3AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+          CommissioningStep3AutoFillGetEvent(_commissioningReportId ?? ""),
         );
       }
     } else if (_currentStep == 4) {
@@ -474,7 +477,7 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         _step4Bloc.add(
-          CommissioningStep4AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+          CommissioningStep4AutoFillGetEvent(_commissioningReportId ?? ""),
         );
       }
     } else if (_currentStep == 5) {
@@ -484,7 +487,7 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         _step5Bloc.add(
-          CommissioningStep5AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+          CommissioningStep5AutoFillGetEvent(_commissioningReportId ?? ""),
         );
       }
     } else if (_currentStep == 6) {
@@ -494,7 +497,7 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         _step6Bloc.add(
-          CommissioningStep6AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+          CommissioningStep6AutoFillGetEvent(_commissioningReportId ?? ""),
         );
       }
     }
@@ -645,7 +648,7 @@ class _CreateCommissioningReportScreenState
             : 1;
         _submitStep2Bloc.add(
           CommissioningStep2GetEvent(
-            _commissioningReportId ?? widget.commissioningWorkId,
+            _commissioningReportId ?? "",
             warrantyYears,
             repNames,
             _agendaController.text.trim(),
@@ -689,7 +692,7 @@ class _CreateCommissioningReportScreenState
         if (_submitStep3Bloc.state is CommissioningStep3LoadingState) return;
         _submitStep3Bloc.add(
           CommissioningStep3GetEvent(
-            _commissioningReportId ?? widget.commissioningWorkId,
+            _commissioningReportId ?? "",
             _isTechnicalDetailsNA,
             techDetails,
           ),
@@ -724,7 +727,7 @@ class _CreateCommissioningReportScreenState
       } else {
         _submitStep4Bloc.add(
           CommissioningStep4GetEvent(
-            _commissioningReportId ?? widget.commissioningWorkId,
+            _commissioningReportId ?? "",
             descriptions,
           ),
         );
@@ -1070,7 +1073,7 @@ class _CreateCommissioningReportScreenState
       } else {
         _submitStep5Bloc.add(
           CommissioningStep5GetEvent(
-            _commissioningReportId ?? widget.commissioningWorkId,
+            _commissioningReportId ?? "",
             _mechNA,
             _pipeNA,
             _elecNA,
@@ -1210,7 +1213,7 @@ class _CreateCommissioningReportScreenState
         _submitStep6Bloc.add(
           CommissioningStep6SubmitEvent(
             commissioning_report_id:
-                _commissioningReportId ?? widget.commissioningWorkId,
+                _commissioningReportId ?? "",
             technicianRemarks: _technicianRemarksController.text.trim(),
             customerRemarks: _customerRemarksController.text.trim(),
             technicianRepresentative: _selectedTechnicianRepId ?? '',
@@ -1252,7 +1255,7 @@ class _CreateCommissioningReportScreenState
           } else {
             if (_commissioningReportId != null) {
               _step2Bloc.add(
-                CommissioningStep2AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                CommissioningStep2AutoFillGetEvent(_commissioningReportId ?? ""),
               );
             }
           }
@@ -1268,7 +1271,7 @@ class _CreateCommissioningReportScreenState
           } else {
             if (_commissioningReportId != null) {
               _step3Bloc.add(
-                CommissioningStep3AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                CommissioningStep3AutoFillGetEvent(_commissioningReportId ?? ""),
               );
             }
           }
@@ -1284,7 +1287,7 @@ class _CreateCommissioningReportScreenState
           } else {
             if (_commissioningReportId != null) {
               _step4Bloc.add(
-                CommissioningStep4AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                CommissioningStep4AutoFillGetEvent(_commissioningReportId ?? ""),
               );
             }
           }
@@ -1300,7 +1303,7 @@ class _CreateCommissioningReportScreenState
           } else {
             if (_commissioningReportId != null) {
               _step5Bloc.add(
-                CommissioningStep5AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                CommissioningStep5AutoFillGetEvent(_commissioningReportId ?? ""),
               );
             }
           }
@@ -1480,7 +1483,7 @@ class _CreateCommissioningReportScreenState
                   _currentStep++;
                   if (_currentStep == 3 && _commissioningReportId != null) {
                     _step3Bloc.add(
-                      CommissioningStep3AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                      CommissioningStep3AutoFillGetEvent(_commissioningReportId ?? ""),
                     );
                   }
                 });
@@ -1502,7 +1505,7 @@ class _CreateCommissioningReportScreenState
                     _currentStep++;
                     if (_currentStep == 2 && _commissioningReportId != null) {
                       _step2Bloc.add(
-                        CommissioningStep2AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                        CommissioningStep2AutoFillGetEvent(_commissioningReportId ?? ""),
                       );
                     }
                   });
@@ -1551,7 +1554,7 @@ class _CreateCommissioningReportScreenState
                         if (_currentStep == 4 &&
                             _commissioningReportId != null) {
                           _step4Bloc.add(
-                            CommissioningStep4AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                            CommissioningStep4AutoFillGetEvent(_commissioningReportId ?? ""),
                           );
                         }
                       });
@@ -1740,7 +1743,7 @@ class _CreateCommissioningReportScreenState
                                                     _commissioningReportId !=
                                                         null) {
                                                   _step5Bloc.add(
-                                                    CommissioningStep5AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                                                    CommissioningStep5AutoFillGetEvent(_commissioningReportId ?? ""),
                                                   );
                                                 }
                                               });
@@ -1925,7 +1928,7 @@ class _CreateCommissioningReportScreenState
                                                                                 _commissioningReportId !=
                                                                                     null) {
                                                                               _step6Bloc.add(
-                                                                                CommissioningStep6AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                                                                                CommissioningStep6AutoFillGetEvent(_commissioningReportId ?? ""),
                                                                               );
                                                                               _assignedTechniciansBloc.add(
                                                                                 AssignedTechnicianRepresentativeGetEvent(
@@ -2838,23 +2841,23 @@ class _CreateCommissioningReportScreenState
                       if (_commissioningReportId != null) {
                         if (_currentStep == 2) {
                           _step2Bloc.add(
-                            CommissioningStep2AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                            CommissioningStep2AutoFillGetEvent(_commissioningReportId ?? ""),
                           );
                         } else if (_currentStep == 3) {
                           _step3Bloc.add(
-                            CommissioningStep3AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                            CommissioningStep3AutoFillGetEvent(_commissioningReportId ?? ""),
                           );
                         } else if (_currentStep == 4) {
                           _step4Bloc.add(
-                            CommissioningStep4AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                            CommissioningStep4AutoFillGetEvent(_commissioningReportId ?? ""),
                           );
                         } else if (_currentStep == 5) {
                           _step5Bloc.add(
-                            CommissioningStep5AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                            CommissioningStep5AutoFillGetEvent(_commissioningReportId ?? ""),
                           );
                         } else if (_currentStep == 6) {
                           _step6Bloc.add(
-                            CommissioningStep6AutoFillGetEvent(_commissioningReportId ?? widget.commissioningWorkId),
+                            CommissioningStep6AutoFillGetEvent(_commissioningReportId ?? ""),
                           );
                           _assignedTechniciansBloc.add(
                             AssignedTechnicianRepresentativeGetEvent(_commissioningReportId!),
