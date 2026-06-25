@@ -128,14 +128,29 @@ class CustomerAmcVisitsScreen extends StatelessWidget {
             }
 
             if (state is CustomerAmcVisitsError) {
-              return Center(
-                child: Text(
-                  state.message,
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 16,
-                    fontFamily: AppFont.family,
-                  ),
+              return RefreshIndicator(
+                color: const Color(0xFF1565C0),
+                backgroundColor: Colors.white,
+                onRefresh: () async {
+                  context.read<CustomerAmcVisitsBloc>().add(GetCustomerAmcVisitsEvent(customerId));
+                },
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      child: Center(
+                        child: Text(
+                          state.message,
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                            fontFamily: AppFont.family,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               );
             }
@@ -143,29 +158,52 @@ class CustomerAmcVisitsScreen extends StatelessWidget {
             if (state is CustomerAmcVisitsSuccess) {
               final items = state.response.data?.results ?? [];
               if (items.isEmpty) {
-                return Center(
-                  child: Text(
-                    'no_visits_found'.tr(),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontFamily: AppFont.family,
-                    ),
+                return RefreshIndicator(
+                  color: const Color(0xFF1565C0),
+                  backgroundColor: Colors.white,
+                  onRefresh: () async {
+                    context.read<CustomerAmcVisitsBloc>().add(GetCustomerAmcVisitsEvent(customerId));
+                  },
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        child: Center(
+                          child: Text(
+                            'no_visits_found'.tr(),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: AppFont.family,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               }
 
               final firstItem = items.first;
 
-              return ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  _buildHeaderCard(firstItem),
-                  const SizedBox(height: 16),
-                  ...items.map((item) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _CollapsibleVisitCard(item: item, defaultLocation: firstItem.siteName ?? ''),
-                      )),
-                ],
+              return RefreshIndicator(
+                color: const Color(0xFF1565C0),
+                backgroundColor: Colors.white,
+                onRefresh: () async {
+                  context.read<CustomerAmcVisitsBloc>().add(GetCustomerAmcVisitsEvent(customerId));
+                },
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    _buildHeaderCard(firstItem),
+                    const SizedBox(height: 16),
+                    ...items.map((item) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _CollapsibleVisitCard(item: item, defaultLocation: firstItem.siteName ?? ''),
+                        )),
+                  ],
+                ),
               );
             }
 
@@ -190,7 +228,7 @@ class CustomerAmcVisitsScreen extends StatelessWidget {
         border: Border.all(color: const Color(0xFFF1F2F6)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -461,101 +499,103 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: _toggleExpanded,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFF1F2F6)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEEF2FF),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        'Visit ${widget.item.visitNumber}',
-                        style: TextStyle(
-                          color: const Color(0xFF4F46E5),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: AppFont.family,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFF1F2F6)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: _toggleExpanded,
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEEF2FF),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'Visit ${widget.item.visitNumber}',
+                          style: TextStyle(
+                            color: const Color(0xFF4F46E5),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: AppFont.family,
+                          ),
                         ),
                       ),
-                    ),
-                    const Spacer(),
-                    _buildStatusBadge(widget.item.visitStatus),
-                    if (widget.item.feedbackSubmitted)
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => FeedbackDetailsScreen(
-                                reportId: widget.item.visitId,
-                                isServiceCall: false,
-                                isAmc: true,
-                                title: 'amc_feedback_details'.tr(),
-                                onBack: () => Navigator.pop(context),
+                      const Spacer(),
+                      _buildStatusBadge(widget.item.visitStatus),
+                      if (widget.item.feedbackSubmitted)
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FeedbackDetailsScreen(
+                                  reportId: widget.item.visitId,
+                                  isServiceCall: false,
+                                  isAmc: true,
+                                  title: 'amc_feedback_details'.tr(),
+                                  onBack: () => Navigator.pop(context),
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.only(left: 8),
-                          child: Icon(Icons.check_circle, color: Colors.green, size: 24),
+                            );
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 8),
+                            child: Icon(Icons.check_circle, color: Colors.green, size: 24),
+                          ),
+                        )
+                      else if (widget.item.qrCodeImage != null || widget.item.qrCodeUrl != null)
+                        GestureDetector(
+                          onTap: () => _showQrCodeDialog(context),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Image.asset('assets/images/qr_icon.png', width: 24, height: 24, errorBuilder: (c,e,s) => const Icon(Icons.qr_code, size: 24, color: Colors.orange)),
+                          ),
                         ),
-                      )
-                    else if (widget.item.qrCodeImage != null || widget.item.qrCodeUrl != null)
-                      GestureDetector(
-                        onTap: () => _showQrCodeDialog(context),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: Image.asset('assets/images/qr_icon.png', width: 24, height: 24, errorBuilder: (c,e,s) => const Icon(Icons.qr_code, size: 24, color: Colors.orange)),
-                        ),
-                      ),
-                    const SizedBox(width: 8),
-                    Icon(_isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: Colors.grey),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  '${'amc_schedule_window'.tr()} : ${widget.item.visitFromDate} - ${widget.item.visitToDate}',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: AppFont.family,
+                      const SizedBox(width: 8),
+                      Icon(_isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: Colors.grey),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 12),
+                  Text(
+                    '${'amc_schedule_window'.tr()} : ${widget.item.visitFromDate} - ${widget.item.visitToDate}',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: AppFont.family,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        if (_isExpanded)
+          if (_isExpanded)
           BlocBuilder<AmcVisitReportsBloc, AmcVisitReportsState>(
             bloc: _reportsBloc,
             builder: (context, state) {
               if (state is AmcVisitReportsLoadingState) {
                 return const Padding(
-                  padding: EdgeInsets.only(top: 16.0),
+                  padding: EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
                   child: AmcReportCardShimmer(isFromHistory: true),
                 );
               }
@@ -574,7 +614,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                   );
                 }
                 return Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
+                  padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
                   child: Column(
                     children: List.generate(reportsCount, (index) {
                       final report = state.data.data.reports[index];
@@ -597,7 +637,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                           borderRadius: BorderRadius.circular(24),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
+                              color: Colors.black.withOpacity(0.12),
                               blurRadius: 15,
                               offset: const Offset(0, 5),
                             ),
@@ -759,6 +799,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
             },
           ),
       ],
+    ),
     );
   }
 }
@@ -790,7 +831,7 @@ class _CustomerAmcVisitsShimmer extends StatelessWidget {
         border: Border.all(color: const Color(0xFFF1F2F6)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -839,7 +880,7 @@ class _CustomerAmcVisitsShimmer extends StatelessWidget {
         border: Border.all(color: const Color(0xFFF1F2F6)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

@@ -10,7 +10,14 @@ class AmcReportsHistoryBloc extends Bloc<AmcReportsHistoryEvent, AmcReportsHisto
   AmcReportsHistoryBloc(this.getAmcReportsHistoryUseCase) : super(AmcReportsHistoryInitial()) {
     on<GetAmcReportsHistoryEvent>((event, emit) async {
       emit(AmcReportsHistoryLoadingState());
-      final result = await getAmcReportsHistoryUseCase.call(NoParams());
+      final result = await getAmcReportsHistoryUseCase.call(
+        AmcReportsHistoryParams(
+          customerName: event.customerName,
+          siteName: event.siteName,
+          dateFrom: event.dateFrom,
+          dateTo: event.dateTo,
+        ),
+      );
       result.fold(
         (failure) => emit(AmcReportsHistoryErrorState(failure.message)),
         (data) => emit(AmcReportsHistorySuccessState(data)),

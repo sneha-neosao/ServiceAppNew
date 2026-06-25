@@ -86,11 +86,36 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   }
 
   void _fetchServiceCallHistory() {
-    _serviceCallHistoryBloc.add(FetchServiceCallReportHistory());
+    final String? dateStr = _selectedDate != null
+        ? '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}'
+        : null;
+    _serviceCallHistoryBloc.add(FetchServiceCallReportHistory(
+      customerId: _selectedCustomerId,
+      siteId: _selectedSiteId,
+      date: dateStr,
+    ));
   }
 
   void _fetchAmcHistory() {
-    _amcReportsHistoryBloc.add(GetAmcReportsHistoryEvent());
+    final String? dateStr = _selectedDate != null
+        ? '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}'
+        : null;
+    _amcReportsHistoryBloc.add(GetAmcReportsHistoryEvent(
+      customerName: _selectedCustomerName,
+      siteName: _selectedSiteName,
+      dateFrom: dateStr,
+      dateTo: dateStr,
+    ));
+  }
+
+  void _fetchCurrentTabHistory() {
+    if (_selectedTab == 0) {
+      _fetchReportHistory();
+    } else if (_selectedTab == 1) {
+      _fetchServiceCallHistory();
+    } else if (_selectedTab == 2) {
+      _fetchAmcHistory();
+    }
   }
 
   @override
@@ -851,7 +876,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                 SitesGetEvent(customer_id: customer.id),
                               );
                             }
-                            _fetchReportHistory();
+                            _fetchCurrentTabHistory();
                           },
                         );
                       },
@@ -919,7 +944,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                               _selectedSiteName = site?.name;
                               _selectedSiteId = site?.id;
                             });
-                            _fetchReportHistory();
+                            _fetchCurrentTabHistory();
                           },
                         );
 
@@ -964,7 +989,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         );
                         if (picked != null) {
                           setState(() => _selectedDate = picked);
-                          _fetchReportHistory();
+                          _fetchCurrentTabHistory();
                         }
                       },
                       child: Container(
@@ -998,7 +1023,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                               GestureDetector(
                                 onTap: () {
                                   setState(() => _selectedDate = null);
-                                  _fetchReportHistory();
+                                  _fetchCurrentTabHistory();
                                 },
                                 child: const Icon(Icons.close, color: Color(0xFFA5ABB7), size: 16),
                               ),
@@ -1041,7 +1066,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                               _selectedTechnicianName = tech?.name;
                               _selectedTechnicianId = tech?.id;
                             });
-                            _fetchReportHistory();
+                            _fetchCurrentTabHistory();
                           },
                         );
                       },
@@ -1062,7 +1087,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     _selectedTechnicianId = null;
                     _selectedDate = null;
                   });
-                  _fetchReportHistory();
+                  _fetchCurrentTabHistory();
                 },
                 child: Container(
                   width: double.infinity,

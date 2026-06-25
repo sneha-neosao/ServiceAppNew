@@ -10,7 +10,17 @@ class ServiceCallReportHistoryBloc extends Bloc<ServiceCallReportHistoryEvent, S
   ServiceCallReportHistoryBloc({required this.usecase}) : super(ServiceCallReportHistoryInitial()) {
     on<FetchServiceCallReportHistory>((event, emit) async {
       emit(ServiceCallReportHistoryLoading());
-      final result = await usecase(NoParams());
+      final result = await usecase(ServiceCallReportHistoryParams(
+        customerId: event.customerId,
+        siteId: event.siteId,
+        date: event.date,
+        startDate: event.startDate,
+        endDate: event.endDate,
+        page: event.page,
+        pageSize: event.pageSize,
+        search: event.search,
+        reportType: event.reportType,
+      ));
       result.fold(
         (failure) => emit(ServiceCallReportHistoryError(message: failure.message)),
         (response) {

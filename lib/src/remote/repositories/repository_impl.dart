@@ -10,6 +10,7 @@ import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step
 import 'package:fpdart/fpdart.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:service_app/src/core/usecases/usecase.dart';
+import 'package:service_app/src/features/amc/domain/usecase/get_amc_reports_history_usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/customer_usecase.dart';
 import 'package:service_app/src/features/home/domain/usecase/upcoming_amc_usecase.dart';
@@ -38,6 +39,8 @@ import 'package:service_app/src/remote/models/assign_technician_service_call_mod
 import 'package:service_app/src/remote/models/assigned_servicecall_technician_model/assigned_servicecall_technician_response.dart';
 import 'package:service_app/src/remote/models/assigned_technician_representative_model/assigned_technician_representative_response.dart';
 import 'package:service_app/src/remote/models/close_over_call_model/close_over_call_response.dart';
+import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_history_usecase.dart';
+import 'package:service_app/src/remote/models/servicecalls_report_history_model/servicecalls_report_history_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step1_model/servicecall_report_step1_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step2_model/servicecall_report_step2_response.dart';
 import 'package:service_app/src/remote/models/servicecall_report_step3_model/servicecall_report_step3_response.dart';
@@ -333,7 +336,7 @@ abstract class Repository {
   getServiceCallComplaintPdf(String complaintId);
 
   Future<Either<Failure, ServiceCallReportResponse>>
-  getServiceCallsReportHistory();
+  getServiceCallsReportHistory(ServiceCallReportHistoryParams params);
 
   Future<Either<Failure, AmcVisitsListResponse>> technicianAmcs(
     NoParams params,
@@ -363,7 +366,7 @@ abstract class Repository {
     PostAmcReportStep3Params params,
   );
 
-  Future<Either<Failure, AmcHistoryResponse>> amcReportsHistory();
+  Future<Either<Failure, AmcHistoryResponse>> amcReportsHistory(AmcReportsHistoryParams params);
 
   Future<Either<Failure, AmcReportStep1Response>> amcReportStep1AutoFill(
     String reportId,
@@ -2492,13 +2495,14 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, ServiceCallReportResponse>>
-  getServiceCallsReportHistory() {
+  getServiceCallsReportHistory(ServiceCallReportHistoryParams params) {
     return _networkInfo.check<ServiceCallReportResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           final response = await _remoteDataSource.getServiceCallsReportHistory(
             token,
+            params: params,
           );
 
           if (response.status != 200) {
@@ -2749,14 +2753,14 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, AmcHistoryResponse>> amcReportsHistory() async {
+  Future<Either<Failure, AmcHistoryResponse>> amcReportsHistory(AmcReportsHistoryParams params) async {
     return _networkInfo.check<AmcHistoryResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           if (token.isEmpty) throw AuthException();
 
-          final respData = await _remoteDataSource.amcReportsHistory(token);
+          final respData = await _remoteDataSource.amcReportsHistory(token, params: params);
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));

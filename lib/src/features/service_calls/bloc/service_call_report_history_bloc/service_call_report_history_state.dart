@@ -14,11 +14,12 @@ class ServiceCallReportHistoryLoading extends ServiceCallReportHistoryState {}
 
 class ServiceCallReportHistoryLoaded extends ServiceCallReportHistoryState {
   final ServiceCallReportResponse response;
+  final int timestamp;
 
-  const ServiceCallReportHistoryLoaded({required this.response});
+  ServiceCallReportHistoryLoaded({required this.response}) : timestamp = DateTime.now().millisecondsSinceEpoch;
 
   @override
-  List<Object?> get props => [response];
+  List<Object?> get props => [response, timestamp];
 }
 
 class ServiceCallReportHistoryError extends ServiceCallReportHistoryState {

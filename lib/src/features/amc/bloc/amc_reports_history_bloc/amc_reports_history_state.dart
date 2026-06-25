@@ -14,11 +14,12 @@ class AmcReportsHistoryLoadingState extends AmcReportsHistoryState {}
 
 class AmcReportsHistorySuccessState extends AmcReportsHistoryState {
   final AmcHistoryResponse response;
+  final int timestamp;
 
-  const AmcReportsHistorySuccessState(this.response);
+  AmcReportsHistorySuccessState(this.response) : timestamp = DateTime.now().millisecondsSinceEpoch;
 
   @override
-  List<Object> get props => [response];
+  List<Object> get props => [response, timestamp];
 }
 
 class AmcReportsHistoryErrorState extends AmcReportsHistoryState {

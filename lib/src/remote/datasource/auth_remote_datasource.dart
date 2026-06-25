@@ -82,7 +82,9 @@ import '../../features/my_commissioning/domain/usecase/commissioning_step5_useca
 import '../../features/my_commissioning/domain/usecase/commissioning_step6_usecase.dart';
 import '../../features/my_commissioning/domain/usecase/commissioning_step6_autofill_usecase.dart';
 import '../models/commissioning_report_step6_autofill_model/commissioning_report_step6_autofill_response.dart';
-import '../../features/my_commissioning/domain/usecase/assigned_technician_representative_usecase.dart';
+import 'package:service_app/src/features/amc/domain/usecase/get_amc_reports_history_usecase.dart';
+import 'package:service_app/src/features/my_commissioning/domain/usecase/assigned_technician_representative_usecase.dart';
+import 'package:service_app/src/features/service_calls/domain/usecase/service_call_report_history_usecase.dart';
 import '../models/assigned_technician_representative_model/assigned_technician_representative_response.dart';
 import '../models/commissioning_work_create_model/commissioning_work_create_response.dart';
 import '../models/commissioning_report_history_model/commissioning_report_history_response.dart';
@@ -229,9 +231,7 @@ sealed class RemoteDataSource {
     String token,
   );
 
-  Future<AmcHistoryResponse> amcReportsHistory(
-    String token,
-  );
+  Future<AmcHistoryResponse> amcReportsHistory(String token, {AmcReportsHistoryParams? params});
 
   Future<AmcReportStep1Response> amcReportStep1AutoFill(
     String reportId,
@@ -430,7 +430,7 @@ sealed class RemoteDataSource {
     String token,
   );
 
-  Future<ServiceCallReportResponse> getServiceCallsReportHistory(String token);
+  Future<ServiceCallReportResponse> getServiceCallsReportHistory(String token, {ServiceCallReportHistoryParams? params});
 
   Future<CommissioningReportPdfResponse> getServiceCallReportPdf(
     String reportId,
@@ -1392,11 +1392,36 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<AmcHistoryResponse> amcReportsHistory(String token) async {
+  Future<AmcHistoryResponse> amcReportsHistory(String token, {AmcReportsHistoryParams? params}) async {
     try {
+      final Map<String, String> queryParams = {};
+      if (params != null) {
+        if (params.customerName != null && params.customerName!.isNotEmpty) {
+          queryParams['customer_name'] = params.customerName!;
+        }
+        if (params.siteName != null && params.siteName!.isNotEmpty) {
+          queryParams['site_name'] = params.siteName!;
+        }
+        if (params.dateFrom != null && params.dateFrom!.isNotEmpty) {
+          queryParams['date_from'] = params.dateFrom!;
+        }
+        if (params.dateTo != null && params.dateTo!.isNotEmpty) {
+          queryParams['date_to'] = params.dateTo!;
+        }
+      }
+
+      String queryString = '';
+      if (queryParams.isNotEmpty) {
+        queryString =
+            '?' +
+            queryParams.entries
+                .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+                .join('&');
+      }
+
       final response = await _helper.execute(
         method: Method.get,
-        url: ApiUrl.amcReportsHistory,
+        url: '${ApiUrl.amcReportsHistory}$queryString',
         options: Options(headers: {
           'Authorization': 'Bearer $token',
         }),
@@ -2733,12 +2758,53 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<ServiceCallReportResponse> getServiceCallsReportHistory(
-    String token,
-  ) async {
+    String token, {
+    ServiceCallReportHistoryParams? params,
+  }) async {
     try {
+      final Map<String, String> queryParams = {};
+      if (params != null) {
+        if (params.customerId != null && params.customerId!.isNotEmpty) {
+          queryParams['customer_id'] = params.customerId!;
+        }
+        if (params.siteId != null && params.siteId!.isNotEmpty) {
+          queryParams['site_id'] = params.siteId!;
+        }
+        if (params.date != null && params.date!.isNotEmpty) {
+          queryParams['date'] = params.date!;
+        }
+        if (params.startDate != null && params.startDate!.isNotEmpty) {
+          queryParams['start_date'] = params.startDate!;
+        }
+        if (params.endDate != null && params.endDate!.isNotEmpty) {
+          queryParams['end_date'] = params.endDate!;
+        }
+        if (params.search != null && params.search!.isNotEmpty) {
+          queryParams['search'] = params.search!;
+        }
+        if (params.reportType != null && params.reportType!.isNotEmpty) {
+          queryParams['report_type'] = params.reportType!;
+        }
+        if (params.page != null) {
+          queryParams['page'] = params.page.toString();
+        }
+        if (params.pageSize != null) {
+          queryParams['page_size'] = params.pageSize.toString();
+        }
+      }
+
+      String queryString = '';
+      if (queryParams.isNotEmpty) {
+        queryString =
+            '?' +
+            queryParams.entries
+                .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+                .join('&');
+      }
+
       final response = await _helper.execute(
         method: Method.get,
-        url: ApiUrl.serviceCallReportHistory,
+        url: '${ApiUrl.serviceCallReportHistory}$queryString',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
