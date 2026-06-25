@@ -262,6 +262,9 @@ class CustomerAmcVisitsScreen extends StatelessWidget {
     } else if (statusUpper == 'PENDING') {
       bgColor = const Color(0xFFFFF8E1);
       textColor = const Color(0xFFFFB300);
+    } else if (statusUpper == 'EXPIRED') {
+      bgColor = const Color(0xFFFFEBEE);
+      textColor = const Color(0xFFF44336);
     } else {
       bgColor = Colors.grey[200]!;
       textColor = Colors.grey[700]!;
@@ -425,6 +428,9 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
     } else if (statusUpper == 'PENDING') {
       bgColor = const Color(0xFFFFF8E1);
       textColor = const Color(0xFFFFB300);
+    } else if (statusUpper == 'EXPIRED') {
+      bgColor = const Color(0xFFFFEBEE);
+      textColor = const Color(0xFFF44336);
     } else {
       bgColor = Colors.grey[200]!;
       textColor = Colors.grey[700]!;
