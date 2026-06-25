@@ -3,13 +3,13 @@ import 'package:equatable/equatable.dart';
 class AmcHistoryResponse extends Equatable {
   final int status;
   final bool success;
-  final List<AmcHistoryData> data;
+  final AmcHistoryReportData? data;
   final String message;
 
   const AmcHistoryResponse({
     required this.status,
     required this.success,
-    required this.data,
+    this.data,
     required this.message,
   });
 
@@ -17,10 +17,7 @@ class AmcHistoryResponse extends Equatable {
     return AmcHistoryResponse(
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
-      data: (json['data'] as List<dynamic>?)
-          ?.map((e) => AmcHistoryData.fromJson(e))
-          .toList() ??
-          [],
+      data: json['data'] != null ? AmcHistoryReportData.fromJson(json['data']) : null,
       message: json['message'] ?? '',
     );
   }
@@ -29,13 +26,45 @@ class AmcHistoryResponse extends Equatable {
     return {
       'status': status,
       'success': success,
-      'data': data.map((e) => e.toJson()).toList(),
+      'data': data?.toJson(),
       'message': message,
     };
   }
 
   @override
   List<Object?> get props => [status, success, data, message];
+}
+
+class AmcHistoryReportData extends Equatable {
+  final List<AmcHistoryData> results;
+  final AmcHistoryPagination? pagination;
+
+  const AmcHistoryReportData({
+    required this.results,
+    this.pagination,
+  });
+
+  factory AmcHistoryReportData.fromJson(Map<String, dynamic> json) {
+    return AmcHistoryReportData(
+      results: (json['results'] as List<dynamic>?)
+              ?.map((e) => AmcHistoryData.fromJson(e))
+              .toList() ??
+          [],
+      pagination: json['pagination'] != null
+          ? AmcHistoryPagination.fromJson(json['pagination'])
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'results': results.map((e) => e.toJson()).toList(),
+      'pagination': pagination?.toJson(),
+    };
+  }
+
+  @override
+  List<Object?> get props => [results, pagination];
 }
 
 class AmcHistoryData extends Equatable {
@@ -126,4 +155,39 @@ class AmcHistoryData extends Equatable {
     totalVisits,
     completedVisits,
   ];
+}
+
+class AmcHistoryPagination extends Equatable {
+  final int page;
+  final int pageSize;
+  final int totalPages;
+  final int totalItems;
+
+  const AmcHistoryPagination({
+    required this.page,
+    required this.pageSize,
+    required this.totalPages,
+    required this.totalItems,
+  });
+
+  factory AmcHistoryPagination.fromJson(Map<String, dynamic> json) {
+    return AmcHistoryPagination(
+      page: json['page'] ?? 0,
+      pageSize: json['page_size'] ?? 0,
+      totalPages: json['total_pages'] ?? 0,
+      totalItems: json['total_items'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'page': page,
+      'page_size': pageSize,
+      'total_pages': totalPages,
+      'total_items': totalItems,
+    };
+  }
+
+  @override
+  List<Object?> get props => [page, pageSize, totalPages, totalItems];
 }

@@ -107,6 +107,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       siteName: _selectedSiteName,
       dateFrom: dateStr,
       dateTo: dateStr,
+      page: 1,
+      pageSize: 10,
     ));
   }
 
@@ -689,7 +691,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                             ],
                           );
                         } else if (state is AmcReportsHistorySuccessState) {
-                          final items = state.response.data;
+                          final items = state.response.data?.results ?? [];
                           if (items.isEmpty) {
                             return ListView(
                               physics: const AlwaysScrollableScrollPhysics(),
