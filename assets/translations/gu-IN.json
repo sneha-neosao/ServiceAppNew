@@ -518,5 +518,7 @@
   "preventive_maintenance_checklist_title": "પ્રિવેન્ટિવ મેન્ટેનન્સ ચેકલિસ્ટ\n(જો ઠીક / ઠીક નથી તો ચેક કરો અને ટિક કરો)",
   "total_visits": "કુલ મુલાકાતો",
   "missed_amc_visits": "ચૂકાયેલી AMC મુલાકાતો",
-  "view_all_visits": "બધી મુલાકાતો"
+  "view_all_visits": "બધી મુલાકાતો",
+  "amc_duration": "AMC અવધિ",
+  "completed_visits": "પૂર્ણ થયેલી મુલાકાતો"
 }

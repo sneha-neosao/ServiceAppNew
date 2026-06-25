@@ -1406,7 +1406,7 @@ class _ReportCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Completed Visits',
+                            'completed_visits'.tr(),
                             style: AppFont.style(
                               fontSize: 11,
                               fontWeight: FontWeight.w800,

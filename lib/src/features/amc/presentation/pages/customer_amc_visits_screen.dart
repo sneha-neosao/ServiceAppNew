@@ -201,14 +201,14 @@ class CustomerAmcVisitsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInfoRow('Customer Name', item.customerName),
+                    _buildInfoRow('close_call_customer_name_label'.tr(), item.customerName),
                     const SizedBox(height: 8),
-                    _buildInfoRow('Site Name', item.siteName),
+                    _buildInfoRow('close_call_site_name_label'.tr(), item.siteName),
                     const SizedBox(height: 8),
-                    _buildInfoRow('Total Visits', '${item.totalVisits}'),
+                    _buildInfoRow('total_visits'.tr(), '${item.totalVisits}'),
                     const SizedBox(height: 8),
                     _buildInfoRow(
-                      'AMC Duration',
+                      'amc_duration'.tr(),
                       '${item.contractStart} - ${item.contractEnd}',
                     ),
                   ],
@@ -526,7 +526,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Visit Range : ${widget.item.visitFromDate} - ${widget.item.visitToDate}',
+                  '${'amc_schedule_window'.tr()} : ${widget.item.visitFromDate} - ${widget.item.visitToDate}',
                   style: TextStyle(
                     color: Colors.black87,
                     fontSize: 14,
