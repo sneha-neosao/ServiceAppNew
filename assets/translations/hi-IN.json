@@ -520,5 +520,6 @@
   "missed_amc_visits": "छूटे हुए AMC विज़िट्स",
   "view_all_visits": "सभी विज़िट्स",
   "amc_duration": "AMC अवधि",
-  "completed_visits": "पूर्ण विज़िट्स"
+  "completed_visits": "पूर्ण विज़िट्स",
+  "complaint_date_and_time": "शिकायत दिनांक और समय"
 }

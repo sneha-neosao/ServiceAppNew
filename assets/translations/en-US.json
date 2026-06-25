@@ -520,5 +520,6 @@
   "missed_amc_visits": "Missed AMC Visits",
   "view_all_visits": "All Visits",
   "amc_duration": "AMC Duration",
-  "completed_visits": "Completed Visits"
+  "completed_visits": "Completed Visits",
+  "complaint_date_and_time": "Complaint Date & Time"
 }

@@ -56,7 +56,12 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
         } else if (state is ServiceCallComplaintPdfLoaded) {
           final url = state.response.data?.pdfUrl;
           if (url != null && url.isNotEmpty) {
-            launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+            final uri = Uri.parse(url);
+            final cacheClearUri = uri.replace(queryParameters: {
+              ...uri.queryParameters,
+              'v': DateTime.now().millisecondsSinceEpoch.toString(),
+            });
+            launchUrl(cacheClearUri, mode: LaunchMode.externalApplication);
           } else {
             appSnackBar(context, const Color(0xFFF44336), 'pdf_url_is_empty'.tr());
           }
@@ -144,7 +149,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                     child: _buildInfoItem('complaint_report_client_label'.tr(), data.customerName),
                                   ),
                                   Expanded(
-                                    child: _buildInfoItem('Complaint Date & Time', dateStr),
+                                    child: _buildInfoItem('complaint_date_and_time'.tr(), dateStr),
                                   ),
                                 ],
                               ),

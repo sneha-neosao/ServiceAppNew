@@ -56,7 +56,12 @@ class CustomerAmcVisitsScreen extends StatelessWidget {
                 Navigator.pop(context);
                 final url = state.pdfUrl;
                 if (url.isNotEmpty) {
-                  launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                  final uri = Uri.parse(url);
+                  final cacheClearUri = uri.replace(queryParameters: {
+                    ...uri.queryParameters,
+                    'v': DateTime.now().millisecondsSinceEpoch.toString(),
+                  });
+                  launchUrl(cacheClearUri, mode: LaunchMode.externalApplication);
                 } else {
                   appSnackBar(context, const Color(0xFFF44336), 'pdf_url_is_empty'.tr());
                 }
@@ -605,7 +610,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  '${'report'.tr()} ${reportsCount - index}',
+                                  '${'report'.tr()} ${index + 1}',
                                   style: AppFont.style(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w800,
@@ -730,7 +735,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      '${'view_report'.tr()} ${reportsCount - index}',
+                                      '${'view_report'.tr()} ${index + 1}',
                                       style: AppFont.style(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w900,

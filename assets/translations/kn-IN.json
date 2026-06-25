@@ -520,5 +520,6 @@
   "missed_amc_visits": "ಮಿಸ್ ಆದ AMC ಭೇಟಿಗಳು",
   "view_all_visits": "ಎಲ್ಲಾ ಭೇಟಿಗಳು",
   "amc_duration": "AMC ಅವಧಿ",
-  "completed_visits": "ಪೂರ್ಣಗೊಂಡ ಭೇಟಿಗಳು"
+  "completed_visits": "ಪೂರ್ಣಗೊಂಡ ಭೇಟಿಗಳು",
+  "complaint_date_and_time": "ದೂರು ದಿನಾಂಕ ಮತ್ತು ಸಮಯ"
 }

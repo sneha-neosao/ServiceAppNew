@@ -363,12 +363,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 _memberPresentsControllers.first.text = '';
               }
               _agendaController.text = state.data.data.agenda;
-              if (state.data.data.assignedTechnicians.isNotEmpty) {
-                _technicians.clear();
-                _technicianIds.clear();
-                for (var tech in state.data.data.assignedTechnicians) {
-                  _technicians.add(TextEditingController(text: tech.name));
-                  _technicianIds.add(tech.id);
+              if (widget.reportId != null) {
+                if (state.data.data.assignedTechnicians.isNotEmpty) {
+                  _technicians.clear();
+                  _technicianIds.clear();
+                  for (var tech in state.data.data.assignedTechnicians) {
+                    _technicians.add(TextEditingController(text: tech.name));
+                    _technicianIds.add(tech.id);
+                  }
                 }
               }
               if (_technicians.isEmpty) {
@@ -376,7 +378,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 _technicianIds.add(null);
               }
 
-              if (_currentReportId == null && state.data.data.id.isNotEmpty) {
+              if (widget.reportId != null && _currentReportId == null && state.data.data.id.isNotEmpty) {
                 _currentReportId = state.data.data.id;
               }
 

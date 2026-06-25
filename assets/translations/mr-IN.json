@@ -520,5 +520,6 @@
   "missed_amc_visits": "चुकलेल्या AMC भेटी",
   "view_all_visits": "सर्व भेटी",
   "amc_duration": "AMC कालावधी",
-  "completed_visits": "पूर्ण झालेल्या भेटी"
+  "completed_visits": "पूर्ण झालेल्या भेटी",
+  "complaint_date_and_time": "तक्रारीची दिनांक व वेळ"
 }
