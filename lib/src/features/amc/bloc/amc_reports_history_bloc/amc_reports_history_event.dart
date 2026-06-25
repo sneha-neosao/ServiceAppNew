@@ -12,12 +12,16 @@ class GetAmcReportsHistoryEvent extends AmcReportsHistoryEvent {
   final String? siteName;
   final String? dateFrom;
   final String? dateTo;
+  final int page;
+  final int pageSize;
 
   const GetAmcReportsHistoryEvent({
     this.customerName,
     this.siteName,
     this.dateFrom,
     this.dateTo,
+    this.page = 1,
+    this.pageSize = 10,
   });
 
   @override
@@ -26,5 +30,7 @@ class GetAmcReportsHistoryEvent extends AmcReportsHistoryEvent {
     if (siteName != null) siteName!,
     if (dateFrom != null) dateFrom!,
     if (dateTo != null) dateTo!,
+    page,
+    pageSize,
   ];
 }

@@ -9,12 +9,16 @@ class AmcReportsHistoryParams {
   final String? siteName;
   final String? dateFrom;
   final String? dateTo;
+  final int page;
+  final int pageSize;
 
   AmcReportsHistoryParams({
     this.customerName,
     this.siteName,
     this.dateFrom,
     this.dateTo,
+    this.page = 1,
+    this.pageSize = 10,
   });
 }
 

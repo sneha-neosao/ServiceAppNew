@@ -1409,6 +1409,8 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         if (params.dateTo != null && params.dateTo!.isNotEmpty) {
           queryParams['date_to'] = params.dateTo!;
         }
+        queryParams['page'] = params.page.toString();
+        queryParams['page_size'] = params.pageSize.toString();
       }
 
       String queryString = '';
