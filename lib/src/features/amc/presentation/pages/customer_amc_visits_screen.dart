@@ -15,6 +15,7 @@ import 'package:service_app/src/features/widgets/amc_report_card_shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:service_app/src/features/report_history/presentation/pages/feedback_details_screen.dart';
 
 class CustomerAmcVisitsScreen extends StatelessWidget {
   final String customerId;
@@ -490,12 +491,33 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                     ),
                     const Spacer(),
                     _buildStatusBadge(widget.item.visitStatus),
-                    if (widget.item.qrCodeImage != null || widget.item.qrCodeUrl != null)
+                    if (widget.item.feedbackSubmitted)
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FeedbackDetailsScreen(
+                                reportId: widget.item.visitId,
+                                isServiceCall: false,
+                                isAmc: true,
+                                title: 'amc_feedback_details'.tr(),
+                                onBack: () => Navigator.pop(context),
+                              ),
+                            ),
+                          );
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Icon(Icons.check_circle, color: Colors.green, size: 24),
+                        ),
+                      )
+                    else if (widget.item.qrCodeImage != null || widget.item.qrCodeUrl != null)
                       GestureDetector(
                         onTap: () => _showQrCodeDialog(context),
                         child: Padding(
                           padding: const EdgeInsets.only(left: 8),
-                          child: Image.asset('assets/images/qr_icon.png', width: 20, height: 20, errorBuilder: (c,e,s) => const Icon(Icons.qr_code, size: 20, color: Colors.orange)),
+                          child: Image.asset('assets/images/qr_icon.png', width: 24, height: 24, errorBuilder: (c,e,s) => const Icon(Icons.qr_code, size: 24, color: Colors.orange)),
                         ),
                       ),
                     const SizedBox(width: 8),
@@ -535,9 +557,9 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
               if (state is AmcVisitReportsSuccessState) {
                 final reportsCount = state.data.data.reports.length;
                 if (reportsCount == 0) {
-                  return const Padding(
+                  return Padding(
                     padding: EdgeInsets.all(16.0),
-                    child: Text('No reports found.'),
+                    child: Text('no_reports_found'.tr()),
                   );
                 }
                 return Padding(

@@ -414,15 +414,15 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           return ListView(
                             physics: const AlwaysScrollableScrollPhysics(),
                             children: [
-                              SizedBox(
-                                height: MediaQuery.of(context).size.height * 0.6,
+                              Padding(
+                                padding: const EdgeInsets.only(top: 80),
                                 child: Center(
                                   child: Text(
-                                    state.message,
+                                    'no_reports_found'.tr(),
                                     style: AppFont.style(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.red,
+                                      color: const Color(0xFFA5ABB7),
                                     ),
                                   ),
                                 ),
@@ -435,8 +435,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                             return ListView(
                               physics: const AlwaysScrollableScrollPhysics(),
                               children: [
-                                SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.6,
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 80),
                                   child: Center(
                                     child: Text(
                                       'no_reports_found'.tr(),
@@ -529,15 +529,15 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           return ListView(
                             physics: const AlwaysScrollableScrollPhysics(),
                             children: [
-                              SizedBox(
-                                height: MediaQuery.of(context).size.height * 0.6,
+                              Padding(
+                                padding: const EdgeInsets.only(top: 80),
                                 child: Center(
                                   child: Text(
-                                    state.message,
+                                    'no_reports_found'.tr(),
                                     style: AppFont.style(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.red,
+                                      color: const Color(0xFFA5ABB7),
                                     ),
                                   ),
                                 ),
@@ -550,8 +550,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                             return ListView(
                               physics: const AlwaysScrollableScrollPhysics(),
                               children: [
-                                SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.6,
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 80),
                                   child: Center(
                                     child: Text(
                                       'no_reports_found'.tr(),
@@ -635,15 +635,15 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           return ListView(
                             physics: const AlwaysScrollableScrollPhysics(),
                             children: [
-                              SizedBox(
-                                height: MediaQuery.of(context).size.height * 0.6,
+                              Padding(
+                                padding: const EdgeInsets.only(top: 80),
                                 child: Center(
                                   child: Text(
-                                    state.errorMessage,
+                                    'no_reports_found'.tr(),
                                     style: AppFont.style(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.red,
+                                      color: const Color(0xFFA5ABB7),
                                     ),
                                   ),
                                 ),
@@ -656,8 +656,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                             return ListView(
                               physics: const AlwaysScrollableScrollPhysics(),
                               children: [
-                                SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.6,
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 80),
                                   child: Center(
                                     child: Text(
                                       'no_reports_found'.tr(),
