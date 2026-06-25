@@ -554,7 +554,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  '${'report'.tr()} ${index + 1}',
+                                  '${'report'.tr()} ${reportsCount - index}',
                                   style: AppFont.style(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w800,
@@ -681,7 +681,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      '${'view_report'.tr()} ${index + 1}',
+                                      '${'view_report'.tr()} ${reportsCount - index}',
                                       style: AppFont.style(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w900,

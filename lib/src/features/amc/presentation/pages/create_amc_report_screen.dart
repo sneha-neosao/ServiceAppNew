@@ -131,14 +131,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
     if (widget.reportId != null) {
       if (_currentStep == 1) {
-        _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
+        // _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
       } else if (_currentStep == 2) {
         _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
       } else if (_currentStep == 3) {
         _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
       }
     } else {
-      _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
+      // _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
     }
   }
 
