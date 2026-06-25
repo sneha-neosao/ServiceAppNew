@@ -852,7 +852,7 @@ class _CustomerAmcVisitsShimmer extends StatelessWidget {
       children: [
         _buildHeaderShimmer(),
         const SizedBox(height: 16),
-        ...List.generate(4, (index) => Padding(
+        ...List.generate(10, (index) => Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: _buildVisitShimmer(),
         )),
