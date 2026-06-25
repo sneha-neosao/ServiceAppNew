@@ -205,7 +205,17 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
     final bool isSelected = _selectedTab == index;
     return GestureDetector(
       onTap: () {
-        setState(() => _selectedTab = index);
+        setState(() {
+          _selectedTab = index;
+          _selectedCustomerName = null;
+          _selectedCustomerId = null;
+          _selectedSiteName = null;
+          _selectedSiteId = null;
+          _selectedDate = null;
+          _complaintController.clear();
+          _pendingCustomerController.clear();
+          _pendingSiteController.clear();
+        });
         if (index == 0) {
           _fetchServiceCalls(isRefresh: true, isAssignedOnly: true);
         } else {
@@ -332,6 +342,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           Expanded(
             child: TextField(
               controller: _complaintController,
+              onChanged: (_) => _fetchServiceCalls(isRefresh: true),
               onSubmitted: (_) => _fetchServiceCalls(isRefresh: true),
               style: AppFont.style(
                 fontSize: 14,

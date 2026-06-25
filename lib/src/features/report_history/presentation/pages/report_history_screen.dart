@@ -67,6 +67,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   String? _selectedTechnicianName;
   String? _selectedTechnicianId;
   DateTime? _selectedDate;
+  final TextEditingController _searchController = TextEditingController();
 
   void _fetchReportHistory() {
     final String? dateStr = _selectedDate != null
@@ -93,6 +94,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       customerId: _selectedCustomerId,
       siteId: _selectedSiteId,
       date: dateStr,
+      search: _searchController.text.trim().isNotEmpty ? _searchController.text.trim() : null,
     ));
   }
 
@@ -162,6 +164,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     _customerBloc.close();
     _sitesBloc.close();
     _technicianBloc.close();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -762,7 +765,17 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     bool isSelected = _selectedTab == index;
     return GestureDetector(
       onTap: () {
-        setState(() => _selectedTab = index);
+        setState(() {
+          _selectedTab = index;
+          _selectedCustomerName = null;
+          _selectedCustomerId = null;
+          _selectedSiteName = null;
+          _selectedSiteId = null;
+          _selectedTechnicianName = null;
+          _selectedTechnicianId = null;
+          _selectedDate = null;
+          _searchController.clear();
+        });
         if (index == 0) {
           _fetchReportHistory();
         } else if (index == 1) {
@@ -1086,6 +1099,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     _selectedTechnicianName = null;
                     _selectedTechnicianId = null;
                     _selectedDate = null;
+                    _searchController.clear();
                   });
                   _fetchCurrentTabHistory();
                 },
@@ -1183,17 +1197,32 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       ),
       child: Row(
         children: [
-          // Icon(icon, color: const Color(0xFFA5ABB7), size: 18),
-          // const SizedBox(width: 8),
           Expanded(
-            child: Text(
-              label,
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: label,
+                hintStyle: AppFont.style(
+                  fontSize: 14,
+                  color: const Color(0xFFA5ABB7),
+                  fontWeight: FontWeight.w500,
+                ),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              ),
               style: AppFont.style(
                 fontSize: 14,
-                color: const Color(0xFFA5ABB7),
+                color: const Color(0xFF0D121F),
                 fontWeight: FontWeight.w500,
               ),
-              overflow: TextOverflow.ellipsis,
+              textInputAction: TextInputAction.search,
+              onChanged: (_) {
+                _fetchCurrentTabHistory();
+              },
+              onSubmitted: (_) {
+                _fetchCurrentTabHistory();
+              },
             ),
           ),
         ],

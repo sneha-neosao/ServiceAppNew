@@ -62,7 +62,17 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
     if (widget.items != oldWidget.items || widget.isLoading != oldWidget.isLoading) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          _itemsNotifier.value = widget.items;
+          if (widget.filterFn != null) {
+            _itemsNotifier.value = widget.items
+                .where((item) => widget.filterFn!(item, _lastSearch))
+                .toList();
+          } else {
+            _itemsNotifier.value = widget.items
+                .where((item) => widget.itemAsString(item)
+                    .toLowerCase()
+                    .contains(_lastSearch.toLowerCase()))
+                .toList();
+          }
           _loadingNotifier.value = widget.isLoading;
         }
       });
@@ -113,7 +123,21 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                     autofocus: true,
                     onChanged: (val) {
                       _lastSearch = val;
-                      widget.onSearchChanged?.call(val);
+                      if (widget.onSearchChanged != null) {
+                        _loadingNotifier.value = true;
+                        widget.onSearchChanged?.call(val);
+                      }
+                      if (widget.filterFn != null) {
+                        _itemsNotifier.value = widget.items
+                            .where((item) => widget.filterFn!(item, val))
+                            .toList();
+                      } else {
+                        _itemsNotifier.value = widget.items
+                            .where((item) => widget.itemAsString(item)
+                                .toLowerCase()
+                                .contains(val.toLowerCase()))
+                            .toList();
+                      }
                     },
                     decoration: InputDecoration(
                       hintText: 'Search...',
@@ -154,10 +178,10 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                       return ValueListenableBuilder<List<T>>(
                         valueListenable: _itemsNotifier,
                         builder: (context, items, _) {
-                          if (isLoading && items.isEmpty) {
+                          if (isLoading) {
                             return const Center(
                               child: CircularProgressIndicator(
-                                color: Color(0xFF1565C0),
+                                color: Color(0xFF0B68B9),
                               ),
                             );
                           }
@@ -183,7 +207,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                                   padding: EdgeInsets.all(16.0),
                                   child: Center(
                                     child: CircularProgressIndicator(
-                                      color: Color(0xFF1565C0),
+                                      color: Color(0xFF0B68B9),
                                     ),
                                   ),
                                 );
