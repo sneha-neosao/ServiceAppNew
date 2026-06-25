@@ -16,6 +16,7 @@ import 'package:service_app/src/features/common/domain/usecase/customer_usecase.
 import 'package:service_app/src/features/home/domain/usecase/upcoming_amc_usecase.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
 import 'package:service_app/src/features/my_commissioning/domain/usecase/commissioning_work_update_usecase.dart';
+import 'package:service_app/src/features/amc/domain/usecase/get_customer_amc_visits_usecase.dart';
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step1_usecase.dart';
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step1_autofill_usecase.dart';
 import 'package:service_app/src/features/reports/domain/usecases/service_work_report_step2_usecase.dart';
@@ -347,7 +348,7 @@ abstract class Repository {
   );
 
   Future<Either<Failure, CustomerAmcVisitsResponse>> getCustomerAmcVisits(
-    String customerId,
+    CustomerAmcVisitsParams params,
   );
 
   Future<Either<Failure, ServiceCallDetailsResponse>> serviceCallDetails(
@@ -2596,13 +2597,13 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, CustomerAmcVisitsResponse>> getCustomerAmcVisits(
-    String customerId,
+    CustomerAmcVisitsParams params,
   ) {
     return _networkInfo.check<CustomerAmcVisitsResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.getCustomerAmcVisits(customerId, token);
+          final respData = await _remoteDataSource.getCustomerAmcVisits(params, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message));
