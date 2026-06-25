@@ -14,6 +14,7 @@ import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:service_app/src/features/common/domain/usecase/sites_usecase.dart';
 import 'package:service_app/src/features/common/domain/usecase/customer_usecase.dart';
 import 'package:service_app/src/features/home/domain/usecase/upcoming_amc_usecase.dart';
+import 'package:service_app/src/features/amc/domain/usecase/get_customer_amc_visits_usecase.dart';
 import 'package:service_app/src/features/login/domain/usecase/login_usecase.dart';
 import 'package:service_app/src/remote/models/auth_model/Login_response.dart';
 import 'package:service_app/src/remote/models/auth_model/app_settings_response.dart';
@@ -446,7 +447,7 @@ sealed class RemoteDataSource {
 
   Future<AmcVisitReportsResponse> amcVisitReports(String visitId, String token);
 
-  Future<CustomerAmcVisitsResponse> getCustomerAmcVisits(String customerId, String token);
+  Future<CustomerAmcVisitsResponse> getCustomerAmcVisits(CustomerAmcVisitsParams params, String token);
 
   Future<ServiceCallDetailsResponse> serviceCallDetails(
     String id,
@@ -2901,11 +2902,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CustomerAmcVisitsResponse> getCustomerAmcVisits(String customerId, String token) async {
+  Future<CustomerAmcVisitsResponse> getCustomerAmcVisits(CustomerAmcVisitsParams params, String token) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
-        url: '${ApiUrl.customerAmcVisits}$customerId/',
+        url: '${ApiUrl.customerAmcVisits}${params.customerId}/?page=${params.page}&page_size=${params.pageSize}',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 

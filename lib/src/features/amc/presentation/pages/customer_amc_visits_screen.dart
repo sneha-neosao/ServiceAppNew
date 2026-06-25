@@ -17,7 +17,7 @@ import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:service_app/src/features/report_history/presentation/pages/feedback_details_screen.dart';
 
-class CustomerAmcVisitsScreen extends StatelessWidget {
+class CustomerAmcVisitsScreen extends StatefulWidget {
   final String customerId;
 
   const CustomerAmcVisitsScreen({
@@ -26,12 +26,48 @@ class CustomerAmcVisitsScreen extends StatelessWidget {
   });
 
   @override
+  State<CustomerAmcVisitsScreen> createState() => _CustomerAmcVisitsScreenState();
+}
+
+class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
+  final ScrollController _scrollController = ScrollController();
+  late final CustomerAmcVisitsBloc _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = getIt<CustomerAmcVisitsBloc>()
+      ..add(GetCustomerAmcVisitsEvent(customerId: widget.customerId));
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 50) {
+        final state = _bloc.state;
+        if (state is CustomerAmcVisitsSuccess) {
+          final pagination = state.response.data?.pagination;
+          if (pagination != null) {
+            _bloc.add(GetCustomerAmcVisitsEvent(
+              customerId: widget.customerId,
+              page: pagination.page + 1,
+              pageSize: pagination.pageSize,
+            ));
+          }
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => getIt<CustomerAmcVisitsBloc>()
-            ..add(GetCustomerAmcVisitsEvent(customerId)),
+        BlocProvider.value(
+          value: _bloc,
         ),
         BlocProvider(
           create: (context) => getIt<AmcReportPdfBloc>(),
@@ -132,7 +168,7 @@ class CustomerAmcVisitsScreen extends StatelessWidget {
                 color: const Color(0xFF1565C0),
                 backgroundColor: Colors.white,
                 onRefresh: () async {
-                  context.read<CustomerAmcVisitsBloc>().add(GetCustomerAmcVisitsEvent(customerId));
+                  context.read<CustomerAmcVisitsBloc>().add(GetCustomerAmcVisitsEvent(customerId: widget.customerId));
                 },
                 child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -162,9 +198,10 @@ class CustomerAmcVisitsScreen extends StatelessWidget {
                   color: const Color(0xFF1565C0),
                   backgroundColor: Colors.white,
                   onRefresh: () async {
-                    context.read<CustomerAmcVisitsBloc>().add(GetCustomerAmcVisitsEvent(customerId));
+                    context.read<CustomerAmcVisitsBloc>().add(GetCustomerAmcVisitsEvent(customerId: widget.customerId));
                   },
                   child: ListView(
+                    controller: _scrollController,
                     physics: const AlwaysScrollableScrollPhysics(),
                     children: [
                       SizedBox(
@@ -190,9 +227,10 @@ class CustomerAmcVisitsScreen extends StatelessWidget {
                 color: const Color(0xFF1565C0),
                 backgroundColor: Colors.white,
                 onRefresh: () async {
-                  context.read<CustomerAmcVisitsBloc>().add(GetCustomerAmcVisitsEvent(customerId));
+                  context.read<CustomerAmcVisitsBloc>().add(GetCustomerAmcVisitsEvent(customerId: widget.customerId));
                 },
                 child: ListView(
+                  controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
                   children: [
