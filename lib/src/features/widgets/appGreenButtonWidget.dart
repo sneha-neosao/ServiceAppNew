@@ -26,7 +26,7 @@ class _AppGreenButtonWidgetState extends State<AppGreenButtonWidget> {
           widget.label,
           style: Theme.of(context).textTheme.headlineMedium!.copyWith(
             color: AppColor.white,
-            fontSize: 17,
+            fontSize: 15,
           ),
         ), // uses theme textStyle automatically
       ),

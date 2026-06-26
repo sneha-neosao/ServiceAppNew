@@ -96,7 +96,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                     child: Text(
                       title,
                       style: AppFont.style(
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.w900,
                         color: const Color(0xFF0D121F),
                       ),
@@ -116,13 +116,13 @@ class FeedbackDetailsScreen extends StatelessWidget {
                           return _buildShimmerContent();
                         } else if (state is ServiceCallCheckFeedbackError) {
                           return Center(
-                            child: Text(state.message, style: AppFont.style(fontSize: 14, color: Colors.red)),
+                            child: Text(state.message, style: AppFont.style(fontSize: 12, color: Colors.red)),
                           );
                         } else if (state is ServiceCallCheckFeedbackLoaded) {
                           final data = state.response.data?.feedback;
                           if (data == null) {
                             return Center(
-                              child: Text('no_feedback_found'.tr(), style: AppFont.style(fontSize: 14, color: Colors.grey)),
+                              child: Text('no_feedback_found'.tr(), style: AppFont.style(fontSize: 12, color: Colors.grey)),
                             );
                           }
                           return _buildFeedbackContent(data);
@@ -137,13 +137,13 @@ class FeedbackDetailsScreen extends StatelessWidget {
                               return _buildShimmerContent();
                             } else if (state is AmcCheckFeedbackFailureState) {
                               return Center(
-                                child: Text(state.message, style: AppFont.style(fontSize: 14, color: Colors.red)),
+                                child: Text(state.message, style: AppFont.style(fontSize: 12, color: Colors.red)),
                               );
                             } else if (state is AmcCheckFeedbackSuccessState) {
                               final data = state.data.data?.feedback;
                               if (data == null) {
                                 return Center(
-                                  child: Text('no_feedback_found'.tr(), style: AppFont.style(fontSize: 14, color: Colors.grey)),
+                                  child: Text('no_feedback_found'.tr(), style: AppFont.style(fontSize: 12, color: Colors.grey)),
                                 );
                               }
                               return _buildFeedbackContent(data);
@@ -157,13 +157,13 @@ class FeedbackDetailsScreen extends StatelessWidget {
                               return _buildShimmerContent();
                             } else if (state is CheckFeedbackError) {
                               return Center(
-                                child: Text(state.message, style: AppFont.style(fontSize: 14, color: Colors.red)),
+                                child: Text(state.message, style: AppFont.style(fontSize: 12, color: Colors.red)),
                               );
                             } else if (state is CheckFeedbackLoaded) {
                               final data = state.response.data?.feedback;
                               if (data == null) {
                                 return Center(
-                                  child: Text('no_feedback_found'.tr(), style: AppFont.style(fontSize: 14, color: Colors.grey)),
+                                  child: Text('no_feedback_found'.tr(), style: AppFont.style(fontSize: 12, color: Colors.grey)),
                                 );
                               }
                               return _buildFeedbackContent(data);
@@ -307,7 +307,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                 valueWidget: Text(
                   data.name,
                   style: AppFont.style(
-                    fontSize: 15,
+                    fontSize: 13,
                     fontWeight: FontWeight.w900,
                     color: const Color(0xFF212121),
                   ),
@@ -322,7 +322,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                 valueWidget: Text(
                   data.contactNumber,
                   style: AppFont.style(
-                    fontSize: 15,
+                    fontSize: 13,
                     fontWeight: FontWeight.w900,
                     color: const Color(0xFF212121),
                   ),
@@ -351,7 +351,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                   child: Text(
                     data.issueResolved ? 'yes'.tr() : 'no'.tr(),
                     style: AppFont.style(
-                      fontSize: 13,
+                      fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: data.issueResolved
                           ? const Color(0xFF00C853)
@@ -405,13 +405,13 @@ class FeedbackDetailsScreen extends StatelessWidget {
                                       'excellent'
                                   ? '🌟'
                                   : '💬'),
-                        style: const TextStyle(fontSize: 13),
+                        style: const TextStyle(fontSize: 11),
                       ),
                       const SizedBox(width: 6),
                       Text(
                         data.technicianBehavior,
                         style: AppFont.style(
-                          fontSize: 13,
+                          fontSize: 11,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF00C853),
                         ),
@@ -451,7 +451,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
             child: Text(
               title,
               style: AppFont.style(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFF757575), // Greyish label
               ),
@@ -481,7 +481,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
               Text(
                 title,
                 style: AppFont.style(
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF757575),
                 ),
@@ -494,7 +494,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
             child: Text(
               comment.isNotEmpty ? comment : 'no_comment_provided'.tr(),
               style: AppFont.style(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w900,
                 color: const Color(0xFF212121),
               ).copyWith(fontStyle: FontStyle.italic),

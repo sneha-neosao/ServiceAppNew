@@ -89,7 +89,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                   Text(
                     'complaint_report_title'.tr(),
                     style: AppFont.style(
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF0D121F),
                     ),
@@ -193,7 +193,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                     Text(
                                       'complaint_description'.tr(),
                                       style: AppFont.style(
-                                        fontSize: 11,
+                                        fontSize: 9,
                                         fontWeight: FontWeight.w800,
                                         color: const Color(0xFFA5ABB7),
                                       ),
@@ -202,7 +202,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                     Text(
                                       data.complaintDetails.isNotEmpty ? data.complaintDetails : '-',
                                       style: AppFont.style(
-                                        fontSize: 13,
+                                        fontSize: 11,
                                         fontWeight: FontWeight.w500,
                                         color: const Color(0xFF424B5C),
                                         height: 1.5,
@@ -218,7 +218,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                 Text(
                                   'assigned_technicians'.tr(),
                                   style: AppFont.style(
-                                    fontSize: 11,
+                                    fontSize: 9,
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFFA5ABB7),
                                   ),
@@ -238,7 +238,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                       child: Text(
                                         '${tech['name']} (${tech['phone']})',
                                         style: AppFont.style(
-                                          fontSize: 12,
+                                          fontSize: 10,
                                           fontWeight: FontWeight.w800,
                                           color: const Color(0xFF424B5C),
                                         ),
@@ -254,7 +254,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                 Text(
                                   'attachments'.tr(),
                                   style: AppFont.style(
-                                    fontSize: 11,
+                                    fontSize: 9,
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFFA5ABB7),
                                   ),
@@ -351,7 +351,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                       label: Text(
                                         isLoading ? 'generating_pdf'.tr() : 'reports_view_complaint'.tr(),
                                         style: AppFont.style(
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w800,
                                           color: Colors.white,
                                         ),
@@ -384,7 +384,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
         Text(
           label,
           style: AppFont.style(
-            fontSize: 11,
+            fontSize: 9,
             fontWeight: FontWeight.w800,
             color: const Color(0xFFA5ABB7),
           ),
@@ -393,7 +393,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
         Text(
           value,
           style: AppFont.style(
-            fontSize: isLarge ? 22 : 13,
+            fontSize: isLarge ? 18 : 11,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF0D121F),
           ),

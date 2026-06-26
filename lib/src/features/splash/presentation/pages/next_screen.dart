@@ -150,7 +150,7 @@ class _NextScreenState extends State<NextScreen> with TickerProviderStateMixin {
                       child: Text(
                         'skip'.tr(),
                         style: AppFont.style(
-                          fontSize: 13,
+                          fontSize: 11,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
                           letterSpacing: 0.4,
@@ -250,7 +250,7 @@ class _SlideItem extends StatelessWidget {
               Text(
                 titleKey.tr(),
                 style: AppFont.style(
-                  fontSize: 28,
+                  fontSize: 26,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
                   height: 1.2,
@@ -260,7 +260,7 @@ class _SlideItem extends StatelessWidget {
               Text(
                 subtitleKey.tr(),
                 style: AppFont.style(
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.w400,
                   color: Colors.white.withValues(alpha: 0.90),
                   height: 1.5,

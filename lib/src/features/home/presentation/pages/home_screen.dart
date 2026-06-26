@@ -364,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     : '${state.unreadCount}',
                                                 style: const TextStyle(
                                                   color: Colors.white,
-                                                  fontSize: 9,
+                                                  fontSize: 7,
                                                   fontWeight: FontWeight.w800,
                                                 ),
                                               ),
@@ -564,7 +564,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     "app_update".tr(),
                     style: AppFont.style(
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF1A1A1A),
                     ),
@@ -574,7 +574,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     message,
                     textAlign: TextAlign.center,
                     style: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w500,
                       color: const Color(0xFF424B5C),
                     ),
@@ -600,7 +600,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text(
                           "update_now".tr(),
                           style: AppFont.style(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
@@ -624,7 +624,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Text(
                             "cancel".tr(),
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 12,
                               color: const Color(0xFF1A1A1A),
                               fontWeight: FontWeight.w600,
                             ),
@@ -692,7 +692,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text(
                         'maintenance_mode'.tr(),
                         style: AppFont.style(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF0D121F),
                         ),
@@ -705,7 +705,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         message,
                         textAlign: TextAlign.center,
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF5C616E),
                           height: 1.4,
@@ -738,7 +738,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     'exit'.tr(),
                                     maxLines: 1,
                                     style: AppFont.style(
-                                      fontSize: 14,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w800,
                                       color: const Color(0xFF0D121F),
                                     ),
@@ -785,7 +785,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               'logout_dialog_btn_confirm'.tr(),
                                               maxLines: 1,
                                               style: AppFont.style(
-                                                fontSize: 14,
+                                                fontSize: 12,
                                                 fontWeight: FontWeight.w800,
                                                 color: Colors.white,
                                               ),
@@ -882,12 +882,15 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: screenHeight),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                child: IntrinsicHeight(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
                 BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
                   bloc: _profileDetailsBloc,
                   builder: (context, state) {
@@ -948,7 +951,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Text(
                           name,
                           style: AppFont.style(
-                            fontSize: 28,
+                            fontSize: 26,
                             fontWeight: FontWeight.bold,
                             color: const Color(0xFF1A1A1A),
                           ),
@@ -958,7 +961,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           _getGreetingMessage()
                               .tr(args: [dealerName]),
                           style: AppFont.style(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: Colors.black,
                           ),
@@ -968,7 +971,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                 ),
-                SizedBox(height: screenHeight / 5),
+                const Spacer(),
 
                 // AMC Card
                 if (_profileDetailsBloc.state is ProfileDetailsSuccessState && (_profileDetailsBloc.state as ProfileDetailsSuccessState).data.data.permissions.contains('amcs'))
@@ -990,9 +993,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                   ),
+                const Spacer(),
               ],
             ),
           ),
+        ),
+        ),
         ),
         );
       },
@@ -1004,7 +1010,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Text(
         'home_placeholder'.tr(),
         style: AppFont.style(
-          fontSize: 22,
+          fontSize: 20,
           fontWeight: FontWeight.w600,
           color: const Color(0xFF9E9E9E),
         ),

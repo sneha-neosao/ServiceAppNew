@@ -216,7 +216,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                       Text(
                         'close_call_dialog_title'.tr(),
                         style: AppFont.style(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w900,
                           color: const Color(0xFF0D121F),
                         ),
@@ -224,7 +224,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                       Text(
                         '${widget.complaintNo} - ${widget.customerName}',
                         style: AppFont.style(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.w500,
                           color: const Color(0xFFA5ABB7),
                         ),
@@ -420,7 +420,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
               minLines: 3,
               maxLines: null,
               keyboardType: TextInputType.multiline,
-              style: AppFont.style(fontSize: 14, color: Colors.black),
+              style: AppFont.style(fontSize: 12, color: Colors.black),
               onChanged: (val) {
                 if (_isError && val.trim().length >= 10) {
                   setState(() => _isError = false);
@@ -430,7 +430,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                 hintText:
                     'close_call_resolution_hint'.tr(),
                 hintStyle: AppFont.style(
-                  fontSize: 14,
+                  fontSize: 12,
                   color: const Color(0xFFD1D5DB),
                 ),
                 contentPadding: const EdgeInsets.all(12),
@@ -464,7 +464,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                 Text(
                   'close_call_min_chars'.tr(),
                   style: AppFont.style(
-                    fontSize: 11,
+                    fontSize: 9,
                     fontWeight: FontWeight.w800,
                     color: _isError ? Colors.red : const Color(0xFFEF4444),
                   ),
@@ -482,7 +482,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                   child: Text(
                     'cancel'.tr(),
                     style: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF6B7280),
                     ),
@@ -548,7 +548,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                             Text(
                               'close_call_btn'.tr(),
                               style: AppFont.style(
-                                fontSize: 13,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white,
                               ),
@@ -580,7 +580,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
         Text(
           title,
           style: AppFont.style(
-            fontSize: 10,
+            fontSize: 8,
             fontWeight: FontWeight.w800,
             color: const Color(0xFFA5ABB7),
           ),
@@ -589,7 +589,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
         Text(
           value,
           style: AppFont.style(
-            fontSize: 13,
+            fontSize: 11,
             fontWeight: FontWeight.w900,
             color: const Color(0xFF0D121F),
           ),
@@ -626,7 +626,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     Text(
                       'add_new_customer'.tr(),
                       style: AppFont.style(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w900,
                         color: const Color(0xFF0D121F),
                       ),
@@ -655,7 +655,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                   decoration: InputDecoration(
                     hintText: 'enter_customer_name'.tr(),
                     hintStyle: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 12,
                       color: const Color(0xFFA5ABB7),
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -682,7 +682,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                       child: Text(
                         'cancel'.tr(),
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF6B7280),
                         ),
@@ -754,7 +754,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                                   'save_entry'.tr(),
                                   style: AppFont.style(
                                     color: Colors.white,
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
@@ -830,7 +830,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                     Text(
                       'add_new_site'.tr(),
                       style: AppFont.style(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w900,
                         color: const Color(0xFF0D121F),
                       ),
@@ -868,7 +868,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                   decoration: InputDecoration(
                     hintText: 'enter_site_name'.tr(),
                     hintStyle: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 12,
                       color: const Color(0xFFA5ABB7),
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -895,7 +895,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                       child: Text(
                         'cancel'.tr(),
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF6B7280),
                         ),
@@ -960,7 +960,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                                   'save_entry'.tr(),
                                   style: AppFont.style(
                                     color: Colors.white,
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),

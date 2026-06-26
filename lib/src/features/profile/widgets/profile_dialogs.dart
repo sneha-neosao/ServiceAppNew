@@ -65,7 +65,7 @@ class ProfileLogoutDialog extends StatelessWidget {
                     Text(
                       'logout_dialog_title'.tr(),
                       style: AppFont.style(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF0D121F),
                       ),
@@ -78,7 +78,7 @@ class ProfileLogoutDialog extends StatelessWidget {
                       'logout_dialog_subtitle'.tr(),
                       textAlign: TextAlign.center,
                       style: AppFont.style(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF5C616E),
                         height: 1.4,
@@ -108,7 +108,7 @@ class ProfileLogoutDialog extends StatelessWidget {
                                   'cancel'.tr(),
                                   maxLines: 1,
                                   style: AppFont.style(
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFF0D121F),
                                   ),
@@ -155,7 +155,7 @@ class ProfileLogoutDialog extends StatelessWidget {
                                             'logout_dialog_btn_confirm'.tr(),
                                             maxLines: 1,
                                             style: AppFont.style(
-                                              fontSize: 14,
+                                              fontSize: 12,
                                               fontWeight: FontWeight.w800,
                                               color: Colors.white,
                                             ),
@@ -233,7 +233,7 @@ class ProfileDeleteDialog extends StatelessWidget {
                 Text(
                   'delete_dialog_title'.tr(),
                   style: AppFont.style(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF0D121F),
                   ),
@@ -246,7 +246,7 @@ class ProfileDeleteDialog extends StatelessWidget {
                   'delete_dialog_subtitle'.tr(),
                   textAlign: TextAlign.center,
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF5C616E),
                     height: 1.4,
@@ -301,7 +301,7 @@ class ProfileDeleteDialog extends StatelessWidget {
                                   'cancel'.tr(),
                                   maxLines: 1,
                                   style: AppFont.style(
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFF0D121F),
                                   ),
@@ -350,7 +350,7 @@ class ProfileDeleteDialog extends StatelessWidget {
                                             'delete_dialog_btn_confirm'.tr(),
                                             maxLines: 1,
                                             style: AppFont.style(
-                                              fontSize: 14,
+                                              fontSize: 12,
                                               fontWeight: FontWeight.w800,
                                               color: Colors.white,
                                             ),

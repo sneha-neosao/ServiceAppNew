@@ -54,7 +54,7 @@ class CommissioningCard extends StatelessWidget {
                       Text(
                         companyName,
                         style: AppFont.style(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w900,
                           color: const Color(0xFF0D121F),
                         ),
@@ -72,7 +72,7 @@ class CommissioningCard extends StatelessWidget {
                           Text(
                             location,
                             style: AppFont.style(
-                              fontSize: 13,
+                              fontSize: 11,
                               fontWeight: FontWeight.w600,
                               color: const Color(0xFFA5ABB7),
                             ),
@@ -86,7 +86,7 @@ class CommissioningCard extends StatelessWidget {
                           Text(
                             'name_of_equipment'.tr(),
                             style: AppFont.style(
-                              fontSize: 13,
+                              fontSize: 11,
                               fontWeight: FontWeight.w600,
                               color: const Color(0xFFA5ABB7),
                             ),
@@ -95,7 +95,7 @@ class CommissioningCard extends StatelessWidget {
                           Text(
                             equipmentName,
                             style: AppFont.style(
-                              fontSize: 13,
+                              fontSize: 11,
                               fontWeight: FontWeight.w600,
                               color: Colors.black,
                             ),
@@ -139,7 +139,7 @@ class CommissioningCard extends StatelessWidget {
                     child: Text(
                       members,
                       style: AppFont.style(
-                        fontSize: 13,
+                        fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF3A4152),
                       ),
@@ -172,7 +172,7 @@ class CommissioningCard extends StatelessWidget {
                         child: Text(
                           'commissioning_submit_btn'.tr(),
                           style: AppFont.style(
-                            fontSize: 12,
+                            fontSize: 10,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
                           ),

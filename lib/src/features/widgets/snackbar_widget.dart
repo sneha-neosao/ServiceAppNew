@@ -111,7 +111,7 @@ class _AnimatedOverlaySnackBarState extends State<_AnimatedOverlaySnackBar>
                 widget.label,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 14.0,
+                  fontSize: 12.0,
                   fontWeight: FontWeight.w400,
                 ),
               ),

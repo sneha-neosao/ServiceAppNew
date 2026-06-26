@@ -54,7 +54,7 @@ class UpcomingAmcCard extends StatelessWidget {
                 child: Text(
                   'home_amc_card_title'.tr(),
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF0A2342),
                     letterSpacing: 0.3,
@@ -107,7 +107,7 @@ class UpcomingAmcCard extends StatelessWidget {
                           return Text(
                             '${state.data.data?.total ?? 0}',
                             style: AppFont.style(
-                              fontSize: 32,
+                              fontSize: 30,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFFD38C22),
                             ),
@@ -116,7 +116,7 @@ class UpcomingAmcCard extends StatelessWidget {
                         return Text(
                           '0',
                           style: AppFont.style(
-                            fontSize: 32,
+                            fontSize: 30,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFFD38C22),
                           ),
@@ -127,7 +127,7 @@ class UpcomingAmcCard extends StatelessWidget {
                     Text(
                       'home_amc_total_label'.tr(),
                       style: AppFont.style(
-                        fontSize: 12,
+                        fontSize: 10,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF985A05),
                       ),
@@ -197,7 +197,7 @@ class _UpcomingAmcDropdownPillState extends State<UpcomingAmcDropdownPill> {
           .map(
             (opt) => PopupMenuItem(
               value: opt,
-              child: Text(_getTranslation(opt), style: AppFont.style(color: Colors.black)),
+              child: Text(_getTranslation(opt), style: AppFont.style(color: Colors.black, fontSize: 12)),
             ),
           )
           .toList(),
@@ -214,7 +214,7 @@ class _UpcomingAmcDropdownPillState extends State<UpcomingAmcDropdownPill> {
             Text(
               _selectedOption == null ? widget.label : _getTranslation(_selectedOption!),
               style: AppFont.style(
-                fontSize: 13,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFF0A2342),
               ),

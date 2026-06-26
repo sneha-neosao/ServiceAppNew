@@ -72,7 +72,7 @@ class MergeCustomerDialogWidget extends StatelessWidget {
                     Text(
                       'merge_customer'.tr(),
                       style: AppFont.style(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF0D121F),
                       ),
@@ -84,7 +84,7 @@ class MergeCustomerDialogWidget extends StatelessWidget {
                       'merge_subtitle'.tr(),
                       textAlign: TextAlign.center,
                       style: AppFont.style(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF5C616E),
                         height: 1.4,
@@ -109,7 +109,7 @@ class MergeCustomerDialogWidget extends StatelessWidget {
                               child: Text(
                                 'no'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF0D121F),
                                 ),
@@ -154,7 +154,7 @@ class MergeCustomerDialogWidget extends StatelessWidget {
                                   : Text(
                                 'yes'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
                                 ),

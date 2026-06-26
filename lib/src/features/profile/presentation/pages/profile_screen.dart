@@ -25,6 +25,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _darkMode = false;
   bool _pushNotifications = false;
   String _selectedLanguage = 'English';
+  final ValueNotifier<bool> _isScrolled = ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _isScrolled.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -124,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Text(
                               nativeName,
                               style: AppFont.style(
-                                fontSize: 18,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w700,
                                 color: isSelected
                                     ? const Color(0xFF0B68B9)
@@ -134,7 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Text(
                               englishName,
                               style: AppFont.style(
-                                fontSize: 14,
+                                fontSize: 10,
                                 fontWeight: FontWeight.w500,
                                 color: isSelected
                                     ? const Color(0xFF0B68B9).withOpacity(0.6)
@@ -175,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Text(
                         'select_language'.tr(),
                         style: AppFont.style(
-                          fontSize: 16,
+                          fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: const Color(0xFF9CA3AF),
                         ),
@@ -222,9 +229,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
           getIt<ProfileDetailsBloc>()..add(const ProfileDetailsGetEvent()),
       child: Scaffold(
         backgroundColor: const Color(0xFFF2F6FA),
-        body: BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
-          builder: (context, state) {
-            final data = state is ProfileDetailsSuccessState
+        extendBodyBehindAppBar: true,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(0),
+          child: ValueListenableBuilder<bool>(
+            valueListenable: _isScrolled,
+            builder: (context, isScrolled, child) {
+              return AppBar(
+                toolbarHeight: 0,
+                elevation: 0,
+                backgroundColor: isScrolled
+                    ? const Color(0xFF0B68B9)
+                    : Colors.transparent,
+              );
+            },
+          ),
+        ),
+        body: NotificationListener<ScrollNotification>(
+          onNotification: (scrollNotification) {
+            if (scrollNotification.metrics.pixels > 20 && !_isScrolled.value) {
+              _isScrolled.value = true;
+            } else if (scrollNotification.metrics.pixels <= 20 && _isScrolled.value) {
+              _isScrolled.value = false;
+            }
+            return false;
+          },
+          child: BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
+            builder: (context, state) {
+              final data = state is ProfileDetailsSuccessState
                 ? state.data.data
                 : null;
             final isLoading = state is ProfileDetailsLoadingState ||
@@ -267,7 +299,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Text(
                                 state.message,
                                 style: AppFont.style(
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.red.shade600,
                                 ),
@@ -356,6 +388,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             );
           },
         ),
+        ),
       ),
     );
   }
@@ -367,7 +400,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         // Blue gradient bg
         Container(
-          height: 140,
+          height: 180,
           decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage('assets/images/profile_bg_image.png'),
@@ -376,7 +409,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           child: SafeArea(
             bottom: false,
-            top: false,
+            top: true,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Stack(
@@ -414,7 +447,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     'profile_title'.tr(),
                     style: AppFont.style(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
@@ -429,7 +462,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Positioned(
           left: 16,
           right: 16,
-          top: 105,
+          top: 145,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
@@ -471,7 +504,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Text(
                             _getInitials(data.name),
                             style: AppFont.style(
-                              fontSize: 20,
+                              fontSize: 18,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
                             ),
@@ -488,7 +521,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         : Text(
                             data?.name ?? '—',
                             style: AppFont.style(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFF0D121F),
                             ),
@@ -507,7 +540,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             : Text(
                                 data != null ? 'ID: ${data.code}' : '—',
                                 style: AppFont.style(
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w500,
                                   color: const Color(0xFFA5ABB7),
                                 ),
@@ -522,7 +555,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
 
         // Space the Stack so the floating card doesn't get clipped
-        const SizedBox(height: 180),
+        const SizedBox(height: 220),
       ],
     );
   }
@@ -534,7 +567,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Text(
         title,
         style: AppFont.style(
-          fontSize: 14,
+          fontSize: 12,
           fontWeight: FontWeight.w700,
           color: const Color(0xFF0D121F),
         ),
@@ -601,7 +634,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   label,
                   style: AppFont.style(
-                    fontSize: 11,
+                    fontSize: 9,
                     fontWeight: FontWeight.w500,
                     color: const Color(0xFFA5ABB7),
                   ),
@@ -615,7 +648,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF0D121F),
                         ),
@@ -672,7 +705,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ? data!.dealer.name
                                 : '—',
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
                             ),
@@ -765,7 +798,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     label,
                     style: AppFont.style(
-                      fontSize: 13,
+                      fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF0B68B9),
                     ),
@@ -773,7 +806,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     subtitle,
                     style: AppFont.style(
-                      fontSize: 12,
+                      fontSize: 10,
                       fontWeight: FontWeight.w400,
                       color: const Color(0xFF0D121F),
                     ),
@@ -816,7 +849,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   label,
                   style: AppFont.style(
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF0B68B9),
                   ),
@@ -824,7 +857,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   subtitle,
                   style: AppFont.style(
-                    fontSize: 12,
+                    fontSize: 10,
                     fontWeight: FontWeight.w400,
                     color: const Color(0xFFA5ABB7),
                   ),
@@ -873,7 +906,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Text(
               label,
               style: AppFont.style(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: color,
               ),

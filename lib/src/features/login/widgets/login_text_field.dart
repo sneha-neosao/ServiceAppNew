@@ -53,7 +53,7 @@ class _LoginTextFieldState<T> extends State<LoginTextField<T>> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       obscureText: widget.isSecure ?? false ? _isVisible : false,
       onChanged: widget.onChanged,
-      style: AppFont.style(fontSize: 14, color: Colors.white),
+      style: AppFont.style(fontSize: 12, color: Colors.white),
       textCapitalization: widget.textCapitalization ?? TextCapitalization.none,
       inputFormatters: widget.inputFormat,
       keyboardType: widget.keyboardType,
@@ -72,18 +72,18 @@ class _LoginTextFieldState<T> extends State<LoginTextField<T>> {
       decoration: InputDecoration(
         labelText: widget.label.tr(),
         labelStyle: AppFont.style(
-          fontSize: 13,
+          fontSize: 11,
           fontWeight: FontWeight.w500,
           color: Colors.white.withOpacity(0.85),
         ),
         floatingLabelStyle: AppFont.style(
-          fontSize: 12,
+          fontSize: 10,
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
         hintText: widget.hintKey.tr(),
         hintStyle: AppFont.style(
-          fontSize: 14,
+          fontSize: 12,
           color: Colors.white.withOpacity(0.5),
         ),
         suffixIcon: widget.isSecure ?? false
@@ -127,7 +127,7 @@ class _LoginTextFieldState<T> extends State<LoginTextField<T>> {
           borderSide: const BorderSide(color: Colors.blue, width: 1.6),
         ),
         errorStyle: AppFont.style(
-          fontSize: 10,
+          fontSize: 8,
           color: Colors.blue,
           fontWeight: FontWeight.w400,
         ),

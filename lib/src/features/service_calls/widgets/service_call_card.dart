@@ -70,7 +70,7 @@ class ServiceCallCard extends StatelessWidget {
                       child: Text(
                         complaintNo,
                         style: AppFont.style(
-                          fontSize: 11,
+                          fontSize: 9,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF1565C0),
                         ),
@@ -90,7 +90,7 @@ class ServiceCallCard extends StatelessWidget {
                       child: Text(
                         'service_calls_btn_completed'.tr(),
                         style: AppFont.style(
-                          fontSize: 11,
+                          fontSize: 9,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF2E7D32),
                         ),
@@ -102,7 +102,7 @@ class ServiceCallCard extends StatelessWidget {
                     Text(
                       dateReceived!,
                       style: AppFont.style(
-                        fontSize: 12,
+                        fontSize: 10,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFFA5ABB7),
                       ),
@@ -123,7 +123,7 @@ class ServiceCallCard extends StatelessWidget {
                       Text(
                         companyName,
                         style: AppFont.style(
-                          fontSize: 17,
+                          fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF0D121F),
                         ),
@@ -142,7 +142,7 @@ class ServiceCallCard extends StatelessWidget {
                             child: Text(
                               location,
                               style: AppFont.style(
-                                fontSize: 13,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w800,
                                 color: const Color(0xFFA5ABB7),
                               ),
@@ -189,7 +189,7 @@ class ServiceCallCard extends StatelessWidget {
                       child: Text(
                         assignedTo!,
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF424B5C),
                         ),
@@ -272,7 +272,7 @@ class ServiceCallCard extends StatelessWidget {
               child: Text(
                 label,
                 style: AppFont.style(
-                  fontSize: 12,
+                  fontSize: 10,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
                 ),
@@ -302,7 +302,7 @@ class ServiceCallCard extends StatelessWidget {
             child: Text(
               label,
               style: AppFont.style(
-                fontSize: 12,
+                fontSize: 10,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFF5C616E),
               ),
@@ -336,7 +336,7 @@ class ServiceCallCard extends StatelessWidget {
             child: Text(
               'service_calls_btn_completed'.tr(),
               style: AppFont.style(
-                fontSize: 12,
+                fontSize: 10,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFFA5ABB7),
               ),

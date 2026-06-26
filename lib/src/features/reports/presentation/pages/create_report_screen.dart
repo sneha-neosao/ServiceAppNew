@@ -876,7 +876,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       Text(
                         'delete_draft_report'.tr(),
                         style: AppFont.style(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF0D121F),
                         ),
@@ -889,7 +889,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         'delete_draft_subtitle'.tr(),
                         textAlign: TextAlign.center,
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF5C616E),
                           height: 1.4,
@@ -916,7 +916,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                 child: Text(
                                   'cancel'.tr(),
                                   style: AppFont.style(
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFF0D121F),
                                   ),
@@ -994,7 +994,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                             : Text(
                                                 'delete_now'.tr(),
                                                 style: AppFont.style(
-                                                  fontSize: 14,
+                                                  fontSize: 12,
                                                   fontWeight: FontWeight.w800,
                                                   color: Colors.white,
                                                 ),
@@ -1082,7 +1082,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   'service_call_report_feedback'.tr(),
                   textAlign: TextAlign.center,
                   style: AppFont.style(
-                    fontSize: 22,
+                    fontSize: 20,
                     fontWeight: FontWeight.w900,
                     color: const Color(0xFF0D121F),
                   ),
@@ -1119,7 +1119,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   'scan_for_customer_feedback'.tr(),
                   textAlign: TextAlign.center,
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFFA5ABB7),
                   ),
@@ -1504,7 +1504,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                                 child: Text(
                                                   'service_work_report'.tr(),
                                                   style: AppFont.style(
-                                                    fontSize: 17,
+                                                    fontSize: 15,
                                                     fontWeight: FontWeight.w900,
                                                     color: const Color(
                                                       0xFF0D121F,
@@ -1592,7 +1592,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                                     'create_report_btn_back'
                                                         .tr(),
                                                     style: AppFont.style(
-                                                      fontSize: 14,
+                                                      fontSize: 12,
                                                       fontWeight:
                                                           FontWeight.w800,
                                                       color: const Color(
@@ -1609,7 +1609,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                               child: Text(
                                                 'cancel'.tr(),
                                                 style: AppFont.style(
-                                                  fontSize: 14,
+                                                  fontSize: 12,
                                                   fontWeight: FontWeight.w800,
                                                   color: const Color(
                                                     0xFFA5ABB7,
@@ -1711,7 +1711,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                                               : 'create_report_btn_next'
                                                                     .tr(),
                                                           style: AppFont.style(
-                                                            fontSize: 12,
+                                                            fontSize: 10,
                                                             fontWeight:
                                                                 FontWeight.w800,
                                                             color: Colors.white,
@@ -1806,7 +1806,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         decoration: InputDecoration(
                           hintText: 'Search...',
                           hintStyle: AppFont.style(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: const Color(0xFFA5ABB7),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
@@ -1833,7 +1833,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           ),
                         ),
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           color: const Color(0xFF0D121F),
                         ),
                       ),
@@ -1859,7 +1859,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                 child: Text(
                                   item.name,
                                   style: AppFont.style(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                     color: const Color(0xFF0D121F),
                                   ),
@@ -1930,7 +1930,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             child: Text(
               'coming_soon'.tr(),
               style: AppFont.style(
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFFA5ABB7),
               ),
@@ -2007,7 +2007,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         Text(
                           'add_new_customer'.tr(),
                           style: AppFont.style(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: const Color(0xFF0D121F),
                           ),
@@ -2036,7 +2036,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     Text(
                       'create_report_customer_name'.tr(),
                       style: AppFont.style(
-                        fontSize: 10,
+                        fontSize: 8,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFFA5ABB7),
                         letterSpacing: 1.0,
@@ -2048,14 +2048,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       autofocus: true,
                       enabled: !isLoading,
                       style: AppFont.style(
-                        fontSize: 15,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF0D121F),
                       ),
                       decoration: InputDecoration(
                         hintText: 'enter_customer_name'.tr(),
                         hintStyle: AppFont.style(
-                          fontSize: 15,
+                          fontSize: 13,
                           fontWeight: FontWeight.w500,
                           color: const Color(0xFFA5ABB7),
                         ),
@@ -2121,7 +2121,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                             : Text(
                                 'save_entry'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 13,
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
                                   letterSpacing: 0.5,
@@ -2232,7 +2232,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         Text(
                           'add_new_site'.tr(),
                           style: AppFont.style(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: const Color(0xFF0D121F),
                           ),
@@ -2261,7 +2261,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     Text(
                       'site_name'.tr(),
                       style: AppFont.style(
-                        fontSize: 10,
+                        fontSize: 8,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFFA5ABB7),
                         letterSpacing: 1.0,
@@ -2273,14 +2273,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       autofocus: true,
                       enabled: !isLoading,
                       style: AppFont.style(
-                        fontSize: 15,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF0D121F),
                       ),
                       decoration: InputDecoration(
                         hintText: 'enter_site_name'.tr(),
                         hintStyle: AppFont.style(
-                          fontSize: 15,
+                          fontSize: 13,
                           fontWeight: FontWeight.w500,
                           color: const Color(0xFFA5ABB7),
                         ),
@@ -2350,7 +2350,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                             : Text(
                                 'save_entry'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 13,
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
                                   letterSpacing: 0.5,
@@ -2517,7 +2517,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   //       // Text(
                   //       //   'create_report_service_provider'.tr(),
                   //       //   style: AppFont.style(
-                  //       //     fontSize: 12,
+                  //       //     fontSize: 10,
                   //       //     fontWeight: FontWeight.w800,
                   //       //     color: const Color(0xFFA5ABB7),
                   //       //   ),
@@ -2525,7 +2525,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   //       // Text(
                   //       //   dealerToShow,
                   //       //   style: AppFont.style(
-                  //       //     fontSize: 15,
+                  //       //     fontSize: 13,
                   //       //     fontWeight: FontWeight.w900,
                   //       //     color: const Color(0xFF0D121F),
                   //       //   ),
@@ -2539,7 +2539,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       Text(
                         'create_report_date'.tr(),
                         style: AppFont.style(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFFA5ABB7),
                         ),
@@ -2547,7 +2547,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       Text(
                         DateFormat('d MMMM yyyy', context.locale.languageCode).format(DateTime.now()),
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w900,
                           color: const Color(0xFF0D121F),
                         ),
@@ -2625,7 +2625,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                   hintText: 'commissioning_select_technician'
                                       .tr(),
                                   hintStyle: AppFont.style(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                     color: const Color(0xFFA5ABB7),
                                   ),
@@ -2679,7 +2679,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                         ),
                                 ),
                                 style: AppFont.style(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                   color: const Color(0xFF0D121F),
                                 ),
@@ -2951,14 +2951,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                               child: TextField(
                                 controller: ctrl,
                                 style: AppFont.style(
-                                  fontSize: 15,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w900,
                                   color: const Color(0xFF0D121F),
                                 ),
                                 decoration: InputDecoration(
                                   hintText: 'enter_member_name'.tr(),
                                   hintStyle: AppFont.style(
-                                    fontSize: 15,
+                                    fontSize: 13,
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFFA5ABB7),
                                   ),
@@ -3021,14 +3021,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       controller: _agendaController,
                       maxLines: null,
                       style: AppFont.style(
-                        fontSize: 15,
+                        fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF0D121F),
                       ),
                       decoration: InputDecoration(
                         hintText: 'amc_report_agenda'.tr(),
                         hintStyle: AppFont.style(
-                          fontSize: 15,
+                          fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: const Color(0xFFA5ABB7),
                         ),
@@ -3064,7 +3064,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             Text(
               'commissioning_technical_details'.tr(),
               style: AppFont.style(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w900,
                 color: const Color(0xFF0D121F),
               ),
@@ -3097,7 +3097,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 Text(
                   'commissioning_na'.tr(),
                   style: AppFont.style(
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFFA5ABB7),
                   ),
@@ -3225,7 +3225,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   child: Text(
                     'service_work_description'.tr(),
                     style: AppFont.style(
-                      fontSize: 15,
+                      fontSize: 13,
                       fontWeight: FontWeight.w900,
                       color: const Color(0xFFA5ABB7),
                     ),
@@ -3244,7 +3244,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           child: Text(
                             '${index + 1}.',
                             style: AppFont.style(
-                              fontSize: 15,
+                              fontSize: 13,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFFA5ABB7),
                             ),
@@ -3283,14 +3283,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                           minLines: 3,
                                           maxLines: null,
                                           style: AppFont.style(
-                                            fontSize: 15,
+                                            fontSize: 13,
                                             fontWeight: FontWeight.w700,
                                             color: const Color(0xFF0D121F),
                                           ),
                                           decoration: InputDecoration(
                                             hintText: 'commissioning_work_description_hint'.tr(),
                                             hintStyle: AppFont.style(
-                                              fontSize: 15,
+                                              fontSize: 13,
                                               fontWeight: FontWeight.w700,
                                               color: const Color(0xFFA5ABB7),
                                             ),
@@ -3345,14 +3345,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ? [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))]
           : null,
       style: AppFont.style(
-        fontSize: 15,
+        fontSize: 13,
         fontWeight: FontWeight.w900,
         color: const Color(0xFF0D121F),
       ),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: AppFont.style(
-          fontSize: 15,
+          fontSize: 13,
           fontWeight: FontWeight.w800,
           color: const Color(0xFFA5ABB7),
         ),
@@ -3376,7 +3376,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         Text(
           unit,
           style: AppFont.style(
-            fontSize: 11,
+            fontSize: 9,
             fontWeight: FontWeight.w800,
             color: const Color(0xFFA5ABB7),
           ),
@@ -3389,7 +3389,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*')),
           ],
           style: AppFont.style(
-            fontSize: 15,
+            fontSize: 13,
             fontWeight: FontWeight.w900,
             color: const Color(0xFF0D121F),
           ),
@@ -3417,7 +3417,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           'preventive_maintenance_checklist_title'.tr(),
           textAlign: TextAlign.center,
           style: AppFont.style(
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: FontWeight.w900,
             color: const Color(0xFF0D121F),
           ),
@@ -3588,7 +3588,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               child: Text(
                 title,
                 style: AppFont.style(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w900,
                   color: const Color(0xFF0D121F),
                 ),
@@ -3620,7 +3620,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   Text(
                     'commissioning_na'.tr(),
                     style: AppFont.style(
-                      fontSize: 13,
+                      fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFFA5ABB7),
                     ),
@@ -3669,7 +3669,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 TextSpan(
                   text: label,
                   style: AppFont.style(
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w900,
                     color: const Color(0xFF3A4152),
                   ),
@@ -3677,7 +3677,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 const TextSpan(
                   text: ' *',
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w900,
                     color: Colors.red,
                   ),
@@ -3726,7 +3726,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       Text(
                         labels[i],
                         style: AppFont.style(
-                          fontSize: 13,
+                          fontSize: 11,
                           fontWeight: FontWeight.w800,
                           color: isSelected
                               ? const Color(0xFF1565C0)
@@ -3752,7 +3752,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         Text(
           'commissioning_remarks_tech'.tr(),
           style: AppFont.style(
-            fontSize: 13,
+            fontSize: 11,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF6B7280),
           ),
@@ -3769,7 +3769,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         Text(
           'commissioning_remarks_customer'.tr(),
           style: AppFont.style(
-            fontSize: 13,
+            fontSize: 11,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF6B7180),
           ),
@@ -3788,7 +3788,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         Text(
           'commissioning_recorded_by'.tr(),
           style: AppFont.style(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w900,
             color: const Color(0xFF0D121F),
           ),
@@ -3799,7 +3799,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         Text(
           'commissioning_tech_rep'.tr(),
           style: AppFont.style(
-            fontSize: 11,
+            fontSize: 9,
             fontWeight: FontWeight.w900,
             color: const Color(0xFFA5ABB7),
             letterSpacing: 0.8,
@@ -3819,7 +3819,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     TextSpan(
                       text: 'commissioning_name'.tr(),
                       style: AppFont.style(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF8E9BAE),
                       ),
@@ -3827,7 +3827,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     const TextSpan(
                       text: ' *',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         color: Colors.red,
                       ),
@@ -3882,7 +3882,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         Text(
           'commissioning_customer_rep'.tr(),
           style: AppFont.style(
-            fontSize: 11,
+            fontSize: 9,
             fontWeight: FontWeight.w900,
             color: const Color(0xFFA5ABB7),
             letterSpacing: 0.8,
@@ -3903,7 +3903,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     TextSpan(
                       text: 'commissioning_name'.tr(),
                       style: AppFont.style(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF8E9BAE),
                       ),
@@ -3911,7 +3911,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     const TextSpan(
                       text: ' *',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         color: Colors.red,
                       ),
@@ -3927,14 +3927,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               child: TextField(
                 controller: _customerRepNameCtrl,
                 style: AppFont.style(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: const Color(0xFF0D121F),
                 ),
                 decoration: InputDecoration(
                   hintText: 'commissioning_enter_name'.tr(),
                   hintStyle: AppFont.style(
-                    fontSize: 15,
+                    fontSize: 13,
                     fontWeight: FontWeight.w400,
                     color: const Color(0xFFA5ABB7),
                   ),
@@ -3986,7 +3986,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               TextSpan(
                 text: 'commissioning_upload_work_photos'.tr(),
                 style: AppFont.style(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w900,
                   color: const Color(0xFF0D121F),
                 ),
@@ -3994,7 +3994,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               const TextSpan(
                 text: ' *',
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w900,
                   color: Colors.red,
                 ),
@@ -4109,7 +4109,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       Text(
                         'upload'.tr(),
                         style: AppFont.style(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFFA5ABB7),
                         ),
@@ -4149,7 +4149,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       Text(
                         'capture'.tr(),
                         style: AppFont.style(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFFA5ABB7),
                         ),
@@ -4187,14 +4187,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               minLines: 4,
               maxLines: null,
               style: AppFont.style(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: const Color(0xFF0D121F),
               ),
               decoration: InputDecoration(
                 hintText: hint,
                 hintStyle: AppFont.style(
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.w400,
                   color: const Color(0xFFA5ABB7),
                 ),
@@ -4220,7 +4220,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         Text(
           title,
           style: AppFont.style(
-            fontSize: 13,
+            fontSize: 11,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF5C6672),
           ),
@@ -4229,7 +4229,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           Text(
             ' *',
             style: AppFont.style(
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: FontWeight.w800,
               color: const Color(0xFFE53935),
             ),
@@ -4256,7 +4256,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   text: TextSpan(
                     text: label.replaceAll('*', '').trimRight(),
                     style: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF8E9BAE),
                     ),
@@ -4264,7 +4264,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       TextSpan(
                         text: ' *',
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: Colors.red,
                         ),
@@ -4275,7 +4275,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               : Text(
                   label,
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF8E9BAE),
                   ),
@@ -4338,7 +4338,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           Text(
                             placeholder,
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFFCDD0D8),
                             ),
@@ -4410,7 +4410,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       Text(
                         'commissioning_draw_signature'.tr(),
                         style: AppFont.style(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w900,
                           color: const Color(0xFF0D121F),
                         ),
@@ -4459,7 +4459,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                               child: Text(
                                 'commissioning_clear'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF6B7280),
                                 ),
@@ -4504,7 +4504,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                               child: Text(
                                 'commissioning_done'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
                                 ),

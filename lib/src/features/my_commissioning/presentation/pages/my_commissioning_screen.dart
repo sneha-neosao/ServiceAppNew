@@ -62,7 +62,7 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
                     child: Text(
                       'commissioning_section_title'.tr(),
                       style: AppFont.style(
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF0D121F),
                       ),
@@ -105,7 +105,7 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
                           child: Text(
                             '$count',
                             style: AppFont.style(
-                              fontSize: 13,
+                              fontSize: 11,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
                             ),
@@ -147,7 +147,7 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
                             child: Text(
                               state.message,
                               style: AppFont.style(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.red,
                               ),
@@ -169,7 +169,7 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
                               child: Text(
                                 'no_commissioning_work_message'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   color: const Color(0xFFA5ABB7),
                                 ),
                               ),

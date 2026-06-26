@@ -43,7 +43,7 @@ class ServiceCallsStep6Widget extends StatelessWidget {
                 child: Text(
                   'service_calls_empty_pending'.tr(),
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: const Color(0xFFA5ABB7),
                   ),
                 ),

@@ -22,7 +22,7 @@ class AppAddNewTextButtonWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         foregroundColor: _getTextColor(isDark), // text + icon color
         textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontSize: 16,
+          fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
       ),

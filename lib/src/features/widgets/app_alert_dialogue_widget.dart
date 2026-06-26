@@ -58,7 +58,7 @@ class AppAlertDialogWidget extends StatelessWidget {
                 Text(
                   title,
                   style: AppFont.style(
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF0D121F),
                   ),
@@ -71,7 +71,7 @@ class AppAlertDialogWidget extends StatelessWidget {
                   subtitle,
                   textAlign: TextAlign.center,
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 10,
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF5C616E),
                     height: 1.4,
@@ -97,7 +97,7 @@ class AppAlertDialogWidget extends StatelessWidget {
                           child: Text(
                             cancelText,
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 10,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFF0D121F),
                             ),
@@ -131,7 +131,7 @@ class AppAlertDialogWidget extends StatelessWidget {
                               : Text(
                             confirmText,
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 10,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
                             ),

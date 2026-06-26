@@ -81,7 +81,7 @@ class LoginScreen extends StatelessWidget {
                             Text(
                               'login'.tr(),
                               style: AppFont.style(
-                                fontSize: 26,
+                                fontSize: 24,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white,
                               ),
@@ -156,7 +156,7 @@ class LoginScreen extends StatelessWidget {
                                         : Text(
                                             'login'.tr(),
                                             style: AppFont.style(
-                                              fontSize: 16,
+                                              fontSize: 14,
                                               fontWeight: FontWeight.w700,
                                               color: const Color(0xFF3B82C4),
                                             ),

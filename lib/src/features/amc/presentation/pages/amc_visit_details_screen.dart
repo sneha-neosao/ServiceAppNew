@@ -205,7 +205,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                       Text(
                         '${'total_visits'.tr()} ($reportsCount)',
                         style: AppFont.style(
-                          fontSize: 20,
+                          fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF0D121F),
                         ),
@@ -214,7 +214,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                       Text(
                         visitRangeStr,
                         style: AppFont.style(
-                          fontSize: 13,
+                          fontSize: 9,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF0D121F),
                         ),
@@ -223,7 +223,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                       Text(
                         widget.title,
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 10,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF7A8699),
                         ),
@@ -241,7 +241,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                             child: Text(
                               widget.location,
                               style: AppFont.style(
-                                fontSize: 13,
+                                fontSize: 9,
                                 fontWeight: FontWeight.w600,
                                 color: const Color(0xFFA5ABB7),
                               ),
@@ -262,7 +262,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                   child: Text(
                     visitStatus,
                     style: AppFont.style(
-                      fontSize: 10,
+                      fontSize: 6,
                       fontWeight: FontWeight.w800,
                       color: badgeTextColor,
                     ),
@@ -307,7 +307,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                       Text(
                         widget.title,
                         style: AppFont.style(
-                          fontSize: 20,
+                          fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF0D121F),
                         ),
@@ -324,7 +324,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                             child: Text(
                               widget.location,
                               style: AppFont.style(
-                                fontSize: 13,
+                                fontSize: 9,
                                 fontWeight: FontWeight.w600,
                                 color: const Color(0xFFA5ABB7),
                               ),
@@ -389,7 +389,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                         ),
                       ],
                     ),
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -414,27 +414,27 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                         const SizedBox(height: 16),
 
                         // ── Visit range ─────────────────────────────────────
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '${'amc_details_visit_window'.tr()}: ',
-                                style: AppFont.style(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF0D121F),
-                                ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'amc_details_visit_window'.tr(),
+                              style: AppFont.style(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFF0D121F),
                               ),
-                              TextSpan(
-                                text: visitRangeStr,
-                                style: AppFont.style(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF1565C0),
-                                ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              visitRangeStr,
+                              style: AppFont.style(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFF1565C0),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         if (reportsCount == 0) ...[
                           const SizedBox(height: 20),
@@ -463,7 +463,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                       child: Text(
                                         'amc_details_submit_btn'.tr(),
                                         style: AppFont.style(
-                                          fontSize: 12,
+                                          fontSize: 8,
                                           fontWeight: FontWeight.w800,
                                           color: Colors.white,
                                         ),
@@ -493,7 +493,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                         ? '${'amc_details_reports_created'.tr()} ($reportsCount)'
                         : '${'amc_details_reports_created'.tr()} (0)',
                     style: AppFont.style(
-                      fontSize: 13,
+                      fontSize: 9,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFFA5ABB7),
                       letterSpacing: 0.3,
@@ -532,9 +532,9 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                         margin: const EdgeInsets.only(
                           left: 20,
                           right: 20,
-                          bottom: 16,
+                          bottom: 12,
                         ),
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(24),
@@ -556,7 +556,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                 Text(
                                   '${'report'.tr()} ${reportsCount - index}',
                                   style: AppFont.style(
-                                    fontSize: 17,
+                                    fontSize: 13,
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFF0D121F),
                                   ),
@@ -564,7 +564,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                 Text(
                                   submittedDateStr ?? 'not_submitted'.tr(),
                                   style: AppFont.style(
-                                    fontSize: 12,
+                                    fontSize: 8,
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFFA5ABB7),
                                   ),
@@ -585,7 +585,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                   child: Text(
                                     report?.siteName ?? widget.location,
                                     style: AppFont.style(
-                                      fontSize: 14,
+                                      fontSize: 10,
                                       fontWeight: FontWeight.w800,
                                       color: const Color(0xFF7A8699),
                                     ),
@@ -622,7 +622,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                       Text(
                                         report?.technicianRepresentativeName ?? 'unknown_technician'.tr(),
                                         style: AppFont.style(
-                                          fontSize: 14,
+                                          fontSize: 10,
                                           fontWeight: FontWeight.w800,
                                           color: const Color(0xFF0D121F),
                                         ),
@@ -633,7 +633,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                       Text(
                                         report?.dealerName ?? '',
                                         style: AppFont.style(
-                                          fontSize: 11,
+                                          fontSize: 7,
                                           fontWeight: FontWeight.w800,
                                           color: const Color(0xFFA5ABB7),
                                         ),
@@ -652,7 +652,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                   child: Text(
                                     isSubmitted ? 'submitted'.tr() : 'draft'.tr(),
                                     style: AppFont.style(
-                                      fontSize: 10,
+                                      fontSize: 6,
                                       fontWeight: FontWeight.w800,
                                       color: isSubmitted ? const Color(0xFF00A76F) : const Color(0xFFE65100),
                                     ),
@@ -683,7 +683,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                     Text(
                                       '${'view_report'.tr()} ${reportsCount - index}',
                                       style: AppFont.style(
-                                        fontSize: 12,
+                                        fontSize: 8,
                                         fontWeight: FontWeight.w900,
                                         color: Colors.white,
                                       ),
@@ -703,9 +703,9 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                       margin: const EdgeInsets.only(
                         left: 20,
                         right: 20,
-                        bottom: 16,
+                        bottom: 12,
                       ),
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
@@ -742,7 +742,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                     Text(
                                       '${'report'.tr()} ${reportsCount - index}',
                                       style: AppFont.style(
-                                        fontSize: 16,
+                                        fontSize: 12,
                                         fontWeight: FontWeight.w900,
                                         color: const Color(0xFF0D121F),
                                       ),
@@ -757,7 +757,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                       child: Text(
                                         isSubmitted ? 'submitted'.tr() : 'draft'.tr(),
                                         style: AppFont.style(
-                                          fontSize: 10,
+                                          fontSize: 6,
                                           fontWeight: FontWeight.w800,
                                           color: isSubmitted ? const Color(0xFF00A76F) : const Color(0xFFE65100),
                                         ),
@@ -795,7 +795,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                       ? '${'submitted_on'.tr()} $submittedDateStr'
                                       : 'not_submitted'.tr(),
                                   style: AppFont.style(
-                                    fontSize: 13,
+                                    fontSize: 9,
                                     fontWeight: FontWeight.w600,
                                     color: const Color(0xFFA5ABB7),
                                   ),
@@ -833,7 +833,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                             child: Text(
                               'create_another_report'.tr(),
                               style: AppFont.style(
-                                fontSize: 12,
+                                fontSize: 8,
                               fontWeight: FontWeight.w800,
                               color: hasDraftReport ? const Color(0xFFA5ABB7) : const Color(0xFF1565C0),
                               ),
@@ -886,7 +886,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                     child: Text(
                       'amc_details_complete_btn'.tr(),
                     style: AppFont.style(
-                      fontSize: 12,
+                      fontSize: 8,
                       fontWeight: FontWeight.w800,
                       color: (reportsCount > 0 && !hasDraftReport)
                           ? Colors.white
@@ -945,7 +945,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                 Text(
                   'finish_amc_work'.tr(),
                   style: AppFont.style(
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.w900,
                     color: const Color(0xFF0D121F),
                   ),
@@ -956,7 +956,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   style: AppFont.style(
-                    fontSize: 13,
+                    fontSize: 9,
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF6B7280),
                   ),
@@ -979,7 +979,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                         child: Text(
                           'yes_complete'.tr(),
                           style: AppFont.style(
-                            fontSize: 14,
+                            fontSize: 10,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
                           ),
@@ -998,7 +998,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                     child: Text(
                       'cancel'.tr(),
                       style: AppFont.style(
-                        fontSize: 14,
+                        fontSize: 10,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFFA5ABB7),
                       ),
@@ -1057,7 +1057,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                     Text(
                       'delete_draft_report'.tr(),
                       style: AppFont.style(
-                        fontSize: 20,
+                        fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF0D121F),
                       ),
@@ -1070,7 +1070,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                       'delete_draft_subtitle'.tr(),
                       textAlign: TextAlign.center,
                       style: AppFont.style(
-                        fontSize: 14,
+                        fontSize: 10,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF5C616E),
                         height: 1.4,
@@ -1097,7 +1097,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                               child: Text(
                                 'cancel'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 14,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF0D121F),
                                 ),
@@ -1140,7 +1140,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                                       : Text(
                                           'Delete'.tr(),
                                           style: AppFont.style(
-                                            fontSize: 14,
+                                            fontSize: 10,
                                             fontWeight: FontWeight.w800,
                                             color: Colors.white,
                                           ),
@@ -1206,7 +1206,7 @@ class _OutlineBadge extends StatelessWidget {
       child: Text(
         label,
         style: AppFont.style(
-          fontSize: 12,
+          fontSize: 8,
           fontWeight: FontWeight.w700,
           color: textColor,
         ),

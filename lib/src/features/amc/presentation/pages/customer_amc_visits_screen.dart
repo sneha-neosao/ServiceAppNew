@@ -145,7 +145,7 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
                           Text(
                             'view_all_visits'.tr(),
                             style: AppFont.style(
-                              fontSize: 20,
+                              fontSize: 18,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFF0D121F),
                             ),
@@ -180,7 +180,7 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
                           state.message,
                           style: TextStyle(
                             color: Colors.red,
-                            fontSize: 16,
+                            fontSize: 14,
                             fontFamily: AppFont.family,
                           ),
                         ),
@@ -210,7 +210,7 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
                           child: Text(
                             'no_visits_found'.tr(),
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontFamily: AppFont.family,
                             ),
                           ),
@@ -259,7 +259,7 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
 
   Widget _buildHeaderCard(dynamic item) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -311,7 +311,7 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
             text: '$label: ',
             style: TextStyle(
               color: Colors.black,
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
               fontFamily: AppFont.family,
             ),
@@ -320,7 +320,7 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
             text: value,
             style: TextStyle(
               color: const Color(0xFF6B7280),
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.w400,
               fontFamily: AppFont.family,
             ),
@@ -361,7 +361,7 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
         statusUpper,
         style: TextStyle(
           color: textColor,
-          fontSize: 10,
+          fontSize: 8,
           fontWeight: FontWeight.w700,
           fontFamily: AppFont.family,
         ),
@@ -448,7 +448,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                   'amc_report_feedback'.tr(),
                   textAlign: TextAlign.center,
                   style: AppFont.style(
-                    fontSize: 22,
+                    fontSize: 20,
                     fontWeight: FontWeight.w900,
                     color: const Color(0xFF0D121F),
                   ),
@@ -484,7 +484,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                 Text(
                   'create_report_scan_feedback'.tr(),
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFFA5ABB7),
                   ),
@@ -499,32 +499,36 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
   }
 
   Widget _buildStatusBadge(String status) {
-    final statusUpper = status.toUpperCase();
+    String statusStr = status.toUpperCase();
     Color bgColor;
     Color textColor;
 
-    if (statusUpper == 'ACTIVE' || statusUpper == 'COMPLETED') {
+    if (statusStr == 'ACTIVE' || statusStr == 'COMPLETED') {
       bgColor = const Color(0xFFE8F5E9);
-      textColor = const Color(0xFF4CAF50);
-    } else if (statusUpper == 'PENDING') {
-      bgColor = const Color(0xFFFFF8E1);
-      textColor = const Color(0xFFFFB300);
-    } else if (statusUpper == 'EXPIRED') {
+      textColor = const Color(0xFF00A76F);
+      statusStr = 'Completed';
+    } else if (statusStr == 'PENDING') {
       bgColor = const Color(0xFFFFEBEE);
       textColor = const Color(0xFFF44336);
+      statusStr = 'Pending';
+    } else if (statusStr == 'EXPIRED') {
+      bgColor = const Color(0xFFFFEBEE);
+      textColor = const Color(0xFFF44336);
+      statusStr = 'Expired';
     } else {
       bgColor = Colors.grey[200]!;
       textColor = Colors.grey[700]!;
+      statusStr = statusStr[0].toUpperCase() + statusStr.substring(1).toLowerCase();
     }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        statusUpper,
+        statusStr,
         style: TextStyle(
           color: textColor,
           fontSize: 10,
@@ -556,30 +560,32 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
             onTap: _toggleExpanded,
             behavior: HitTestBehavior.opaque,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
+                      _buildStatusBadge(widget.item.visitStatus),
+                      const SizedBox(width: 10),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFEEF2FF),
-                          borderRadius: BorderRadius.circular(6),
+                          color: const Color(0xFFC8E6C9),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFF1B5E20), width: 1.5),
                         ),
                         child: Text(
-                          'Visit ${widget.item.visitNumber}',
+                          'Visit ${widget.item.visitNumber}/${widget.item.totalVisits}',
                           style: TextStyle(
-                            color: const Color(0xFF4F46E5),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF1B5E20),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
                             fontFamily: AppFont.family,
                           ),
                         ),
                       ),
                       const Spacer(),
-                      _buildStatusBadge(widget.item.visitStatus),
                       if (widget.item.feedbackSubmitted)
                         GestureDetector(
                           onTap: () {
@@ -618,7 +624,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                     '${'amc_schedule_window'.tr()} : ${widget.item.visitFromDate} - ${widget.item.visitToDate}',
                     style: TextStyle(
                       color: Colors.black87,
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w500,
                       fontFamily: AppFont.family,
                     ),
@@ -668,8 +674,8 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                       }
 
                       return Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        padding: const EdgeInsets.all(16),
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(24),
@@ -690,7 +696,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                                 Text(
                                   '${'report'.tr()} ${reportsCount - index}',
                                   style: AppFont.style(
-                                    fontSize: 17,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFF0D121F),
                                   ),
@@ -698,7 +704,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                                 Text(
                                   submittedDateStr ?? 'not_submitted'.tr(),
                                   style: AppFont.style(
-                                    fontSize: 12,
+                                    fontSize: 10,
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFFA5ABB7),
                                   ),
@@ -718,7 +724,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                                   child: Text(
                                     report.siteName ?? widget.defaultLocation,
                                     style: AppFont.style(
-                                      fontSize: 14,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w800,
                                       color: const Color(0xFF7A8699),
                                     ),
@@ -754,7 +760,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                                       Text(
                                         report.technicianRepresentativeName ?? 'unknown_technician'.tr(),
                                         style: AppFont.style(
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w800,
                                           color: const Color(0xFF0D121F),
                                         ),
@@ -765,7 +771,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                                       Text(
                                         report.dealerName ?? '',
                                         style: AppFont.style(
-                                          fontSize: 11,
+                                          fontSize: 9,
                                           fontWeight: FontWeight.w800,
                                           color: const Color(0xFFA5ABB7),
                                         ),
@@ -784,7 +790,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                                   child: Text(
                                     isSubmitted ? 'submitted'.tr() : 'draft'.tr(),
                                     style: AppFont.style(
-                                      fontSize: 10,
+                                      fontSize: 8,
                                       fontWeight: FontWeight.w800,
                                       color: isSubmitted ? const Color(0xFF00A76F) : const Color(0xFFE65100),
                                     ),
@@ -815,7 +821,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                                     Text(
                                       '${'view_report'.tr()} ${reportsCount - index}',
                                       style: AppFont.style(
-                                        fontSize: 12,
+                                        fontSize: 10,
                                         fontWeight: FontWeight.w900,
                                         color: Colors.white,
                                       ),

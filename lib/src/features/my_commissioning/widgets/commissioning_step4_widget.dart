@@ -17,7 +17,7 @@ class Step4Widget extends StatelessWidget {
                     : 'commissioning_work_description')
                 .tr(),
             style: AppFont.style(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w900,
               color: const Color(0xFFA5ABB7),
             ),

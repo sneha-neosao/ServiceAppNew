@@ -109,10 +109,10 @@ class ServiceCallsStep3Widget extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: parent._pendingCustomerController,
-              style: AppFont.style(fontSize: 13, color: const Color(0xFF0D121F)),
+              style: AppFont.style(fontSize: 11, color: const Color(0xFF0D121F)),
               decoration: InputDecoration(
                 hintText: 'enter_customer_name'.tr(),
-                hintStyle: AppFont.style(fontSize: 13, color: const Color(0xFFA5ABB7)),
+                hintStyle: AppFont.style(fontSize: 11, color: const Color(0xFFA5ABB7)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 filled: true,
                 fillColor: Colors.white,
@@ -137,10 +137,10 @@ class ServiceCallsStep3Widget extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: parent._pendingSiteController,
-              style: AppFont.style(fontSize: 13, color: const Color(0xFF0D121F)),
+              style: AppFont.style(fontSize: 11, color: const Color(0xFF0D121F)),
               decoration: InputDecoration(
                 hintText: 'enter_site_name'.tr(),
-                hintStyle: AppFont.style(fontSize: 13, color: const Color(0xFFA5ABB7)),
+                hintStyle: AppFont.style(fontSize: 11, color: const Color(0xFFA5ABB7)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 filled: true,
                 fillColor: Colors.white,

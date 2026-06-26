@@ -13,7 +13,7 @@ class Step6Widget extends StatelessWidget {
         Text(
           'commissioning_remarks_tech'.tr(),
           style: AppFont.style(
-            fontSize: 13,
+            fontSize: 11,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF6B7280),
           ),
@@ -28,7 +28,7 @@ class Step6Widget extends StatelessWidget {
         Text(
           'commissioning_remarks_customer'.tr(),
           style: AppFont.style(
-            fontSize: 13,
+            fontSize: 11,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF6B7180),
           ),
@@ -45,7 +45,7 @@ class Step6Widget extends StatelessWidget {
         Text(
           'commissioning_recorded_by'.tr(),
           style: AppFont.style(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w900,
             color: const Color(0xFF0D121F),
           ),
@@ -55,7 +55,7 @@ class Step6Widget extends StatelessWidget {
         Text(
           'commissioning_tech_rep'.tr(),
           style: AppFont.style(
-            fontSize: 11,
+            fontSize: 9,
             fontWeight: FontWeight.w900,
             color: const Color(0xFFA5ABB7),
             letterSpacing: 0.8,
@@ -75,7 +75,7 @@ class Step6Widget extends StatelessWidget {
                     TextSpan(
                       text: 'commissioning_name'.tr(),
                       style: AppFont.style(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF8E9BAE),
                       ),
@@ -83,7 +83,7 @@ class Step6Widget extends StatelessWidget {
                      TextSpan(
                       text: 'asterisk'.tr(),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         color: Colors.red,
                       ),
@@ -153,7 +153,7 @@ class Step6Widget extends StatelessWidget {
         Text(
           'commissioning_customer_rep'.tr(),
           style: AppFont.style(
-            fontSize: 11,
+            fontSize: 9,
             fontWeight: FontWeight.w900,
             color: const Color(0xFFA5ABB7),
             letterSpacing: 0.8,
@@ -174,7 +174,7 @@ class Step6Widget extends StatelessWidget {
                     TextSpan(
                       text: 'commissioning_name'.tr(),
                       style: AppFont.style(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF8E9BAE),
                       ),
@@ -182,7 +182,7 @@ class Step6Widget extends StatelessWidget {
                      TextSpan(
                       text: 'asterisk'.tr(),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         color: Colors.red,
                       ),
@@ -198,14 +198,14 @@ class Step6Widget extends StatelessWidget {
               child: TextField(
                 controller: parent._customerRepNameController,
                 style: AppFont.style(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: const Color(0xFF0D121F),
                 ),
                 decoration: InputDecoration(
                   hintText: 'commissioning_enter_name'.tr(),
                   hintStyle: AppFont.style(
-                    fontSize: 15,
+                    fontSize: 13,
                     fontWeight: FontWeight.w400,
                     color: const Color(0xFFA5ABB7),
                   ),
@@ -256,7 +256,7 @@ class Step6Widget extends StatelessWidget {
               TextSpan(
                 text: 'commissioning_upload_work_photos'.tr(),
                 style: AppFont.style(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w900,
                   color: const Color(0xFF0D121F),
                 ),
@@ -264,7 +264,7 @@ class Step6Widget extends StatelessWidget {
               TextSpan(
                 text: 'asterisk'.tr(),
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w900,
                   color: Colors.red,
                 ),
@@ -394,7 +394,7 @@ class Step6Widget extends StatelessWidget {
                       Text(
                         'upload'.tr(),
                         style: AppFont.style(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFFA5ABB7),
                         ),
@@ -429,7 +429,7 @@ class Step6Widget extends StatelessWidget {
                       Text(
                         'capture'.tr(),
                         style: AppFont.style(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFFA5ABB7),
                         ),

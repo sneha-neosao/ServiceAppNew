@@ -43,7 +43,7 @@ class AddNewEntryBottomSheet extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w900,
                     color: Color(0xFF0D121F),
                   ),
@@ -69,7 +69,7 @@ class AddNewEntryBottomSheet extends StatelessWidget {
             Text(
               label,
               style: const TextStyle(
-                fontSize: 10,
+                fontSize: 8,
                 fontWeight: FontWeight.w800,
                 color: Color(0xFFA5ABB7),
                 letterSpacing: 1.0,
@@ -84,14 +84,14 @@ class AddNewEntryBottomSheet extends StatelessWidget {
               autofocus: true,
               enabled: !isLoading,
               style: const TextStyle(
-                fontSize: 15,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF0D121F),
               ),
               decoration: InputDecoration(
                 hintText: hint,
                 hintStyle: const TextStyle(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: Color(0xFFA5ABB7),
                 ),
@@ -143,7 +143,7 @@ class AddNewEntryBottomSheet extends StatelessWidget {
                     :  Text(
                   'save_entry'.tr(),
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
                     letterSpacing: 0.5,

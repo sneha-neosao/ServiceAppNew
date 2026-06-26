@@ -41,7 +41,7 @@ class EditCommissioningScreen extends StatelessWidget {
                   Text(
                     'edit_commissioning_title'.tr(),
                     style: AppFont.style(
-                      fontSize: 24,
+                      fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF0D121F),
                     ),
@@ -49,7 +49,7 @@ class EditCommissioningScreen extends StatelessWidget {
                   Text(
                     'edit_commissioning_subtitle'.tr(),
                     style: AppFont.style(
-                      fontSize: 12,
+                      fontSize: 10,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFFA5ABB7),
                       letterSpacing: 0.5,
@@ -106,7 +106,7 @@ class EditCommissioningScreen extends StatelessWidget {
                   Text(
                     'edit_commissioning_btn_assign'.tr(),
                     style: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
                       letterSpacing: 1.2,
@@ -132,7 +132,7 @@ class EditCommissioningScreen extends StatelessWidget {
           Text(
             title,
             style: AppFont.style(
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: FontWeight.w800,
               color: const Color(0xFFA5ABB7),
               letterSpacing: 0.5,
@@ -168,7 +168,7 @@ class EditCommissioningScreen extends StatelessWidget {
             child: Text(
               value,
               style: AppFont.style(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFF0D121F),
               ),
@@ -194,7 +194,7 @@ class EditCommissioningScreen extends StatelessWidget {
       child: Text(
         value,
         style: AppFont.style(
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: FontWeight.w800,
           color: const Color(0xFF0D121F),
         ),

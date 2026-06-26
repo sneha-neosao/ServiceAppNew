@@ -38,7 +38,7 @@ class ServiceCallsStep5Widget extends StatelessWidget {
                 child: Text(
                   'service_calls_empty_assigned'.tr(),
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: const Color(0xFFA5ABB7),
                   ),
                 ),

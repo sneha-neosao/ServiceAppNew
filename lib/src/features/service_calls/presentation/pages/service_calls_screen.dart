@@ -233,7 +233,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               Text(
                 label,
                 style: AppFont.style(
-                  fontSize: 12,
+                  fontSize: 10,
                   fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                   color: isSelected
                       ? const Color(0xFF1565C0)
@@ -257,7 +257,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   : Text(
                       '($count)',
                       style: AppFont.style(
-                        fontSize: 11,
+                        fontSize: 9,
                         fontWeight: FontWeight.w500,
                         color: isSelected
                             ? const Color(0xFF1565C0)
@@ -305,7 +305,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                 : Text(
                     label,
                     style: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 12,
                       color: const Color(0xFFA5ABB7),
                       fontWeight: FontWeight.w500,
                     ),
@@ -345,14 +345,14 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               onChanged: (_) => _fetchServiceCalls(isRefresh: true),
               onSubmitted: (_) => _fetchServiceCalls(isRefresh: true),
               style: AppFont.style(
-                fontSize: 14,
+                fontSize: 12,
                 color: const Color(0xFF0D121F),
                 fontWeight: FontWeight.w500,
               ),
               decoration: InputDecoration(
                 hintText: 'service_calls_filter_complaint_hint'.tr(),
                 hintStyle: AppFont.style(
-                  fontSize: 14,
+                  fontSize: 12,
                   color: const Color(0xFFA5ABB7),
                   fontWeight: FontWeight.w500,
                 ),
@@ -407,7 +407,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                       ).format(DateTime.parse(_selectedDate!))
                     : 'service_calls_filter_date_hint'.tr(),
                 style: AppFont.style(
-                  fontSize: 14,
+                  fontSize: 12,
                   color: _selectedDate != null
                       ? const Color(0xFF0D121F)
                       : const Color(0xFFA5ABB7),
@@ -455,7 +455,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                 child: Text(
                   'service_calls_empty_assigned'.tr(),
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: const Color(0xFFA5ABB7),
                   ),
                 ),
@@ -581,7 +581,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                 child: Text(
                   'service_calls_empty_pending'.tr(),
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: const Color(0xFFA5ABB7),
                   ),
                 ),

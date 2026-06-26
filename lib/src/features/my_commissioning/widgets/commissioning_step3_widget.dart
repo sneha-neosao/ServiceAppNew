@@ -16,7 +16,7 @@ class Step3Widget extends StatelessWidget {
             Text(
               'commissioning_technical_details'.tr(),
               style: AppFont.style(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w900,
                 color: const Color(0xFF0D121F),
               ),
@@ -51,7 +51,7 @@ class Step3Widget extends StatelessWidget {
                 Text(
                   'commissioning_na_paren'.tr(),
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFFA5ABB7),
                   ),

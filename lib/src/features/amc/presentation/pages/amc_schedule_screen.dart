@@ -102,7 +102,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                   Text(
                     'amc_schedule_appbar_title'.tr(),
                     style: AppFont.style(
-                      fontSize: 20,
+                      fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF0D121F),
                     ),
@@ -110,7 +110,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                   Text(
                     'amc_schedule_subtitle'.tr(),
                     style: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFFA5ABB7),
                     ),
@@ -323,7 +323,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                       Text(
                         'missed_amc_visits'.tr(),
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: const Color(0xFF4A6581),
                         ),
@@ -346,7 +346,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                       itemCount: 4,
                       itemBuilder: (context, index) {
                         return const Padding(
-                          padding: EdgeInsets.only(bottom: 20),
+                          padding: EdgeInsets.only(bottom: 12),
                           child: ListCardShimmer(),
                         );
                       },
@@ -376,7 +376,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                         child: Text(
                           'No AMC visits found.',
                           style: AppFont.style(
-                            fontSize: 15,
+                            fontSize: 13,
                             color: const Color(0xFFA5ABB7),
                           ),
                         ),
@@ -391,7 +391,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                     itemBuilder: (context, index) {
                       final visit = filteredVisits[index];
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
+                        padding: const EdgeInsets.only(bottom: 12),
                         child: _AmcScheduleCard(
                           title: visit.customerName,
                           location: visit.siteName,
@@ -452,7 +452,7 @@ class _AmcScheduleCard extends StatelessWidget {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -466,7 +466,7 @@ class _AmcScheduleCard extends StatelessWidget {
                         Text(
                           title,
                           style: AppFont.style(
-                            fontSize: 18,
+                            fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF0D121F),
                           ),
@@ -483,7 +483,7 @@ class _AmcScheduleCard extends StatelessWidget {
                             Text(
                               location,
                               style: AppFont.style(
-                                fontSize: 13,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w600,
                                 color: const Color(0xFF424B5C),
                               ),
@@ -495,9 +495,9 @@ class _AmcScheduleCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               const Divider(height: 1, color: Color(0xFFF1F2F6)),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               // Info Row
               Row(
                 children: [
@@ -508,7 +508,7 @@ class _AmcScheduleCard extends StatelessWidget {
                         Text(
                           'amc_schedule_visit_info'.tr(),
                           style: AppFont.style(
-                            fontSize: 11,
+                            fontSize: 9,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFFA5ABB7),
                           ),
@@ -517,7 +517,7 @@ class _AmcScheduleCard extends StatelessWidget {
                         Text(
                           visitInfo,
                           style: AppFont.style(
-                            fontSize: 14,
+                            fontSize: 12,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF0D121F),
                           ),
@@ -532,7 +532,7 @@ class _AmcScheduleCard extends StatelessWidget {
                         Text(
                           'amc_report_date_label'.tr(),
                           style: AppFont.style(
-                            fontSize: 11,
+                            fontSize: 9,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFFA5ABB7),
                           ),
@@ -541,7 +541,7 @@ class _AmcScheduleCard extends StatelessWidget {
                         Text(
                           date,
                           style: AppFont.style(
-                            fontSize: 14,
+                            fontSize: 12,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF1565C0),
                           ),

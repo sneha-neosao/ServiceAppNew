@@ -232,7 +232,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         decoration: InputDecoration(
                           hintText: 'search'.tr(),
                           hintStyle: AppFont.style(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: const Color(0xFFA5ABB7),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
@@ -256,7 +256,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                           ),
                         ),
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           color: const Color(0xFF0D121F),
                         ),
                       ),
@@ -283,7 +283,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                                 child: Text(
                                   item.name,
                                   style: AppFont.style(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                     color: const Color(0xFF0D121F),
                                   ),
@@ -569,7 +569,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             child: Text(
               'amc_report_title'.tr(),
               style: AppFont.style(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w900,
                 color: const Color(0xFF0D121F),
               ),
@@ -656,7 +656,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             //             Text(
             //               dealerToShow,
             //               style: AppFont.style(
-            //                 fontSize: 16,
+            //                 fontSize: 14,
             //                 fontWeight: FontWeight.w900,
             //                 color: const Color(0xFF0D121F),
             //               ),
@@ -672,7 +672,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 Text(
                   'amc_report_date_label'.tr(),
                   style: AppFont.style(
-                    fontSize: 12,
+                    fontSize: 10,
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF7A8699),
                   ),
@@ -680,7 +680,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 Text(
                   DateFormat('d MMMM yyyy', context.locale.languageCode).format(DateTime.now()),
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w900,
                     color: const Color(0xFF0D121F),
                   ),
@@ -754,7 +754,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                             decoration: InputDecoration(
                               hintText: 'commissioning_select_technician'.tr(),
                               hintStyle: AppFont.style(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w700,
                                 color: const Color(0xFFA5ABB7),
                               ),
@@ -805,7 +805,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                                     ),
                             ),
                             style: AppFont.style(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w500,
                               color: const Color(0xFF0D121F),
                             ),
@@ -958,7 +958,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         Text(
           'amc_report_checklist_title'.tr(),
           style: AppFont.style(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w900,
             color: const Color(0xFF0D121F),
           ),
@@ -1019,7 +1019,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               child: Text(
                 title,
                 style: AppFont.style(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w900,
                   color: const Color(0xFF0D121F),
                 ),
@@ -1046,7 +1046,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   Text(
                     'commissioning_na_paren'.tr(),
                     style: AppFont.style(
-                      fontSize: 12,
+                      fontSize: 10,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF7A8699),
                     ),
@@ -1093,7 +1093,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     TextSpan(
                       text: text.tr(),
                       style: AppFont.style(
-                        fontSize: 13,
+                        fontSize: 11,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF5C6672),
                       ),
@@ -1101,7 +1101,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                      TextSpan(
                       text: 'asterisk'.tr(),
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 11,
                         fontWeight: FontWeight.w800,
                         color: Colors.red,
                       ),
@@ -1143,7 +1143,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   TextSpan(
                     text: 'checklist_vibration'.tr() + " :",
                     style: AppFont.style(
-                      fontSize: 13,
+                      fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF5C6672),
                     ),
@@ -1151,7 +1151,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                    TextSpan(
                     text: 'asterisk'.tr(),
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: Colors.red,
                     ),
@@ -1183,7 +1183,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     Text(
                       'normal'.tr(),
                       style: AppFont.style(
-                        fontSize: 12,
+                        fontSize: 10,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF5C6672),
                       ),
@@ -1213,7 +1213,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     Text(
                       'high'.tr(),
                       style: AppFont.style(
-                        fontSize: 12,
+                        fontSize: 10,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF5C6672),
                       ),
@@ -1236,7 +1236,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         Text(
           'commissioning_remarks_tech'.tr(),
           style: AppFont.style(
-            fontSize: 13,
+            fontSize: 11,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF6B7280),
           ),
@@ -1251,7 +1251,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         Text(
           'commissioning_remarks_customer'.tr(),
           style: AppFont.style(
-            fontSize: 13,
+            fontSize: 11,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF6B7180),
           ),
@@ -1268,7 +1268,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         Text(
           'amc_report_recorded_by'.tr(),
           style: AppFont.style(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w900,
             color: const Color(0xFF0D121F),
           ),
@@ -1278,7 +1278,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         Text(
           'amc_report_technician_rep'.tr(),
           style: AppFont.style(
-            fontSize: 11,
+            fontSize: 9,
             fontWeight: FontWeight.w900,
             color: const Color(0xFFA5ABB7),
             letterSpacing: 0.8,
@@ -1298,7 +1298,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     TextSpan(
                       text: 'commissioning_name'.tr(),
                       style: AppFont.style(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF8E9BAE),
                       ),
@@ -1306,7 +1306,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     const TextSpan(
                       text: ' *',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         color: Colors.red,
                       ),
@@ -1391,7 +1391,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         Text(
           'amc_report_customer_rep'.tr(),
           style: AppFont.style(
-            fontSize: 11,
+            fontSize: 9,
             fontWeight: FontWeight.w900,
             color: const Color(0xFFA5ABB7),
             letterSpacing: 0.8,
@@ -1412,7 +1412,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     TextSpan(
                       text: 'commissioning_name'.tr(),
                       style: AppFont.style(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF8E9BAE),
                       ),
@@ -1420,7 +1420,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     const TextSpan(
                       text: ' *',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         color: Colors.red,
                       ),
@@ -1436,14 +1436,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               child: TextField(
                 controller: _customerRepNameController,
                 style: AppFont.style(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: const Color(0xFF0D121F),
                 ),
                 decoration: InputDecoration(
                   hintText: 'commissioning_enter_name'.tr(),
                   hintStyle: AppFont.style(
-                    fontSize: 15,
+                    fontSize: 13,
                     fontWeight: FontWeight.w400,
                     color: const Color(0xFFA5ABB7),
                   ),
@@ -1493,7 +1493,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               TextSpan(
                 text: 'amc_report_upload_photos'.tr(),
                 style: AppFont.style(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w900,
                   color: const Color(0xFF0D121F),
                 ),
@@ -1501,7 +1501,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                TextSpan(
                 text: 'asterisk'.tr(),
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w900,
                   color: Colors.red,
                 ),
@@ -1628,7 +1628,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       Text(
                         'upload'.tr(),
                         style: AppFont.style(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFFA5ABB7),
                         ),
@@ -1662,7 +1662,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       Text(
                         'capture'.tr(),
                         style: AppFont.style(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFFA5ABB7),
                         ),
@@ -1714,7 +1714,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       Text(
                         'commissioning_draw_signature'.tr(),
                         style: AppFont.style(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w900,
                           color: const Color(0xFF0D121F),
                         ),
@@ -1761,7 +1761,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                               child: Text(
                                 'commissioning_clear'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF6B7280),
                                 ),
@@ -1802,7 +1802,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                               child: Text(
                                 'commissioning_done'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
                                 ),
@@ -1838,14 +1838,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             controller: controller,
             maxLines: 4,
             style: AppFont.style(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w900,
               color: const Color(0xFF0D121F),
             ),
             decoration: InputDecoration(
               hintText: placeholder,
               hintStyle: AppFont.style(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFFA5ABB7),
               ),
@@ -1890,7 +1890,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   text: TextSpan(
                     text: label.replaceAll('*', '').trimRight(),
                     style: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF8E9BAE),
                     ),
@@ -1898,7 +1898,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       TextSpan(
                         text: 'asterisk'.tr(),
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: Colors.red,
                         ),
@@ -1909,7 +1909,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               : Text(
                   label,
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF8E9BAE),
                   ),
@@ -1972,7 +1972,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                           Text(
                             placeholder,
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFFCDD0D8),
                             ),
@@ -2015,7 +2015,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
       return Text(
         title,
         style: AppFont.style(
-          fontSize: 13,
+          fontSize: 11,
           fontWeight: FontWeight.w800,
           color: const Color(0xFF5C6672),
         ),
@@ -2028,7 +2028,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           TextSpan(
             text: title,
             style: AppFont.style(
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: FontWeight.w800,
               color: const Color(0xFF5C6672),
             ),
@@ -2036,7 +2036,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           const TextSpan(
             text: ' *',
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: FontWeight.w800,
               color: Colors.red,
             ),
@@ -2054,7 +2054,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           child: Text(
             label,
             style: AppFont.style(
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: FontWeight.w800,
               color: const Color(0xFF5C6672),
             ),
@@ -2063,7 +2063,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         Text(
           ':',
           style: AppFont.style(
-            fontSize: 13,
+            fontSize: 11,
             fontWeight: FontWeight.w800,
             color: const Color(0xFFA5ABB7),
           ),
@@ -2073,7 +2073,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           child: Text(
             value,
             style: AppFont.style(
-              fontSize: 15,
+              fontSize: 13,
               fontWeight: FontWeight.w900,
               color: const Color(0xFF0D121F),
             ),
@@ -2110,13 +2110,13 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 hintText: hint,
                 border: InputBorder.none,
                 hintStyle: AppFont.style(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFFA5ABB7),
                 ),
               ),
               style: AppFont.style(
-                fontSize: 15,
+                fontSize: 13,
                 fontWeight: FontWeight.w900,
                 color: const Color(0xFF0D121F),
               ),
@@ -2144,7 +2144,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: AppFont.style(
-                fontSize: 15,
+                fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFFA5ABB7),
               ),
@@ -2152,7 +2152,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               contentPadding: const EdgeInsets.all(16),
             ),
             style: AppFont.style(
-              fontSize: 15,
+              fontSize: 13,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF0D121F),
             ),
@@ -2212,7 +2212,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   Text(
                     'amc_report_btn_back'.tr(),
                     style: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFFA5ABB7),
                     ),
@@ -2221,7 +2221,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   Text(
                     'cancel'.tr(),
                     style: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFFA5ABB7),
                     ),
@@ -2472,7 +2472,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     Text(
                       _currentStep < 3 ? 'amc_report_btn_next'.tr() : 'amc_report_btn_submit'.tr(),
                       style: AppFont.style(
-                        fontSize: 12,
+                        fontSize: 10,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
                       ),

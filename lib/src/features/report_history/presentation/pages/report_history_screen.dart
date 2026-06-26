@@ -315,7 +315,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               //         Text(
               //           'reports_title'.tr(),
               //           style: AppFont.style(
-              //             fontSize: 18,
+              //             fontSize: 16,
               //             fontWeight: FontWeight.w800,
               //             color: const Color(0xFF0D121F),
               //           ),
@@ -460,7 +460,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   child: Text(
                                     'no_reports_found'.tr(),
                                     style: AppFont.style(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w600,
                                       color: const Color(0xFFA5ABB7),
                                     ),
@@ -481,7 +481,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                     child: Text(
                                       'no_reports_found'.tr(),
                                       style: AppFont.style(
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.w600,
                                         color: const Color(0xFFA5ABB7),
                                       ),
@@ -575,7 +575,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   child: Text(
                                     'no_reports_found'.tr(),
                                     style: AppFont.style(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w600,
                                       color: const Color(0xFFA5ABB7),
                                     ),
@@ -596,7 +596,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                     child: Text(
                                       'no_reports_found'.tr(),
                                       style: AppFont.style(
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.w600,
                                         color: const Color(0xFFA5ABB7),
                                       ),
@@ -681,7 +681,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   child: Text(
                                     'no_reports_found'.tr(),
                                     style: AppFont.style(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w600,
                                       color: const Color(0xFFA5ABB7),
                                     ),
@@ -702,7 +702,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                     child: Text(
                                       'no_reports_found'.tr(),
                                       style: AppFont.style(
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.w600,
                                         color: const Color(0xFFA5ABB7),
                                       ),
@@ -793,7 +793,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           child: Text(
             label,
             style: AppFont.style(
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
               color: isSelected
                   ? const Color(0xFF1565C0)
@@ -815,7 +815,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               Text(
                 title,
                 style: AppFont.style(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF0D121F),
                 ),
@@ -1025,7 +1025,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                     ? '${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}'
                                     : 'reports_filter_date_hint'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   color: _selectedDate != null
                                       ? const Color(0xFF0D121F)
                                       : const Color(0xFFA5ABB7),
@@ -1124,7 +1124,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                       Text(
                         'reports_clear_filters'.tr(),
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF1565C0),
                         ),
@@ -1161,7 +1161,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             child: Text(
               label,
               style: AppFont.style(
-                fontSize: 14,
+                fontSize: 12,
                 color: const Color(0xFFA5ABB7),
                 fontWeight: FontWeight.w500,
               ),
@@ -1205,7 +1205,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               decoration: InputDecoration(
                 hintText: label,
                 hintStyle: AppFont.style(
-                  fontSize: 14,
+                  fontSize: 12,
                   color: const Color(0xFFA5ABB7),
                   fontWeight: FontWeight.w500,
                 ),
@@ -1214,7 +1214,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
               style: AppFont.style(
-                fontSize: 14,
+                fontSize: 12,
                 color: const Color(0xFF0D121F),
                 fontWeight: FontWeight.w500,
               ),
@@ -1331,7 +1331,7 @@ class _ReportCard extends StatelessWidget {
                 Text(
                   companyName,
                   style: AppFont.style(
-                    fontSize: 17,
+                    fontSize: 15,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF0D121F),
                   ),
@@ -1339,7 +1339,7 @@ class _ReportCard extends StatelessWidget {
                 Text(
                   date,
                   style: AppFont.style(
-                    fontSize: 12,
+                    fontSize: 10,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFFA5ABB7),
                   ),
@@ -1359,7 +1359,7 @@ class _ReportCard extends StatelessWidget {
                 Text(
                   location,
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF7A8699),
                   ),
@@ -1384,7 +1384,7 @@ class _ReportCard extends StatelessWidget {
                     Text(
                       complaintNo!,
                       style: AppFont.style(
-                        fontSize: 13,
+                        fontSize: 11,
                         fontWeight: FontWeight.w900,
                         color: const Color(0xFF1565C0),
                       ),
@@ -1417,7 +1417,7 @@ class _ReportCard extends StatelessWidget {
                         child: Text(
                           'reports_view_complaint'.tr(),
                           style: AppFont.style(
-                            fontSize: 11,
+                            fontSize: 9,
                             fontWeight: FontWeight.w900,
                             color: const Color(0xFFE65100),
                             letterSpacing: 0.5,
@@ -1450,7 +1450,7 @@ class _ReportCard extends StatelessWidget {
                           Text(
                             'total_visits'.tr(),
                             style: AppFont.style(
-                              fontSize: 11,
+                              fontSize: 9,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFFA5ABB7),
                             ),
@@ -1459,7 +1459,7 @@ class _ReportCard extends StatelessWidget {
                           Text(
                             '${totalVisits ?? 0}',
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFF424B5C),
                             ),
@@ -1474,7 +1474,7 @@ class _ReportCard extends StatelessWidget {
                           Text(
                             'completed_visits'.tr(),
                             style: AppFont.style(
-                              fontSize: 11,
+                              fontSize: 9,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFFA5ABB7),
                             ),
@@ -1483,7 +1483,7 @@ class _ReportCard extends StatelessWidget {
                           Text(
                             '${completedVisits ?? 0}',
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFF424B5C),
                             ),
@@ -1523,7 +1523,7 @@ class _ReportCard extends StatelessWidget {
                           Text(
                             technician,
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFF424B5C),
                             ),
@@ -1533,7 +1533,7 @@ class _ReportCard extends StatelessWidget {
                             Text(
                               technicianId,
                               style: AppFont.style(
-                                fontSize: 11,
+                                fontSize: 9,
                                 fontWeight: FontWeight.w800,
                                 color: const Color(0xFFA5ABB7),
                               ),
@@ -1585,7 +1585,7 @@ class _ReportCard extends StatelessWidget {
                   Text(
                     btnText,
                     style: AppFont.style(
-                      fontSize: 12,
+                      fontSize: 10,
                       fontWeight: FontWeight.w900,
                       color: Colors.white,
                     ),
@@ -1739,7 +1739,7 @@ class _ReportCard extends StatelessWidget {
       child: Text(
         displayStatus,
         style: AppFont.style(
-          fontSize: 10,
+          fontSize: 8,
           fontWeight: FontWeight.w800,
           color: textColor,
         ),
@@ -1790,7 +1790,7 @@ class _ReportCard extends StatelessWidget {
                           : 'commissioning_work_report_feedback'.tr(),
                   textAlign: TextAlign.center,
                   style: AppFont.style(
-                    fontSize: 22,
+                    fontSize: 20,
                     fontWeight: FontWeight.w900,
                     color: const Color(0xFF0D121F),
                   ),
@@ -1826,7 +1826,7 @@ class _ReportCard extends StatelessWidget {
                 Text(
                   'create_report_scan_feedback'.tr(),
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFFA5ABB7),
                   ),

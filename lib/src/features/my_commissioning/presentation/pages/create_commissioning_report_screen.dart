@@ -1360,7 +1360,7 @@ class _CreateCommissioningReportScreenState
                     widget.isServiceReport ? 'service_call_report_feedback'.tr() : 'commissioning_work_report_feedback'.tr(),
                     textAlign: TextAlign.center,
                     style: AppFont.style(
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: FontWeight.w900,
                       color: const Color(0xFF0D121F),
                     ),
@@ -1391,7 +1391,7 @@ class _CreateCommissioningReportScreenState
                     '',
                     textAlign: TextAlign.center,
                     style: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFFA5ABB7),
                     ),
@@ -2273,7 +2273,7 @@ class _CreateCommissioningReportScreenState
                                                                                                                     ? 'service_report'.tr()
                                                                                                                     : 'commissioning_report'.tr(),
                                                                                                                 style: AppFont.style(
-                                                                                                                  fontSize: 17,
+                                                                                                                  fontSize: 15,
                                                                                                                   fontWeight: FontWeight.w900,
                                                                                                                   color: const Color(
                                                                                                                     0xFF0D121F,
@@ -2380,7 +2380,7 @@ class _CreateCommissioningReportScreenState
                                                                                                                 Text(
                                                                                                                   'create_report_btn_back'.tr(),
                                                                                                                   style: AppFont.style(
-                                                                                                                    fontSize: 14,
+                                                                                                                    fontSize: 12,
                                                                                                                     fontWeight: FontWeight.w800,
                                                                                                                     color: const Color(
                                                                                                                       0xFFA5ABB7,
@@ -2396,7 +2396,7 @@ class _CreateCommissioningReportScreenState
                                                                                                             child: Text(
                                                                                                               'cancel'.tr(),
                                                                                                               style: AppFont.style(
-                                                                                                                fontSize: 14,
+                                                                                                                fontSize: 12,
                                                                                                                 fontWeight: FontWeight.w800,
                                                                                                                 color: const Color(
                                                                                                                   0xFFA5ABB7,
@@ -2657,7 +2657,7 @@ class _CreateCommissioningReportScreenState
                                                                                                                                                                                         : 'create_report_btn_next'.tr(),
                                                                                                                                                                                     style: AppFont
                                                                                                                                                                                         .style(
-                                                                                                                                                                                      fontSize: 12,
+                                                                                                                                                                                      fontSize: 10,
                                                                                                                                                                                       fontWeight: FontWeight
                                                                                                                                                                                           .w800,
                                                                                                                                                                                       color: Colors
@@ -3143,7 +3143,7 @@ class _CreateCommissioningReportScreenState
                         decoration: InputDecoration(
                           hintText: 'Search...',
                           hintStyle: AppFont.style(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: const Color(0xFFA5ABB7),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
@@ -3167,7 +3167,7 @@ class _CreateCommissioningReportScreenState
                           ),
                         ),
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           color: const Color(0xFF0D121F),
                         ),
                       ),
@@ -3193,7 +3193,7 @@ class _CreateCommissioningReportScreenState
                                 child: Text(
                                   item.name,
                                   style: AppFont.style(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                     color: const Color(0xFF0D121F),
                                   ),
@@ -3225,7 +3225,7 @@ class _CreateCommissioningReportScreenState
           child: Text(
             label,
             style: AppFont.style(
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: FontWeight.w800,
               color: const Color(0xFF5C6672),
             ),
@@ -3234,7 +3234,7 @@ class _CreateCommissioningReportScreenState
         Text(
           ':',
           style: AppFont.style(
-            fontSize: 13,
+            fontSize: 11,
             fontWeight: FontWeight.w800,
             color: const Color(0xFFE5E7EB),
           ),
@@ -3244,7 +3244,7 @@ class _CreateCommissioningReportScreenState
           child: Text(
             value,
             style: AppFont.style(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w900,
               color: const Color(0xFF0D121F),
             ),
@@ -3271,7 +3271,7 @@ class _CreateCommissioningReportScreenState
                 TextSpan(
                   text: label,
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w900,
                     color: const Color(0xFF5C616E),
                   ),
@@ -3279,7 +3279,7 @@ class _CreateCommissioningReportScreenState
                 // const TextSpan(
                 //   text: ' *',
                 //   style: TextStyle(
-                //     fontSize: 14,
+                //     fontSize: 12,
                 //     fontWeight: FontWeight.w900,
                 //     color: Colors.red,
                 //   ),
@@ -3291,7 +3291,7 @@ class _CreateCommissioningReportScreenState
           TextField(
             controller: controller,
             style: AppFont.style(
-              fontSize: 15,
+              fontSize: 13,
               fontWeight: FontWeight.w500,
               color: const Color(0xFF0D121F),
             ),
@@ -3327,7 +3327,7 @@ class _CreateCommissioningReportScreenState
                 TextSpan(
                   text: label,
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w900,
                     color: const Color(0xFF5C616E),
                   ),
@@ -3335,7 +3335,7 @@ class _CreateCommissioningReportScreenState
                 // const TextSpan(
                 //   text: ' *',
                 //   style: TextStyle(
-                //     fontSize: 14,
+                //     fontSize: 12,
                 //     fontWeight: FontWeight.w900,
                 //     color: Colors.red,
                 //   ),
@@ -3359,7 +3359,7 @@ class _CreateCommissioningReportScreenState
                     Text(
                       unit,
                       style: AppFont.style(
-                        fontSize: 11,
+                        fontSize: 9,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFFA5ABB7),
                       ),
@@ -3376,7 +3376,7 @@ class _CreateCommissioningReportScreenState
                         ),
                       ],
                       style: AppFont.style(
-                        fontSize: 15,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: const Color(0xFF0D121F),
                       ),
@@ -3420,7 +3420,7 @@ class _CreateCommissioningReportScreenState
             child: Text(
               '$number.',
               style: AppFont.style(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w900,
                 color: const Color(0xFFA5ABB7),
               ),
@@ -3441,14 +3441,14 @@ class _CreateCommissioningReportScreenState
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
                     style: AppFont.style(
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w900,
                       color: const Color(0xFF0D121F),
                     ),
                     decoration: InputDecoration(
                       hintText: 'commissioning_work_description_hint'.tr(),
                       hintStyle: AppFont.style(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFFA5ABB7),
                       ),
@@ -3501,7 +3501,7 @@ class _CreateCommissioningReportScreenState
               child: Text(
                 title,
                 style: AppFont.style(
-                  fontSize: 13,
+                  fontSize: 11,
                   fontWeight: FontWeight.w900,
                   color: const Color(0xFF0D121F),
                 ),
@@ -3533,7 +3533,7 @@ class _CreateCommissioningReportScreenState
                   Text(
                     'commissioning_na_paren'.tr(),
                     style: AppFont.style(
-                      fontSize: 13,
+                      fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFFA5ABB7),
                     ),
@@ -3581,7 +3581,7 @@ class _CreateCommissioningReportScreenState
                 TextSpan(
                   text: label,
                   style: AppFont.style(
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w900,
                     color: const Color(0xFF5C616E),
                   ),
@@ -3589,7 +3589,7 @@ class _CreateCommissioningReportScreenState
                 const TextSpan(
                   text: ' *',
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w900,
                     color: Colors.red,
                   ),
@@ -3645,7 +3645,7 @@ class _CreateCommissioningReportScreenState
                       Text(
                         labels[i],
                         style: AppFont.style(
-                          fontSize: 13,
+                          fontSize: 11,
                           fontWeight: FontWeight.w900,
                           color: const Color(0xFF7A8699),
                         ),
@@ -3683,7 +3683,7 @@ class _CreateCommissioningReportScreenState
             Text(
               text,
               style: AppFont.style(
-                fontSize: 12,
+                fontSize: 10,
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFF1565C0),
               ),
@@ -3778,7 +3778,7 @@ class _CreateCommissioningReportScreenState
                       Text(
                         'commissioning_draw_signature'.tr(),
                         style: AppFont.style(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w900,
                           color: const Color(0xFF0D121F),
                         ),
@@ -3825,7 +3825,7 @@ class _CreateCommissioningReportScreenState
                               child: Text(
                                 'commissioning_clear'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF6B7280),
                                 ),
@@ -3863,7 +3863,7 @@ class _CreateCommissioningReportScreenState
                               child: Text(
                                 'commissioning_done'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
                                 ),
@@ -3905,14 +3905,14 @@ class _CreateCommissioningReportScreenState
             maxLines: null,
             keyboardType: TextInputType.multiline,
             style: AppFont.style(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w900,
               color: const Color(0xFF0D121F),
             ),
             decoration: InputDecoration(
               hintText: placeholder,
               hintStyle: AppFont.style(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFFA5ABB7),
               ),
@@ -3957,7 +3957,7 @@ class _CreateCommissioningReportScreenState
                   text: TextSpan(
                     text: label.replaceAll('*', '').trimRight(),
                     style: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF8E9BAE),
                     ),
@@ -3965,7 +3965,7 @@ class _CreateCommissioningReportScreenState
                       TextSpan(
                         text: ' *',
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: Colors.red,
                         ),
@@ -3976,7 +3976,7 @@ class _CreateCommissioningReportScreenState
               : Text(
                   label,
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF8E9BAE),
                   ),
@@ -4039,7 +4039,7 @@ class _CreateCommissioningReportScreenState
                           Text(
                             placeholder,
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFFCDD0D8),
                             ),
@@ -4084,7 +4084,7 @@ class _CreateCommissioningReportScreenState
         Text(
           title,
           style: AppFont.style(
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.w900,
             color: const Color(0xFF0D121F),
           ),
@@ -4101,7 +4101,7 @@ class _CreateCommissioningReportScreenState
     return Text(
       text,
       style: AppFont.style(
-        fontSize: 12,
+        fontSize: 10,
         fontWeight: FontWeight.w800,
         color: const Color(0xFFA5ABB7),
       ),
@@ -4114,7 +4114,7 @@ class _CreateCommissioningReportScreenState
       child: Text(
         text,
         style: AppFont.style(
-          fontSize: 12,
+          fontSize: 10,
           fontWeight: FontWeight.w800,
           color: const Color(0xFF1565C0),
         ),
@@ -4137,7 +4137,7 @@ class _CreateCommissioningReportScreenState
           Text(
             hint,
             style: AppFont.style(
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.w800,
               color: const Color(0xFFA5ABB7),
             ),

@@ -25,7 +25,7 @@ class Step2Widget extends StatelessWidget {
                 child: Text(
                   'commissioning_customer_members'.tr(),
                   style: AppFont.style(
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF5C6672),
                   ),
@@ -37,7 +37,7 @@ class Step2Widget extends StatelessWidget {
               child: Text(
                 ':',
                 style: AppFont.style(
-                  fontSize: 13,
+                  fontSize: 11,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFFE5E7EB),
                 ),
@@ -60,14 +60,14 @@ class Step2Widget extends StatelessWidget {
                               child: TextField(
                                 controller: controller,
                                 style: AppFont.style(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w900,
                                   color: const Color(0xFF0D121F),
                                 ),
                                 decoration: InputDecoration(
                                   hintText: 'commissioning_representative'.tr(),
                                   hintStyle: AppFont.style(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w900,
                                     color: const Color(0xFFA5ABB7),
                                   ),
@@ -135,7 +135,7 @@ class Step2Widget extends StatelessWidget {
                       TextSpan(
                         text: 'commissioning_select_warranty_period_label'.tr(),
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF5C6672),
                         ),
@@ -143,7 +143,7 @@ class Step2Widget extends StatelessWidget {
                       const TextSpan(
                         text: ' *',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: Colors.red,
                         ),
@@ -206,14 +206,14 @@ class Step2Widget extends StatelessWidget {
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 style: AppFont.style(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w900,
                   color: const Color(0xFF0D121F),
                 ),
                 decoration: InputDecoration(
                   hintText: 'commissioning_agenda_hint'.tr(),
                   hintStyle: AppFont.style(
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFFA5ABB7),
                   ),

@@ -61,7 +61,7 @@ class _AuthTextFieldState<T> extends State<AuthTextField<T>> {
           Text(
             widget.label.tr(),
             style: AppFont.style(
-              fontSize: 11,
+              fontSize: 9,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF1A1A1A),
               letterSpacing: 1.2,
@@ -90,7 +90,7 @@ class _AuthTextFieldState<T> extends State<AuthTextField<T>> {
                   widget.textCapitalization ?? TextCapitalization.none,
 
               style: AppFont.style(
-                fontSize: 15.sp,
+                fontSize: 13.sp,
                 color: const Color(0xFF1A1A1A),
               ),
 
@@ -100,7 +100,7 @@ class _AuthTextFieldState<T> extends State<AuthTextField<T>> {
                 /// HINT
                 hintText: widget.hint.tr(),
                 hintStyle: AppFont.style(
-                  fontSize: 15.sp,
+                  fontSize: 13.sp,
                   color: const Color(0xFFBDBDBD),
                 ),
 
@@ -137,7 +137,7 @@ class _AuthTextFieldState<T> extends State<AuthTextField<T>> {
                 /// ERROR STYLE
                 errorMaxLines: 3,
                 errorStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  fontSize: 10.sp,
+                  fontSize: 8.sp,
                   fontStyle: FontStyle.italic,
                   fontWeight: FontWeight.w300,
                 ),

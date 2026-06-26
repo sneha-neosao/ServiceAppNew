@@ -142,7 +142,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                     decoration: InputDecoration(
                       hintText: 'Search...',
                       hintStyle: AppFont.style(
-                        fontSize: 14,
+                        fontSize: 10,
                         color: const Color(0xFFA5ABB7),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
@@ -163,7 +163,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                       ),
                     ),
                     style: AppFont.style(
-                      fontSize: 14,
+                      fontSize: 10,
                       color: const Color(0xFF0D121F),
                     ),
                   ),
@@ -191,7 +191,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                               child: Text(
                                 'No data found',
                                 style: AppFont.style(
-                                  fontSize: 16,
+                                  fontSize: 12,
                                   color: const Color(0xFFA5ABB7),
                                 ),
                               ),
@@ -230,7 +230,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                                   child: Text(
                                     widget.itemAsString(item),
                                     style: AppFont.style(
-                                      fontSize: 16,
+                                      fontSize: 12,
                                       fontWeight: isSelected
                                           ? FontWeight.w900
                                           : FontWeight.w500,
@@ -302,7 +302,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                     ? widget.itemAsString(widget.value as T)
                     : widget.hintText,
                 style: AppFont.style(
-                  fontSize: widget.isFilter ? 14 : 15,
+                  fontSize: widget.isFilter ? 12 : 13,
                   fontWeight: widget.value != null
                       ? (widget.isFilter ? FontWeight.w500 : FontWeight.w900)
                       : FontWeight.w500,

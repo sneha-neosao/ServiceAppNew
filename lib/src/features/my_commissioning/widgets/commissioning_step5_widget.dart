@@ -14,7 +14,7 @@ class Step5Widget extends StatelessWidget {
           'commissioning_preventive_checklist_title'.tr(),
           textAlign: TextAlign.center,
           style: AppFont.style(
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: FontWeight.w900,
             color: const Color(0xFF0D121F),
           ),

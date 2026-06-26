@@ -415,7 +415,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                               ? 'edit_commissioning_work'.tr()
                               : 'assign_for_new_commissioning_work'.tr(),
                           style: AppFont.style(
-                            fontSize: 17,
+                            fontSize: 15,
                             fontWeight: FontWeight.w900,
                             color: const Color(0xFF0D121F),
                           ),
@@ -748,7 +748,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                                       ? 'select_technician'.tr()
                                                       : '$selectedCount ${'selected'.tr()}',
                                                   style: AppFont.style(
-                                                    fontSize: 15,
+                                                    fontSize: 13,
                                                     fontWeight: selectedCount == 0
                                                         ? FontWeight.w500
                                                         : FontWeight.w900,
@@ -841,7 +841,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                                             ? 'save_changes'.tr()
                                                             : 'assign'.tr(),
                                                         style: AppFont.style(
-                                                          fontSize: 14,
+                                                          fontSize: 12,
                                                           fontWeight:
                                                               FontWeight.w900,
                                                           color: Colors.white,
@@ -892,7 +892,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
             text: TextSpan(
               text: label.tr(),
               style: AppFont.style(
-                fontSize: 11.5,
+                fontSize: 9.5,
                 fontWeight: FontWeight.w900,
                 color: const Color(0xFFA2AEC0),
                 letterSpacing: 0.8,
@@ -901,7 +901,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                 TextSpan(
                   text: 'asterisk'.tr(),
                   style: AppFont.style(
-                    fontSize: 11.5,
+                    fontSize: 9.5,
                     fontWeight: FontWeight.w900,
                     color: Colors.red,
                   ),
@@ -974,14 +974,14 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
         child: TextField(
           controller: controller,
           style: AppFont.style(
-            fontSize: 15,
+            fontSize: 13,
             fontWeight: FontWeight.w700,
             color: const Color(0xFF0D121F),
           ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: AppFont.style(
-              fontSize: 15,
+              fontSize: 13,
               fontWeight: FontWeight.w500,
               color: const Color(0xFFA5ABB7),
             ),
@@ -1138,7 +1138,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           hintText: 'search'.tr(),
                           prefixIcon: const Icon(Icons.search, color: Color(0xFFA5ABB7), size: 20),
                           hintStyle: AppFont.style(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: const Color(0xFFA5ABB7),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
@@ -1159,7 +1159,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           ),
                         ),
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           color: const Color(0xFF0D121F),
                         ),
                       ),
@@ -1203,7 +1203,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                           Text(
                                             item.name,
                                             style: AppFont.style(
-                                              fontSize: 16,
+                                              fontSize: 14,
                                               fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                                               color: isSelected ? const Color(0xFF1565C0) : const Color(0xFF0D121F),
                                             ),
@@ -1212,7 +1212,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                           Text(
                                             '${'tech_id'.tr()} ${item.code ?? item.id}',
                                             style: AppFont.style(
-                                              fontSize: 12,
+                                              fontSize: 10,
                                               fontWeight: FontWeight.w700,
                                               color: const Color(0xFFA5ABB7),
                                             ),
@@ -1272,7 +1272,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                             'create_report_btn_done'.tr(),
                             style: AppFont.style(
                               color: Colors.white,
-                              fontSize: 12,
+                              fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

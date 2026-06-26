@@ -113,7 +113,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                             size: 20,
                           ),
                           hintStyle: AppFont.style(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: const Color(0xFFA5ABB7),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
@@ -140,7 +140,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                           ),
                         ),
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           color: const Color(0xFF0D121F),
                         ),
                       ),
@@ -194,7 +194,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                           Text(
                                             item.name,
                                             style: AppFont.style(
-                                              fontSize: 16,
+                                              fontSize: 14,
                                               fontWeight: isSelected
                                                   ? FontWeight.bold
                                                   : FontWeight.w600,
@@ -207,7 +207,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                           Text(
                                             'TECH ID: ${item.code.isNotEmpty ? item.code : item.id}',
                                             style: AppFont.style(
-                                              fontSize: 12,
+                                              fontSize: 10,
                                               fontWeight: FontWeight.w700,
                                               color: const Color(0xFFA5ABB7),
                                             ),
@@ -272,7 +272,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                             'DONE',
                             style: AppFont.style(
                               color: Colors.white,
-                              fontSize: 12,
+                              fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -321,7 +321,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                         Text(
                           'Assign Service Technician',
                           style: AppFont.style(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w900,
                             color: const Color(0xFF0D121F),
                           ),
@@ -349,7 +349,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                       text: TextSpan(
                         text: 'Complaint Number: ',
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFFA5ABB7),
                         ),
@@ -357,7 +357,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                           TextSpan(
                             text: widget.complaintNo,
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFF0D121F),
                             ),
@@ -382,7 +382,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                               Text(
                                 'Customer Name :',
                                 style: AppFont.style(
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFFA5ABB7),
                                 ),
@@ -391,7 +391,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                               Text(
                                 widget.customerName,
                                 style: AppFont.style(
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF0D121F),
                                 ),
@@ -406,7 +406,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                               Text(
                                 'Site Name :',
                                 style: AppFont.style(
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFFA5ABB7),
                                 ),
@@ -415,7 +415,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                               Text(
                                 widget.siteName,
                                 style: AppFont.style(
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF0D121F),
                                 ),
@@ -436,7 +436,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                     Text(
                       'Select Multiple Technicians',
                       style: AppFont.style(
-                        fontSize: 12,
+                        fontSize: 10,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF6B7280),
                       ),
@@ -490,7 +490,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                         ? 'Select'
                                         : '${_selectedTechnicians.length} Selected',
                                     style: AppFont.style(
-                                      fontSize: 14,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                       color: const Color(0xFF0D121F),
                                     ),
@@ -532,7 +532,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                           child: Text(
                             'Cancel',
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFF6B7280),
                             ),
@@ -621,7 +621,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                       : Text(
                                           'Assign',
                                           style: AppFont.style(
-                                            fontSize: 14,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.w900,
                                             color: Colors.white,
                                           ),

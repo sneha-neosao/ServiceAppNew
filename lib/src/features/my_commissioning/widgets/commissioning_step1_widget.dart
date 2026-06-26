@@ -44,7 +44,7 @@ class Step1Widget extends StatelessWidget {
               //         data?.dealerName ??
               //             'commissioning_dealer_name_fallback'.tr(),
               //         style: AppFont.style(
-              //           fontSize: 16,
+              //           fontSize: 14,
               //           fontWeight: FontWeight.w900,
               //           color: const Color(0xFF0D121F),
               //         ),
@@ -58,7 +58,7 @@ class Step1Widget extends StatelessWidget {
                   Text(
                     'commissioning_date'.tr(),
                     style: AppFont.style(
-                      fontSize: 12,
+                      fontSize: 10,
                       fontWeight: FontWeight.w900,
                       color: const Color(0xFF8E9BAE),
                     ),
@@ -67,7 +67,7 @@ class Step1Widget extends StatelessWidget {
                   Text(
                     DateFormat('d MMMM yyyy', context.locale.languageCode).format(DateTime.now()),
                     style: AppFont.style(
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w900,
                       color: const Color(0xFF0D121F),
                     ),
@@ -89,7 +89,7 @@ class Step1Widget extends StatelessWidget {
                   TextSpan(
                     text: 'commissioning_technician_names'.tr(),
                     style: AppFont.style(
-                      fontSize: 13,
+                      fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF5C6672),
                     ),
@@ -97,7 +97,7 @@ class Step1Widget extends StatelessWidget {
                   const TextSpan(
                     text: ' *',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: Colors.red,
                     ),
@@ -151,7 +151,7 @@ class Step1Widget extends StatelessWidget {
                             decoration: InputDecoration(
                               hintText: 'commissioning_select_technician'.tr(),
                               hintStyle: AppFont.style(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w700,
                                 color: const Color(0xFFA5ABB7),
                               ),
@@ -202,7 +202,7 @@ class Step1Widget extends StatelessWidget {
                                     ),
                             ),
                             style: AppFont.style(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w500,
                               color: const Color(0xFF0D121F),
                             ),

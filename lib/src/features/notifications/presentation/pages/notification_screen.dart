@@ -145,7 +145,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   Text(
                     'notif_header_title'.tr(),
                     style: AppFont.style(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF0D121F),
                     ),
@@ -215,7 +215,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           Text(
                             'notif_clear_filters'.tr(),
                             style: AppFont.style(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFF1565C0),
                             ),
@@ -357,7 +357,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         textInputAction: TextInputAction.search,
         onSubmitted: (_) => onSubmitted(),
         style: AppFont.style(
-          fontSize: 14,
+          fontSize: 12,
           fontWeight: FontWeight.w700,
           color: const Color(0xFF424B5C),
         ),
@@ -365,7 +365,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           border: InputBorder.none,
           hintText: hintText,
           hintStyle: AppFont.style(
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: FontWeight.w700,
             color: const Color(0xFFA5ABB7),
           ),
@@ -395,7 +395,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               child: Text(
                 label,
                 style: AppFont.style(
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: _selectedDate == null 
                       ? const Color(0xFFA5ABB7)
@@ -511,7 +511,7 @@ class _NotificationCard extends StatelessWidget {
                                     child: Text(
                                       title,
                                       style: AppFont.style(
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.w800,
                                         color: const Color(0xFF0D121F),
                                       ),
@@ -530,7 +530,7 @@ class _NotificationCard extends StatelessWidget {
                                   //     child: Text(
                                   //       'notif_status_new'.tr(),
                                   //       style: AppFont.style(
-                                  //         fontSize: 10,
+                                  //         fontSize: 8,
                                   //         fontWeight: FontWeight.w800,
                                   //         color: Colors.white,
                                   //       ),
@@ -542,7 +542,7 @@ class _NotificationCard extends StatelessWidget {
                               Text(
                                 description,
                                 style: AppFont.style(
-                                  fontSize: 13,
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                   color: const Color(0xFF5C616E),
                                   height: 1.4,
@@ -600,7 +600,7 @@ class _NotificationCard extends StatelessWidget {
       child: Text(
         label,
         style: AppFont.style(
-          fontSize: 11,
+          fontSize: 9,
           fontWeight: FontWeight.w800,
           color: const Color(0xFF8E9BAE),
         ),
@@ -616,7 +616,7 @@ class _NotificationCard extends StatelessWidget {
         Text(
           text,
           style: AppFont.style(
-            fontSize: 12,
+            fontSize: 10,
             fontWeight: FontWeight.w700,
             color: const Color(0xFF8E9BAE),
           ),

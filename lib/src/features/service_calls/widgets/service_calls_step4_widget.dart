@@ -50,7 +50,7 @@ class ServiceCallsStep4Widget extends StatelessWidget {
                 Text(
                   'service_calls_clear_filters'.tr(),
                   style: AppFont.style(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF1565C0),
                   ),

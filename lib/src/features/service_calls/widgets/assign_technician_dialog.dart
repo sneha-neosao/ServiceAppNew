@@ -130,7 +130,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                               Text(
                                 'add_new_customer'.tr(),
                                 style: AppFont.style(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w900,
                                   color: const Color(0xFF0D121F),
                                 ),
@@ -167,7 +167,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             decoration: InputDecoration(
                               hintText: 'enter_customer_name'.tr(),
                               hintStyle: AppFont.style(
-                                fontSize: 14,
+                                fontSize: 12,
                                 color: const Color(0xFFA5ABB7),
                               ),
                               contentPadding: const EdgeInsets.symmetric(
@@ -203,7 +203,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 child: Text(
                                   'Cancel',
                                   style: AppFont.style(
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFF6B7280),
                                   ),
@@ -309,7 +309,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                             'save_entry'.tr(),
                                             style: AppFont.style(
                                               color: Colors.white,
-                                              fontSize: 14,
+                                              fontSize: 12,
                                               fontWeight: FontWeight.w800,
                                             ),
                                           ),
@@ -399,7 +399,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           Text(
                             'Add Site',
                             style: AppFont.style(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w900,
                               color: const Color(0xFF0D121F),
                             ),
@@ -445,7 +445,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                         decoration: InputDecoration(
                           hintText: 'enter_site_name'.tr(),
                           hintStyle: AppFont.style(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: const Color(0xFFA5ABB7),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
@@ -481,7 +481,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             child: Text(
                               'cancel'.tr(),
                               style: AppFont.style(
-                                fontSize: 14,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w800,
                                 color: const Color(0xFF6B7280),
                               ),
@@ -568,7 +568,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                         'save_entry'.tr(),
                                         style: AppFont.style(
                                           color: Colors.white,
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w800,
                                         ),
                                       ),
@@ -636,7 +636,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             size: 20,
                           ),
                           hintStyle: AppFont.style(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: const Color(0xFFA5ABB7),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
@@ -663,7 +663,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           ),
                         ),
                         style: AppFont.style(
-                          fontSize: 14,
+                          fontSize: 12,
                           color: const Color(0xFF0D121F),
                         ),
                       ),
@@ -719,7 +719,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                           Text(
                                             item.name,
                                             style: AppFont.style(
-                                              fontSize: 16,
+                                              fontSize: 14,
                                               fontWeight: isSelected
                                                   ? FontWeight.bold
                                                   : FontWeight.w600,
@@ -732,7 +732,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                           Text(
                                             '${'tech_id'.tr()} ${item.code.isNotEmpty ? item.code : item.id}',
                                             style: AppFont.style(
-                                              fontSize: 12,
+                                              fontSize: 10,
                                               fontWeight: FontWeight.w700,
                                               color: const Color(0xFFA5ABB7),
                                             ),
@@ -798,7 +798,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             'create_report_btn_done'.tr(),
                             style: AppFont.style(
                               color: Colors.white,
-                              fontSize: 12,
+                              fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -846,7 +846,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                         child: Text(
                           'assign_tech_dialog_title'.tr(),
                           style: AppFont.style(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w900,
                             color: const Color(0xFF0D121F),
                           ),
@@ -888,7 +888,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                         Text(
                           widget.complaintNo,
                           style: AppFont.style(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: const Color(0xFF0D121F),
                           ),
@@ -1076,7 +1076,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 'Failed to load technicians: ${state.message}',
                                 style: AppFont.style(
                                   color: Colors.red,
-                                  fontSize: 12,
+                                  fontSize: 10,
                                 ),
                               );
                             }
@@ -1117,7 +1117,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                             ? 'reports_filter_select_technician'.tr()
                                             : '$selectedCount ${'selected'.tr()}',
                                         style: AppFont.style(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           fontWeight: selectedCount == 0
                                               ? FontWeight.w700
                                               : FontWeight.w900,
@@ -1160,7 +1160,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                         child: Text(
                           'cancel'.tr(),
                           style: AppFont.style(
-                            fontSize: 14,
+                            fontSize: 12,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF6B7280),
                           ),
@@ -1318,7 +1318,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                     : Text(
                                         'assign_tech_dialog_btn'.tr(),
                                         style: AppFont.style(
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w900,
                                           color: Colors.white,
                                         ),

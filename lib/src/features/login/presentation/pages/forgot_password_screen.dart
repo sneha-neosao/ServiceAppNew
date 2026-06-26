@@ -39,7 +39,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 Text(
                   'forgot_title'.tr(),
                   style: AppFont.style(
-                    fontSize: 32,
+                    fontSize: 30,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF1A1A1A),
                     height: 1.15,
@@ -49,7 +49,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 Text(
                   'forgot_subtitle'.tr(),
                   style: AppFont.style(
-                    fontSize: 15,
+                    fontSize: 13,
                     fontWeight: FontWeight.w400,
                     color: const Color(0xFF6B6B6B),
                     height: 1.55,
@@ -62,7 +62,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 Text(
                   'forgot_username_label'.tr(),
                   style: AppFont.style(
-                    fontSize: 11,
+                    fontSize: 9,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF1A1A1A),
                     letterSpacing: 1.2,
@@ -96,7 +96,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         Text(
                           'forgot_send_link'.tr(),
                           style: AppFont.style(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.3,
                           ),
@@ -126,7 +126,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         Text(
                           'forgot_back_to_login'.tr(),
                           style: AppFont.style(
-                            fontSize: 14,
+                            fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: const Color(0xFF1A1A1A),
                           ),
@@ -143,7 +143,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: Text(
                     'login_copyright'.tr(),
                     style: AppFont.style(
-                      fontSize: 11,
+                      fontSize: 9,
                       fontWeight: FontWeight.w500,
                       color: const Color(0xFFBDBDBD),
                       letterSpacing: 1.1,

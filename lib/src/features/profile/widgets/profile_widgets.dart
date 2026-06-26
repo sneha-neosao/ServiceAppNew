@@ -15,7 +15,7 @@ class ProfileSectionHeader extends StatelessWidget {
           Text(
             title,
             style: AppFont.style(
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.w900,
               color: const Color(0xFF0D121F),
             ),
@@ -65,7 +65,7 @@ class ProfileInfoItem extends StatelessWidget {
               Text(
                 label,
                 style: AppFont.style(
-                  fontSize: 10,
+                  fontSize: 8,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFFA5ABB7),
                 ),
@@ -74,7 +74,7 @@ class ProfileInfoItem extends StatelessWidget {
               Text(
                 value,
                 style: AppFont.style(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w900,
                   color: const Color(0xFF455A64),
                 ),
@@ -122,7 +122,7 @@ class ProfileActionButton extends StatelessWidget {
             Text(
               label,
               style: AppFont.style(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w900,
                 color: textColor,
               ),
