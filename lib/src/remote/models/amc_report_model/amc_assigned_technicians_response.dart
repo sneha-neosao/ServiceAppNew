@@ -19,8 +19,8 @@ class AmcAssignedTechniciansResponse extends Equatable {
       success: json['success'] ?? false,
       data: (json['data'] != null && json['data']['results'] != null)
           ? (json['data']['results'] as List<dynamic>)
-                .map((e) => AmcAssignedTechnician.fromJson(e))
-                .toList()
+              .map((e) => AmcAssignedTechnician.fromJson(e))
+              .toList()
           : [],
       message: json['message'] ?? '',
     );

@@ -11,9 +11,7 @@ class CommissioningReportPdfUseCase
   CommissioningReportPdfUseCase(this.repository);
 
   @override
-  Future<Either<Failure, CommissioningReportPdfResponse>> call(
-    String reportId,
-  ) async {
+  Future<Either<Failure, CommissioningReportPdfResponse>> call(String reportId) async {
     return await repository.getCommissioningReportPdf(reportId);
   }
 }

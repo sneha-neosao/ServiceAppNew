@@ -16,7 +16,7 @@ class Step5Widget extends StatelessWidget {
           style: AppFont.style(
             fontSize: 12,
             fontWeight: FontWeight.w900,
-            color: AppColor.colorFF0D121F,
+            color: const Color(0xFF0D121F),
           ),
         ),
         const SizedBox(height: 28),

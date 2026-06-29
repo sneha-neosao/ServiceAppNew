@@ -8,7 +8,7 @@ class ServiceWorkReportStep3Bloc
   final ServiceWorkReportStep3Usecase usecase;
 
   ServiceWorkReportStep3Bloc({required this.usecase})
-    : super(ServiceWorkReportStep3Initial()) {
+      : super(ServiceWorkReportStep3Initial()) {
     on<PostServiceWorkReportStep3Event>((event, emit) async {
       emit(ServiceWorkReportStep3Loading());
       final result = await usecase.call(event.params);

@@ -8,14 +8,11 @@ abstract class ServiceWorkReportStep4AutofillState extends Equatable {
   List<Object?> get props => [];
 }
 
-class ServiceWorkReportStep4AutofillInitial
-    extends ServiceWorkReportStep4AutofillState {}
+class ServiceWorkReportStep4AutofillInitial extends ServiceWorkReportStep4AutofillState {}
 
-class ServiceWorkReportStep4AutofillLoading
-    extends ServiceWorkReportStep4AutofillState {}
+class ServiceWorkReportStep4AutofillLoading extends ServiceWorkReportStep4AutofillState {}
 
-class ServiceWorkReportStep4AutofillSuccess
-    extends ServiceWorkReportStep4AutofillState {
+class ServiceWorkReportStep4AutofillSuccess extends ServiceWorkReportStep4AutofillState {
   final ServiceWorkReportStep4Response data;
 
   const ServiceWorkReportStep4AutofillSuccess(this.data);
@@ -24,8 +21,7 @@ class ServiceWorkReportStep4AutofillSuccess
   List<Object?> get props => [data];
 }
 
-class ServiceWorkReportStep4AutofillFailure
-    extends ServiceWorkReportStep4AutofillState {
+class ServiceWorkReportStep4AutofillFailure extends ServiceWorkReportStep4AutofillState {
   final String error;
 
   const ServiceWorkReportStep4AutofillFailure(this.error);

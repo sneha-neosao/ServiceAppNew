@@ -1,4 +1,3 @@
-import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,7 +63,7 @@ class _AuthTextFieldState<T> extends State<AuthTextField<T>> {
             style: AppFont.style(
               fontSize: 9,
               fontWeight: FontWeight.w700,
-              color: AppColor.colorFF1A1A1A,
+              color: const Color(0xFF1A1A1A),
               letterSpacing: 1.2,
             ),
           ),
@@ -74,15 +73,15 @@ class _AuthTextFieldState<T> extends State<AuthTextField<T>> {
           /// TEXTFIELD
           Container(
             decoration: BoxDecoration(
-              color: AppColor.colorFFF5F5F5,
+              color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: AppColor.colorFFE0E0E0, width: 1),
+              border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
             ),
             child: TextFormField(
               initialValue: widget.initialValue,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               obscureText: widget.isSecure ?? false ? _isVisible : false,
-              cursorColor: AppColor.colorFF1A1A1A,
+              cursorColor: const Color(0xFF1A1A1A),
               onChanged: widget.onChanged,
               keyboardType: widget.keyboardType,
               readOnly: widget.readOnly ?? false,
@@ -92,7 +91,7 @@ class _AuthTextFieldState<T> extends State<AuthTextField<T>> {
 
               style: AppFont.style(
                 fontSize: 13.sp,
-                color: AppColor.colorFF1A1A1A,
+                color: const Color(0xFF1A1A1A),
               ),
 
               decoration: InputDecoration(
@@ -102,7 +101,7 @@ class _AuthTextFieldState<T> extends State<AuthTextField<T>> {
                 hintText: widget.hint.tr(),
                 hintStyle: AppFont.style(
                   fontSize: 13.sp,
-                  color: AppColor.colorFFBDBDBD,
+                  color: const Color(0xFFBDBDBD),
                 ),
 
                 /// PREFIX ICON
@@ -110,7 +109,7 @@ class _AuthTextFieldState<T> extends State<AuthTextField<T>> {
                     ? Icon(
                         widget.prefixIcon,
                         size: 20.sp,
-                        color: AppColor.colorFFBDBDBD,
+                        color: const Color(0xFFBDBDBD),
                       )
                     : null,
 
@@ -124,7 +123,7 @@ class _AuthTextFieldState<T> extends State<AuthTextField<T>> {
                               ? Icons.remove_red_eye_outlined
                               : Icons.visibility_off_outlined,
                           size: 20.sp,
-                          color: AppColor.colorFF9E9E9E,
+                          color: const Color(0xFF9E9E9E),
                         ),
                       )
                     : null,

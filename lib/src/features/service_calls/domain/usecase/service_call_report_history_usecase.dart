@@ -29,16 +29,14 @@ class ServiceCallReportHistoryParams {
 }
 
 class ServiceCallReportHistoryUsecase
-    implements
-        UseCase<ServiceCallReportResponse, ServiceCallReportHistoryParams> {
+    implements UseCase<ServiceCallReportResponse, ServiceCallReportHistoryParams> {
   final AuthRepositoryImpl repository;
 
   ServiceCallReportHistoryUsecase(this.repository);
 
   @override
   Future<Either<Failure, ServiceCallReportResponse>> call(
-    ServiceCallReportHistoryParams params,
-  ) async {
+      ServiceCallReportHistoryParams params) async {
     return await repository.getServiceCallsReportHistory(params);
   }
 }

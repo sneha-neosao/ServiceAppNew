@@ -36,13 +36,15 @@ class AmcVisitReportsData {
   final VisitInfo visit;
   final List<AmcVisitData> reports;
 
-  AmcVisitReportsData({required this.visit, required this.reports});
+  AmcVisitReportsData({
+    required this.visit,
+    required this.reports,
+  });
 
   factory AmcVisitReportsData.fromJson(Map<String, dynamic> json) {
     return AmcVisitReportsData(
       visit: VisitInfo.fromJson(json['visit'] ?? {}),
-      reports:
-          (json['reports'] as List<dynamic>?)
+      reports: (json['reports'] as List<dynamic>?)
               ?.map((e) => AmcVisitData.fromJson(e))
               .toList() ??
           [],

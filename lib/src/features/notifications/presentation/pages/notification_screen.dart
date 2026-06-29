@@ -13,7 +13,6 @@ import 'package:service_app/src/features/common/bloc/sites_bloc/sites_bloc.dart'
 import 'package:service_app/src/remote/models/customer_model/customer_response.dart';
 import 'package:service_app/src/remote/models/sites_model/sites_response.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
-import 'package:service_app/src/core/theme/app_color.dart';
 
 class NotificationScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -29,7 +28,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   final TextEditingController _siteController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _isFetchingMore = false;
-
+  
   late NotificationsBloc _notificationsBloc;
   late CustomerBloc _customerBloc;
   late SitesBloc _sitesBloc;
@@ -48,12 +47,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 50) {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 50) {
       final state = _notificationsBloc.state;
-      if (state is NotificationsLoaded &&
-          !state.hasReachedMax &&
-          !_isFetchingMore) {
+      if (state is NotificationsLoaded && !state.hasReachedMax && !_isFetchingMore) {
         setState(() => _isFetchingMore = true);
         final currentPage = state.response.data?.pagination?.page ?? 1;
         _fetchNotifications(page: currentPage + 1);
@@ -62,21 +58,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   void _fetchNotifications({int page = 1}) {
-    _notificationsBloc.add(
-      GetNotificationsEvent(
-        page: page,
-        isRefresh: page == 1,
-        customerName: _customerController.text.trim().isNotEmpty
-            ? _customerController.text.trim()
-            : null,
-        siteName: _siteController.text.trim().isNotEmpty
-            ? _siteController.text.trim()
-            : null,
-        date: _selectedDate != null
-            ? DateFormat('yyyy-MM-dd').format(_selectedDate!)
-            : null,
-      ),
-    );
+    _notificationsBloc.add(GetNotificationsEvent(
+      page: page,
+      isRefresh: page == 1,
+      customerName: _customerController.text.trim().isNotEmpty ? _customerController.text.trim() : null,
+      siteName: _siteController.text.trim().isNotEmpty ? _siteController.text.trim() : null,
+      date: _selectedDate != null ? DateFormat('yyyy-MM-dd').format(_selectedDate!) : null,
+    ));
   }
 
   @override
@@ -100,7 +88,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: AppColor.colorFF1565C0, // header background color
+              primary: Color(0xFF1565C0), // header background color
               onPrimary: Colors.white, // header text color
               onSurface: Colors.black, // body text color
             ),
@@ -135,7 +123,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColor.colorFFE5E7EB),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.04),
@@ -148,7 +136,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       icon: const Icon(
                         Icons.arrow_back,
                         size: 20,
-                        color: AppColor.colorFF5C616E,
+                        color: Color(0xFF5C616E),
                       ),
                       onPressed: widget.onBack,
                     ),
@@ -159,7 +147,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     style: AppFont.style(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
-                      color: AppColor.colorFF0D121F,
+                      color: const Color(0xFF0D121F),
                     ),
                   ),
                 ],
@@ -192,12 +180,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   ),
                   const SizedBox(height: 12),
                   _buildFilterField(
-                    _selectedDate == null
-                        ? 'notif_filter_date'.tr()
-                        : DateFormat(
-                            'dd MMM yyyy',
-                            context.locale.languageCode,
-                          ).format(_selectedDate!),
+                    _selectedDate == null 
+                        ? 'notif_filter_date'.tr() 
+                        : DateFormat('dd MMM yyyy', context.locale.languageCode).format(_selectedDate!),
                     Icons.calendar_today_outlined,
                     onTap: () => _selectDate(context),
                   ),
@@ -215,7 +200,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: AppColor.colorFFF3F8FF,
+                        color: const Color(0xFFF3F8FF),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -223,7 +208,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         children: [
                           const Icon(
                             Icons.refresh,
-                            color: AppColor.colorFF1565C0,
+                            color: Color(0xFF1565C0),
                             size: 20,
                           ),
                           const SizedBox(width: 8),
@@ -232,7 +217,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             style: AppFont.style(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
-                              color: AppColor.colorFF1565C0,
+                              color: const Color(0xFF1565C0),
                             ),
                           ),
                         ],
@@ -244,25 +229,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
 
             const SizedBox(height: 20),
-            const Divider(
-              height: 1,
-              thickness: 1,
-              color: AppColor.colorFFF1F2F6,
-            ),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
             // ── Notifications List ────────────────────────────────────────────
             Expanded(
               child: BlocConsumer<NotificationsBloc, NotificationsState>(
                 bloc: _notificationsBloc,
                 listener: (context, state) {
-                  if (state is NotificationsLoaded ||
-                      state is NotificationsError) {
+                  if (state is NotificationsLoaded || state is NotificationsError) {
                     setState(() => _isFetchingMore = false);
                   }
                 },
                 builder: (context, state) {
-                  if (state is NotificationsLoading ||
-                      state is NotificationsInitial) {
+                  if (state is NotificationsLoading || state is NotificationsInitial) {
                     return ListView.builder(
                       padding: const EdgeInsets.all(20),
                       itemCount: 5,
@@ -278,7 +257,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   } else if (state is NotificationsLoaded) {
                     if (state.notifications.isEmpty) {
                       return RefreshIndicator(
-                        color: AppColor.colorFF0B68B9,
+                        color: const Color(0xFF0B68B9),
                         onRefresh: () async {
                           _fetchNotifications(page: 1);
                           await Future.delayed(const Duration(seconds: 1));
@@ -294,7 +273,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       );
                     }
                     return RefreshIndicator(
-                      color: AppColor.colorFF0B68B9,
+                      color: const Color(0xFF0B68B9),
                       onRefresh: () async {
                         _fetchNotifications(page: 1);
                         await Future.delayed(const Duration(seconds: 1));
@@ -302,65 +281,52 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       child: ListView.builder(
                         physics: const AlwaysScrollableScrollPhysics(),
                         controller: _scrollController,
-                        padding: const EdgeInsets.all(20),
-                        itemCount:
-                            state.notifications.length +
-                            (state.hasReachedMax ? 0 : 1),
-                        itemBuilder: (context, index) {
-                          if (index >= state.notifications.length) {
-                            return const Padding(
-                              padding: EdgeInsets.only(bottom: 16),
-                              child: _NotificationCardShimmer(),
-                            );
-                          }
-                          final notification = state.notifications[index];
-                          NotificationType type;
-                          switch (notification.notificationType
-                              ?.toLowerCase()) {
-                            case 'complaint':
-                              type = NotificationType.error;
-                              break;
-                            default:
-                              type = NotificationType.info;
-                          }
-
-                          String formattedTime = '';
-                          String formattedDate = '';
-                          if (notification.createdAt != null) {
-                            try {
-                              final dt = DateTime.parse(
-                                notification.createdAt!,
-                              ).toLocal();
-                              formattedTime = DateFormat(
-                                'hh:mm a',
-                                context.locale.languageCode,
-                              ).format(dt);
-                              formattedDate = DateFormat(
-                                'd MMMM yyyy',
-                                context.locale.languageCode,
-                              ).format(dt);
-                            } catch (e) {}
-                          }
-
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: _NotificationCard(
-                              type: type,
-                              title: notification.title ?? '',
-                              description: notification.message ?? '',
-                              tags: [
-                                if (notification.customerName != null)
-                                  notification.customerName!,
-                                if (notification.siteName != null)
-                                  notification.siteName!,
-                              ],
-                              time: formattedTime,
-                              date: formattedDate,
-                              isNew: !(notification.isRead ?? false),
-                            ),
+                      padding: const EdgeInsets.all(20),
+                      itemCount: state.notifications.length + (state.hasReachedMax ? 0 : 1),
+                      itemBuilder: (context, index) {
+                        if (index >= state.notifications.length) {
+                          return const Padding(
+                            padding: EdgeInsets.only(bottom: 16),
+                            child: _NotificationCardShimmer(),
                           );
-                        },
-                      ),
+                        }
+                        final notification = state.notifications[index];
+                        NotificationType type;
+                        switch (notification.notificationType?.toLowerCase()) {
+                          case 'complaint':
+                            type = NotificationType.error;
+                            break;
+                          default:
+                            type = NotificationType.info;
+                        }
+                        
+                        String formattedTime = '';
+                        String formattedDate = '';
+                        if (notification.createdAt != null) {
+                          try {
+                            final dt = DateTime.parse(notification.createdAt!).toLocal();
+                            formattedTime = DateFormat('hh:mm a', context.locale.languageCode).format(dt);
+                            formattedDate = DateFormat('d MMMM yyyy', context.locale.languageCode).format(dt);
+                          } catch (e) {}
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: _NotificationCard(
+                            type: type,
+                            title: notification.title ?? '',
+                            description: notification.message ?? '',
+                            tags: [
+                              if (notification.customerName != null) notification.customerName!,
+                              if (notification.siteName != null) notification.siteName!
+                            ],
+                            time: formattedTime,
+                            date: formattedDate,
+                            isNew: !(notification.isRead ?? false),
+                          ),
+                        );
+                      },
+                    ),
                     );
                   }
                   return const SizedBox();
@@ -384,7 +350,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColor.colorFFF1F2F6),
+        border: Border.all(color: const Color(0xFFF1F2F6)),
       ),
       child: TextField(
         controller: controller,
@@ -393,7 +359,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         style: AppFont.style(
           fontSize: 12,
           fontWeight: FontWeight.w700,
-          color: AppColor.colorFF424B5C,
+          color: const Color(0xFF424B5C),
         ),
         decoration: InputDecoration(
           border: InputBorder.none,
@@ -401,7 +367,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           hintStyle: AppFont.style(
             fontSize: 12,
             fontWeight: FontWeight.w700,
-            color: AppColor.colorFFA5ABB7,
+            color: const Color(0xFFA5ABB7),
           ),
           contentPadding: const EdgeInsets.symmetric(vertical: 14),
           isDense: true,
@@ -419,11 +385,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColor.colorFFF1F2F6),
+          border: Border.all(color: const Color(0xFFF1F2F6)),
         ),
         child: Row(
           children: [
-            // Icon(icon, size: 20, color: AppColor.colorFFA5ABB7),
+            // Icon(icon, size: 20, color: const Color(0xFFA5ABB7)),
             // const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -431,16 +397,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 style: AppFont.style(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: _selectedDate == null
-                      ? AppColor.colorFFA5ABB7
-                      : AppColor.colorFF424B5C,
+                  color: _selectedDate == null 
+                      ? const Color(0xFFA5ABB7)
+                      : const Color(0xFF424B5C),
                 ),
               ),
             ),
-            const Icon(
-              Icons.calendar_month_outlined,
-              color: AppColor.colorFFA5ABB7,
-            ),
+            const Icon(Icons.calendar_month_outlined, color: Color(0xFFA5ABB7)),
           ],
         ),
       ),
@@ -477,24 +440,24 @@ class _NotificationCard extends StatelessWidget {
 
     switch (type) {
       case NotificationType.info:
-        accentColor = AppColor.colorFF1565C0;
+        accentColor = const Color(0xFF1565C0);
         icon = Icons.info_outline;
-        iconBg = AppColor.colorFFF1F8FF;
+        iconBg = const Color(0xFFF1F8FF);
         break;
       case NotificationType.warning:
-        accentColor = AppColor.colorFFF9A825;
+        accentColor = const Color(0xFFF9A825);
         icon = Icons.error_outline;
-        iconBg = AppColor.colorFFFFFDE7;
+        iconBg = const Color(0xFFFFFDE7);
         break;
       case NotificationType.success:
-        accentColor = AppColor.colorFF2E7D32;
+        accentColor = const Color(0xFF2E7D32);
         icon = Icons.check_circle_outline;
-        iconBg = AppColor.colorFFE8F5E9;
+        iconBg = const Color(0xFFE8F5E9);
         break;
       case NotificationType.error:
-        accentColor = AppColor.colorFFD32F2F;
+        accentColor = const Color(0xFFD32F2F);
         icon = Icons.error_outline;
-        iconBg = AppColor.colorFFFFEBEE;
+        iconBg = const Color(0xFFFFEBEE);
         break;
     }
 
@@ -517,7 +480,7 @@ class _NotificationCard extends StatelessWidget {
           children: [
             Container(
               width: 5,
-              color: isNew ? AppColor.colorFF1565C0 : Colors.transparent,
+              color: isNew ? const Color(0xFF1565C0) : Colors.transparent,
             ),
             Expanded(
               child: Padding(
@@ -550,7 +513,7 @@ class _NotificationCard extends StatelessWidget {
                                       style: AppFont.style(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w800,
-                                        color: AppColor.colorFF0D121F,
+                                        color: const Color(0xFF0D121F),
                                       ),
                                     ),
                                   ),
@@ -561,7 +524,7 @@ class _NotificationCard extends StatelessWidget {
                                   //       vertical: 4,
                                   //     ),
                                   //     decoration: BoxDecoration(
-                                  //       color: AppColor.colorFF1565C0,
+                                  //       color: const Color(0xFF1565C0),
                                   //       borderRadius: BorderRadius.circular(6),
                                   //     ),
                                   //     child: Text(
@@ -581,7 +544,7 @@ class _NotificationCard extends StatelessWidget {
                                 style: AppFont.style(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColor.colorFF5C616E,
+                                  color: const Color(0xFF5C616E),
                                   height: 1.4,
                                 ),
                               ),
@@ -631,7 +594,7 @@ class _NotificationCard extends StatelessWidget {
       margin: const EdgeInsets.only(right: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColor.colorFFF8F9FB,
+        color: const Color(0xFFF8F9FB),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -639,7 +602,7 @@ class _NotificationCard extends StatelessWidget {
         style: AppFont.style(
           fontSize: 9,
           fontWeight: FontWeight.w800,
-          color: AppColor.colorFF8E9BAE,
+          color: const Color(0xFF8E9BAE),
         ),
       ),
     );
@@ -648,14 +611,14 @@ class _NotificationCard extends StatelessWidget {
   Widget _buildFooterItem(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: AppColor.colorFFA5ABB7),
+        Icon(icon, size: 14, color: const Color(0xFFA5ABB7)),
         const SizedBox(width: 6),
         Text(
           text,
           style: AppFont.style(
             fontSize: 10,
             fontWeight: FontWeight.w700,
-            color: AppColor.colorFF8E9BAE,
+            color: const Color(0xFF8E9BAE),
           ),
         ),
       ],
@@ -685,7 +648,10 @@ class _NotificationCardShimmer extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(width: 5, color: Colors.transparent),
+            Container(
+              width: 5,
+              color: Colors.transparent,
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(20),

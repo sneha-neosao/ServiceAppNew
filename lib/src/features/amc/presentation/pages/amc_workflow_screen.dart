@@ -22,7 +22,7 @@ class AmcWorkflowScreen extends StatefulWidget {
   final bool isFromHistory;
 
   const AmcWorkflowScreen({
-    super.key,
+    super.key, 
     this.initialFilter = 'Today',
     this.initialVisitId,
     this.initialTitle,
@@ -71,9 +71,7 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop:
-          _viewState == AmcViewState.schedule ||
-          (widget.isFromHistory && _viewState == AmcViewState.details),
+      canPop: _viewState == AmcViewState.schedule || (widget.isFromHistory && _viewState == AmcViewState.details),
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         setState(() {
@@ -96,17 +94,13 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (_) =>
-                    const Center(child: CircularProgressIndicator()),
+                builder: (_) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
               );
             } else if (state is AmcVisitCompleteSuccessState) {
               Navigator.pop(context); // pop loader
-              appSnackBar(
-                context,
-                AppColor.green,
-                state.data.message ??
-                    'amc_visit_marked_complete_successfully'.tr(),
-              );
+              appSnackBar(context, AppColor.green, state.data.message ?? 'amc_visit_marked_complete_successfully'.tr());
               if (widget.isFromHistory) {
                 Navigator.pop(context);
               } else {
@@ -121,7 +115,9 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
           },
           child: Scaffold(
             backgroundColor: Colors.white,
-            body: SafeArea(child: _buildCurrentView()),
+            body: SafeArea(
+              child: _buildCurrentView(),
+            ),
           ),
         ),
       ),
@@ -176,9 +172,7 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
           }),
           onCompleteAmcWork: () {
             if (_selectedAmcVisitId != null) {
-              _amcVisitCompleteBloc.add(
-                SubmitAmcVisitCompleteEvent(visitId: _selectedAmcVisitId!),
-              );
+              _amcVisitCompleteBloc.add(SubmitAmcVisitCompleteEvent(visitId: _selectedAmcVisitId!));
             }
           },
         );

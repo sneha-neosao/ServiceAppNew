@@ -17,9 +17,7 @@ class CustomerAmcVisitsResponse extends Equatable {
     return CustomerAmcVisitsResponse(
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
-      data: json['data'] != null
-          ? CustomerAmcVisitsData.fromJson(json['data'])
-          : null,
+      data: json['data'] != null ? CustomerAmcVisitsData.fromJson(json['data']) : null,
       message: json['message'] ?? '',
     );
   }
@@ -41,12 +39,14 @@ class CustomerAmcVisitsData extends Equatable {
   final List<CustomerAmcVisitItem> results;
   final CustomerAmcPagination? pagination;
 
-  const CustomerAmcVisitsData({required this.results, this.pagination});
+  const CustomerAmcVisitsData({
+    required this.results,
+    this.pagination,
+  });
 
   factory CustomerAmcVisitsData.fromJson(Map<String, dynamic> json) {
     return CustomerAmcVisitsData(
-      results:
-          (json['results'] as List<dynamic>?)
+      results: (json['results'] as List<dynamic>?)
               ?.map((e) => CustomerAmcVisitItem.fromJson(e))
               .toList() ??
           [],
@@ -139,8 +139,7 @@ class CustomerAmcVisitItem extends Equatable {
       feedbackSubmitted: json['feedback_submitted'] ?? false,
       qrCodeUrl: json['qr_code_url'],
       qrCodeImage: json['qr_code_image'],
-      reports:
-          (json['reports'] as List<dynamic>?)
+      reports: (json['reports'] as List<dynamic>?)
               ?.map((e) => CustomerAmcVisitReport.fromJson(e))
               .toList() ??
           [],
@@ -176,29 +175,29 @@ class CustomerAmcVisitItem extends Equatable {
 
   @override
   List<Object?> get props => [
-    visitId,
-    visitNumber,
-    visitFromDate,
-    visitToDate,
-    visitStatus,
-    amcDateId,
-    contractStart,
-    contractEnd,
-    contractStatus,
-    amcDuration,
-    visitsPerYear,
-    totalVisits,
-    completedVisits,
-    amcId,
-    customerId,
-    customerName,
-    siteId,
-    siteName,
-    feedbackSubmitted,
-    qrCodeUrl,
-    qrCodeImage,
-    reports,
-  ];
+        visitId,
+        visitNumber,
+        visitFromDate,
+        visitToDate,
+        visitStatus,
+        amcDateId,
+        contractStart,
+        contractEnd,
+        contractStatus,
+        amcDuration,
+        visitsPerYear,
+        totalVisits,
+        completedVisits,
+        amcId,
+        customerId,
+        customerName,
+        siteId,
+        siteName,
+        feedbackSubmitted,
+        qrCodeUrl,
+        qrCodeImage,
+        reports,
+      ];
 }
 
 class CustomerAmcVisitReport extends Equatable {
@@ -244,8 +243,7 @@ class CustomerAmcVisitReport extends Equatable {
       siteName: json['site_name'] ?? '',
       dealerName: json['dealer_name'] ?? '',
       customerRepresentativeName: json['customer_representative_name'] ?? '',
-      technicianRepresentativeName:
-          json['technician_representative_name'] ?? '',
+      technicianRepresentativeName: json['technician_representative_name'] ?? '',
       status: json['status'] ?? '',
       submittedAt: json['submitted_at'] ?? '',
       stepNo: json['step_no'] ?? 0,
@@ -275,21 +273,21 @@ class CustomerAmcVisitReport extends Equatable {
 
   @override
   List<Object?> get props => [
-    id,
-    amcVisitId,
-    visitNumber,
-    customerId,
-    customerName,
-    siteName,
-    dealerName,
-    customerRepresentativeName,
-    technicianRepresentativeName,
-    status,
-    submittedAt,
-    stepNo,
-    totalVisits,
-    completedVisits,
-  ];
+        id,
+        amcVisitId,
+        visitNumber,
+        customerId,
+        customerName,
+        siteName,
+        dealerName,
+        customerRepresentativeName,
+        technicianRepresentativeName,
+        status,
+        submittedAt,
+        stepNo,
+        totalVisits,
+        completedVisits,
+      ];
 }
 
 class CustomerAmcPagination extends Equatable {

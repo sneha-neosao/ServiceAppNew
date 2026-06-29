@@ -22,16 +22,13 @@ class AmcReportsHistoryParams {
   });
 }
 
-class GetAmcReportsHistoryUseCase
-    implements UseCase<AmcHistoryResponse, AmcReportsHistoryParams> {
+class GetAmcReportsHistoryUseCase implements UseCase<AmcHistoryResponse, AmcReportsHistoryParams> {
   final Repository repository;
 
   GetAmcReportsHistoryUseCase(this.repository);
 
   @override
-  Future<Either<Failure, AmcHistoryResponse>> call(
-    AmcReportsHistoryParams params,
-  ) async {
+  Future<Either<Failure, AmcHistoryResponse>> call(AmcReportsHistoryParams params) async {
     return await repository.amcReportsHistory(params);
   }
 }

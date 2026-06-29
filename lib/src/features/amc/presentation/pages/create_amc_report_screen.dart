@@ -41,7 +41,6 @@ import 'package:service_app/src/features/amc/bloc/amc_report_step2_autofill_bloc
 import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step2_usecase.dart';
 import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step3_usecase.dart';
 import 'package:service_app/src/core/theme/app_color.dart';
-
 class CreateAmcReportScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSubmit;
@@ -99,9 +98,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
   final List<TextEditingController> _technicians = [TextEditingController()];
   final List<String?> _technicianIds = [null];
-  final List<TextEditingController> _memberPresentsControllers = [
-    TextEditingController(),
-  ];
+  final List<TextEditingController> _memberPresentsControllers = [TextEditingController()];
   final TextEditingController _agendaController = TextEditingController();
 
   // Step 3 variables
@@ -131,21 +128,15 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
     _assignedTechniciansBloc = getIt<AmcAssignedTechniciansBloc>();
 
-    _currentStep = widget.initialStepNo > 0
-        ? (widget.initialStepNo < 3 ? widget.initialStepNo + 1 : 3)
-        : 1;
+    _currentStep = widget.initialStepNo > 0 ? (widget.initialStepNo < 3 ? widget.initialStepNo + 1 : 3) : 1;
 
     if (widget.reportId != null) {
       if (_currentStep == 1) {
         // _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
       } else if (_currentStep == 2) {
-        _step2AutofillBloc.add(
-          GetAmcReportStep2AutofillEvent(_currentReportId!),
-        );
+        _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
       } else if (_currentStep == 3) {
-        _assignedTechniciansBloc.add(
-          GetAmcAssignedTechniciansEvent(_currentReportId!),
-        );
+        _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
       }
     } else {
       // _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
@@ -213,12 +204,10 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             final filteredItems = lastSearch.isEmpty
                 ? validItems
                 : validItems
-                      .where(
-                        (item) => item.name.toLowerCase().contains(
-                          lastSearch.toLowerCase(),
-                        ),
-                      )
-                      .toList();
+                    .where((item) => item.name
+                        .toLowerCase()
+                        .contains(lastSearch.toLowerCase()))
+                    .toList();
 
             return SafeArea(
               bottom: false,
@@ -245,7 +234,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                           hintText: 'search'.tr(),
                           hintStyle: AppFont.style(
                             fontSize: 12,
-                            color: AppColor.colorFFA5ABB7,
+                            color: const Color(0xFFA5ABB7),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -253,26 +242,23 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: AppColor.colorFFE5E7EB,
-                            ),
+                            borderSide:
+                                const BorderSide(color: Color(0xFFE5E7EB)),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: AppColor.colorFFE5E7EB,
-                            ),
+                            borderSide:
+                                const BorderSide(color: Color(0xFFE5E7EB)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: AppColor.colorFF1565C0,
-                            ),
+                            borderSide:
+                                const BorderSide(color: Color(0xFF1565C0)),
                           ),
                         ),
                         style: AppFont.style(
                           fontSize: 12,
-                          color: AppColor.colorFF0D121F,
+                          color: const Color(0xFF0D121F),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -300,7 +286,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                                   style: AppFont.style(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: AppColor.colorFF0D121F,
+                                    color: const Color(0xFF0D121F),
                                   ),
                                 ),
                               ),
@@ -337,11 +323,12 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               setState(() => _currentStep++);
               if (widget.reportId != null && !_hasFetchedStep2Autofill) {
                 _hasFetchedStep2Autofill = true;
-                _step2AutofillBloc.add(
-                  GetAmcReportStep2AutofillEvent(_currentReportId!),
-                );
+                _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
               }
-              appSnackBar(context, AppColor.green, state.data.message);
+              appSnackBar(
+                context, AppColor.green,
+                state.data.message,
+              );
             } else if (state is AmcReportStep1FailureState) {
               appSnackBar(context, AppColor.bright_red, state.message);
             }
@@ -364,12 +351,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               });
               if (state.data.data.memberPresentsCustomerSide.isNotEmpty) {
                 _memberPresentsControllers.clear();
-                for (var name
-                    in state.data.data.memberPresentsCustomerSide.split(',')) {
+                for (var name in state.data.data.memberPresentsCustomerSide.split(',')) {
                   if (name.trim().isNotEmpty) {
-                    _memberPresentsControllers.add(
-                      TextEditingController(text: name.trim()),
-                    );
+                    _memberPresentsControllers.add(TextEditingController(text: name.trim()));
                   }
                 }
                 if (_memberPresentsControllers.isEmpty) {
@@ -394,11 +378,10 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 _technicianIds.add(null);
               }
 
-              if (widget.reportId != null &&
-                  _currentReportId == null &&
-                  state.data.data.id.isNotEmpty) {
+              if (widget.reportId != null && _currentReportId == null && state.data.data.id.isNotEmpty) {
                 _currentReportId = state.data.data.id;
               }
+
             } else if (state is AmcReportStep1AutofillFailureState) {
               appSnackBar(context, AppColor.bright_red, state.message);
             }
@@ -416,11 +399,12 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             if (state is AmcReportStep2SuccessState) {
               setState(() => _currentStep++);
               if (_currentReportId != null) {
-                _assignedTechniciansBloc.add(
-                  GetAmcAssignedTechniciansEvent(_currentReportId!),
-                );
+                _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
               }
-              appSnackBar(context, AppColor.green, state.data.message);
+              appSnackBar(
+                context, AppColor.green,
+                state.data.message,
+              );
             } else if (state is AmcReportStep2ErrorState) {
               appSnackBar(context, AppColor.bright_red, state.message);
             }
@@ -448,8 +432,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     Map<String, dynamic> map = jsonDecode(s);
                     List<String> list = [];
                     map.forEach((key, value) {
-                      if (key == 'vibration_check'.tr())
-                        return; // Handled separately
+                      if (key == 'vibration_check'.tr()) return; // Handled separately
                       if (value == 'ok'.tr()) {
                         list.add('$key :');
                       }
@@ -462,29 +445,17 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
                 try {
                   if (state.data.data.mechanicalChecklist.isNotEmpty) {
-                    Map<String, dynamic> map = jsonDecode(
-                      state.data.data.mechanicalChecklist,
-                    );
+                    Map<String, dynamic> map = jsonDecode(state.data.data.mechanicalChecklist);
                     if (map.containsKey('vibration_check'.tr())) {
-                      _vibrationSelected = map['vibration_check'.tr()]
-                          .toString()
-                          .toUpperCase();
+                      _vibrationSelected = map['vibration_check'.tr()].toString().toUpperCase();
                     }
                   }
                 } catch (_) {}
-                _mechanicalSelected = decodeMapToList(
-                  state.data.data.mechanicalChecklist,
-                );
+                _mechanicalSelected = decodeMapToList(state.data.data.mechanicalChecklist);
 
-                _pipelineSelected = decodeMapToList(
-                  state.data.data.pipelineHydraulicChecklist,
-                );
-                _electricalSelected = decodeMapToList(
-                  state.data.data.electricalChecklist,
-                );
-                _operationSelected = decodeMapToList(
-                  state.data.data.operationChecklist,
-                );
+                _pipelineSelected = decodeMapToList(state.data.data.pipelineHydraulicChecklist);
+                _electricalSelected = decodeMapToList(state.data.data.electricalChecklist);
+                _operationSelected = decodeMapToList(state.data.data.operationChecklist);
               });
             } else if (state is AmcReportStep2AutofillFailureState) {
               appSnackBar(context, AppColor.bright_red, state.message);
@@ -526,30 +497,30 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         ),
       ],
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Header ────────────────────────────────────────────────────────
-          _buildHeader(),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Header ────────────────────────────────────────────────────────
+        _buildHeader(),
 
-          // ── Progress Bar ──────────────────────────────────────────────────
-          _buildProgress(),
+        // ── Progress Bar ──────────────────────────────────────────────────
+        _buildProgress(),
 
-          // ── Scrollable Body ───────────────────────────────────────────────
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: _currentStep == 1
-                  ? _buildStep1()
-                  : _currentStep == 2
-                  ? _buildStep2()
-                  : _buildStep3(),
-            ),
+        // ── Scrollable Body ───────────────────────────────────────────────
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: _currentStep == 1
+                ? _buildStep1()
+                : _currentStep == 2
+                ? _buildStep2()
+                : _buildStep3(),
           ),
+        ),
 
-          // ── Bottom Navigation ─────────────────────────────────────────────
-          _buildBottomNav(),
-        ],
-      ),
+        // ── Bottom Navigation ─────────────────────────────────────────────
+        _buildBottomNav(),
+      ],
+    ),
     );
   }
 
@@ -565,7 +536,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColor.colorFFE5E7EB),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.04),
@@ -578,7 +549,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               icon: const Icon(
                 Icons.arrow_back,
                 size: 20,
-                color: AppColor.colorFF5C616E,
+                color: Color(0xFF5C616E),
               ),
               onPressed: widget.onBack,
             ),
@@ -588,7 +559,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             width: 4,
             height: 24,
             decoration: BoxDecoration(
-              color: AppColor.colorFF0B68B9,
+              color: const Color(0xFF0B68B9),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -599,7 +570,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               style: AppFont.style(
                 fontSize: 14,
                 fontWeight: FontWeight.w900,
-                color: AppColor.colorFF0D121F,
+                color: const Color(0xFF0D121F),
               ),
             ),
           ),
@@ -611,14 +582,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
   Widget _buildProgress() {
     return Row(
       children: [
-        Expanded(child: Container(height: 4, color: AppColor.colorFF1565C0)),
+        Expanded(child: Container(height: 4, color: const Color(0xFF1565C0))),
         const SizedBox(width: 2),
         Expanded(
           child: Container(
             height: 4,
             color: _currentStep >= 2
-                ? AppColor.colorFF1565C0
-                : AppColor.colorFFE5E7EB,
+                ? const Color(0xFF1565C0)
+                : const Color(0xFFE5E7EB),
           ),
         ),
         const SizedBox(width: 2),
@@ -626,8 +597,8 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           child: Container(
             height: 4,
             color: _currentStep >= 3
-                ? AppColor.colorFF1565C0
-                : AppColor.colorFFE5E7EB,
+                ? const Color(0xFF1565C0)
+                : const Color(0xFFE5E7EB),
           ),
         ),
       ],
@@ -651,13 +622,13 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             //   width: 44,
             //   height: 44,
             //   decoration: BoxDecoration(
-            //     color: AppColor.colorFFF9FAFB,
+            //     color: const Color(0xFFF9FAFB),
             //     borderRadius: BorderRadius.circular(8),
-            //     border: Border.all(color: AppColor.colorFFE5E7EB),
+            //     border: Border.all(color: const Color(0xFFE5E7EB)),
             //   ),
             //   child: const Icon(
             //     Icons.business_outlined,
-            //     color: AppColor.colorFFCDD0D8,
+            //     color: Color(0xFFCDD0D8),
             //   ),
             // ),
             // const SizedBox(width: 12),
@@ -686,7 +657,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             //               style: AppFont.style(
             //                 fontSize: 14,
             //                 fontWeight: FontWeight.w900,
-            //                 color: AppColor.colorFF0D121F,
+            //                 color: const Color(0xFF0D121F),
             //               ),
             //             ),
             //         ],
@@ -702,18 +673,15 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   style: AppFont.style(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
-                    color: AppColor.colorFF7A8699,
+                    color: const Color(0xFF7A8699),
                   ),
                 ),
                 Text(
-                  DateFormat(
-                    'd MMMM yyyy',
-                    context.locale.languageCode,
-                  ).format(DateTime.now()),
+                  DateFormat('d MMMM yyyy', context.locale.languageCode).format(DateTime.now()),
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w900,
-                    color: AppColor.colorFF0D121F,
+                    color: const Color(0xFF0D121F),
                   ),
                 ),
               ],
@@ -721,16 +689,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           ],
         ),
 
+
         const SizedBox(height: 32),
 
         // ── Technician Name(s) ─────────────────────────────────────────────
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildSectionTitle(
-              'amc_report_technician_names'.tr(),
-              isMandatory: true,
-            ),
+            _buildSectionTitle('amc_report_technician_names'.tr(), isMandatory: true),
             AppAddNewTextButtonWidget(
               onPressed: () {
                 setState(() {
@@ -738,7 +704,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   _technicianIds.add(null);
                 });
               },
-            ),
+            )
           ],
         ),
         const SizedBox(height: 16),
@@ -782,15 +748,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                           TextFormField(
                             controller: controller,
                             onChanged: (val) {
-                              _technicianIds[idx] =
-                                  ''; // Manual input, clear ID
+                              _technicianIds[idx] = ''; // Manual input, clear ID
                             },
                             decoration: InputDecoration(
                               hintText: 'commissioning_select_technician'.tr(),
                               hintStyle: AppFont.style(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: AppColor.colorFFA5ABB7,
+                                color: const Color(0xFFA5ABB7),
                               ),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 16,
@@ -798,21 +763,18 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: AppColor.colorFFE5E7EB,
-                                ),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFFE5E7EB)),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: AppColor.colorFFE5E7EB,
-                                ),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFFE5E7EB)),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: AppColor.colorFF1565C0,
-                                ),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFF1565C0)),
                               ),
                               suffixIcon: isLoading
                                   ? const Padding(
@@ -822,14 +784,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                                         height: 16,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
-                                          color: AppColor.colorFF1565C0,
+                                          color: Color(0xFF1565C0),
                                         ),
                                       ),
                                     )
                                   : IconButton(
                                       icon: const Icon(
                                         Icons.keyboard_arrow_down,
-                                        color: AppColor.colorFFA5ABB7,
+                                        color: Color(0xFFA5ABB7),
                                       ),
                                       onPressed: () {
                                         _showTechnicianBottomSheet(
@@ -844,7 +806,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                             style: AppFont.style(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: AppColor.colorFF0D121F,
+                              color: const Color(0xFF0D121F),
                             ),
                           ),
                         ],
@@ -866,13 +828,13 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       width: 54,
                       height: 54,
                       decoration: BoxDecoration(
-                        color: AppColor.colorFFFFF0F0,
+                        color: const Color(0xFFFFF0F0),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColor.colorFFFFD6D6),
+                        border: Border.all(color: const Color(0xFFFFD6D6)),
                       ),
                       child: const Icon(
                         Icons.delete_outline,
-                        color: AppColor.colorFFE53935,
+                        color: Color(0xFFE53935),
                         size: 24,
                       ),
                     ),
@@ -891,21 +853,16 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           builder: (context, state) {
             String currentCustomer = widget.customerName;
             String currentSite = widget.siteName;
-
+            
             if (state is AmcReportStep1AutofillSuccessState) {
-              if (state.data.data.customerName.isNotEmpty)
-                currentCustomer = state.data.data.customerName;
-              if (state.data.data.siteName.isNotEmpty)
-                currentSite = state.data.data.siteName;
+              if (state.data.data.customerName.isNotEmpty) currentCustomer = state.data.data.customerName;
+              if (state.data.data.siteName.isNotEmpty) currentSite = state.data.data.siteName;
             }
-
+            
             return Column(
               children: [
                 if (currentCustomer.isNotEmpty) ...[
-                  _buildInfoRow(
-                    'amc_report_customer_name'.tr(),
-                    currentCustomer,
-                  ),
+                  _buildInfoRow('amc_report_customer_name'.tr(), currentCustomer),
                   const SizedBox(height: 24),
                 ],
                 if (currentSite.isNotEmpty)
@@ -928,7 +885,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   _memberPresentsControllers.add(TextEditingController());
                 });
               },
-            ),
+            )
           ],
         ),
         const SizedBox(height: 12),
@@ -960,13 +917,13 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       width: 54,
                       height: 54,
                       decoration: BoxDecoration(
-                        color: AppColor.colorFFFFF0F0,
+                        color: const Color(0xFFFFF0F0),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColor.colorFFFFD6D6),
+                        border: Border.all(color: const Color(0xFFFFD6D6)),
                       ),
                       child: const Icon(
                         Icons.delete_outline,
-                        color: AppColor.colorFFE53935,
+                        color: Color(0xFFE53935),
                         size: 24,
                       ),
                     ),
@@ -982,10 +939,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         // ── Agenda / Purpose ──────────────────────────────────────────────
         _buildSectionTitle('amc_report_agenda'.tr()),
         const SizedBox(height: 12),
-        _buildTextArea(
-          'amc_report_agenda_hint'.tr(),
-          controller: _agendaController,
-        ),
+        _buildTextArea('amc_report_agenda_hint'.tr(), controller: _agendaController),
 
         const SizedBox(height: 40),
       ],
@@ -1005,151 +959,60 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           style: AppFont.style(
             fontSize: 14,
             fontWeight: FontWeight.w900,
-            color: AppColor.colorFF0D121F,
+            color: const Color(0xFF0D121F),
           ),
         ),
         const SizedBox(height: 24),
 
-        _buildChecklistCard(
-          'checklist_mech_title'.tr(),
-          Icons.settings_outlined,
-          [
-            _buildChecklistItem(
-              'pump_foundation_bolt_tight'.tr(),
-              _mechanicalSelected,
-            ),
-            _buildChecklistItem(
-              'coupling_alignment_checked'.tr(),
-              _mechanicalSelected,
-            ),
-            _buildChecklistItem(
-              'bearing_noise_checked'.tr(),
-              _mechanicalSelected,
-            ),
-            _buildChecklistItem(
-              'abnormal_sound_checked'.tr(),
-              _mechanicalSelected,
-            ),
-            _buildChecklistItem(
-              'mechanical_seal_gland_leakage_checked'.tr(),
-              _mechanicalSelected,
-            ),
-            _buildVibrationItem(),
-            _buildChecklistItem('pump_cleaned'.tr(), _mechanicalSelected),
-            _buildChecklistItem(
-              'pump_not_running_dry'.tr(),
-              _mechanicalSelected,
-              isLast: true,
-            ),
-          ],
-          _mechNA,
-          () => setState(() => _mechNA = !_mechNA),
-        ),
+        _buildChecklistCard('checklist_mech_title'.tr(), Icons.settings_outlined, [
+          _buildChecklistItem('pump_foundation_bolt_tight'.tr(), _mechanicalSelected),
+          _buildChecklistItem('coupling_alignment_checked'.tr(), _mechanicalSelected),
+          _buildChecklistItem('bearing_noise_checked'.tr(), _mechanicalSelected),
+          _buildChecklistItem('abnormal_sound_checked'.tr(), _mechanicalSelected),
+          _buildChecklistItem('mechanical_seal_gland_leakage_checked'.tr(), _mechanicalSelected),
+          _buildVibrationItem(),
+          _buildChecklistItem('pump_cleaned'.tr(), _mechanicalSelected),
+          _buildChecklistItem('pump_not_running_dry'.tr(), _mechanicalSelected, isLast: true),
+        ], _mechNA, () => setState(() => _mechNA = !_mechNA)),
         const SizedBox(height: 32),
 
-        _buildChecklistCard(
-          'checklist_pipe_title'.tr(),
-          Icons.water_drop_outlined,
-          [
-            _buildChecklistItem(
-              "suction_line_leakage_checked".tr(),
-              _pipelineSelected,
-            ),
-            _buildChecklistItem(
-              "delivery_line_leakage_checked".tr(),
-              _pipelineSelected,
-            ),
-            _buildChecklistItem(
-              "valve_working_checked".tr(),
-              _pipelineSelected,
-            ),
-            _buildChecklistItem("strainer_cleaned".tr(), _pipelineSelected),
-            _buildChecklistItem(
-              "valve_condition_checked".tr(),
-              _pipelineSelected,
-            ),
-            _buildChecklistItem(
-              "pressure_switch_checked".tr(),
-              _pipelineSelected,
-              isLast: true,
-            ),
-          ],
-          _pipeNA,
-          () => setState(() => _pipeNA = !_pipeNA),
-        ),
+        _buildChecklistCard('checklist_pipe_title'.tr(), Icons.water_drop_outlined, [
+          _buildChecklistItem("suction_line_leakage_checked".tr(), _pipelineSelected),
+          _buildChecklistItem("delivery_line_leakage_checked".tr(), _pipelineSelected),
+          _buildChecklistItem("valve_working_checked".tr(), _pipelineSelected),
+          _buildChecklistItem("strainer_cleaned".tr(), _pipelineSelected),
+          _buildChecklistItem("valve_condition_checked".tr(), _pipelineSelected),
+          _buildChecklistItem("pressure_switch_checked".tr(), _pipelineSelected, isLast: true),
+        ], _pipeNA, () => setState(() => _pipeNA = !_pipeNA)),
         const SizedBox(height: 32),
 
-        _buildChecklistCard(
-          'checklist_elec_title'.tr(),
-          Icons.bolt_outlined,
-          [
-            _buildChecklistItem("panel_cleaned".tr(), _electricalSelected),
-            _buildChecklistItem(
-              "contactor_relay_checked".tr(),
-              _electricalSelected,
-            ),
-            _buildChecklistItem(
-              "overload_setting_checked".tr(),
-              _electricalSelected,
-            ),
-            _buildChecklistItem(
-              "loose_wiring_checked".tr(),
-              _electricalSelected,
-            ),
-            _buildChecklistItem(
-              "phase_voltage_current_checked".tr(),
-              _electricalSelected,
-            ),
-            _buildChecklistItem(
-              "earthing_checked".tr(),
-              _electricalSelected,
-              isLast: true,
-            ),
-          ],
-          _elecNA,
-          () => setState(() => _elecNA = !_elecNA),
-        ),
+        _buildChecklistCard('checklist_elec_title'.tr(), Icons.bolt_outlined, [
+          _buildChecklistItem("panel_cleaned".tr(), _electricalSelected),
+          _buildChecklistItem("contactor_relay_checked".tr(), _electricalSelected),
+          _buildChecklistItem("overload_setting_checked".tr(), _electricalSelected),
+          _buildChecklistItem("loose_wiring_checked".tr(), _electricalSelected),
+          _buildChecklistItem("phase_voltage_current_checked".tr(), _electricalSelected),
+          _buildChecklistItem("earthing_checked".tr(), _electricalSelected, isLast: true),
+        ], _elecNA, () => setState(() => _elecNA = !_elecNA)),
         const SizedBox(height: 32),
 
-        _buildChecklistCard(
-          'checklist_pump_title'.tr(),
-          Icons.monitor_heart_outlined,
-          [
-            _buildChecklistItem("pump_started_manual".tr(), _operationSelected),
-            _buildChecklistItem(
-              "auto_operation_checked".tr(),
-              _operationSelected,
-            ),
-            _buildChecklistItem(
-              "water_flow_pressure_checked".tr(),
-              _operationSelected,
-            ),
-            _buildChecklistItem(
-              "rotation_direction_checked".tr(),
-              _operationSelected,
-              isLast: true,
-            ),
-          ],
-          _operationNA,
-          () => setState(() => _operationNA = !_operationNA),
-        ),
+        _buildChecklistCard('checklist_pump_title'.tr(), Icons.monitor_heart_outlined, [
+          _buildChecklistItem("pump_started_manual".tr(), _operationSelected),
+          _buildChecklistItem("auto_operation_checked".tr(), _operationSelected),
+          _buildChecklistItem("water_flow_pressure_checked".tr(), _operationSelected),
+          _buildChecklistItem("rotation_direction_checked".tr(), _operationSelected, isLast: true),
+        ], _operationNA, () => setState(() => _operationNA = !_operationNA)),
       ],
     );
   }
 
-  Widget _buildChecklistCard(
-    String title,
-    IconData icon,
-    List<Widget> items,
-    bool isNA,
-    VoidCallback onNATap,
-  ) {
+  Widget _buildChecklistCard(String title, IconData icon, List<Widget> items, bool isNA, VoidCallback onNATap) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(icon, color: AppColor.colorFF0D121F, size: 20),
+            Icon(icon, color: const Color(0xFF0D121F), size: 20),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -1157,7 +1020,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 style: AppFont.style(
                   fontSize: 13,
                   fontWeight: FontWeight.w900,
-                  color: AppColor.colorFF0D121F,
+                  color: const Color(0xFF0D121F),
                 ),
               ),
             ),
@@ -1169,18 +1032,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     width: 22,
                     height: 22,
                     decoration: BoxDecoration(
-                      color: isNA ? AppColor.colorFF1565C0 : Colors.white,
+                      color: isNA ? const Color(0xFF1565C0) : Colors.white,
                       border: Border.all(
-                        color: isNA
-                            ? AppColor.colorFF1565C0
-                            : AppColor.colorFFCDD0D8,
+                        color: isNA ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: isNA
-                        ? const Icon(Icons.check, size: 14, color: Colors.white)
-                        : null,
+                    child: isNA ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -1188,7 +1047,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     style: AppFont.style(
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
-                      color: AppColor.colorFF7A8699,
+                      color: const Color(0xFF7A8699),
                     ),
                   ),
                 ],
@@ -1208,11 +1067,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     );
   }
 
-  Widget _buildChecklistItem(
-    String text,
-    List<String> selectedList, {
-    bool isLast = false,
-  }) {
+  Widget _buildChecklistItem(String text, List<String> selectedList, {bool isLast = false}) {
     bool isSelected = selectedList.contains(text);
     return Container(
       padding: const EdgeInsets.only(bottom: 16),
@@ -1239,10 +1094,10 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       style: AppFont.style(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
-                        color: AppColor.colorFF5C6672,
+                        color: const Color(0xFF5C6672),
                       ),
                     ),
-                    TextSpan(
+                     TextSpan(
                       text: 'asterisk'.tr(),
                       style: TextStyle(
                         fontSize: 11,
@@ -1259,18 +1114,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               width: 22,
               height: 22,
               decoration: BoxDecoration(
-                color: isSelected ? AppColor.colorFF1565C0 : Colors.white,
+                color: isSelected ? const Color(0xFF1565C0) : Colors.white,
                 border: Border.all(
-                  color: isSelected
-                      ? AppColor.colorFF1565C0
-                      : AppColor.colorFFCDD0D8,
+                  color: isSelected ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
                   width: 1.5,
                 ),
                 borderRadius: BorderRadius.circular(5),
               ),
-              child: isSelected
-                  ? const Icon(Icons.check, size: 14, color: Colors.white)
-                  : null,
+              child: isSelected ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
             ),
           ],
         ),
@@ -1293,10 +1144,10 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     style: AppFont.style(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
-                      color: AppColor.colorFF5C6672,
+                      color: const Color(0xFF5C6672),
                     ),
                   ),
-                  TextSpan(
+                   TextSpan(
                     text: 'asterisk'.tr(),
                     style: TextStyle(
                       fontSize: 11,
@@ -1318,24 +1169,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       width: 22,
                       height: 22,
                       decoration: BoxDecoration(
-                        color: _vibrationSelected == 'normal'.tr()
-                            ? AppColor.colorFF1565C0
-                            : Colors.white,
+                        color: _vibrationSelected == 'normal'.tr() ? const Color(0xFF1565C0) : Colors.white,
                         border: Border.all(
-                          color: _vibrationSelected == 'normal'.tr()
-                              ? AppColor.colorFF1565C0
-                              : AppColor.colorFFCDD0D8,
+                          color: _vibrationSelected == 'normal'.tr() ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
                           width: 1.5,
                         ),
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      child: _vibrationSelected == 'normal'.tr()
-                          ? const Icon(
-                              Icons.check,
-                              size: 14,
-                              color: Colors.white,
-                            )
-                          : null,
+                      child: _vibrationSelected == 'normal'.tr() ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
                     ),
                     const SizedBox(width: 8),
                     Text(
@@ -1343,7 +1184,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       style: AppFont.style(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
-                        color: AppColor.colorFF5C6672,
+                        color: const Color(0xFF5C6672),
                       ),
                     ),
                   ],
@@ -1358,24 +1199,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       width: 22,
                       height: 22,
                       decoration: BoxDecoration(
-                        color: _vibrationSelected == 'high'.tr()
-                            ? AppColor.colorFF1565C0
-                            : Colors.white,
+                        color: _vibrationSelected == 'high'.tr() ? const Color(0xFF1565C0) : Colors.white,
                         border: Border.all(
-                          color: _vibrationSelected == 'high'.tr()
-                              ? AppColor.colorFF1565C0
-                              : AppColor.colorFFCDD0D8,
+                          color: _vibrationSelected == 'high'.tr() ? const Color(0xFF1565C0) : const Color(0xFFCDD0D8),
                           width: 1.5,
                         ),
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      child: _vibrationSelected == 'high'.tr()
-                          ? const Icon(
-                              Icons.check,
-                              size: 14,
-                              color: Colors.white,
-                            )
-                          : null,
+                      child: _vibrationSelected == 'high'.tr() ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
                     ),
                     const SizedBox(width: 8),
                     Text(
@@ -1383,7 +1214,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       style: AppFont.style(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
-                        color: AppColor.colorFF5C6672,
+                        color: const Color(0xFF5C6672),
                       ),
                     ),
                   ],
@@ -1406,7 +1237,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w800,
-            color: AppColor.colorFF6B7280,
+            color: const Color(0xFF6B7280),
           ),
         ),
         const SizedBox(height: 10),
@@ -1421,7 +1252,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w800,
-            color: AppColor.colorFF6B7180,
+            color: const Color(0xFF6B7180),
           ),
         ),
         const SizedBox(height: 10),
@@ -1430,7 +1261,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           _customerRemarksController,
         ),
         const SizedBox(height: 36),
-        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 28),
         // ── Recorded By ────────────────────────────────────────────
         Text(
@@ -1438,7 +1269,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           style: AppFont.style(
             fontSize: 14,
             fontWeight: FontWeight.w900,
-            color: AppColor.colorFF0D121F,
+            color: const Color(0xFF0D121F),
           ),
         ),
         const SizedBox(height: 24),
@@ -1448,12 +1279,12 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           style: AppFont.style(
             fontSize: 9,
             fontWeight: FontWeight.w900,
-            color: AppColor.colorFFA5ABB7,
+            color: const Color(0xFFA5ABB7),
             letterSpacing: 0.8,
           ),
         ),
         const SizedBox(height: 16),
-        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 16),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -1468,7 +1299,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       style: AppFont.style(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: AppColor.colorFF8E9BAE,
+                        color: const Color(0xFF8E9BAE),
                       ),
                     ),
                     const TextSpan(
@@ -1484,65 +1315,53 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            const Text(':', style: TextStyle(color: AppColor.colorFF8E9BAE)),
+            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
             const SizedBox(width: 8),
             Expanded(
-              child:
-                  BlocBuilder<
-                    AmcAssignedTechniciansBloc,
-                    AmcAssignedTechniciansState
-                  >(
-                    bloc: _assignedTechniciansBloc,
-                    builder: (context, state) {
-                      bool isLoading =
-                          state is AmcAssignedTechniciansLoadingState;
-                      List<dynamic> validItems = [];
-                      if (state is AmcAssignedTechniciansSuccessState) {
-                        validItems = List.from(state.data.data);
-                        // Ensure the logged-in technician is auto-selected if possible
-                        if (_selectedTechnicianRepId == null &&
-                            _loggedInTechnicianId != null) {
-                          final matched = validItems
-                              .where(
-                                (e) => e.technicianId == _loggedInTechnicianId,
-                              )
-                              .firstOrNull;
-                          if (matched != null) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (mounted) {
-                                setState(() {
-                                  _selectedTechnicianRepId = matched.assignId;
-                                });
-                              }
+              child: BlocBuilder<AmcAssignedTechniciansBloc, AmcAssignedTechniciansState>(
+                bloc: _assignedTechniciansBloc,
+                builder: (context, state) {
+                  bool isLoading = state is AmcAssignedTechniciansLoadingState;
+                  List<dynamic> validItems = [];
+                  if (state is AmcAssignedTechniciansSuccessState) {
+                    validItems = List.from(state.data.data);
+                    // Ensure the logged-in technician is auto-selected if possible
+                    if (_selectedTechnicianRepId == null && _loggedInTechnicianId != null) {
+                      final matched = validItems.where((e) => e.technicianId == _loggedInTechnicianId).firstOrNull;
+                      if (matched != null) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (mounted) {
+                            setState(() {
+                              _selectedTechnicianRepId = matched.assignId;
                             });
                           }
-                        }
+                        });
                       }
-                      return IgnorePointer(
-                        ignoring: true,
-                        child: SearchableDropdown<dynamic>(
-                          showArrow: false,
-                          items: validItems,
-                          value: _selectedTechnicianRepId != null
-                              ? validItems.firstWhere(
-                                  (e) => e.assignId == _selectedTechnicianRepId,
-                                  orElse: () => null,
-                                )
-                              : null,
-                          hintText: 'commissioning_select_technician'.tr(),
-                          itemAsString: (item) => item.name,
-                          isLoading: isLoading,
-                          onChanged: (v) {
-                            if (v != null) {
-                              setState(
-                                () => _selectedTechnicianRepId = v.assignId,
-                              );
-                            }
-                          },
-                        ),
-                      );
-                    },
-                  ),
+                    }
+                  }
+                  return IgnorePointer(
+                    ignoring: true,
+                    child: SearchableDropdown<dynamic>(
+                      showArrow: false,
+                      items: validItems,
+                      value: _selectedTechnicianRepId != null
+                          ? validItems.firstWhere(
+                              (e) => e.assignId == _selectedTechnicianRepId,
+                              orElse: () => null,
+                            )
+                          : null,
+                      hintText: 'commissioning_select_technician'.tr(),
+                      itemAsString: (item) => item.name,
+                      isLoading: isLoading,
+                      onChanged: (v) {
+                        if (v != null) {
+                          setState(() => _selectedTechnicianRepId = v.assignId);
+                        }
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -1573,12 +1392,12 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           style: AppFont.style(
             fontSize: 9,
             fontWeight: FontWeight.w900,
-            color: AppColor.colorFFA5ABB7,
+            color: const Color(0xFFA5ABB7),
             letterSpacing: 0.8,
           ),
         ),
         const SizedBox(height: 16),
-        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 16),
         // Editable name field
         Row(
@@ -1594,7 +1413,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       style: AppFont.style(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: AppColor.colorFF8E9BAE,
+                        color: const Color(0xFF8E9BAE),
                       ),
                     ),
                     const TextSpan(
@@ -1610,7 +1429,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            const Text(':', style: TextStyle(color: AppColor.colorFF8E9BAE)),
+            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
             const SizedBox(width: 8),
             Expanded(
               child: TextField(
@@ -1618,21 +1437,21 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 style: AppFont.style(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
-                  color: AppColor.colorFF0D121F,
+                  color: const Color(0xFF0D121F),
                 ),
                 decoration: InputDecoration(
                   hintText: 'commissioning_enter_name'.tr(),
                   hintStyle: AppFont.style(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
-                    color: AppColor.colorFFA5ABB7,
+                    color: const Color(0xFFA5ABB7),
                   ),
                   enabledBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: AppColor.colorFFD8DCE6),
+                    borderSide: BorderSide(color: Color(0xFFD8DCE6)),
                   ),
                   focusedBorder: const UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: AppColor.colorFF1565C0,
+                      color: Color(0xFF1565C0),
                       width: 1.5,
                     ),
                   ),
@@ -1664,7 +1483,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           },
         ),
         const SizedBox(height: 36),
-        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 28),
         // ── Upload / Capture Work Photos ──────────────────────────────
         RichText(
@@ -1675,10 +1494,10 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 style: AppFont.style(
                   fontSize: 13,
                   fontWeight: FontWeight.w900,
-                  color: AppColor.colorFF0D121F,
+                  color: const Color(0xFF0D121F),
                 ),
               ),
-              TextSpan(
+               TextSpan(
                 text: 'asterisk'.tr(),
                 style: TextStyle(
                   fontSize: 13,
@@ -1702,7 +1521,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     height: 110,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColor.colorFFE5E7EB),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
@@ -1751,7 +1570,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     height: 110,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColor.colorFFE5E7EB),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
@@ -1795,7 +1614,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 }
               },
               child: CustomPaint(
-                painter: _DashedBorderPainter(color: AppColor.colorFFCDD0D8),
+                painter: _DashedBorderPainter(color: const Color(0xFFCDD0D8)),
                 child: Container(
                   width: 110,
                   height: 110,
@@ -1803,18 +1622,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
-                        Icons.add,
-                        size: 28,
-                        color: AppColor.colorFFA5ABB7,
-                      ),
+                      const Icon(Icons.add, size: 28, color: Color(0xFFA5ABB7)),
                       const SizedBox(height: 6),
                       Text(
                         'upload'.tr(),
                         style: AppFont.style(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
-                          color: AppColor.colorFFA5ABB7,
+                          color: const Color(0xFFA5ABB7),
                         ),
                       ),
                     ],
@@ -1825,9 +1640,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             GestureDetector(
               onTap: () async {
                 final ImagePicker picker = ImagePicker();
-                final XFile? file = await picker.pickImage(
-                  source: ImageSource.camera,
-                );
+                final XFile? file = await picker.pickImage(source: ImageSource.camera);
                 if (file != null) {
                   setState(() {
                     _workPhotos.add(File(file.path));
@@ -1835,7 +1648,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 }
               },
               child: CustomPaint(
-                painter: _DashedBorderPainter(color: AppColor.colorFFCDD0D8),
+                painter: _DashedBorderPainter(color: const Color(0xFFCDD0D8)),
                 child: Container(
                   width: 110,
                   height: 110,
@@ -1843,18 +1656,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
-                        Icons.camera_alt_outlined,
-                        size: 28,
-                        color: AppColor.colorFFA5ABB7,
-                      ),
+                      const Icon(Icons.camera_alt_outlined, size: 28, color: Color(0xFFA5ABB7)),
                       const SizedBox(height: 6),
                       Text(
                         'capture'.tr(),
                         style: AppFont.style(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
-                          color: AppColor.colorFFA5ABB7,
+                          color: const Color(0xFFA5ABB7),
                         ),
                       ),
                     ],
@@ -1876,7 +1685,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     FocusManager.instance.primaryFocus?.unfocus();
     final SignatureController signatureController = SignatureController(
       penStrokeWidth: 4,
-      penColor: AppColor.colorFF0D121F,
+      penColor: const Color(0xFF0D121F),
       exportBackgroundColor: Colors.white,
     );
     showModalBottomSheet(
@@ -1906,7 +1715,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         style: AppFont.style(
                           fontSize: 14,
                           fontWeight: FontWeight.w900,
-                          color: AppColor.colorFF0D121F,
+                          color: const Color(0xFF0D121F),
                         ),
                       ),
                       IconButton(
@@ -1919,16 +1728,16 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   Container(
                     height: 200,
                     decoration: BoxDecoration(
-                      color: AppColor.colorFFF9FAFB,
+                      color: const Color(0xFFF9FAFB),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColor.colorFFE5E7EB),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Signature(
                         controller: signatureController,
                         height: 200,
-                        backgroundColor: AppColor.colorFFF9FAFB,
+                        backgroundColor: const Color(0xFFF9FAFB),
                       ),
                     ),
                   ),
@@ -1945,7 +1754,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: AppColor.colorFFCDD0D8),
+                              border: Border.all(color: const Color(0xFFCDD0D8)),
                             ),
                             child: Center(
                               child: Text(
@@ -1953,7 +1762,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                                 style: AppFont.style(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w800,
-                                  color: AppColor.colorFF6B7280,
+                                  color: const Color(0xFF6B7280),
                                 ),
                               ),
                             ),
@@ -1985,7 +1794,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                           child: Container(
                             height: 44,
                             decoration: BoxDecoration(
-                              color: AppColor.colorFF1565C0,
+                              color: const Color(0xFF1565C0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Center(
@@ -2018,8 +1827,8 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColor.colorFFF9FAFB,
-        border: Border.all(color: AppColor.colorFFE5E7EB),
+        color: const Color(0xFFF9FAFB),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Stack(
@@ -2030,14 +1839,14 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             style: AppFont.style(
               fontSize: 14,
               fontWeight: FontWeight.w900,
-              color: AppColor.colorFF0D121F,
+              color: const Color(0xFF0D121F),
             ),
             decoration: InputDecoration(
               hintText: placeholder,
               hintStyle: AppFont.style(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
-                color: AppColor.colorFFA5ABB7,
+                color: const Color(0xFFA5ABB7),
               ),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.all(16),
@@ -2054,7 +1863,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             child: Icon(
               Icons.signal_cellular_4_bar,
               size: 12,
-              color: AppColor.colorFFA5ABB7,
+              color: Color(0xFFA5ABB7),
             ),
           ),
         ],
@@ -2082,7 +1891,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     style: AppFont.style(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: AppColor.colorFF8E9BAE,
+                      color: const Color(0xFF8E9BAE),
                     ),
                     children: [
                       TextSpan(
@@ -2101,12 +1910,12 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: AppColor.colorFF8E9BAE,
+                    color: const Color(0xFF8E9BAE),
                   ),
                 ),
         ),
         const SizedBox(width: 8),
-        const Text(':', style: TextStyle(color: AppColor.colorFF8E9BAE)),
+        const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
         const SizedBox(width: 8),
         Expanded(
           child: GestureDetector(
@@ -2118,9 +1927,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             child: Container(
               height: 120,
               decoration: BoxDecoration(
-                color: AppColor.colorFFF9FAFB,
+                color: const Color(0xFFF9FAFB),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColor.colorFFE5E7EB),
+                border: Border.all(color: const Color(0xFFE5E7EB)),
               ),
               child: Stack(
                 children: [
@@ -2156,7 +1965,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         children: [
                           const Icon(
                             Icons.edit_outlined,
-                            color: AppColor.colorFFA5ABB7,
+                            color: Color(0xFFA5ABB7),
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -2164,7 +1973,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                             style: AppFont.style(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
-                              color: AppColor.colorFFCDD0D8,
+                              color: const Color(0xFFCDD0D8),
                             ),
                           ),
                         ],
@@ -2207,11 +2016,11 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         style: AppFont.style(
           fontSize: 11,
           fontWeight: FontWeight.w800,
-          color: AppColor.colorFF5C6672,
+          color: const Color(0xFF5C6672),
         ),
       );
     }
-
+    
     return RichText(
       text: TextSpan(
         children: [
@@ -2220,7 +2029,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             style: AppFont.style(
               fontSize: 11,
               fontWeight: FontWeight.w800,
-              color: AppColor.colorFF5C6672,
+              color: const Color(0xFF5C6672),
             ),
           ),
           const TextSpan(
@@ -2246,7 +2055,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             style: AppFont.style(
               fontSize: 11,
               fontWeight: FontWeight.w800,
-              color: AppColor.colorFF5C6672,
+              color: const Color(0xFF5C6672),
             ),
           ),
         ),
@@ -2255,7 +2064,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w800,
-            color: AppColor.colorFFA5ABB7,
+            color: const Color(0xFFA5ABB7),
           ),
         ),
         const SizedBox(width: 24),
@@ -2265,7 +2074,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             style: AppFont.style(
               fontSize: 13,
               fontWeight: FontWeight.w900,
-              color: AppColor.colorFF0D121F,
+              color: const Color(0xFF0D121F),
             ),
           ),
         ),
@@ -2285,12 +2094,12 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColor.colorFFE5E7EB),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Row(
         children: [
           if (prefixIcon != null) ...[
-            Icon(prefixIcon, color: AppColor.colorFF5C616E, size: 20),
+            Icon(prefixIcon, color: const Color(0xFF5C616E), size: 20),
             const SizedBox(width: 12),
           ],
           Expanded(
@@ -2302,13 +2111,13 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 hintStyle: AppFont.style(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
-                  color: AppColor.colorFFA5ABB7,
+                  color: const Color(0xFFA5ABB7),
                 ),
               ),
               style: AppFont.style(
                 fontSize: 13,
                 fontWeight: FontWeight.w900,
-                color: AppColor.colorFF0D121F,
+                color: const Color(0xFF0D121F),
               ),
             ),
           ),
@@ -2322,9 +2131,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
   Widget _buildTextArea(String hint, {TextEditingController? controller}) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColor.colorFFF9FAFB,
+        color: const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColor.colorFFE5E7EB),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Stack(
         children: [
@@ -2336,7 +2145,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               hintStyle: AppFont.style(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: AppColor.colorFFA5ABB7,
+                color: const Color(0xFFA5ABB7),
               ),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.all(16),
@@ -2344,7 +2153,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             style: AppFont.style(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: AppColor.colorFF0D121F,
+              color: const Color(0xFF0D121F),
             ),
           ),
           if (controller != null)
@@ -2359,7 +2168,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             child: Icon(
               Icons.signal_cellular_4_bar,
               size: 12,
-              color: AppColor.colorFFA5ABB7,
+              color: Color(0xFFA5ABB7),
             ),
           ),
         ],
@@ -2382,13 +2191,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 setState(() => _currentStep--);
                 if (_currentReportId != null) {
                   if (_currentStep == 1) {
-                    _step1AutofillBloc.add(
-                      GetAmcReportStep1AutofillEvent(widget.visitId),
-                    );
+                    _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
                   } else if (_currentStep == 2) {
-                    _step2AutofillBloc.add(
-                      GetAmcReportStep2AutofillEvent(_currentReportId!),
-                    );
+                    _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
                   }
                 }
               }
@@ -2400,7 +2205,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   const Icon(
                     Icons.arrow_back,
                     size: 16,
-                    color: AppColor.colorFFA5ABB7,
+                    color: Color(0xFFA5ABB7),
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -2408,7 +2213,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     style: AppFont.style(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: AppColor.colorFFA5ABB7,
+                      color: const Color(0xFFA5ABB7),
                     ),
                   ),
                 ] else
@@ -2417,7 +2222,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     style: AppFont.style(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: AppColor.colorFFA5ABB7,
+                      color: const Color(0xFFA5ABB7),
                     ),
                   ),
               ],
@@ -2431,12 +2236,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       List<Map<String, dynamic>> selectedTechs = [];
                       List<dynamic> allTechs = [];
                       if (_technicianBloc.state is TechnicianSuccessState) {
-                        allTechs =
-                            (_technicianBloc.state as TechnicianSuccessState)
-                                .data
-                                .data;
+                        allTechs = (_technicianBloc.state as TechnicianSuccessState).data.data;
                       }
-
+                      
                       for (int i = 0; i < _technicians.length; i++) {
                         var controller = _technicians[i];
                         if (controller.text.isNotEmpty) {
@@ -2445,9 +2247,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
                           if (id.isEmpty) {
                             try {
-                              final match = allTechs.firstWhere(
-                                (t) => t.name == name,
-                              );
+                              final match = allTechs.firstWhere((t) => t.name == name);
                               id = match.id;
                             } catch (_) {}
                           }
@@ -2463,275 +2263,97 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         return;
                       }
 
-                      _step1Bloc.add(
-                        PostAmcReportStep1Event(
-                          PostAmcReportStep1Params(
-                            amcVisitId: widget.visitId,
-                            amcReportId: _currentReportId,
-                            technicianIds: selectedTechs,
-                            memberPresentsCustomerSide:
-                                _memberPresentsControllers
-                                    .map((c) => c.text.trim())
-                                    .where((t) => t.isNotEmpty)
-                                    .join(", "),
-                            agenda: _agendaController.text,
-                          ),
-                        ),
-                      );
+                      _step1Bloc.add(PostAmcReportStep1Event(PostAmcReportStep1Params(
+                        amcVisitId: widget.visitId,
+                        amcReportId: _currentReportId,
+                        technicianIds: selectedTechs,
+                        memberPresentsCustomerSide: _memberPresentsControllers.map((c) => c.text.trim()).where((t) => t.isNotEmpty).join(", "),
+                        agenda: _agendaController.text,
+                      )));
                     } else if (_currentStep == 2) {
                       if (_currentReportId == null) {
-                        appSnackBar(
-                          context,
-                          AppColor.bright_red,
-                          'report_id_is_missing'.tr(),
-                        );
+                        appSnackBar(context, AppColor.bright_red, 'report_id_is_missing'.tr());
                         return;
                       }
 
                       if (!_mechNA) {
-                        if (!_mechanicalSelected.contains(
-                          'pump_foundation_bolt_tight'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_pump_foundation'.tr(),
-                          );
-                          return;
+                        if (!_mechanicalSelected.contains('pump_foundation_bolt_tight'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_pump_foundation'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains(
-                          'coupling_alignment_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_coupling'.tr(),
-                          );
-                          return;
+                        if (!_mechanicalSelected.contains('coupling_alignment_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_coupling'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains(
-                          'bearing_noise_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_bearing_noise'.tr(),
-                          );
-                          return;
+                        if (!_mechanicalSelected.contains('bearing_noise_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_bearing_noise'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains(
-                          'abnormal_sound_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_abnormal_sound'.tr(),
-                          );
-                          return;
+                        if (!_mechanicalSelected.contains('abnormal_sound_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_abnormal_sound'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains(
-                          'mechanical_seal_gland_leakage_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_mech_seal'.tr(),
-                          );
-                          return;
+                        if (!_mechanicalSelected.contains('mechanical_seal_gland_leakage_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_mech_seal'.tr()); return;
                         }
                         if (_vibrationSelected == null) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_vibration'.tr(),
-                          );
-                          return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_vibration'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains(
-                          'pump_cleaned'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_pump_cleaned'.tr(),
-                          );
-                          return;
+                        if (!_mechanicalSelected.contains('pump_cleaned'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_pump_cleaned'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains(
-                          'pump_not_running_dry'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_pump_dry'.tr(),
-                          );
-                          return;
+                        if (!_mechanicalSelected.contains('pump_not_running_dry'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_pump_dry'.tr()); return;
                         }
                       }
                       if (!_pipeNA) {
-                        if (!_pipelineSelected.contains(
-                          'suction_line_leakage_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_suction_line'.tr(),
-                          );
-                          return;
+                        if (!_pipelineSelected.contains('suction_line_leakage_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_suction_line'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains(
-                          'delivery_line_leakage_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_delivery_line'.tr(),
-                          );
-                          return;
+                        if (!_pipelineSelected.contains('delivery_line_leakage_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_delivery_line'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains(
-                          'valve_working_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_nrv'.tr(),
-                          );
-                          return;
+                        if (!_pipelineSelected.contains('valve_working_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_nrv'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains(
-                          'strainer_cleaned'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_strainer'.tr(),
-                          );
-                          return;
+                        if (!_pipelineSelected.contains('strainer_cleaned'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_strainer'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains(
-                          'valve_condition_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_suction_del_valve'.tr(),
-                          );
-                          return;
+                        if (!_pipelineSelected.contains('valve_condition_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_suction_del_valve'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains(
-                          'pressure_switch_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_pressure_switch'.tr(),
-                          );
-                          return;
+                        if (!_pipelineSelected.contains('pressure_switch_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_pressure_switch'.tr()); return;
                         }
                       }
                       if (!_elecNA) {
-                        if (!_electricalSelected.contains(
-                          'panel_cleaned'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_panel_cleaned'.tr(),
-                          );
-                          return;
+                        if (!_electricalSelected.contains('panel_cleaned'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_panel_cleaned'.tr()); return;
                         }
-                        if (!_electricalSelected.contains(
-                          'contactor_relay_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_contactor'.tr(),
-                          );
-                          return;
+                        if (!_electricalSelected.contains('contactor_relay_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_contactor'.tr()); return;
                         }
-                        if (!_electricalSelected.contains(
-                          'overload_setting_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_overload'.tr(),
-                          );
-                          return;
+                        if (!_electricalSelected.contains('overload_setting_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_overload'.tr()); return;
                         }
-                        if (!_electricalSelected.contains(
-                          'loose_wiring_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_loose_wiring'.tr(),
-                          );
-                          return;
+                        if (!_electricalSelected.contains('loose_wiring_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_loose_wiring'.tr()); return;
                         }
-                        if (!_electricalSelected.contains(
-                          'phase_voltage_current_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_phase_voltage'.tr(),
-                          );
-                          return;
+                        if (!_electricalSelected.contains('phase_voltage_current_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_phase_voltage'.tr()); return;
                         }
-                        if (!_electricalSelected.contains(
-                          'earthing_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_earthing'.tr(),
-                          );
-                          return;
+                        if (!_electricalSelected.contains('earthing_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_earthing'.tr()); return;
                         }
                       }
                       if (!_operationNA) {
-                        if (!_operationSelected.contains(
-                          'pump_started_manual'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_pump_manual'.tr(),
-                          );
-                          return;
+                        if (!_operationSelected.contains('pump_started_manual'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_pump_manual'.tr()); return;
                         }
-                        if (!_operationSelected.contains(
-                          'auto_operation_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_auto_operation'.tr(),
-                          );
-                          return;
+                        if (!_operationSelected.contains('auto_operation_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_auto_operation'.tr()); return;
                         }
-                        if (!_operationSelected.contains(
-                          'water_flow_pressure_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_water_flow'.tr(),
-                          );
-                          return;
+                        if (!_operationSelected.contains('water_flow_pressure_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_water_flow'.tr()); return;
                         }
-                        if (!_operationSelected.contains(
-                          'rotation_direction_checked'.tr(),
-                        )) {
-                          appSnackBar(
-                            context,
-                            AppColor.bright_red,
-                            'val_amc_rotation'.tr(),
-                          );
-                          return;
+                        if (!_operationSelected.contains('rotation_direction_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_rotation'.tr()); return;
                         }
                       }
 
@@ -2744,98 +2366,56 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         return map;
                       }
 
-                      Map<String, String> mechMap = _mechNA
-                          ? {}
-                          : listToMap(_mechanicalSelected);
+                      Map<String, String> mechMap = _mechNA ? {} : listToMap(_mechanicalSelected);
                       if (!_mechNA && _vibrationSelected != null) {
-                        mechMap['vibration_checked'.tr()] = _vibrationSelected!
-                            .toLowerCase();
+                        mechMap['vibration_checked'.tr()] = _vibrationSelected!.toLowerCase();
                       }
 
-                      _step2Bloc.add(
-                        PostAmcReportStep2Event(
-                          PostAmcReportStep2Params(
-                            id: _currentReportId!,
-                            isMechanicalChecklistNa: _mechNA,
-                            isPipelineHydraulicChecklistNa: _pipeNA,
-                            isElectricalChecklistNa: _elecNA,
-                            operationChecklistNa: _operationNA,
-                            mechanicalChecklist: jsonEncode(mechMap),
-                            pipelineHydraulicChecklist: jsonEncode(
-                              _pipeNA ? {} : listToMap(_pipelineSelected),
-                            ),
-                            electricalChecklist: jsonEncode(
-                              _elecNA ? {} : listToMap(_electricalSelected),
-                            ),
-                            operationChecklist: jsonEncode(
-                              _operationNA ? {} : listToMap(_operationSelected),
-                            ),
-                          ),
-                        ),
-                      );
+                      _step2Bloc.add(PostAmcReportStep2Event(PostAmcReportStep2Params(
+                        id: _currentReportId!,
+                        isMechanicalChecklistNa: _mechNA,
+                        isPipelineHydraulicChecklistNa: _pipeNA,
+                        isElectricalChecklistNa: _elecNA,
+                        operationChecklistNa: _operationNA,
+                        mechanicalChecklist: jsonEncode(mechMap),
+                        pipelineHydraulicChecklist: jsonEncode(_pipeNA ? {} : listToMap(_pipelineSelected)),
+                        electricalChecklist: jsonEncode(_elecNA ? {} : listToMap(_electricalSelected)),
+                        operationChecklist: jsonEncode(_operationNA ? {} : listToMap(_operationSelected)),
+                      )));
                     } else if (_currentStep < 3) {
                       setState(() => _currentStep++);
                       if (_currentStep == 3 && _currentReportId != null) {
-                        _assignedTechniciansBloc.add(
-                          GetAmcAssignedTechniciansEvent(_currentReportId!),
-                        );
+                        _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
                       }
                     } else {
                       // Submit action
                       if (_currentReportId == null) {
-                        appSnackBar(
-                          context,
-                          AppColor.bright_red,
-                          "report_id_is_missing".tr(),
-                        );
+                        appSnackBar(context, AppColor.bright_red, "report_id_is_missing".tr());
                         return;
                       }
 
                       if (_customerRepNameController.text.trim().isEmpty) {
-                        appSnackBar(
-                          context,
-                          AppColor.bright_red,
-                          "customer_rep_name_required".tr(),
-                        );
+                        appSnackBar(context, AppColor.bright_red, "customer_rep_name_required".tr());
                         return;
                       }
 
                       if (_selectedTechnicianRepId == null) {
-                        appSnackBar(
-                          context,
-                          AppColor.bright_red,
-                          "technician_rep_required".tr(),
-                        );
+                        appSnackBar(context, AppColor.bright_red, "technician_rep_required".tr());
                         return;
                       }
 
-                      if (_technicianSignatureFile == null &&
-                          _existingTechnicianSignatureUrl == null) {
-                        appSnackBar(
-                          context,
-                          AppColor.bright_red,
-                          "technician_signature_required".tr(),
-                        );
+                      if (_technicianSignatureFile == null && _existingTechnicianSignatureUrl == null) {
+                        appSnackBar(context, AppColor.bright_red, "technician_signature_required".tr());
                         return;
                       }
 
-                      if (_customerSignatureFile == null &&
-                          _existingCustomerSignatureUrl == null) {
-                        appSnackBar(
-                          context,
-                          AppColor.bright_red,
-                          "customer_signature_required".tr(),
-                        );
+                      if (_customerSignatureFile == null && _existingCustomerSignatureUrl == null) {
+                        appSnackBar(context, AppColor.bright_red, "customer_signature_required".tr());
                         return;
                       }
 
-                      if (_workPhotos.isEmpty &&
-                          _existingWorkPhotosUrls.isEmpty) {
-                        appSnackBar(
-                          context,
-                          AppColor.bright_red,
-                          "work_photos_required".tr(),
-                        );
+                      if (_workPhotos.isEmpty && _existingWorkPhotosUrls.isEmpty) {
+                        appSnackBar(context, AppColor.bright_red, "work_photos_required".tr());
                         return;
                       }
 
@@ -2844,34 +2424,27 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       // Given PostAmcReportStep3Params requires File, they must re-sign or we need to handle it.
                       // Since the user requested the API submission flow for step 3, we will pass the files.
 
-                      _step3Bloc.add(
-                        PostAmcReportStep3Event(
-                          PostAmcReportStep3Params(
-                            id: _currentReportId!,
-                            technicianRemarks: _technicianRemarksController.text
-                                .trim(),
-                            customerRemarks: _customerRemarksController.text
-                                .trim(),
-                            workPhotos: _workPhotos,
-                            technicianRepresentative: _selectedTechnicianRepId!,
-                            technicianSignature: _technicianSignatureFile,
-                            customerRepresentativeName:
-                                _customerRepNameController.text.trim(),
-                            customerSignature: _customerSignatureFile,
-                          ),
-                        ),
-                      );
+                      _step3Bloc.add(PostAmcReportStep3Event(PostAmcReportStep3Params(
+                        id: _currentReportId!,
+                        technicianRemarks: _technicianRemarksController.text.trim(),
+                        customerRemarks: _customerRemarksController.text.trim(),
+                        workPhotos: _workPhotos,
+                        technicianRepresentative: _selectedTechnicianRepId!,
+                        technicianSignature: _technicianSignatureFile,
+                        customerRepresentativeName: _customerRepNameController.text.trim(),
+                        customerSignature: _customerSignatureFile,
+                      )));
                     }
                   },
             child: Container(
               height: 44,
               padding: const EdgeInsets.symmetric(horizontal: 32),
               decoration: BoxDecoration(
-                color: AppColor.colorFF1565C0,
+                color: const Color(0xFF1565C0),
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColor.colorFF1565C0.withValues(alpha: 0.2),
+                    color: const Color(0xFF1565C0).withValues(alpha: 0.2),
                     blurRadius: 15,
                     offset: const Offset(0, 8),
                   ),
@@ -2884,10 +2457,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                     )
                   else ...[
                     if (_currentStep == 3) ...[
@@ -2899,9 +2469,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       const SizedBox(width: 12),
                     ],
                     Text(
-                      _currentStep < 3
-                          ? 'amc_report_btn_next'.tr()
-                          : 'amc_report_btn_submit'.tr(),
+                      _currentStep < 3 ? 'amc_report_btn_next'.tr() : 'amc_report_btn_submit'.tr(),
                       style: AppFont.style(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
@@ -2911,11 +2479,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                   ],
                   if (_currentStep < 3) ...[
                     const SizedBox(width: 8),
-                    const Icon(
-                      Icons.arrow_forward,
-                      size: 16,
-                      color: Colors.white,
-                    ),
+                    const Icon(Icons.arrow_forward, size: 16, color: Colors.white),
                   ],
                 ],
               ),
@@ -2925,6 +2489,8 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
       ),
     );
   }
+
+
 }
 
 class _DashedBorderPainter extends CustomPainter {
@@ -2937,15 +2503,10 @@ class _DashedBorderPainter extends CustomPainter {
       ..color = color
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
-
+      
     Path path = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(0, 0, size.width, size.height),
-          const Radius.circular(10),
-        ),
-      );
-
+      ..addRRect(RRect.fromRectAndRadius(Rect.fromLTWH(0, 0, size.width, size.height), const Radius.circular(10)));
+      
     Path dashPath = Path();
     double dashWidth = 6.0;
     double dashSpace = 4.0;

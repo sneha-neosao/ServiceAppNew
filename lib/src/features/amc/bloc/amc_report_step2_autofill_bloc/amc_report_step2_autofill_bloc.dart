@@ -9,7 +9,7 @@ class AmcReportStep2AutofillBloc
   final GetAmcReportStep2AutofillUsecase getAmcReportStep2AutofillUsecase;
 
   AmcReportStep2AutofillBloc(this.getAmcReportStep2AutofillUsecase)
-    : super(AmcReportStep2AutofillInitialState()) {
+      : super(AmcReportStep2AutofillInitialState()) {
     on<GetAmcReportStep2AutofillEvent>((event, emit) async {
       emit(AmcReportStep2AutofillLoadingState());
 

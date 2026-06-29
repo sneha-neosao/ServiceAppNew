@@ -10,7 +10,7 @@ class DeleteAmcReportBloc
   final DeleteAmcReportUsecase _deleteAmcReportUsecase;
 
   DeleteAmcReportBloc(this._deleteAmcReportUsecase)
-    : super(DeleteAmcReportInitialState()) {
+      : super(DeleteAmcReportInitialState()) {
     on<DeleteAmcReportSubmitEvent>((event, emit) async {
       emit(DeleteAmcReportLoadingState());
 

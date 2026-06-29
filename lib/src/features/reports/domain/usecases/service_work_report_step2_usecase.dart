@@ -29,16 +29,15 @@ class ServiceWorkReportStep2Params extends Equatable {
 
   @override
   List<Object?> get props => [
-    id,
-    isTechnicalNa,
-    technicalDetails,
-    descriptions,
-  ];
+        id,
+        isTechnicalNa,
+        technicalDetails,
+        descriptions,
+      ];
 }
 
 class ServiceWorkReportStep2Usecase
-    implements
-        UseCase<ServiceWorkReportStep2Response, ServiceWorkReportStep2Params> {
+    implements UseCase<ServiceWorkReportStep2Response, ServiceWorkReportStep2Params> {
   final AuthRepositoryImpl repository;
 
   ServiceWorkReportStep2Usecase(this.repository);

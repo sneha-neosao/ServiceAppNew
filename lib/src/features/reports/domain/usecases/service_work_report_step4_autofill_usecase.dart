@@ -19,9 +19,7 @@ class ServiceWorkReportStep4AutoFillUsecase
   Future<Either<Failure, ServiceWorkReportStep4Response>> call(
     ServiceWorkReportStep4AutoFillParams params,
   ) async {
-    return await _authRepository.serviceWorkReportStep4AutoFill(
-      params.reportId,
-    );
+    return await _authRepository.serviceWorkReportStep4AutoFill(params.reportId);
   }
 }
 

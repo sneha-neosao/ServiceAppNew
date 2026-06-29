@@ -34,7 +34,10 @@ class FeedbackData {
   final bool feedbackSubmitted;
   final FeedbackDetails? feedback;
 
-  FeedbackData({required this.feedbackSubmitted, this.feedback});
+  FeedbackData({
+    required this.feedbackSubmitted,
+    this.feedback,
+  });
 
   factory FeedbackData.fromJson(Map<String, dynamic> json) {
     return FeedbackData(

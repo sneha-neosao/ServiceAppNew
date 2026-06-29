@@ -15,7 +15,6 @@ import 'package:service_app/src/features/amc/bloc/amc_check_feedback_bloc/amc_ch
 import 'package:service_app/src/features/amc/bloc/amc_check_feedback_bloc/amc_check_feedback_state.dart';
 import 'package:service_app/src/remote/models/feedback_model/feedback_response.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:service_app/src/core/theme/app_color.dart';
 
 class FeedbackDetailsScreen extends StatelessWidget {
   final String reportId;
@@ -37,23 +36,20 @@ class FeedbackDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isServiceCall) {
       return BlocProvider(
-        create: (_) =>
-            getIt<ServiceCallCheckFeedbackBloc>()
-              ..add(FetchServiceCallCheckFeedbackEvent(reportId: reportId)),
+        create: (_) => getIt<ServiceCallCheckFeedbackBloc>()
+          ..add(FetchServiceCallCheckFeedbackEvent(reportId: reportId)),
         child: _buildScreen(context),
       );
     } else if (isAmc) {
       return BlocProvider(
-        create: (_) =>
-            getIt<AmcCheckFeedbackBloc>()
-              ..add(CheckAmcFeedbackEvent(amcVisitId: reportId)),
+        create: (_) => getIt<AmcCheckFeedbackBloc>()
+          ..add(CheckAmcFeedbackEvent(amcVisitId: reportId)),
         child: _buildScreen(context),
       );
     } else {
       return BlocProvider(
-        create: (_) =>
-            getIt<CheckFeedbackBloc>()
-              ..add(FetchCheckFeedbackEvent(reportId: reportId)),
+        create: (_) => getIt<CheckFeedbackBloc>()
+          ..add(FetchCheckFeedbackEvent(reportId: reportId)),
         child: _buildScreen(context),
       );
     }
@@ -77,7 +73,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColor.colorFFE5E7EB),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.04),
@@ -90,7 +86,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                       icon: const Icon(
                         Icons.arrow_back,
                         size: 20,
-                        color: AppColor.colorFF5C616E,
+                        color: Color(0xFF5C616E),
                       ),
                       onPressed: onBack,
                     ),
@@ -102,50 +98,31 @@ class FeedbackDetailsScreen extends StatelessWidget {
                       style: AppFont.style(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
-                        color: AppColor.colorFF0D121F,
+                        color: const Color(0xFF0D121F),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            const Divider(
-              height: 1,
-              thickness: 1,
-              color: AppColor.colorFFF1F2F6,
-            ),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
             // ── Content ───────────────────────────────────────────────────────
             Expanded(
               child: isServiceCall
-                  ? BlocBuilder<
-                      ServiceCallCheckFeedbackBloc,
-                      ServiceCallCheckFeedbackState
-                    >(
+                  ? BlocBuilder<ServiceCallCheckFeedbackBloc, ServiceCallCheckFeedbackState>(
                       builder: (context, state) {
                         if (state is ServiceCallCheckFeedbackLoading) {
                           return _buildShimmerContent();
                         } else if (state is ServiceCallCheckFeedbackError) {
                           return Center(
-                            child: Text(
-                              state.message,
-                              style: AppFont.style(
-                                fontSize: 12,
-                                color: Colors.red,
-                              ),
-                            ),
+                            child: Text(state.message, style: AppFont.style(fontSize: 12, color: Colors.red)),
                           );
                         } else if (state is ServiceCallCheckFeedbackLoaded) {
                           final data = state.response.data?.feedback;
                           if (data == null) {
                             return Center(
-                              child: Text(
-                                'no_feedback_found'.tr(),
-                                style: AppFont.style(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
+                              child: Text('no_feedback_found'.tr(), style: AppFont.style(fontSize: 12, color: Colors.grey)),
                             );
                           }
                           return _buildFeedbackContent(data);
@@ -154,70 +131,46 @@ class FeedbackDetailsScreen extends StatelessWidget {
                       },
                     )
                   : isAmc
-                  ? BlocBuilder<AmcCheckFeedbackBloc, AmcCheckFeedbackState>(
-                      builder: (context, state) {
-                        if (state is AmcCheckFeedbackLoadingState) {
-                          return _buildShimmerContent();
-                        } else if (state is AmcCheckFeedbackFailureState) {
-                          return Center(
-                            child: Text(
-                              state.message,
-                              style: AppFont.style(
-                                fontSize: 12,
-                                color: Colors.red,
-                              ),
-                            ),
-                          );
-                        } else if (state is AmcCheckFeedbackSuccessState) {
-                          final data = state.data.data?.feedback;
-                          if (data == null) {
-                            return Center(
-                              child: Text(
-                                'no_feedback_found'.tr(),
-                                style: AppFont.style(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            );
-                          }
-                          return _buildFeedbackContent(data);
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    )
-                  : BlocBuilder<CheckFeedbackBloc, CheckFeedbackState>(
-                      builder: (context, state) {
-                        if (state is CheckFeedbackLoading) {
-                          return _buildShimmerContent();
-                        } else if (state is CheckFeedbackError) {
-                          return Center(
-                            child: Text(
-                              state.message,
-                              style: AppFont.style(
-                                fontSize: 12,
-                                color: Colors.red,
-                              ),
-                            ),
-                          );
-                        } else if (state is CheckFeedbackLoaded) {
-                          final data = state.response.data?.feedback;
-                          if (data == null) {
-                            return Center(
-                              child: Text(
-                                'no_feedback_found'.tr(),
-                                style: AppFont.style(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            );
-                          }
-                          return _buildFeedbackContent(data);
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
+                      ? BlocBuilder<AmcCheckFeedbackBloc, AmcCheckFeedbackState>(
+                          builder: (context, state) {
+                            if (state is AmcCheckFeedbackLoadingState) {
+                              return _buildShimmerContent();
+                            } else if (state is AmcCheckFeedbackFailureState) {
+                              return Center(
+                                child: Text(state.message, style: AppFont.style(fontSize: 12, color: Colors.red)),
+                              );
+                            } else if (state is AmcCheckFeedbackSuccessState) {
+                              final data = state.data.data?.feedback;
+                              if (data == null) {
+                                return Center(
+                                  child: Text('no_feedback_found'.tr(), style: AppFont.style(fontSize: 12, color: Colors.grey)),
+                                );
+                              }
+                              return _buildFeedbackContent(data);
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        )
+                      : BlocBuilder<CheckFeedbackBloc, CheckFeedbackState>(
+                          builder: (context, state) {
+                            if (state is CheckFeedbackLoading) {
+                              return _buildShimmerContent();
+                            } else if (state is CheckFeedbackError) {
+                              return Center(
+                                child: Text(state.message, style: AppFont.style(fontSize: 12, color: Colors.red)),
+                              );
+                            } else if (state is CheckFeedbackLoaded) {
+                              final data = state.response.data?.feedback;
+                              if (data == null) {
+                                return Center(
+                                  child: Text('no_feedback_found'.tr(), style: AppFont.style(fontSize: 12, color: Colors.grey)),
+                                );
+                              }
+                              return _buildFeedbackContent(data);
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
             ),
           ],
         ),
@@ -233,7 +186,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColor.colorFFF1F2F6),
+            border: Border.all(color: const Color(0xFFF1F2F6)),
           ),
           child: Shimmer.fromColors(
             baseColor: Colors.grey[300]!,
@@ -241,35 +194,15 @@ class FeedbackDetailsScreen extends StatelessWidget {
             child: Column(
               children: [
                 _buildShimmerRow(),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: AppColor.colorFFF1F2F6,
-                ),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
                 _buildShimmerRow(),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: AppColor.colorFFF1F2F6,
-                ),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
                 _buildShimmerRow(),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: AppColor.colorFFF1F2F6,
-                ),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
                 _buildShimmerRow(),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: AppColor.colorFFF1F2F6,
-                ),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
                 _buildShimmerRow(),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: AppColor.colorFFF1F2F6,
-                ),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
                 _buildShimmerCommentRow(),
               ],
             ),
@@ -293,9 +226,18 @@ class FeedbackDetailsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Expanded(child: Container(height: 14, color: Colors.white)),
+          Expanded(
+            child: Container(
+              height: 14,
+              color: Colors.white,
+            ),
+          ),
           const SizedBox(width: 24),
-          Container(width: 80, height: 14, color: Colors.white),
+          Container(
+            width: 80,
+            height: 14,
+            color: Colors.white,
+          ),
         ],
       ),
     );
@@ -318,7 +260,11 @@ class FeedbackDetailsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Container(width: 100, height: 14, color: Colors.white),
+              Container(
+                width: 100,
+                height: 14,
+                color: Colors.white,
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -343,7 +289,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColor.colorFFF1F2F6),
+            border: Border.all(color: const Color(0xFFF1F2F6)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.02),
@@ -356,45 +302,37 @@ class FeedbackDetailsScreen extends StatelessWidget {
             children: [
               _buildRow(
                 icon: Icons.person_outline,
-                iconColor: AppColor.colorFF6B4EFF,
+                iconColor: const Color(0xFF6B4EFF),
                 title: 'close_call_customer_name_label'.tr(),
                 valueWidget: Text(
                   data.name,
                   style: AppFont.style(
                     fontSize: 13,
                     fontWeight: FontWeight.w900,
-                    color: AppColor.colorFF212121,
+                    color: const Color(0xFF212121),
                   ),
                 ),
               ),
-              const Divider(
-                height: 1,
-                thickness: 1,
-                color: AppColor.colorFFF1F2F6,
-              ),
+              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
               _buildRow(
                 icon: Icons.phone_outlined,
-                iconColor: AppColor.colorFF00BFA5,
+                iconColor: const Color(0xFF00BFA5),
                 title: 'contact_number'.tr(),
                 valueWidget: Text(
                   data.contactNumber,
                   style: AppFont.style(
                     fontSize: 13,
                     fontWeight: FontWeight.w900,
-                    color: AppColor.colorFF212121,
+                    color: const Color(0xFF212121),
                   ),
                 ),
               ),
-              const Divider(
-                height: 1,
-                thickness: 1,
-                color: AppColor.colorFFF1F2F6,
-              ),
+              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
               _buildRow(
                 icon: Icons.verified_user_outlined,
-                iconColor: AppColor.colorFF00C853,
+                iconColor: const Color(0xFF00C853),
                 title: 'was_the_issue_resolved'.tr(),
                 valueWidget: Container(
                   padding: const EdgeInsets.symmetric(
@@ -406,7 +344,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: data.issueResolved
-                          ? AppColor.colorFF00C853
+                          ? const Color(0xFF00C853)
                           : Colors.red,
                     ),
                   ),
@@ -416,21 +354,17 @@ class FeedbackDetailsScreen extends StatelessWidget {
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: data.issueResolved
-                          ? AppColor.colorFF00C853
+                          ? const Color(0xFF00C853)
                           : Colors.red,
                     ),
                   ),
                 ),
               ),
-              const Divider(
-                height: 1,
-                thickness: 1,
-                color: AppColor.colorFFF1F2F6,
-              ),
+              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
               _buildRow(
                 icon: Icons.star_outline,
-                iconColor: AppColor.colorFFFF9800,
+                iconColor: const Color(0xFFFF9800),
                 title: 'customer_rating'.tr(),
                 valueWidget: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -438,22 +372,18 @@ class FeedbackDetailsScreen extends StatelessWidget {
                     return Icon(
                       index < data.rating ? Icons.star : Icons.star_border,
                       color: index < data.rating
-                          ? AppColor.colorFFFF9800
-                          : AppColor.colorFFE0E0E0,
+                          ? const Color(0xFFFF9800)
+                          : const Color(0xFFE0E0E0),
                       size: 20,
                     );
                   }),
                 ),
               ),
-              const Divider(
-                height: 1,
-                thickness: 1,
-                color: AppColor.colorFFF1F2F6,
-              ),
+              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
               _buildRow(
                 icon: Icons.workspace_premium_outlined,
-                iconColor: AppColor.colorFF2962FF,
+                iconColor: const Color(0xFF2962FF),
                 title: 'technician_behaviour'.tr(),
                 valueWidget: Container(
                   padding: const EdgeInsets.symmetric(
@@ -463,7 +393,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColor.colorFF00C853),
+                    border: Border.all(color: const Color(0xFF00C853)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -483,22 +413,18 @@ class FeedbackDetailsScreen extends StatelessWidget {
                         style: AppFont.style(
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
-                          color: AppColor.colorFF00C853,
+                          color: const Color(0xFF00C853),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const Divider(
-                height: 1,
-                thickness: 1,
-                color: AppColor.colorFFF1F2F6,
-              ),
+              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
 
               _buildCommentRow(
                 icon: Icons.chat_bubble_outline,
-                iconColor: AppColor.colorFF9C27B0,
+                iconColor: const Color(0xFF9C27B0),
                 title: 'short_comment'.tr(),
                 comment: data.shortComment,
               ),
@@ -527,7 +453,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
               style: AppFont.style(
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
-                color: AppColor.colorFF757575, // Greyish label
+                color: const Color(0xFF757575), // Greyish label
               ),
             ),
           ),
@@ -557,7 +483,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                 style: AppFont.style(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
-                  color: AppColor.colorFF757575,
+                  color: const Color(0xFF757575),
                 ),
               ),
             ],
@@ -570,7 +496,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
               style: AppFont.style(
                 fontSize: 12,
                 fontWeight: FontWeight.w900,
-                color: AppColor.colorFF212121,
+                color: const Color(0xFF212121),
               ).copyWith(fontStyle: FontStyle.italic),
             ),
           ),

@@ -12,7 +12,7 @@ class UnreadCountBloc extends Bloc<UnreadCountEvent, UnreadCountState> {
   final GetUnreadNotificationCountUseCase getUnreadNotificationCountUseCase;
 
   UnreadCountBloc({required this.getUnreadNotificationCountUseCase})
-    : super(UnreadCountInitial()) {
+      : super(UnreadCountInitial()) {
     on<GetUnreadNotificationCountEvent>((event, emit) async {
       emit(UnreadCountLoading());
 
@@ -23,7 +23,11 @@ class UnreadCountBloc extends Bloc<UnreadCountEvent, UnreadCountState> {
           emit(UnreadCountError(message: failure.message));
         },
         (response) {
-          emit(UnreadCountLoaded(unreadCount: response.data?.unreadCount ?? 0));
+          emit(
+            UnreadCountLoaded(
+              unreadCount: response.data?.unreadCount ?? 0,
+            ),
+          );
         },
       );
     });

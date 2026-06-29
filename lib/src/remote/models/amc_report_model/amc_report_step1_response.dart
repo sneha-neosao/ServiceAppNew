@@ -68,9 +68,7 @@ class AmcReportStep1Data extends Equatable {
 
     return AmcReportStep1Data(
       id: json['id']?.toString() ?? '',
-      memberPresentsCustomerSide: parseStringOrList(
-        json['member_presents_customer_side'],
-      ),
+      memberPresentsCustomerSide: parseStringOrList(json['member_presents_customer_side']),
       agenda: json['agenda']?.toString() ?? '',
       dealerName: json['dealer_name']?.toString() ?? '',
       customerName: json['customer_name']?.toString() ?? '',
@@ -90,9 +88,8 @@ class AmcReportStep1Data extends Equatable {
       'dealer_name': dealerName,
       'customer_name': customerName,
       'site_name': siteName,
-      'assigned_technicians': assignedTechnicians
-          .map((e) => e.toJson())
-          .toList(),
+      'assigned_technicians':
+      assignedTechnicians.map((e) => e.toJson()).toList(),
       'last_completed_step': lastCompletedStep,
     };
   }
@@ -114,14 +111,23 @@ class AssignedTechnician extends Equatable {
   final String id;
   final String name;
 
-  const AssignedTechnician({required this.id, required this.name});
+  const AssignedTechnician({
+    required this.id,
+    required this.name,
+  });
 
   factory AssignedTechnician.fromJson(Map<String, dynamic> json) {
-    return AssignedTechnician(id: json['id'] ?? '', name: json['name'] ?? '');
+    return AssignedTechnician(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+    );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name};
+    return {
+      'id': id,
+      'name': name,
+    };
   }
 
   @override

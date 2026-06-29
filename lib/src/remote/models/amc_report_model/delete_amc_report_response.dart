@@ -4,7 +4,12 @@ class DeleteAmcReportResponse {
   final dynamic data;
   final String? message;
 
-  DeleteAmcReportResponse({this.status, this.success, this.data, this.message});
+  DeleteAmcReportResponse({
+    this.status,
+    this.success,
+    this.data,
+    this.message,
+  });
 
   factory DeleteAmcReportResponse.fromJson(Map<String, dynamic> json) {
     return DeleteAmcReportResponse(

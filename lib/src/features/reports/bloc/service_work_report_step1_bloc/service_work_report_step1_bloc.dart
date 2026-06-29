@@ -3,12 +3,10 @@ import 'package:service_app/src/features/reports/domain/usecases/service_work_re
 import 'service_work_report_step1_event.dart';
 import 'service_work_report_step1_state.dart';
 
-class ServiceWorkReportStep1Bloc
-    extends Bloc<ServiceWorkReportStep1Event, ServiceWorkReportStep1State> {
+class ServiceWorkReportStep1Bloc extends Bloc<ServiceWorkReportStep1Event, ServiceWorkReportStep1State> {
   final ServiceWorkReportStep1Usecase usecase;
 
-  ServiceWorkReportStep1Bloc({required this.usecase})
-    : super(ServiceWorkReportStep1Initial()) {
+  ServiceWorkReportStep1Bloc({required this.usecase}) : super(ServiceWorkReportStep1Initial()) {
     on<PostServiceWorkReportStep1Event>(_onPostStep1);
   }
 

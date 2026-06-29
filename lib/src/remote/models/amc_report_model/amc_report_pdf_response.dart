@@ -15,9 +15,7 @@ class AmcReportPdfResponse {
     return AmcReportPdfResponse(
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
-      data: json['data'] != null
-          ? AmcReportPdfData.fromJson(json['data'])
-          : null,
+      data: json['data'] != null ? AmcReportPdfData.fromJson(json['data']) : null,
       message: json['message'] ?? '',
     );
   }
@@ -38,10 +36,14 @@ class AmcReportPdfData {
   AmcReportPdfData({required this.pdfUrl});
 
   factory AmcReportPdfData.fromJson(Map<String, dynamic> json) {
-    return AmcReportPdfData(pdfUrl: json['pdf_url'] ?? '');
+    return AmcReportPdfData(
+      pdfUrl: json['pdf_url'] ?? '',
+    );
   }
 
   Map<String, dynamic> toJson() {
-    return {'pdf_url': pdfUrl};
+    return {
+      'pdf_url': pdfUrl,
+    };
   }
 }

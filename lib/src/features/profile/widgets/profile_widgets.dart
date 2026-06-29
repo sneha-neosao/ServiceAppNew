@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
-import 'package:service_app/src/core/theme/app_color.dart';
 
 class ProfileSectionHeader extends StatelessWidget {
   final String title;
@@ -18,16 +17,12 @@ class ProfileSectionHeader extends StatelessWidget {
             style: AppFont.style(
               fontSize: 12,
               fontWeight: FontWeight.w900,
-              color: AppColor.colorFF0D121F,
+              color: const Color(0xFF0D121F),
             ),
           ),
           const SizedBox(width: 12),
           const Expanded(
-            child: Divider(
-              height: 1,
-              thickness: 1,
-              color: AppColor.colorFFF1F2F6,
-            ),
+            child: Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
           ),
         ],
       ),
@@ -58,9 +53,9 @@ class ProfileInfoItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColor.colorFFF1F2F6),
+            border: Border.all(color: const Color(0xFFF1F2F6)),
           ),
-          child: Icon(icon, size: 20, color: AppColor.colorFFA5ABB7),
+          child: Icon(icon, size: 20, color: const Color(0xFFA5ABB7)),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -72,7 +67,7 @@ class ProfileInfoItem extends StatelessWidget {
                 style: AppFont.style(
                   fontSize: 8,
                   fontWeight: FontWeight.w800,
-                  color: AppColor.colorFFA5ABB7,
+                  color: const Color(0xFFA5ABB7),
                 ),
               ),
               const SizedBox(height: 4),
@@ -81,7 +76,7 @@ class ProfileInfoItem extends StatelessWidget {
                 style: AppFont.style(
                   fontSize: 13,
                   fontWeight: FontWeight.w900,
-                  color: AppColor.colorFF455A64,
+                  color: const Color(0xFF455A64),
                 ),
               ),
             ],

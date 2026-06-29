@@ -11,8 +11,7 @@ part 'amc_visits_list_state.dart';
 class AmcVisitsListBloc extends Bloc<AmcVisitsListEvent, AmcVisitsListState> {
   final AmcVisitsListUseCase _amcVisitsListUseCase;
 
-  AmcVisitsListBloc(this._amcVisitsListUseCase)
-    : super(AmcVisitsListInitialState()) {
+  AmcVisitsListBloc(this._amcVisitsListUseCase) : super(AmcVisitsListInitialState()) {
     on<AmcVisitsListGetEvent>(_getAmcVisitsList);
   }
 

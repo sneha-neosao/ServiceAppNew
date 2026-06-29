@@ -8,7 +8,7 @@ class ServiceCallComplaintPdfBloc
   final ServiceCallComplaintPdfUseCase usecase;
 
   ServiceCallComplaintPdfBloc({required this.usecase})
-    : super(ServiceCallComplaintPdfInitial()) {
+      : super(ServiceCallComplaintPdfInitial()) {
     on<FetchServiceCallComplaintPdfEvent>(_onFetchServiceCallComplaintPdf);
   }
 
@@ -20,7 +20,8 @@ class ServiceCallComplaintPdfBloc
     final result = await usecase(event.complaintId);
     result.fold(
       (failure) => emit(ServiceCallComplaintPdfError(failure.message)),
-      (response) => emit(ServiceCallComplaintPdfLoaded(response, event.action)),
+      (response) =>
+          emit(ServiceCallComplaintPdfLoaded(response, event.action)),
     );
   }
 }

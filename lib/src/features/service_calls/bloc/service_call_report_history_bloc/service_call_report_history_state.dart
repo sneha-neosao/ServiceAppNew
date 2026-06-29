@@ -16,8 +16,7 @@ class ServiceCallReportHistoryLoaded extends ServiceCallReportHistoryState {
   final ServiceCallReportResponse response;
   final int timestamp;
 
-  ServiceCallReportHistoryLoaded({required this.response})
-    : timestamp = DateTime.now().millisecondsSinceEpoch;
+  ServiceCallReportHistoryLoaded({required this.response}) : timestamp = DateTime.now().millisecondsSinceEpoch;
 
   @override
   List<Object?> get props => [response, timestamp];

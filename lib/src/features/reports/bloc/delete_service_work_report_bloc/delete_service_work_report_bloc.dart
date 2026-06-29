@@ -4,12 +4,10 @@ import 'package:service_app/src/features/reports/domain/usecases/delete_service_
 import 'delete_service_work_report_event.dart';
 import 'delete_service_work_report_state.dart';
 
-class DeleteServiceWorkReportBloc
-    extends Bloc<DeleteServiceWorkReportEvent, DeleteServiceWorkReportState> {
+class DeleteServiceWorkReportBloc extends Bloc<DeleteServiceWorkReportEvent, DeleteServiceWorkReportState> {
   final DeleteServiceWorkReportUsecase usecase;
 
-  DeleteServiceWorkReportBloc({required this.usecase})
-    : super(DeleteServiceWorkReportInitial()) {
+  DeleteServiceWorkReportBloc({required this.usecase}) : super(DeleteServiceWorkReportInitial()) {
     on<DeleteDraftServiceWorkReportEvent>(_onDeleteReport);
   }
 

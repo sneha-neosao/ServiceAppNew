@@ -44,13 +44,9 @@ class ServiceWorkReportStep3Data {
       isMechanicalChecklistNa: json['is_mechanical_checklist_na'] ?? false,
       isPipelineChecklistNa: json['is_pipeline_checklist_na'] ?? false,
       isElectricalChecklistNa: json['is_electrical_checklist_na'] ?? false,
-      savedChecklists:
-          (json['saved_checklists'] as List<dynamic>?)
-              ?.map(
-                (e) => ServiceWorkSavedChecklist.fromJson(
-                  e as Map<String, dynamic>,
-                ),
-              )
+      savedChecklists: (json['saved_checklists'] as List<dynamic>?)
+              ?.map((e) => ServiceWorkSavedChecklist.fromJson(
+                  e as Map<String, dynamic>))
               .toList() ??
           [],
       lastCompletedStep: json['last_completed_step'] ?? 0,

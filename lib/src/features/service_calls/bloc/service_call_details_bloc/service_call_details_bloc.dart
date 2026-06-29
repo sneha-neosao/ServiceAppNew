@@ -7,8 +7,7 @@ class ServiceCallDetailsBloc
     extends Bloc<ServiceCallDetailsEvent, ServiceCallDetailsState> {
   final ServiceCallDetailsUseCase _useCase;
 
-  ServiceCallDetailsBloc(this._useCase)
-    : super(ServiceCallDetailsInitialState()) {
+  ServiceCallDetailsBloc(this._useCase) : super(ServiceCallDetailsInitialState()) {
     on<ServiceCallDetailsGetEvent>(_onGetServiceCallDetails);
   }
 

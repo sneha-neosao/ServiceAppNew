@@ -69,14 +69,11 @@ class AmcReportStep2Data extends Equatable {
     return AmcReportStep2Data(
       id: json['id']?.toString() ?? '',
       isMechanicalChecklistNa: json['is_mechanical_checklist_na'] ?? false,
-      isPipelineHydraulicChecklistNa:
-          json['is_pipeline_hydraulic_checklist_na'] ?? false,
+      isPipelineHydraulicChecklistNa: json['is_pipeline_hydraulic_checklist_na'] ?? false,
       isElectricalChecklistNa: json['is_electrical_checklist_na'] ?? false,
       operationChecklistNa: json['operation_checklist_na'] ?? false,
       mechanicalChecklist: safeString(json['mechanical_checklist']),
-      pipelineHydraulicChecklist: safeString(
-        json['Pipeline_Hydraulic_checklist'],
-      ),
+      pipelineHydraulicChecklist: safeString(json['Pipeline_Hydraulic_checklist']),
       electricalChecklist: safeString(json['electrical_checklist']),
       operationChecklist: safeString(json['operation_checklist']),
     );
@@ -98,14 +95,14 @@ class AmcReportStep2Data extends Equatable {
 
   @override
   List<Object?> get props => [
-    id,
-    isMechanicalChecklistNa,
-    isPipelineHydraulicChecklistNa,
-    isElectricalChecklistNa,
-    operationChecklistNa,
-    mechanicalChecklist,
-    pipelineHydraulicChecklist,
-    electricalChecklist,
-    operationChecklist,
-  ];
+        id,
+        isMechanicalChecklistNa,
+        isPipelineHydraulicChecklistNa,
+        isElectricalChecklistNa,
+        operationChecklistNa,
+        mechanicalChecklist,
+        pipelineHydraulicChecklist,
+        electricalChecklist,
+        operationChecklist,
+      ];
 }

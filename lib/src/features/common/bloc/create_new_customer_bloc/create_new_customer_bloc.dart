@@ -22,11 +22,12 @@ class CreateNewCustomerBloc
 
     final result = await _createNewCustomerUsecase(event.params);
 
-    result.fold((failure) {
-      final msg = failure.message.isNotEmpty
-          ? failure.message
-          : mapFailureToMessage(failure);
-      emit(CreateNewCustomerFailureState(msg));
-    }, (data) => emit(CreateNewCustomerSuccessState(data)));
+    result.fold(
+      (failure) {
+        final msg = failure.message.isNotEmpty ? failure.message : mapFailureToMessage(failure);
+        emit(CreateNewCustomerFailureState(msg));
+      },
+      (data) => emit(CreateNewCustomerSuccessState(data)),
+    );
   }
 }

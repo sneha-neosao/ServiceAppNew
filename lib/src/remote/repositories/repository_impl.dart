@@ -233,23 +233,28 @@ abstract class Repository {
     ServiceCallReportStep1Params params,
   );
 
-  Future<Either<Failure, ServiceWorkReportStep1Response>>
-  serviceWorkReportStep1(ServiceWorkReportStep1Params params);
+  Future<Either<Failure, ServiceWorkReportStep1Response>> serviceWorkReportStep1(
+    ServiceWorkReportStep1Params params,
+  );
 
-  Future<Either<Failure, ServiceWorkReportStep2Response>>
-  serviceWorkReportStep2(ServiceWorkReportStep2Params params);
+  Future<Either<Failure, ServiceWorkReportStep2Response>> serviceWorkReportStep2(
+    ServiceWorkReportStep2Params params,
+  );
 
   Future<Either<Failure, ServiceWorkReportStep2Response>>
   serviceWorkReportStep2AutoFill(String reportId);
 
-  Future<Either<Failure, ServiceWorkReportStep3Response>>
-  serviceWorkReportStep3(ServiceWorkReportStep3Params params);
+  Future<Either<Failure, ServiceWorkReportStep3Response>> serviceWorkReportStep3(
+    ServiceWorkReportStep3Params params,
+  );
 
-  Future<Either<Failure, ServiceWorkReportStep4Response>>
-  serviceWorkReportStep4(ServiceWorkReportStep4Params params);
+  Future<Either<Failure, ServiceWorkReportStep4Response>> serviceWorkReportStep4(
+    ServiceWorkReportStep4Params params,
+  );
 
-  Future<Either<Failure, AssignedTechnicianResponse>>
-  serviceWorkReportTechnicians(String reportId);
+  Future<Either<Failure, AssignedTechnicianResponse>> serviceWorkReportTechnicians(
+    String reportId,
+  );
 
   Future<Either<Failure, ServiceWorkReportStep3Response>>
   serviceWorkReportStep3AutoFill(String reportId);
@@ -362,9 +367,7 @@ abstract class Repository {
     PostAmcReportStep3Params params,
   );
 
-  Future<Either<Failure, AmcHistoryResponse>> amcReportsHistory(
-    AmcReportsHistoryParams params,
-  );
+  Future<Either<Failure, AmcHistoryResponse>> amcReportsHistory(AmcReportsHistoryParams params);
 
   Future<Either<Failure, AmcReportStep1Response>> amcReportStep1AutoFill(
     String reportId,
@@ -374,8 +377,9 @@ abstract class Repository {
     String reportId,
   );
 
-  Future<Either<Failure, AmcAssignedTechniciansResponse>>
-  amcReportAssignedTechnicians(String reportId);
+  Future<Either<Failure, AmcAssignedTechniciansResponse>> amcReportAssignedTechnicians(
+    String reportId,
+  );
 
   Future<Either<Failure, AmcReportPdfResponse>> getAmcReportPdf(
     String reportId,
@@ -393,8 +397,9 @@ abstract class Repository {
     String reportId,
   );
 
-  Future<Either<Failure, DeleteServiceWorkReportResponse>>
-  deleteServiceWorkReport(String reportId);
+  Future<Either<Failure, DeleteServiceWorkReportResponse>> deleteServiceWorkReport(
+    String reportId,
+  );
 
   Future<Either<Failure, DeleteAccountResponse>> deleteAccount();
 
@@ -1573,8 +1578,9 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceWorkReportStep1Response>>
-  serviceWorkReportStep1(ServiceWorkReportStep1Params params) {
+  Future<Either<Failure, ServiceWorkReportStep1Response>> serviceWorkReportStep1(
+    ServiceWorkReportStep1Params params,
+  ) {
     return _networkInfo.check<ServiceWorkReportStep1Response>(
       connected: () async {
         try {
@@ -1607,8 +1613,9 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceWorkReportStep2Response>>
-  serviceWorkReportStep2(ServiceWorkReportStep2Params params) {
+  Future<Either<Failure, ServiceWorkReportStep2Response>> serviceWorkReportStep2(
+    ServiceWorkReportStep2Params params,
+  ) {
     return _networkInfo.check<ServiceWorkReportStep2Response>(
       connected: () async {
         try {
@@ -1641,14 +1648,17 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceWorkReportStep2Response>>
-  serviceWorkReportStep2AutoFill(String reportId) {
+  Future<Either<Failure, ServiceWorkReportStep2Response>> serviceWorkReportStep2AutoFill(
+    String reportId,
+  ) {
     return _networkInfo.check<ServiceWorkReportStep2Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource
-              .serviceWorkReportStep2AutoFill(reportId, token);
+          final response = await _remoteDataSource.serviceWorkReportStep2AutoFill(
+            reportId,
+            token,
+          );
 
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
@@ -1673,8 +1683,9 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceWorkReportStep3Response>>
-  serviceWorkReportStep3(ServiceWorkReportStep3Params params) {
+  Future<Either<Failure, ServiceWorkReportStep3Response>> serviceWorkReportStep3(
+    ServiceWorkReportStep3Params params,
+  ) {
     return _networkInfo.check<ServiceWorkReportStep3Response>(
       connected: () async {
         try {
@@ -1707,8 +1718,9 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, AssignedTechnicianResponse>>
-  serviceWorkReportTechnicians(String reportId) {
+  Future<Either<Failure, AssignedTechnicianResponse>> serviceWorkReportTechnicians(
+    String reportId,
+  ) {
     return _networkInfo.check<AssignedTechnicianResponse>(
       connected: () async {
         try {
@@ -1736,8 +1748,9 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceWorkReportStep4Response>>
-  serviceWorkReportStep4(ServiceWorkReportStep4Params params) {
+  Future<Either<Failure, ServiceWorkReportStep4Response>> serviceWorkReportStep4(
+    ServiceWorkReportStep4Params params,
+  ) {
     return _networkInfo.check<ServiceWorkReportStep4Response>(
       connected: () async {
         try {
@@ -1770,14 +1783,17 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceWorkReportStep3Response>>
-  serviceWorkReportStep3AutoFill(String reportId) {
+  Future<Either<Failure, ServiceWorkReportStep3Response>> serviceWorkReportStep3AutoFill(
+    String reportId,
+  ) {
     return _networkInfo.check<ServiceWorkReportStep3Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource
-              .serviceWorkReportStep3AutoFill(reportId, token);
+          final response = await _remoteDataSource.serviceWorkReportStep3AutoFill(
+            reportId,
+            token,
+          );
 
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
@@ -1802,14 +1818,17 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceWorkReportStep4Response>>
-  serviceWorkReportStep4AutoFill(String reportId) {
+  Future<Either<Failure, ServiceWorkReportStep4Response>> serviceWorkReportStep4AutoFill(
+    String reportId,
+  ) {
     return _networkInfo.check<ServiceWorkReportStep4Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource
-              .serviceWorkReportStep4AutoFill(reportId, token);
+          final response = await _remoteDataSource.serviceWorkReportStep4AutoFill(
+            reportId,
+            token,
+          );
           return Right(response);
         } catch (e) {
           if (e is ApiException) {
@@ -1829,14 +1848,17 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, ServiceWorkReportStep1Response>>
-  serviceWorkReportStep1AutoFill(String complaintId) {
+  Future<Either<Failure, ServiceWorkReportStep1Response>> serviceWorkReportStep1AutoFill(
+    String complaintId,
+  ) {
     return _networkInfo.check<ServiceWorkReportStep1Response>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource
-              .serviceWorkReportStep1AutoFill(complaintId, token);
+          final response = await _remoteDataSource.serviceWorkReportStep1AutoFill(
+            complaintId,
+            token,
+          );
 
           if (response.status != 200) {
             return Left(CredentialFailure(response.message));
@@ -2539,7 +2561,6 @@ class AuthRepositoryImpl implements Repository {
       },
     );
   }
-
   @override
   Future<Either<Failure, AmcVisitReportsResponse>> amcVisitReports(
     String visitId,
@@ -2548,10 +2569,7 @@ class AuthRepositoryImpl implements Repository {
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.amcVisitReports(
-            visitId,
-            token,
-          );
+          final respData = await _remoteDataSource.amcVisitReports(visitId, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message));
@@ -2585,10 +2603,7 @@ class AuthRepositoryImpl implements Repository {
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.getCustomerAmcVisits(
-            params,
-            token,
-          );
+          final respData = await _remoteDataSource.getCustomerAmcVisits(params, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message));
@@ -2622,10 +2637,7 @@ class AuthRepositoryImpl implements Repository {
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.serviceCallDetails(
-            id,
-            token,
-          );
+          final respData = await _remoteDataSource.serviceCallDetails(id, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message));
@@ -2661,10 +2673,7 @@ class AuthRepositoryImpl implements Repository {
           String token = await SessionManager.getAuthToken() ?? "";
           if (token.isEmpty) throw AuthException();
 
-          final respData = await _remoteDataSource.amcReportStep1(
-            params,
-            token,
-          );
+          final respData = await _remoteDataSource.amcReportStep1(params, token);
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
@@ -2695,20 +2704,14 @@ class AuthRepositoryImpl implements Repository {
           String token = await SessionManager.getAuthToken() ?? "";
           if (token.isEmpty) throw AuthException();
 
-          final respData = await _remoteDataSource.amcReportStep2(
-            params,
-            token,
-          );
+          final respData = await _remoteDataSource.amcReportStep2(params, token);
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         } catch (e) {
           if (e is ApiException) {
             return Left(
-              ServerFailure(
-                e.message ?? mapFailureToMessage(ServerFailure("")),
-              ),
-            );
+                ServerFailure(e.message ?? mapFailureToMessage(ServerFailure(""))));
           }
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
         }
@@ -2729,10 +2732,7 @@ class AuthRepositoryImpl implements Repository {
           String token = await SessionManager.getAuthToken() ?? "";
           if (token.isEmpty) throw AuthException();
 
-          final respData = await _remoteDataSource.amcReportStep3(
-            params,
-            token,
-          );
+          final respData = await _remoteDataSource.amcReportStep3(params, token);
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
@@ -2754,19 +2754,14 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, AmcHistoryResponse>> amcReportsHistory(
-    AmcReportsHistoryParams params,
-  ) async {
+  Future<Either<Failure, AmcHistoryResponse>> amcReportsHistory(AmcReportsHistoryParams params) async {
     return _networkInfo.check<AmcHistoryResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           if (token.isEmpty) throw AuthException();
 
-          final respData = await _remoteDataSource.amcReportsHistory(
-            token,
-            params: params,
-          );
+          final respData = await _remoteDataSource.amcReportsHistory(token, params: params);
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
@@ -2797,10 +2792,7 @@ class AuthRepositoryImpl implements Repository {
           String token = await SessionManager.getAuthToken() ?? "";
           if (token.isEmpty) throw AuthException();
 
-          final respData = await _remoteDataSource.amcReportStep1AutoFill(
-            reportId,
-            token,
-          );
+          final respData = await _remoteDataSource.amcReportStep1AutoFill(reportId, token);
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
@@ -2831,10 +2823,7 @@ class AuthRepositoryImpl implements Repository {
           String token = await SessionManager.getAuthToken() ?? "";
           if (token.isEmpty) throw AuthException();
 
-          final respData = await _remoteDataSource.amcReportStep2AutoFill(
-            reportId,
-            token,
-          );
+          final respData = await _remoteDataSource.amcReportStep2AutoFill(reportId, token);
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
@@ -2856,18 +2845,16 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, AmcAssignedTechniciansResponse>>
-  amcReportAssignedTechnicians(String reportId) async {
+  Future<Either<Failure, AmcAssignedTechniciansResponse>> amcReportAssignedTechnicians(
+    String reportId,
+  ) async {
     return _networkInfo.check<AmcAssignedTechniciansResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
           if (token.isEmpty) throw AuthException();
 
-          final respData = await _remoteDataSource.amcReportAssignedTechnicians(
-            reportId,
-            token,
-          );
+          final respData = await _remoteDataSource.amcReportAssignedTechnicians(reportId, token);
           return Right(respData);
         } on ServerException {
           return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
@@ -2889,17 +2876,12 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, AmcReportPdfResponse>> getAmcReportPdf(
-    String reportId,
-  ) {
+  Future<Either<Failure, AmcReportPdfResponse>> getAmcReportPdf(String reportId) {
     return _networkInfo.check<AmcReportPdfResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.getAmcReportPdf(
-            reportId,
-            token,
-          );
+          final respData = await _remoteDataSource.getAmcReportPdf(reportId, token);
 
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message));
@@ -2925,17 +2907,12 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, FeedbackResponse>> getAmcCheckFeedback(
-    String amcVisitId,
-  ) {
+  Future<Either<Failure, FeedbackResponse>> getAmcCheckFeedback(String amcVisitId) {
     return _networkInfo.check<FeedbackResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.getAmcCheckFeedback(
-            amcVisitId,
-            token,
-          );
+          final respData = await _remoteDataSource.getAmcCheckFeedback(amcVisitId, token);
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message));
           }
@@ -2958,17 +2935,12 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, AmcVisitCompleteResponse>> postAmcVisitComplete(
-    String visitId,
-  ) {
+  Future<Either<Failure, AmcVisitCompleteResponse>> postAmcVisitComplete(String visitId) {
     return _networkInfo.check<AmcVisitCompleteResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.postAmcVisitComplete(
-            visitId,
-            token,
-          );
+          final respData = await _remoteDataSource.postAmcVisitComplete(visitId, token);
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message ?? 'Unknown error'));
           }
@@ -2993,17 +2965,12 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, DeleteAmcReportResponse>> deleteAmcReport(
-    String reportId,
-  ) {
+  Future<Either<Failure, DeleteAmcReportResponse>> deleteAmcReport(String reportId) {
     return _networkInfo.check<DeleteAmcReportResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.deleteAmcReport(
-            reportId,
-            token,
-          );
+          final respData = await _remoteDataSource.deleteAmcReport(reportId, token);
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message ?? 'Unknown error'));
           }
@@ -3028,16 +2995,12 @@ class AuthRepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<Failure, DeleteServiceWorkReportResponse>>
-  deleteServiceWorkReport(String reportId) {
+  Future<Either<Failure, DeleteServiceWorkReportResponse>> deleteServiceWorkReport(String reportId) {
     return _networkInfo.check<DeleteServiceWorkReportResponse>(
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final respData = await _remoteDataSource.deleteServiceWorkReport(
-            reportId,
-            token,
-          );
+          final respData = await _remoteDataSource.deleteServiceWorkReport(reportId, token);
           if (respData.status != 200) {
             return Left(CredentialFailure(respData.message ?? 'Unknown error'));
           }
@@ -3138,9 +3101,8 @@ class AuthRepositoryImpl implements Repository {
       connected: () async {
         try {
           String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.markAllNotificationsRead(
-            token: token,
-          );
+          final response =
+              await _remoteDataSource.markAllNotificationsRead(token: token);
 
           if (response.status != 200) {
             return Left(ServerFailure(response.message ?? ""));

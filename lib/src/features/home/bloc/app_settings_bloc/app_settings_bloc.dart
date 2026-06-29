@@ -9,8 +9,7 @@ import 'app_settings_state.dart';
 class AppSettingsBloc extends Bloc<AppSettingsEvent, AppSettingsState> {
   final GetAppSettingsUseCase getAppSettingsUseCase;
 
-  AppSettingsBloc({required this.getAppSettingsUseCase})
-    : super(AppSettingsInitial()) {
+  AppSettingsBloc({required this.getAppSettingsUseCase}) : super(AppSettingsInitial()) {
     on<GetAppSettingsEvent>(_onGetAppSettings);
   }
 

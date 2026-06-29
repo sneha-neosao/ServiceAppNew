@@ -60,8 +60,7 @@ class ProfileData {
       email: json['email'] ?? '',
       isActive: json['is_active'] ?? false,
       dealer: Dealer.fromJson(json['dealer'] ?? {}),
-      permissions:
-          (json['permissions'] as List<dynamic>?)
+      permissions: (json['permissions'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],

@@ -30,7 +30,7 @@ class ServiceCallsStep2Widget extends StatelessWidget {
               child: Container(
                 height: 48,
                 decoration: BoxDecoration(
-                  color: AppColor.colorFFF1F2F6,
+                  color: const Color(0xFFF1F2F6),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Stack(

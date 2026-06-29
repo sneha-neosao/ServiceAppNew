@@ -12,8 +12,7 @@ class GetAmcAssignedTechniciansUsecase
 
   @override
   Future<Either<Failure, AmcAssignedTechniciansResponse>> call(
-    String params,
-  ) async {
+      String params) async {
     return await repository.amcReportAssignedTechnicians(params);
   }
 }

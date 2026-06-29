@@ -12,9 +12,7 @@ class PostAmcReportStep3UseCase
   PostAmcReportStep3UseCase(this.repository);
 
   @override
-  Future<Either<Failure, AmcReportStep3Response>> call(
-    PostAmcReportStep3Params params,
-  ) async {
+  Future<Either<Failure, AmcReportStep3Response>> call(PostAmcReportStep3Params params) async {
     return repository.amcReportStep3(params);
   }
 }

@@ -5,18 +5,12 @@ import 'service_work_report_technicians_event.dart';
 import 'service_work_report_technicians_state.dart';
 
 class ServiceWorkReportTechniciansBloc
-    extends
-        Bloc<
-          ServiceWorkReportTechniciansEvent,
-          ServiceWorkReportTechniciansState
-        > {
+    extends Bloc<ServiceWorkReportTechniciansEvent, ServiceWorkReportTechniciansState> {
   final ServiceWorkReportTechniciansUsecase usecase;
 
   ServiceWorkReportTechniciansBloc(this.usecase)
-    : super(ServiceWorkReportTechniciansInitial()) {
-    on<FetchServiceWorkReportTechniciansEvent>(
-      _onFetchServiceWorkReportTechniciansEvent,
-    );
+      : super(ServiceWorkReportTechniciansInitial()) {
+    on<FetchServiceWorkReportTechniciansEvent>(_onFetchServiceWorkReportTechniciansEvent);
   }
 
   Future<void> _onFetchServiceWorkReportTechniciansEvent(
@@ -28,8 +22,9 @@ class ServiceWorkReportTechniciansBloc
       ServiceWorkReportTechniciansParams(event.reportId),
     );
     result.fold(
-      (failure) =>
-          emit(ServiceWorkReportTechniciansError(mapFailureToMessage(failure))),
+      (failure) => emit(
+        ServiceWorkReportTechniciansError(mapFailureToMessage(failure)),
+      ),
       (response) => emit(ServiceWorkReportTechniciansLoaded(response)),
     );
   }

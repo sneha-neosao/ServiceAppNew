@@ -1,4 +1,3 @@
-import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
@@ -61,7 +60,7 @@ class AppAlertDialogWidget extends StatelessWidget {
                   style: AppFont.style(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColor.colorFF0D121F,
+                    color: const Color(0xFF0D121F),
                   ),
                 ),
 
@@ -74,7 +73,7 @@ class AppAlertDialogWidget extends StatelessWidget {
                   style: AppFont.style(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
-                    color: AppColor.colorFF5C616E,
+                    color: const Color(0xFF5C616E),
                     height: 1.4,
                   ),
                 ),
@@ -90,7 +89,7 @@ class AppAlertDialogWidget extends StatelessWidget {
                         child: TextButton(
                           onPressed: () => Navigator.pop(context),
                           style: TextButton.styleFrom(
-                            backgroundColor: AppColor.colorFFF6F6F6,
+                            backgroundColor: const Color(0xFFF6F6F6),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -100,7 +99,7 @@ class AppAlertDialogWidget extends StatelessWidget {
                             style: AppFont.style(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
-                              color: AppColor.colorFF0D121F,
+                              color: const Color(0xFF0D121F),
                             ),
                           ),
                         ),
@@ -122,21 +121,21 @@ class AppAlertDialogWidget extends StatelessWidget {
                           ),
                           child: isLoading
                               ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
                               : Text(
-                                  confirmText,
-                                  style: AppFont.style(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                            confirmText,
+                            style: AppFont.style(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -152,11 +151,7 @@ class AppAlertDialogWidget extends StatelessWidget {
             right: 12,
             child: GestureDetector(
               onTap: () => Navigator.pop(context),
-              child: const Icon(
-                Icons.close,
-                size: 20,
-                color: AppColor.colorFFB0B8C8,
-              ),
+              child: const Icon(Icons.close, size: 20, color: Color(0xFFB0B8C8)),
             ),
           ),
         ],

@@ -8,7 +8,7 @@ class ServiceWorkReportStep4Bloc
   final ServiceWorkReportStep4Usecase usecase;
 
   ServiceWorkReportStep4Bloc({required this.usecase})
-    : super(ServiceWorkReportStep4Initial()) {
+      : super(ServiceWorkReportStep4Initial()) {
     on<PostServiceWorkReportStep4Event>((event, emit) async {
       emit(ServiceWorkReportStep4Loading());
       final result = await usecase(event.params);
@@ -20,11 +20,8 @@ class ServiceWorkReportStep4Bloc
           if (response.status == 200) {
             emit(ServiceWorkReportStep4Loaded(response: response));
           } else {
-            emit(
-              ServiceWorkReportStep4Error(
-                message: response.message ?? 'Unknown error occurred',
-              ),
-            );
+            emit(ServiceWorkReportStep4Error(
+                message: response.message ?? 'Unknown error occurred'));
           }
         },
       );

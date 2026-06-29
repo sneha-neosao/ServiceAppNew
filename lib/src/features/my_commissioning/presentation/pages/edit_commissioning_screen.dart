@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
-import 'package:service_app/src/core/theme/app_color.dart';
 
 class EditCommissioningScreen extends StatelessWidget {
   final VoidCallback onBack;
@@ -31,7 +30,7 @@ class EditCommissioningScreen extends StatelessWidget {
                 width: 4,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: AppColor.colorFF1565C0,
+                  color: const Color(0xFF1565C0),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -44,7 +43,7 @@ class EditCommissioningScreen extends StatelessWidget {
                     style: AppFont.style(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
-                      color: AppColor.colorFF0D121F,
+                      color: const Color(0xFF0D121F),
                     ),
                   ),
                   Text(
@@ -52,7 +51,7 @@ class EditCommissioningScreen extends StatelessWidget {
                     style: AppFont.style(
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
-                      color: AppColor.colorFFA5ABB7,
+                      color: const Color(0xFFA5ABB7),
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -94,7 +93,7 @@ class EditCommissioningScreen extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onBack,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColor.colorFF0D47A1,
+                backgroundColor: const Color(0xFF0D47A1),
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
@@ -135,7 +134,7 @@ class EditCommissioningScreen extends StatelessWidget {
             style: AppFont.style(
               fontSize: 10,
               fontWeight: FontWeight.w800,
-              color: AppColor.colorFFA5ABB7,
+              color: const Color(0xFFA5ABB7),
               letterSpacing: 0.5,
             ),
           ),
@@ -144,14 +143,10 @@ class EditCommissioningScreen extends StatelessWidget {
               width: 24,
               height: 24,
               decoration: BoxDecoration(
-                color: AppColor.colorFFF1F8FF,
+                color: const Color(0xFFF1F8FF),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Icon(
-                Icons.add,
-                size: 16,
-                color: AppColor.colorFF1565C0,
-              ),
+              child: const Icon(Icons.add, size: 16, color: Color(0xFF1565C0)),
             ),
         ],
       ),
@@ -163,9 +158,9 @@ class EditCommissioningScreen extends StatelessWidget {
       height: 56,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColor.colorFFF8F9FB,
+        color: const Color(0xFFF8F9FB),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColor.colorFFF1F2F6),
+        border: Border.all(color: const Color(0xFFF1F2F6)),
       ),
       child: Row(
         children: [
@@ -175,11 +170,11 @@ class EditCommissioningScreen extends StatelessWidget {
               style: AppFont.style(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
-                color: AppColor.colorFF0D121F,
+                color: const Color(0xFF0D121F),
               ),
             ),
           ),
-          const Icon(Icons.keyboard_arrow_down, color: AppColor.colorFFA5ABB7),
+          const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7)),
         ],
       ),
     );
@@ -192,16 +187,16 @@ class EditCommissioningScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
-        color: AppColor.colorFFF8F9FB,
+        color: const Color(0xFFF8F9FB),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColor.colorFFF1F2F6),
+        border: Border.all(color: const Color(0xFFF1F2F6)),
       ),
       child: Text(
         value,
         style: AppFont.style(
           fontSize: 14,
           fontWeight: FontWeight.w800,
-          color: AppColor.colorFF0D121F,
+          color: const Color(0xFF0D121F),
         ),
       ),
     );

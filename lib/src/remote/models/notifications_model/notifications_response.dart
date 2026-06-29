@@ -6,50 +6,55 @@ class NotificationsResponse {
   final NotificationsData? data;
   final String? message;
 
-  NotificationsResponse({this.status, this.success, this.data, this.message});
+  NotificationsResponse({
+    this.status,
+    this.success,
+    this.data,
+    this.message,
+  });
 
   factory NotificationsResponse.fromJson(Map<String, dynamic> json) =>
       NotificationsResponse(
         status: json["status"],
         success: json["success"],
-        data: json["data"] == null
-            ? null
-            : NotificationsData.fromJson(json["data"]),
+        data: json["data"] == null ? null : NotificationsData.fromJson(json["data"]),
         message: json["message"],
       );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "success": success,
-    "data": data?.toJson(),
-    "message": message,
-  };
+        "status": status,
+        "success": success,
+        "data": data?.toJson(),
+        "message": message,
+      };
 }
 
 class NotificationsData {
   final List<NotificationItem>? results;
   final Pagination? pagination;
 
-  NotificationsData({this.results, this.pagination});
+  NotificationsData({
+    this.results,
+    this.pagination,
+  });
 
   factory NotificationsData.fromJson(Map<String, dynamic> json) =>
       NotificationsData(
         results: json["results"] == null
             ? []
             : List<NotificationItem>.from(
-                json["results"]!.map((x) => NotificationItem.fromJson(x)),
-              ),
+                json["results"]!.map((x) => NotificationItem.fromJson(x))),
         pagination: json["pagination"] == null
             ? null
             : Pagination.fromJson(json["pagination"]),
       );
 
   Map<String, dynamic> toJson() => {
-    "results": results == null
-        ? []
-        : List<dynamic>.from(results!.map((x) => x.toJson())),
-    "pagination": pagination?.toJson(),
-  };
+        "results": results == null
+            ? []
+            : List<dynamic>.from(results!.map((x) => x.toJson())),
+        "pagination": pagination?.toJson(),
+      };
 }
 
 class NotificationItem {
@@ -83,8 +88,7 @@ class NotificationItem {
     this.sourceType,
   });
 
-  factory NotificationItem.fromJson(Map<String, dynamic> json) =>
-      NotificationItem(
+  factory NotificationItem.fromJson(Map<String, dynamic> json) => NotificationItem(
         id: json["id"],
         notificationType: json["notification_type"],
         title: json["title"],
@@ -101,20 +105,20 @@ class NotificationItem {
       );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "notification_type": notificationType,
-    "title": title,
-    "message": message,
-    "customer_name": customerName,
-    "site_name": siteName,
-    "complaint_number": complaintNumber,
-    "reference_number": referenceNumber,
-    "is_read": isRead,
-    "read_at": readAt,
-    "created_at": createdAt,
-    "source_id": sourceId,
-    "source_type": sourceType,
-  };
+        "id": id,
+        "notification_type": notificationType,
+        "title": title,
+        "message": message,
+        "customer_name": customerName,
+        "site_name": siteName,
+        "complaint_number": complaintNumber,
+        "reference_number": referenceNumber,
+        "is_read": isRead,
+        "read_at": readAt,
+        "created_at": createdAt,
+        "source_id": sourceId,
+        "source_type": sourceType,
+      };
 }
 
 class Pagination {
@@ -123,19 +127,24 @@ class Pagination {
   final int? totalPages;
   final int? totalItems;
 
-  Pagination({this.page, this.pageSize, this.totalPages, this.totalItems});
+  Pagination({
+    this.page,
+    this.pageSize,
+    this.totalPages,
+    this.totalItems,
+  });
 
   factory Pagination.fromJson(Map<String, dynamic> json) => Pagination(
-    page: json["page"],
-    pageSize: json["page_size"],
-    totalPages: json["total_pages"],
-    totalItems: json["total_items"],
-  );
+        page: json["page"],
+        pageSize: json["page_size"],
+        totalPages: json["total_pages"],
+        totalItems: json["total_items"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "page": page,
-    "page_size": pageSize,
-    "total_pages": totalPages,
-    "total_items": totalItems,
-  };
+        "page": page,
+        "page_size": pageSize,
+        "total_pages": totalPages,
+        "total_items": totalItems,
+      };
 }

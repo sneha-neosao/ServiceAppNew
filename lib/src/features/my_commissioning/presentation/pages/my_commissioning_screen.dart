@@ -65,16 +65,13 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
                       style: AppFont.style(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: AppColor.colorFF0D121F,
+                        color: const Color(0xFF0D121F),
                       ),
                     ),
                   ),
                   const SizedBox(width: 10),
                   // Count badge
-                  BlocBuilder<
-                    CommissioningWorkListBloc,
-                    CommissioningWorkListState
-                  >(
+                  BlocBuilder<CommissioningWorkListBloc, CommissioningWorkListState>(
                     bloc: _bloc,
                     builder: (context, state) {
                       if (state is CommissioningWorkListInitialState ||
@@ -92,7 +89,7 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
                           ),
                         );
                       }
-
+                      
                       int count = 0;
                       if (state is CommissioningWorkListSuccessState) {
                         count = state.data.data.length;
@@ -102,7 +99,7 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
                         width: 28,
                         height: 28,
                         decoration: const BoxDecoration(
-                          color: AppColor.colorFF1565C0,
+                          color: Color(0xFF1565C0),
                           shape: BoxShape.circle,
                         ),
                         child: Center(
@@ -125,140 +122,117 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
             // ── List ─────────────────────────────────────────────────────────────
             Expanded(
               child: RefreshIndicator(
-                color: AppColor.colorFF0B68B9,
+                color: const Color(0xFF0B68B9),
                 onRefresh: () async {
                   _bloc.add(CommissioningWorkListGetEvent());
                   await Future.delayed(const Duration(seconds: 1));
                 },
-                child:
-                    BlocBuilder<
-                      CommissioningWorkListBloc,
-                      CommissioningWorkListState
-                    >(
-                      bloc: _bloc,
-                      builder: (context, state) {
-                        if (state is CommissioningWorkListInitialState ||
-                            state is CommissioningWorkListLoadingState) {
-                          return ListView.separated(
-                            padding: const EdgeInsets.only(
-                              left: 16,
-                              right: 16,
-                              top: 6,
-                              bottom: 100,
+                child: BlocBuilder<CommissioningWorkListBloc, CommissioningWorkListState>(
+                  bloc: _bloc,
+                  builder: (context, state) {
+                  if (state is CommissioningWorkListInitialState ||
+                      state is CommissioningWorkListLoadingState) {
+                    return ListView.separated(
+                      padding: const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 100),
+                      itemCount: 3,
+                      separatorBuilder: (context, index) => const SizedBox(height: 16),
+                      itemBuilder: (context, index) => const ListCardShimmer(),
+                    );
+                  } else if (state is CommissioningWorkListFailureState) {
+                    return ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.6,
+                          child: Center(
+                            child: Text(
+                              state.message,
+                              style: AppFont.style(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.red,
+                              ),
                             ),
-                            itemCount: 3,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 16),
-                            itemBuilder: (context, index) =>
-                                const ListCardShimmer(),
-                          );
-                        } else if (state is CommissioningWorkListFailureState) {
-                          return ListView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            children: [
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.6,
-                                child: Center(
-                                  child: Text(
-                                    state.message,
-                                    style: AppFont.style(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.red,
-                                    ),
-                                  ),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else if (state is CommissioningWorkListSuccessState) {
+                    final items = state.data.data;
+                    
+                    if (items.isEmpty) {
+                      return ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            child: Center(
+                              child: Text(
+                                'no_commissioning_work_message'.tr(),
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  color: const Color(0xFFA5ABB7),
                                 ),
                               ),
-                            ],
-                          );
-                        } else if (state is CommissioningWorkListSuccessState) {
-                          final items = state.data.data;
-
-                          if (items.isEmpty) {
-                            return ListView(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              children: [
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.6,
-                                  child: Center(
-                                    child: Text(
-                                      'no_commissioning_work_message'.tr(),
-                                      style: AppFont.style(
-                                        fontSize: 12,
-                                        color: AppColor.colorFFA5ABB7,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }
-
-                          return ListView.separated(
-                            padding: const EdgeInsets.only(
-                              left: 16,
-                              right: 16,
-                              top: 6,
-                              bottom: 100,
                             ),
-                            itemCount: items.length,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 16),
-                            itemBuilder: (context, index) {
-                              final item = items[index];
-                              final membersString =
-                                  item.assignedTechnicians.isNotEmpty
-                                  ? item.assignedTechnicians
-                                        .map((t) => t.name)
-                                        .join(', ')
-                                  : 'no_technician_assigned'.tr();
+                          ),
+                        ],
+                      );
+                    }
 
-                              return CommissioningCard(
-                                companyName: item.customer.name,
-                                equipmentName: item.applicationOfEquipment,
-                                location: item.site.name,
-                                members: membersString,
-                                onEdit: () async {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          AddCommissioningScreen(
-                                            editWorkId: item.id,
-                                            onBack: () =>
-                                                Navigator.pop(context),
-                                          ),
+                    return ListView.separated(
+                      padding: const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 100),
+                      itemCount: items.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 16),
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        final membersString = item.assignedTechnicians.isNotEmpty
+                            ? item.assignedTechnicians
+                                  .map((t) => t.name)
+                                  .join(', ')
+                            : 'no_technician_assigned'.tr();
+
+                        return CommissioningCard(
+                          companyName: item.customer.name,
+                          equipmentName: item.applicationOfEquipment,
+                          location: item.site.name,
+                          members: membersString,
+                          onEdit: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddCommissioningScreen(
+                                  editWorkId: item.id,
+                                  onBack: () => Navigator.pop(context),
+                                ),
+                              ),
+                            );
+                            _bloc.add(CommissioningWorkListGetEvent());
+                          },
+                          onDelete: () => _showDeleteDialog(context, item.id),
+                          onSubmit: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    CreateCommissioningReportScreen(
+                                      commissioningWorkId: item.id,
+                                      initialStepNo: item.stepNo,
+                                      reportId: item.reportId,
+                                      onBack: () => Navigator.pop(context),
                                     ),
-                                  );
-                                  _bloc.add(CommissioningWorkListGetEvent());
-                                },
-                                onDelete: () =>
-                                    _showDeleteDialog(context, item.id),
-                                onSubmit: () async {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          CreateCommissioningReportScreen(
-                                            commissioningWorkId: item.id,
-                                            initialStepNo: item.stepNo,
-                                            reportId: item.reportId,
-                                            onBack: () =>
-                                                Navigator.pop(context),
-                                          ),
-                                    ),
-                                  );
-                                  _bloc.add(CommissioningWorkListGetEvent());
-                                },
-                              );
-                            },
-                          );
-                        }
-                        return const SizedBox();
+                              ),
+                            );
+                            _bloc.add(CommissioningWorkListGetEvent());
+                          },
+                        );
                       },
-                    ),
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
               ),
             ),
           ],
@@ -274,46 +248,51 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
       builder: (BuildContext dialogContext) {
         return BlocProvider(
           create: (_) => getIt<CommissioningWorkDeleteBloc>(),
-          child:
-              BlocConsumer<
-                CommissioningWorkDeleteBloc,
-                CommissioningWorkDeleteState
-              >(
-                listener: (context, state) {
-                  if (state is CommissioningWorkDeleteSuccessState) {
-                    Navigator.pop(dialogContext);
-                    appSnackBar(context, AppColor.green, state.message);
-                    _bloc.add(CommissioningWorkListGetEvent());
-                  } else if (state is CommissioningWorkDeleteFailureState) {
-                    Navigator.pop(dialogContext);
-                    appSnackBar(context, AppColor.bright_red, state.message);
-                  }
-                },
-                builder: (context, state) {
-                  final isLoading =
-                      state is CommissioningWorkDeleteLoadingState;
-                  return AppAlertDialogWidget(
-                    title: 'delete_work'.tr(),
-                    subtitle: 'delete_work_subtitle'.tr(),
-                    confirmText: 'delete_now'.tr(),
-                    cancelText: 'cancel'.tr(),
-                    icon: Icons.error_outline,
-                    iconBgColor: AppColor.colorFFFFF1F0,
-                    iconColor: AppColor.colorFFFF4D4F,
-                    confirmBtnColor: AppColor.colorFFE30000,
-                    isLoading: isLoading,
-                    onConfirm: isLoading
-                        ? () {}
-                        : () {
-                            context.read<CommissioningWorkDeleteBloc>().add(
-                              CommissioningWorkDeleteSubmitEvent(workId),
-                            );
-                          },
+          child: BlocConsumer<CommissioningWorkDeleteBloc, CommissioningWorkDeleteState>(
+            listener: (context, state) {
+              if (state is CommissioningWorkDeleteSuccessState) {
+                Navigator.pop(dialogContext);
+                appSnackBar(
+                  context, AppColor.green,
+                  state.message,
+                );
+                _bloc.add(CommissioningWorkListGetEvent());
+              } else if (state is CommissioningWorkDeleteFailureState) {
+                Navigator.pop(dialogContext);
+                appSnackBar(
+                  context, AppColor.bright_red,
+                  state.message,
+                );
+              }
+            },
+            builder: (context, state) {
+              final isLoading = state is CommissioningWorkDeleteLoadingState;
+              return AppAlertDialogWidget(
+                title: 'delete_work'.tr(),
+                subtitle: 'delete_work_subtitle'.tr(),
+                confirmText: 'delete_now'.tr(),
+                cancelText: 'cancel'.tr(),
+                icon: Icons.error_outline,
+                iconBgColor: const Color(0xFFFFF1F0),
+                iconColor: const Color(0xFFFF4D4F),
+                confirmBtnColor: const Color(0xFFE30000),
+                isLoading: isLoading,
+                onConfirm: isLoading
+                    ? () {}
+                    : () {
+                  context.read<CommissioningWorkDeleteBloc>().add(
+                    CommissioningWorkDeleteSubmitEvent(workId),
                   );
                 },
-              ),
+              );
+            },
+          ),
         );
       },
     );
   }
+
 }
+
+
+

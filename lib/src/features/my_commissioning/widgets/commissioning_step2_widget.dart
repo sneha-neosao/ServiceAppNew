@@ -12,7 +12,7 @@ class Step2Widget extends StatelessWidget {
         // ── Member Context Label ─────────────────────────────────────────
         // parent._buildLabel('commissioning_member_context_label'.tr()),
         const SizedBox(height: 12),
-        // const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
+        // const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         // const SizedBox(height: 32),
         // ── Member Presents ─────────────────────────────────────────────
         Row(
@@ -27,7 +27,7 @@ class Step2Widget extends StatelessWidget {
                   style: AppFont.style(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
-                    color: AppColor.colorFF5C6672,
+                    color: const Color(0xFF5C6672),
                   ),
                 ),
               ),
@@ -39,7 +39,7 @@ class Step2Widget extends StatelessWidget {
                 style: AppFont.style(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
-                  color: AppColor.colorFFE5E7EB,
+                  color: const Color(0xFFE5E7EB),
                 ),
               ),
             ),
@@ -62,14 +62,14 @@ class Step2Widget extends StatelessWidget {
                                 style: AppFont.style(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w900,
-                                  color: AppColor.colorFF0D121F,
+                                  color: const Color(0xFF0D121F),
                                 ),
                                 decoration: InputDecoration(
                                   hintText: 'commissioning_representative'.tr(),
                                   hintStyle: AppFont.style(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w900,
-                                    color: AppColor.colorFFA5ABB7,
+                                    color: const Color(0xFFA5ABB7),
                                   ),
                                   border: InputBorder.none,
                                   isDense: true,
@@ -101,7 +101,7 @@ class Step2Widget extends StatelessWidget {
                                 },
                                 child: const Icon(
                                   Icons.remove,
-                                  color: AppColor.colorFFFF5252,
+                                  color: Color(0xFFFF5252),
                                   size: 24,
                                 ),
                               ),
@@ -111,7 +111,7 @@ class Step2Widget extends StatelessWidget {
                         const Divider(
                           height: 1,
                           thickness: 1,
-                          color: AppColor.colorFFF1F2F6,
+                          color: Color(0xFFF1F2F6),
                         ),
                       ],
                     ),
@@ -137,7 +137,7 @@ class Step2Widget extends StatelessWidget {
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: AppColor.colorFF5C6672,
+                          color: const Color(0xFF5C6672),
                         ),
                       ),
                       const TextSpan(
@@ -153,7 +153,7 @@ class Step2Widget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(':', style: TextStyle(color: AppColor.colorFF8E9BAE)),
+              const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
               const SizedBox(width: 8),
               Expanded(
                 child: SearchableDropdown<String>(
@@ -168,7 +168,7 @@ class Step2Widget extends StatelessWidget {
                   itemAsString: (val) => val.tr(),
                   // icon: const Icon(
                   //   Icons.keyboard_arrow_down,
-                  //   color: AppColor.colorFFA5ABB7,
+                  //   color: Color(0xFFA5ABB7),
                   // ),
                   onChanged: (val) {
                     parent.updateState(() {
@@ -190,13 +190,13 @@ class Step2Widget extends StatelessWidget {
         // ── Purpose of Visit Section ─────────────────────────────────────
         parent._buildLabel('commissioning_agenda_title'.tr()),
         const SizedBox(height: 12),
-        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 16),
         // ── Purpose Text Area ────────────────────────────────────────────
         Container(
           decoration: BoxDecoration(
-            color: AppColor.colorFFF9FAFB,
-            border: Border.all(color: AppColor.colorFFE5E7EB),
+            color: const Color(0xFFF9FAFB),
+            border: Border.all(color: const Color(0xFFE5E7EB)),
           ),
           child: Stack(
             children: [
@@ -208,14 +208,14 @@ class Step2Widget extends StatelessWidget {
                 style: AppFont.style(
                   fontSize: 14,
                   fontWeight: FontWeight.w900,
-                  color: AppColor.colorFF0D121F,
+                  color: const Color(0xFF0D121F),
                 ),
                 decoration: InputDecoration(
                   hintText: 'commissioning_agenda_hint'.tr(),
                   hintStyle: AppFont.style(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColor.colorFFA5ABB7,
+                    color: const Color(0xFFA5ABB7),
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.all(16),
@@ -232,7 +232,7 @@ class Step2Widget extends StatelessWidget {
                 child: Icon(
                   Icons.signal_cellular_4_bar,
                   size: 12,
-                  color: AppColor.colorFFA5ABB7,
+                  color: Color(0xFFA5ABB7),
                 ),
               ),
             ],

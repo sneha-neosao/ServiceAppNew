@@ -35,7 +35,7 @@ class ServiceCallsStep4Widget extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
-              color: AppColor.colorFFF3F8FF,
+              color: const Color(0xFFF3F8FF),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -43,7 +43,7 @@ class ServiceCallsStep4Widget extends StatelessWidget {
               children: [
                 const Icon(
                   Icons.refresh,
-                  color: AppColor.colorFF1565C0,
+                  color: Color(0xFF1565C0),
                   size: 20,
                 ),
                 const SizedBox(width: 8),
@@ -52,7 +52,7 @@ class ServiceCallsStep4Widget extends StatelessWidget {
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: AppColor.colorFF1565C0,
+                    color: const Color(0xFF1565C0),
                   ),
                 ),
               ],

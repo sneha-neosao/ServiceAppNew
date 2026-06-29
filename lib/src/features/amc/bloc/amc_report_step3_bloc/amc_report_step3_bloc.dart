@@ -3,12 +3,10 @@ import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step
 import 'amc_report_step3_event.dart';
 import 'amc_report_step3_state.dart';
 
-class AmcReportStep3Bloc
-    extends Bloc<AmcReportStep3Event, AmcReportStep3State> {
+class AmcReportStep3Bloc extends Bloc<AmcReportStep3Event, AmcReportStep3State> {
   final PostAmcReportStep3UseCase postAmcReportStep3UseCase;
 
-  AmcReportStep3Bloc(this.postAmcReportStep3UseCase)
-    : super(AmcReportStep3InitialState()) {
+  AmcReportStep3Bloc(this.postAmcReportStep3UseCase) : super(AmcReportStep3InitialState()) {
     on<PostAmcReportStep3Event>((event, emit) async {
       emit(AmcReportStep3LoadingState());
       final result = await postAmcReportStep3UseCase(event.params);

@@ -9,7 +9,7 @@ class AmcAssignedTechniciansBloc
   final GetAmcAssignedTechniciansUsecase getAmcAssignedTechniciansUsecase;
 
   AmcAssignedTechniciansBloc(this.getAmcAssignedTechniciansUsecase)
-    : super(AmcAssignedTechniciansInitialState()) {
+      : super(AmcAssignedTechniciansInitialState()) {
     on<GetAmcAssignedTechniciansEvent>((event, emit) async {
       emit(AmcAssignedTechniciansLoadingState());
 

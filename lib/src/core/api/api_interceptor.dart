@@ -41,9 +41,7 @@ class ApiInterceptor extends Interceptor {
 
     options.baseUrl = ApiUrl.baseUrl;
 
-    bool skipAuth =
-        options.path.contains('login') ||
-        options.path.contains('/token/refresh');
+    bool skipAuth = options.path.contains('login') || options.path.contains('/token/refresh');
 
     if (!skipAuth && token != null) {
       options.headers['Authorization'] = 'Bearer $token';
@@ -109,19 +107,15 @@ class ApiInterceptor extends Interceptor {
           final refreshResponse = await dio.post(
             "${ApiUrl.baseUrl}technician/token/refresh",
             data: {'refresh_token': refreshToken},
-            options: Options(
-              headers: {
-                'accept': 'application/json',
-                'Content-Type': 'application/json',
-              },
-            ),
+            options: Options(headers: {
+              'accept': 'application/json',
+              'Content-Type': 'application/json',
+            }),
           );
 
-          if (refreshResponse.statusCode == 200 &&
-              refreshResponse.data['data'] != null) {
+          if (refreshResponse.statusCode == 200 && refreshResponse.data['data'] != null) {
             final newToken = refreshResponse.data['data']['access_token'];
-            final newRefreshToken =
-                refreshResponse.data['data']['refresh_token'];
+            final newRefreshToken = refreshResponse.data['data']['refresh_token'];
             print("new token after refresh token api called: ${newToken}");
 
             if (newToken != null) {
@@ -196,10 +190,7 @@ class ApiInterceptor extends Interceptor {
       if (context == null) return;
 
       // Close any open dialogs/bottom sheets on the root navigator
-      Navigator.of(
-        context,
-        rootNavigator: true,
-      ).popUntil((route) => route.isFirst);
+      Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
 
       context.go(AppRoute.loginScreen.path);
     });

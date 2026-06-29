@@ -24,25 +24,20 @@ class ProfileLogoutDialog extends StatelessWidget {
           if (state is AuthLogoutSuccessState) {
             final nav = Navigator.of(context, rootNavigator: true);
             final router = GoRouter.of(context);
-
+            
             // Pop the dialog
             nav.pop();
             // Pop the ProfileScreen
             nav.pop();
-
+            
             // Replace declarative route with LoginScreen
             router.goNamed(AppRoute.loginScreen.name);
           }
         },
         child: Dialog(
           backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          insetPadding: const EdgeInsets.symmetric(
-            horizontal: 24,
-            vertical: 24,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           child: Stack(
             children: [
               Padding(
@@ -55,16 +50,16 @@ class ProfileLogoutDialog extends StatelessWidget {
                       width: 64,
                       height: 64,
                       decoration: const BoxDecoration(
-                        color: AppColor.colorFFE9F5FF, // Light blue background
+                        color: Color(0xFFE9F5FF), // Light blue background
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
                         Icons.logout,
-                        color: AppColor.colorFF1565C0, // Darker blue icon
+                        color: Color(0xFF1565C0), // Darker blue icon
                         size: 32,
                       ),
                     ),
-
+                    
                     const SizedBox(height: 20),
 
                     // ── Title ───────────────────────────────────────────────────────
@@ -73,7 +68,7 @@ class ProfileLogoutDialog extends StatelessWidget {
                       style: AppFont.style(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: AppColor.colorFF0D121F,
+                        color: const Color(0xFF0D121F),
                       ),
                     ),
 
@@ -86,7 +81,7 @@ class ProfileLogoutDialog extends StatelessWidget {
                       style: AppFont.style(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppColor.colorFF5C616E,
+                        color: const Color(0xFF5C616E),
                         height: 1.4,
                       ),
                     ),
@@ -103,7 +98,7 @@ class ProfileLogoutDialog extends StatelessWidget {
                             child: TextButton(
                               onPressed: () => Navigator.pop(context),
                               style: TextButton.styleFrom(
-                                backgroundColor: AppColor.colorFFF6F6F6,
+                                backgroundColor: const Color(0xFFF6F6F6),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -116,7 +111,7 @@ class ProfileLogoutDialog extends StatelessWidget {
                                   style: AppFont.style(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w800,
-                                    color: AppColor.colorFF0D121F,
+                                    color: const Color(0xFF0D121F),
                                   ),
                                 ),
                               ),
@@ -138,13 +133,10 @@ class ProfileLogoutDialog extends StatelessWidget {
                                           AuthLogoutEvent(),
                                         ),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColor
-                                        .colorFF0D47A1, // Blue for logout
+                                    backgroundColor: const Color(0xFF0D47A1), // Blue for logout
                                     foregroundColor: Colors.white,
                                     elevation: 0,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 4,
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 4),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
@@ -180,7 +172,7 @@ class ProfileLogoutDialog extends StatelessWidget {
                   ],
                 ),
               ),
-
+              
               // ── Close (X) Icon ────────────────────────────────────────────────
               Positioned(
                 top: 12,
@@ -192,7 +184,7 @@ class ProfileLogoutDialog extends StatelessWidget {
                     child: const Icon(
                       Icons.close,
                       size: 20,
-                      color: AppColor.colorFFB0B8C8,
+                      color: Color(0xFFB0B8C8),
                     ),
                   ),
                 ),
@@ -226,16 +218,16 @@ class ProfileDeleteDialog extends StatelessWidget {
                   width: 64,
                   height: 64,
                   decoration: const BoxDecoration(
-                    color: AppColor.colorFFFFF1F0, // Light red background
+                    color: Color(0xFFFFF1F0), // Light red background
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.delete_outline,
-                    color: AppColor.colorFFF44336, // Red icon
+                    color: Color(0xFFF44336), // Red icon
                     size: 32,
                   ),
                 ),
-
+                
                 const SizedBox(height: 20),
 
                 // ── Title ───────────────────────────────────────────────────────
@@ -244,7 +236,7 @@ class ProfileDeleteDialog extends StatelessWidget {
                   style: AppFont.style(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
-                    color: AppColor.colorFF0D121F,
+                    color: const Color(0xFF0D121F),
                   ),
                 ),
 
@@ -257,7 +249,7 @@ class ProfileDeleteDialog extends StatelessWidget {
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: AppColor.colorFF5C616E,
+                    color: const Color(0xFF5C616E),
                     height: 1.4,
                   ),
                 ),
@@ -299,7 +291,7 @@ class ProfileDeleteDialog extends StatelessWidget {
                             child: TextButton(
                               onPressed: () => Navigator.pop(context),
                               style: TextButton.styleFrom(
-                                backgroundColor: AppColor.colorFFF6F6F6,
+                                backgroundColor: const Color(0xFFF6F6F6),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -312,7 +304,7 @@ class ProfileDeleteDialog extends StatelessWidget {
                                   style: AppFont.style(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w800,
-                                    color: AppColor.colorFF0D121F,
+                                    color: const Color(0xFF0D121F),
                                   ),
                                 ),
                               ),
@@ -324,8 +316,7 @@ class ProfileDeleteDialog extends StatelessWidget {
                         Expanded(
                           child: BlocBuilder<DeleteAccountBloc, DeleteAccountState>(
                             builder: (context, state) {
-                              final isLoading =
-                                  state is DeleteAccountLoadingState;
+                              final isLoading = state is DeleteAccountLoadingState;
                               return SizedBox(
                                 height: 48,
                                 child: ElevatedButton(
@@ -333,17 +324,14 @@ class ProfileDeleteDialog extends StatelessWidget {
                                       ? null
                                       : () {
                                           context.read<DeleteAccountBloc>().add(
-                                            const DeleteAccountSubmittedEvent(),
-                                          );
+                                                const DeleteAccountSubmittedEvent(),
+                                              );
                                         },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColor
-                                        .colorFFE30000, // Red for delete
+                                    backgroundColor: const Color(0xFFE30000), // Red for delete
                                     foregroundColor: Colors.white,
                                     elevation: 0,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 4,
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 4),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
@@ -381,7 +369,7 @@ class ProfileDeleteDialog extends StatelessWidget {
               ],
             ),
           ),
-
+          
           // ── Close (X) Icon ────────────────────────────────────────────────
           Positioned(
             top: 12,
@@ -393,7 +381,7 @@ class ProfileDeleteDialog extends StatelessWidget {
                 child: const Icon(
                   Icons.close,
                   size: 20,
-                  color: AppColor.colorFFB0B8C8,
+                  color: Color(0xFFB0B8C8),
                 ),
               ),
             ),

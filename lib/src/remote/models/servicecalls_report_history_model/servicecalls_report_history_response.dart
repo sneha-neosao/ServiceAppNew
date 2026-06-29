@@ -34,14 +34,16 @@ class ReportData {
   final List<ServiceCallReport> results;
   final Pagination pagination;
 
-  ReportData({required this.results, required this.pagination});
+  ReportData({
+    required this.results,
+    required this.pagination,
+  });
 
   factory ReportData.fromJson(Map<String, dynamic> json) {
     return ReportData(
-      results:
-          (json['results'] as List<dynamic>?)
-              ?.map((e) => ServiceCallReport.fromJson(e))
-              .toList() ??
+      results: (json['results'] as List<dynamic>?)
+          ?.map((e) => ServiceCallReport.fromJson(e))
+          .toList() ??
           [],
       pagination: Pagination.fromJson(json['pagination']),
     );
@@ -99,18 +101,11 @@ class ServiceCallReport {
       customerName: json['customer_name'] ?? '',
       siteName: json['site_name'] ?? '',
       dealerName: json['dealer_name'] ?? '',
-      customerRepresentativeName:
-          detail['customer_representative_name'] ??
-          json['customer_representative_name'] ??
-          '',
-      technicianRepresentativeName:
-          detail['technician_representative_name'] ??
-          json['technician_representative_name'] ??
-          '',
+      customerRepresentativeName: detail['customer_representative_name'] ?? json['customer_representative_name'] ?? '',
+      technicianRepresentativeName: detail['technician_representative_name'] ?? json['technician_representative_name'] ?? '',
       status: json['status'] ?? '',
       submittedAt: detail['submitted_at'] ?? json['submitted_at'] ?? '',
-      feedbackSubmitted:
-          detail['feedback_submitted'] ?? json['feedback_submitted'] ?? false,
+      feedbackSubmitted: detail['feedback_submitted'] ?? json['feedback_submitted'] ?? false,
       qrCodeUrl: detail['qr_code_url'] ?? json['qr_code_url'] ?? '',
       qrCodeImage: detail['qr_code_image'] ?? json['qr_code_image'] ?? '',
       reportType: json['report_type'] ?? '',

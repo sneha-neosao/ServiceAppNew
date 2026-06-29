@@ -26,18 +26,19 @@ class ServiceWorkReportStep3Params extends Equatable {
       'is_mechanical_checklist_na': isMechanicalChecklistNa,
       'is_pipeline_checklist_na': isPipelineChecklistNa,
       'is_electrical_checklist_na': isElectricalChecklistNa,
-      'checklist_items': checklistItems.map((e) => e.toJson()).toList(),
+      'checklist_items':
+          checklistItems.map((e) => e.toJson()).toList(),
     };
   }
 
   @override
   List<Object?> get props => [
-    id,
-    isMechanicalChecklistNa,
-    isPipelineChecklistNa,
-    isElectricalChecklistNa,
-    checklistItems,
-  ];
+        id,
+        isMechanicalChecklistNa,
+        isPipelineChecklistNa,
+        isElectricalChecklistNa,
+        checklistItems,
+      ];
 }
 
 class ServiceWorkReportStep3Usecase

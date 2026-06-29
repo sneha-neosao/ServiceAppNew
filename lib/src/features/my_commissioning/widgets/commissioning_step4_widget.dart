@@ -19,12 +19,12 @@ class Step4Widget extends StatelessWidget {
             style: AppFont.style(
               fontSize: 14,
               fontWeight: FontWeight.w900,
-              color: AppColor.colorFFA5ABB7,
+              color: const Color(0xFFA5ABB7),
             ),
           ),
         ),
         const SizedBox(height: 12),
-        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 24),
         // ── Work Description Fields ──────────────────────────────────────
         ...List.generate(

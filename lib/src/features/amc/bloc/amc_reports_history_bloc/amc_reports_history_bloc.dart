@@ -6,8 +6,7 @@ import 'amc_reports_history_state.dart';
 
 import 'package:service_app/src/remote/models/amc_report_model/amc_history_response.dart';
 
-class AmcReportsHistoryBloc
-    extends Bloc<AmcReportsHistoryEvent, AmcReportsHistoryState> {
+class AmcReportsHistoryBloc extends Bloc<AmcReportsHistoryEvent, AmcReportsHistoryState> {
   final GetAmcReportsHistoryUseCase getAmcReportsHistoryUseCase;
 
   int _currentPage = 1;
@@ -18,11 +17,9 @@ class AmcReportsHistoryBloc
   String? _lastDateFrom;
   String? _lastDateTo;
 
-  AmcReportsHistoryBloc(this.getAmcReportsHistoryUseCase)
-    : super(AmcReportsHistoryInitial()) {
+  AmcReportsHistoryBloc(this.getAmcReportsHistoryUseCase) : super(AmcReportsHistoryInitial()) {
     on<GetAmcReportsHistoryEvent>((event, emit) async {
-      bool isNewSearch =
-          event.customerName != _lastCustomerName ||
+      bool isNewSearch = event.customerName != _lastCustomerName ||
           event.siteName != _lastSiteName ||
           event.dateFrom != _lastDateFrom ||
           event.dateTo != _lastDateTo ||
@@ -54,7 +51,7 @@ class AmcReportsHistoryBloc
           pageSize: event.pageSize,
         ),
       );
-
+      
       result.fold(
         (failure) => emit(AmcReportsHistoryErrorState(failure.message)),
         (response) {

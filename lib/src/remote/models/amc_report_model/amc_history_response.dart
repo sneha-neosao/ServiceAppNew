@@ -17,9 +17,7 @@ class AmcHistoryResponse extends Equatable {
     return AmcHistoryResponse(
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
-      data: json['data'] != null
-          ? AmcHistoryReportData.fromJson(json['data'])
-          : null,
+      data: json['data'] != null ? AmcHistoryReportData.fromJson(json['data']) : null,
       message: json['message'] ?? '',
     );
   }
@@ -41,12 +39,14 @@ class AmcHistoryReportData extends Equatable {
   final List<AmcHistoryData> results;
   final AmcHistoryPagination? pagination;
 
-  const AmcHistoryReportData({required this.results, this.pagination});
+  const AmcHistoryReportData({
+    required this.results,
+    this.pagination,
+  });
 
   factory AmcHistoryReportData.fromJson(Map<String, dynamic> json) {
     return AmcHistoryReportData(
-      results:
-          (json['results'] as List<dynamic>?)
+      results: (json['results'] as List<dynamic>?)
               ?.map((e) => AmcHistoryData.fromJson(e))
               .toList() ??
           [],
@@ -110,8 +110,7 @@ class AmcHistoryData extends Equatable {
       siteName: json['site_name'] ?? '',
       dealerName: json['dealer_name'] ?? '',
       customerRepresentativeName: json['customer_representative_name'] ?? '',
-      technicianRepresentativeName:
-          json['technician_representative_name'] ?? '',
+      technicianRepresentativeName: json['technician_representative_name'] ?? '',
       status: json['status'] ?? '',
       submittedAt: json['submitted_at'] ?? '',
       stepNo: json['step_no'] ?? 0,

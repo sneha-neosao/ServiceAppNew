@@ -61,11 +61,8 @@ class ServiceWorkReportStep1Data {
       customerId: json['customer_id']?.toString(),
       siteName: json['site_name']?.toString() ?? '',
       siteId: json['site_id']?.toString(),
-      assignedTechnicians:
-          (json['assigned_technicians'] as List<dynamic>?)
-              ?.map(
-                (e) => AssignedTechnician.fromJson(e as Map<String, dynamic>),
-              )
+      assignedTechnicians: (json['assigned_technicians'] as List<dynamic>?)
+              ?.map((e) => AssignedTechnician.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       lastCompletedStep: json['last_completed_step'] ?? 0,
@@ -77,7 +74,10 @@ class AssignedTechnician {
   final String id;
   final String name;
 
-  AssignedTechnician({required this.id, required this.name});
+  AssignedTechnician({
+    required this.id,
+    required this.name,
+  });
 
   factory AssignedTechnician.fromJson(Map<String, dynamic> json) {
     return AssignedTechnician(

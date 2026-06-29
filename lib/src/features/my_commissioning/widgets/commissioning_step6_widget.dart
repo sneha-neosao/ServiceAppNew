@@ -15,7 +15,7 @@ class Step6Widget extends StatelessWidget {
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w800,
-            color: AppColor.colorFF6B7280,
+            color: const Color(0xFF6B7280),
           ),
         ),
         const SizedBox(height: 10),
@@ -30,7 +30,7 @@ class Step6Widget extends StatelessWidget {
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w800,
-            color: AppColor.colorFF6B7180,
+            color: const Color(0xFF6B7180),
           ),
         ),
         const SizedBox(height: 10),
@@ -39,7 +39,7 @@ class Step6Widget extends StatelessWidget {
           parent._customerRemarksController,
         ),
         const SizedBox(height: 36),
-        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 28),
         // ── Recorded By ────────────────────────────────────────────
         Text(
@@ -47,7 +47,7 @@ class Step6Widget extends StatelessWidget {
           style: AppFont.style(
             fontSize: 14,
             fontWeight: FontWeight.w900,
-            color: AppColor.colorFF0D121F,
+            color: const Color(0xFF0D121F),
           ),
         ),
         const SizedBox(height: 24),
@@ -57,12 +57,12 @@ class Step6Widget extends StatelessWidget {
           style: AppFont.style(
             fontSize: 9,
             fontWeight: FontWeight.w900,
-            color: AppColor.colorFFA5ABB7,
+            color: const Color(0xFFA5ABB7),
             letterSpacing: 0.8,
           ),
         ),
         const SizedBox(height: 16),
-        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 16),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -77,7 +77,7 @@ class Step6Widget extends StatelessWidget {
                       style: AppFont.style(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: AppColor.colorFF8E9BAE,
+                        color: const Color(0xFF8E9BAE),
                       ),
                     ),
                      TextSpan(
@@ -93,7 +93,7 @@ class Step6Widget extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-             Text(':', style: TextStyle(color: AppColor.colorFF8E9BAE)),
+             Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
             const SizedBox(width: 8),
             Expanded(
               child: parent.widget.isServiceReport
@@ -155,12 +155,12 @@ class Step6Widget extends StatelessWidget {
           style: AppFont.style(
             fontSize: 9,
             fontWeight: FontWeight.w900,
-            color: AppColor.colorFFA5ABB7,
+            color: const Color(0xFFA5ABB7),
             letterSpacing: 0.8,
           ),
         ),
         const SizedBox(height: 16),
-        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 16),
         // Editable name field
         Row(
@@ -176,7 +176,7 @@ class Step6Widget extends StatelessWidget {
                       style: AppFont.style(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: AppColor.colorFF8E9BAE,
+                        color: const Color(0xFF8E9BAE),
                       ),
                     ),
                      TextSpan(
@@ -192,7 +192,7 @@ class Step6Widget extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            const Text(':', style: TextStyle(color: AppColor.colorFF8E9BAE)),
+            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
             const SizedBox(width: 8),
             Expanded(
               child: TextField(
@@ -200,21 +200,21 @@ class Step6Widget extends StatelessWidget {
                 style: AppFont.style(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
-                  color: AppColor.colorFF0D121F,
+                  color: const Color(0xFF0D121F),
                 ),
                 decoration: InputDecoration(
                   hintText: 'commissioning_enter_name'.tr(),
                   hintStyle: AppFont.style(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
-                    color: AppColor.colorFFA5ABB7,
+                    color: const Color(0xFFA5ABB7),
                   ),
                   enabledBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: AppColor.colorFFD8DCE6),
+                    borderSide: BorderSide(color: Color(0xFFD8DCE6)),
                   ),
                   focusedBorder: const UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: AppColor.colorFF1565C0,
+                      color: Color(0xFF1565C0),
                       width: 1.5,
                     ),
                   ),
@@ -247,7 +247,7 @@ class Step6Widget extends StatelessWidget {
           },
         ),
         const SizedBox(height: 36),
-        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 28),
         // ── Upload / Capture Work Photos ──────────────────────────────
         RichText(
@@ -258,7 +258,7 @@ class Step6Widget extends StatelessWidget {
                 style: AppFont.style(
                   fontSize: 13,
                   fontWeight: FontWeight.w900,
-                  color: AppColor.colorFF0D121F,
+                  color: const Color(0xFF0D121F),
                 ),
               ),
               TextSpan(
@@ -286,7 +286,7 @@ class Step6Widget extends StatelessWidget {
                     height: 110,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColor.colorFFE5E7EB),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
@@ -336,7 +336,7 @@ class Step6Widget extends StatelessWidget {
                     height: 110,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColor.colorFFE5E7EB),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
@@ -381,7 +381,7 @@ class Step6Widget extends StatelessWidget {
                 }
               },
               child: CustomPaint(
-                painter: _DashedBorderPainter(color: AppColor.colorFFCDD0D8),
+                painter: _DashedBorderPainter(color: const Color(0xFFCDD0D8)),
                 child: Container(
                   width: 110,
                   height: 110,
@@ -389,14 +389,14 @@ class Step6Widget extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.add, size: 28, color: AppColor.colorFFA5ABB7),
+                      const Icon(Icons.add, size: 28, color: Color(0xFFA5ABB7)),
                       const SizedBox(height: 6),
                       Text(
                         'upload'.tr(),
                         style: AppFont.style(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
-                          color: AppColor.colorFFA5ABB7,
+                          color: const Color(0xFFA5ABB7),
                         ),
                       ),
                     ],
@@ -416,7 +416,7 @@ class Step6Widget extends StatelessWidget {
                 }
               },
               child: CustomPaint(
-                painter: _DashedBorderPainter(color: AppColor.colorFFCDD0D8),
+                painter: _DashedBorderPainter(color: const Color(0xFFCDD0D8)),
                 child: Container(
                   width: 110,
                   height: 110,
@@ -424,14 +424,14 @@ class Step6Widget extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.camera_alt_outlined, size: 28, color: AppColor.colorFFA5ABB7),
+                      const Icon(Icons.camera_alt_outlined, size: 28, color: Color(0xFFA5ABB7)),
                       const SizedBox(height: 6),
                       Text(
                         'capture'.tr(),
                         style: AppFont.style(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
-                          color: AppColor.colorFFA5ABB7,
+                          color: const Color(0xFFA5ABB7),
                         ),
                       ),
                     ],

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:service_app/src/core/theme/app_color.dart';
 
 class ListCardShimmer extends StatelessWidget {
   const ListCardShimmer({super.key});
@@ -11,7 +10,7 @@ class ListCardShimmer extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColor.colorFFF1F2F6),
+        border: Border.all(color: const Color(0xFFF1F2F6)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),

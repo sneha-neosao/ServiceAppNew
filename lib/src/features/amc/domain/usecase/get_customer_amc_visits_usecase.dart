@@ -29,8 +29,7 @@ class GetCustomerAmcVisitsUseCase
 
   @override
   Future<Either<Failure, CustomerAmcVisitsResponse>> call(
-    CustomerAmcVisitsParams params,
-  ) async {
+      CustomerAmcVisitsParams params) async {
     return await repository.getCustomerAmcVisits(params);
   }
 }

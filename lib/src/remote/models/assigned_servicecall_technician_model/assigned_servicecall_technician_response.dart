@@ -21,8 +21,8 @@ class AssignedServiceCallTechnicianResponse extends Equatable {
       success: json['success'] ?? false,
       data: (json['data'] != null && json['data']['results'] != null)
           ? (json['data']['results'] as List<dynamic>)
-                .map((e) => AssignedTechnician.fromJson(e))
-                .toList()
+              .map((e) => AssignedTechnician.fromJson(e))
+              .toList()
           : [],
       message: json['message'] ?? '',
     );

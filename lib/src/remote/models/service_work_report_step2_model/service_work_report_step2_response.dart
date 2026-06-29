@@ -50,13 +50,8 @@ class ServiceWorkReportStep2Data {
       id: json['id']?.toString() ?? '',
       isTechnicalNa: json['is_technical_na'] ?? false,
       technicalDetails: json['technical_details']?.toString() ?? '',
-      savedDescriptions:
-          (json['saved_descriptions'] as List<dynamic>?)
-              ?.map(
-                (e) => ServiceWorkSavedDescription.fromJson(
-                  e as Map<String, dynamic>,
-                ),
-              )
+      savedDescriptions: (json['saved_descriptions'] as List<dynamic>?)
+              ?.map((e) => ServiceWorkSavedDescription.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       lastCompletedStep: json['last_completed_step'] ?? 0,
@@ -78,7 +73,10 @@ class ServiceWorkSavedDescription {
   final int srNo;
   final String description;
 
-  ServiceWorkSavedDescription({required this.srNo, required this.description});
+  ServiceWorkSavedDescription({
+    required this.srNo,
+    required this.description,
+  });
 
   factory ServiceWorkSavedDescription.fromJson(Map<String, dynamic> json) {
     return ServiceWorkSavedDescription(
@@ -88,6 +86,9 @@ class ServiceWorkSavedDescription {
   }
 
   Map<String, dynamic> toJson() {
-    return {'sr_no': srNo, 'description': description};
+    return {
+      'sr_no': srNo,
+      'description': description,
+    };
   }
 }

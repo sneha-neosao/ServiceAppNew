@@ -18,7 +18,7 @@ class Step3Widget extends StatelessWidget {
               style: AppFont.style(
                 fontSize: 14,
                 fontWeight: FontWeight.w900,
-                color: AppColor.colorFF0D121F,
+                color: const Color(0xFF0D121F),
               ),
             ),
             Row(
@@ -33,13 +33,13 @@ class Step3Widget extends StatelessWidget {
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: parent._isTechnicalDetailsNA
-                            ? AppColor.colorFF1565C0
-                            : AppColor.colorFFA5ABB7,
+                            ? const Color(0xFF1565C0)
+                            : const Color(0xFFA5ABB7),
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(4),
                       color: parent._isTechnicalDetailsNA
-                          ? AppColor.colorFF1565C0
+                          ? const Color(0xFF1565C0)
                           : Colors.white,
                     ),
                     child: parent._isTechnicalDetailsNA
@@ -53,7 +53,7 @@ class Step3Widget extends StatelessWidget {
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: AppColor.colorFFA5ABB7,
+                    color: const Color(0xFFA5ABB7),
                   ),
                 ),
               ],
@@ -61,7 +61,7 @@ class Step3Widget extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
         const SizedBox(height: 32),
         // ── Input Fields ────────────────────────────────────────────────
         IgnorePointer(

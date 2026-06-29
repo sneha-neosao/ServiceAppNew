@@ -35,12 +35,12 @@ class PostAmcReportStep1Params extends Equatable {
 
   @override
   List<Object?> get props => [
-    amcVisitId,
-    amcReportId,
-    technicianIds,
-    memberPresentsCustomerSide,
-    agenda,
-  ];
+        amcVisitId,
+        amcReportId,
+        technicianIds,
+        memberPresentsCustomerSide,
+        agenda,
+      ];
 }
 
 class PostAmcReportStep1Usecase
@@ -51,8 +51,7 @@ class PostAmcReportStep1Usecase
 
   @override
   Future<Either<Failure, AmcReportStep1Response>> call(
-    PostAmcReportStep1Params params,
-  ) async {
+      PostAmcReportStep1Params params) async {
     return await repository.amcReportStep1(params);
   }
 }

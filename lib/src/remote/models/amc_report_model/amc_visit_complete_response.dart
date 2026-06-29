@@ -15,9 +15,7 @@ class AmcVisitCompleteResponse {
     return AmcVisitCompleteResponse(
       status: json['status'] as int?,
       success: json['success'] as bool?,
-      data: json['data'] != null
-          ? AmcVisitCompleteData.fromJson(json['data'])
-          : null,
+      data: json['data'] != null ? AmcVisitCompleteData.fromJson(json['data']) : null,
       message: json['message'] as String?,
     );
   }

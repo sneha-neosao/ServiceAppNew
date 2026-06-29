@@ -5,16 +5,13 @@ import 'package:service_app/src/core/usecases/usecase.dart';
 import 'package:service_app/src/remote/models/notifications_model/notifications_response.dart';
 import 'package:service_app/src/remote/repositories/repository_impl.dart';
 
-class GetNotificationsUseCase
-    implements UseCase<NotificationsResponse, GetNotificationsParams> {
+class GetNotificationsUseCase implements UseCase<NotificationsResponse, GetNotificationsParams> {
   final Repository _repository;
 
   const GetNotificationsUseCase(this._repository);
 
   @override
-  Future<Either<Failure, NotificationsResponse>> call(
-    GetNotificationsParams params,
-  ) async {
+  Future<Either<Failure, NotificationsResponse>> call(GetNotificationsParams params) async {
     return await _repository.getNotifications(
       page: params.page,
       customerName: params.customerName,

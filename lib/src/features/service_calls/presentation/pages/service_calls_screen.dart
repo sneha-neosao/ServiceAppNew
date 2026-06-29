@@ -26,7 +26,7 @@ import 'package:service_app/src/features/service_calls/widgets/complaint_report_
 import 'package:service_app/src/features/service_calls/widgets/service_call_card.dart';
 import 'package:service_app/src/features/service_calls/widgets/reassign_technician_dialog.dart';
 import 'package:service_app/src/features/service_calls/widgets/close_over_call_dialog.dart';
-import 'package:service_app/src/core/theme/app_color.dart';
+
 
 part 'package:service_app/src/features/service_calls/widgets/service_calls_step1_widget.dart';
 part 'package:service_app/src/features/service_calls/widgets/service_calls_step2_widget.dart';
@@ -51,8 +51,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
   late PendingServiceCallsBloc _pendingServiceCallsBloc;
   final TextEditingController _complaintController = TextEditingController();
   // Pending tab — plain text inputs
-  final TextEditingController _pendingCustomerController =
-      TextEditingController();
+  final TextEditingController _pendingCustomerController = TextEditingController();
   final TextEditingController _pendingSiteController = TextEditingController();
 
   String? _selectedCustomerName;
@@ -133,7 +132,9 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
             SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [ServiceCallsStep1Widget(parent: this)],
+                children: [
+                  ServiceCallsStep1Widget(parent: this),
+                ],
               ),
             ),
             SliverOverlapAbsorber(
@@ -165,18 +166,17 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           ];
         },
         body: Container(
-          color: AppColor.colorFFF8F9FB,
+          color: const Color(0xFFF8F9FB),
           child: RefreshIndicator(
             edgeOffset: 280.0,
-            color: AppColor.colorFF0B68B9,
+            color: const Color(0xFF0B68B9),
             onRefresh: () async {
               _fetchServiceCalls(isRefresh: true);
               await Future.delayed(const Duration(seconds: 1));
             },
             child: NotificationListener<ScrollNotification>(
               onNotification: (ScrollNotification scrollInfo) {
-                if (scrollInfo.metrics.pixels >=
-                        scrollInfo.metrics.maxScrollExtent &&
+                if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
                     scrollInfo.metrics.axis == Axis.vertical) {
                   if (_selectedTab == 0) {
                     _fetchServiceCalls(isRefresh: false, isAssignedOnly: true);
@@ -236,8 +236,8 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   fontSize: 10,
                   fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                   color: isSelected
-                      ? AppColor.colorFF1565C0
-                      : AppColor.colorFFA5ABB7,
+                      ? const Color(0xFF1565C0)
+                      : const Color(0xFFA5ABB7),
                 ),
               ),
               const SizedBox(width: 4),
@@ -260,8 +260,8 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         fontSize: 9,
                         fontWeight: FontWeight.w500,
                         color: isSelected
-                            ? AppColor.colorFF1565C0
-                            : AppColor.colorFFA5ABB7,
+                            ? const Color(0xFF1565C0)
+                            : const Color(0xFFA5ABB7),
                       ),
                     ),
             ],
@@ -282,11 +282,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColor.colorFFE5E7EB),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Row(
         children: [
-          Icon(icon, color: AppColor.colorFFA5ABB7, size: 18),
+          Icon(icon, color: const Color(0xFFA5ABB7), size: 18),
           const SizedBox(width: 8),
           Expanded(
             child: isLoading
@@ -297,7 +297,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         width: 14,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: AppColor.colorFFA5ABB7,
+                          color: Color(0xFFA5ABB7),
                         ),
                       ),
                     ],
@@ -306,7 +306,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                     label,
                     style: AppFont.style(
                       fontSize: 12,
-                      color: AppColor.colorFFA5ABB7,
+                      color: const Color(0xFFA5ABB7),
                       fontWeight: FontWeight.w500,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -314,7 +314,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           ),
           const Icon(
             Icons.keyboard_arrow_down,
-            color: AppColor.colorFFA5ABB7,
+            color: Color(0xFFA5ABB7),
             size: 18,
           ),
         ],
@@ -329,13 +329,13 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColor.colorFFE5E7EB),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Row(
         children: [
           // const Icon(
           //   Icons.assignment_outlined,
-          //   color: AppColor.colorFFA5ABB7,
+          //   color: Color(0xFFA5ABB7),
           //   size: 18,
           // ),
           // const SizedBox(width: 8),
@@ -346,14 +346,14 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               onSubmitted: (_) => _fetchServiceCalls(isRefresh: true),
               style: AppFont.style(
                 fontSize: 12,
-                color: AppColor.colorFF0D121F,
+                color: const Color(0xFF0D121F),
                 fontWeight: FontWeight.w500,
               ),
               decoration: InputDecoration(
                 hintText: 'service_calls_filter_complaint_hint'.tr(),
                 hintStyle: AppFont.style(
                   fontSize: 12,
-                  color: AppColor.colorFFA5ABB7,
+                  color: const Color(0xFFA5ABB7),
                   fontWeight: FontWeight.w500,
                 ),
                 border: InputBorder.none,
@@ -389,13 +389,13 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColor.colorFFE5E7EB),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
         ),
         child: Row(
           children: [
             // const Icon(
             //   Icons.calendar_today_outlined,
-            //   color: AppColor.colorFFA5ABB7,
+            //   color: Color(0xFFA5ABB7),
             //   size: 18,
             // ),
             // const SizedBox(width: 8),
@@ -409,8 +409,8 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                 style: AppFont.style(
                   fontSize: 12,
                   color: _selectedDate != null
-                      ? AppColor.colorFF0D121F
-                      : AppColor.colorFFA5ABB7,
+                      ? const Color(0xFF0D121F)
+                      : const Color(0xFFA5ABB7),
                   fontWeight: FontWeight.w500,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -429,12 +429,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
         if (state is AssignedServiceCallsLoadingState ||
             state is AssignedServiceCallsInitialState) {
           return ListView.separated(
-            padding: const EdgeInsets.only(
-              left: 16,
-              right: 16,
-              top: 292,
-              bottom: 100,
-            ),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 292, bottom: 100),
             itemCount: 3,
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (_, __) =>
@@ -461,7 +456,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   'service_calls_empty_assigned'.tr(),
                   style: AppFont.style(
                     fontSize: 12,
-                    color: AppColor.colorFFA5ABB7,
+                    color: const Color(0xFFA5ABB7),
                   ),
                 ),
               ),
@@ -469,12 +464,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.only(
-              left: 16,
-              right: 16,
-              top: 292,
-              bottom: 100,
-            ),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 292, bottom: 100),
             itemCount: data.data.results.length + (isPaginationLoading ? 1 : 0),
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
@@ -482,9 +472,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: CircularProgressIndicator(
-                      color: AppColor.colorFF1565C0,
-                    ),
+                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
                   ),
                 );
               }
@@ -493,12 +481,9 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
               final techs = item.assignedTechnicians
                   .map((e) => e.name)
                   .join(', ');
-              final dateStr =
-                  item.lastServiceDate != null &&
-                      item.lastServiceDate!.isNotEmpty
+              final dateStr = item.lastServiceDate != null && item.lastServiceDate!.isNotEmpty
                   ? DateFormat(
-                      'd MMMM yyyy',
-                      context.locale.languageCode,
+                      'd MMMM yyyy', context.locale.languageCode
                     ).format(DateTime.parse(item.lastServiceDate!).toLocal())
                   : null;
 
@@ -548,10 +533,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           return Padding(
             padding: const EdgeInsets.only(top: 276),
             child: Center(
-              child: Text(
-                state.message,
-                style: AppFont.style(color: Colors.red),
-              ),
+              child: Text(state.message, style: AppFont.style(color: Colors.red)),
             ),
           );
         }
@@ -600,7 +582,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                   'service_calls_empty_pending'.tr(),
                   style: AppFont.style(
                     fontSize: 12,
-                    color: AppColor.colorFFA5ABB7,
+                    color: const Color(0xFFA5ABB7),
                   ),
                 ),
               ),
@@ -621,20 +603,15 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: CircularProgressIndicator(
-                      color: AppColor.colorFF1565C0,
-                    ),
+                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
                   ),
                 );
               }
 
               final item = data.data.results[index];
-              final dateStr =
-                  item.lastServiceDate != null &&
-                      item.lastServiceDate!.isNotEmpty
+              final dateStr = item.lastServiceDate != null && item.lastServiceDate!.isNotEmpty
                   ? DateFormat(
-                      'd MMMM yyyy',
-                      context.locale.languageCode,
+                      'd MMMM yyyy', context.locale.languageCode
                     ).format(DateTime.parse(item.lastServiceDate!).toLocal())
                   : null;
 
@@ -681,10 +658,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
           return Padding(
             padding: const EdgeInsets.only(top: 276),
             child: Center(
-              child: Text(
-                state.message,
-                style: AppFont.style(color: Colors.red),
-              ),
+              child: Text(state.message, style: AppFont.style(color: Colors.red)),
             ),
           );
         }
@@ -779,15 +753,17 @@ class _StickyFilterDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
   final double height;
 
-  _StickyFilterDelegate({required this.child, required this.height});
+  _StickyFilterDelegate({
+    required this.child,
+    required this.height,
+  });
 
   @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return Container(color: Colors.white, child: child);
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Colors.white,
+      child: child,
+    );
   }
 
   @override
