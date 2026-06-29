@@ -44,16 +44,16 @@ class PostAmcReportStep2Params extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        isMechanicalChecklistNa,
-        isPipelineHydraulicChecklistNa,
-        isElectricalChecklistNa,
-        operationChecklistNa,
-        mechanicalChecklist,
-        pipelineHydraulicChecklist,
-        electricalChecklist,
-        operationChecklist,
-      ];
+    id,
+    isMechanicalChecklistNa,
+    isPipelineHydraulicChecklistNa,
+    isElectricalChecklistNa,
+    operationChecklistNa,
+    mechanicalChecklist,
+    pipelineHydraulicChecklist,
+    electricalChecklist,
+    operationChecklist,
+  ];
 }
 
 class PostAmcReportStep2Usecase
@@ -64,7 +64,8 @@ class PostAmcReportStep2Usecase
 
   @override
   Future<Either<Failure, AmcReportStep2Response>> call(
-      PostAmcReportStep2Params params) async {
+    PostAmcReportStep2Params params,
+  ) async {
     return await repository.amcReportStep2(params);
   }
 }

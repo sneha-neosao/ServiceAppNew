@@ -6,12 +6,7 @@ class AppSettingsResponse {
   final Data? data;
   final String? message;
 
-  AppSettingsResponse({
-    this.status,
-    this.success,
-    this.data,
-    this.message,
-  });
+  AppSettingsResponse({this.status, this.success, this.data, this.message});
 
   factory AppSettingsResponse.fromRawJson(String str) =>
       AppSettingsResponse.fromJson(json.decode(str));
@@ -27,34 +22,30 @@ class AppSettingsResponse {
       );
 
   Map<String, dynamic> toJson() => {
-        "status": status,
-        "success": success,
-        "data": data?.toJson(),
-        "message": message,
-      };
+    "status": status,
+    "success": success,
+    "data": data?.toJson(),
+    "message": message,
+  };
 }
 
 class Data {
   final AndroidApp? androidApp;
   final IosApp? iosApp;
 
-  Data({
-    this.androidApp,
-    this.iosApp,
-  });
+  Data({this.androidApp, this.iosApp});
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        androidApp: json["android_app"] == null
-            ? null
-            : AndroidApp.fromJson(json["android_app"]),
-        iosApp:
-            json["ios_app"] == null ? null : IosApp.fromJson(json["ios_app"]),
-      );
+    androidApp: json["android_app"] == null
+        ? null
+        : AndroidApp.fromJson(json["android_app"]),
+    iosApp: json["ios_app"] == null ? null : IosApp.fromJson(json["ios_app"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "android_app": androidApp?.toJson(),
-        "ios_app": iosApp?.toJson(),
-      };
+    "android_app": androidApp?.toJson(),
+    "ios_app": iosApp?.toJson(),
+  };
 }
 
 class AndroidApp {
@@ -71,18 +62,18 @@ class AndroidApp {
   });
 
   factory AndroidApp.fromJson(Map<String, dynamic> json) => AndroidApp(
-        version: json["version"],
-        forceUpdate: json["force_update"],
-        updateMessage: json["update_message"],
-        playStoreLink: json["play_store_link"],
-      );
+    version: json["version"],
+    forceUpdate: json["force_update"],
+    updateMessage: json["update_message"],
+    playStoreLink: json["play_store_link"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "version": version,
-        "force_update": forceUpdate,
-        "update_message": updateMessage,
-        "play_store_link": playStoreLink,
-      };
+    "version": version,
+    "force_update": forceUpdate,
+    "update_message": updateMessage,
+    "play_store_link": playStoreLink,
+  };
 }
 
 class IosApp {
@@ -99,16 +90,16 @@ class IosApp {
   });
 
   factory IosApp.fromJson(Map<String, dynamic> json) => IosApp(
-        version: json["version"],
-        forceUpdate: json["force_update"],
-        appStoreLink: json["app_store_link"],
-        updateMessage: json["update_message"],
-      );
+    version: json["version"],
+    forceUpdate: json["force_update"],
+    appStoreLink: json["app_store_link"],
+    updateMessage: json["update_message"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "version": version,
-        "force_update": forceUpdate,
-        "app_store_link": appStoreLink,
-        "update_message": updateMessage,
-      };
+    "version": version,
+    "force_update": forceUpdate,
+    "app_store_link": appStoreLink,
+    "update_message": updateMessage,
+  };
 }

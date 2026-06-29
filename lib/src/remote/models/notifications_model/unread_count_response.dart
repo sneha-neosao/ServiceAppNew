@@ -29,8 +29,6 @@ class UnreadCountData {
   const UnreadCountData({required this.unreadCount});
 
   factory UnreadCountData.fromJson(Map<String, dynamic> json) {
-    return UnreadCountData(
-      unreadCount: json['unread_count'] as int,
-    );
+    return UnreadCountData(unreadCount: json['unread_count'] as int);
   }
 }

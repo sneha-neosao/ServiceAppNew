@@ -5,13 +5,16 @@ import 'package:service_app/src/core/usecases/usecase.dart';
 import 'package:service_app/src/remote/models/auth_model/fcm_register_response.dart';
 import 'package:service_app/src/remote/repositories/repository_impl.dart';
 
-class FcmRegisterUseCase implements UseCase<FcmRegisterResponse, FcmRegisterParams> {
+class FcmRegisterUseCase
+    implements UseCase<FcmRegisterResponse, FcmRegisterParams> {
   final Repository _repository;
 
   const FcmRegisterUseCase(this._repository);
 
   @override
-  Future<Either<Failure, FcmRegisterResponse>> call(FcmRegisterParams params) async {
+  Future<Either<Failure, FcmRegisterResponse>> call(
+    FcmRegisterParams params,
+  ) async {
     return await _repository.fcmRegister(params.fcmToken);
   }
 }

@@ -36,14 +36,10 @@ class PdfData {
   PdfData({required this.pdfUrl});
 
   factory PdfData.fromJson(Map<String, dynamic> json) {
-    return PdfData(
-      pdfUrl: json['pdf_url'] ?? '',
-    );
+    return PdfData(pdfUrl: json['pdf_url'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'pdf_url': pdfUrl,
-    };
+    return {'pdf_url': pdfUrl};
   }
 }

@@ -64,11 +64,11 @@ class LoginScreen extends StatelessWidget {
                           vertical: 36.0,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF3B82C4),
+                          color: AppColor.colorFF3B82C4,
                           borderRadius: BorderRadius.circular(24),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF3B82C4).withOpacity(0.35),
+                              color: AppColor.colorFF3B82C4.withOpacity(0.35),
                               blurRadius: 24,
                               offset: const Offset(0, 10),
                             ),
@@ -138,7 +138,7 @@ class LoginScreen extends StatelessWidget {
                                         : () => _login(context),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.white,
-                                      foregroundColor: const Color(0xFF3B82C4),
+                                      foregroundColor: AppColor.colorFF3B82C4,
                                       elevation: 0,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(30),
@@ -149,7 +149,7 @@ class LoginScreen extends StatelessWidget {
                                             height: 20,
                                             width: 20,
                                             child: CircularProgressIndicator(
-                                              color: Color(0xFF3B82C4),
+                                              color: AppColor.colorFF3B82C4,
                                               strokeWidth: 2,
                                             ),
                                           )
@@ -158,7 +158,7 @@ class LoginScreen extends StatelessWidget {
                                             style: AppFont.style(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w700,
-                                              color: const Color(0xFF3B82C4),
+                                              color: AppColor.colorFF3B82C4,
                                             ),
                                           ),
                                   ),
@@ -198,7 +198,7 @@ class _WingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFF3B82C4).withOpacity(0.18)
+      ..color = AppColor.colorFF3B82C4.withOpacity(0.18)
       ..style = PaintingStyle.fill;
 
     // Outer wing
@@ -217,7 +217,7 @@ class _WingPainter extends CustomPainter {
 
     // Inner wing (slightly darker)
     final innerPaint = Paint()
-      ..color = const Color(0xFF3B82C4).withOpacity(0.12)
+      ..color = AppColor.colorFF3B82C4.withOpacity(0.12)
       ..style = PaintingStyle.fill;
 
     final innerPath = Path()

@@ -12,12 +12,11 @@ class MarkAllReadBloc extends Bloc<MarkAllReadEvent, MarkAllReadState> {
   final MarkAllNotificationsReadUseCase markAllNotificationsReadUseCase;
 
   MarkAllReadBloc({required this.markAllNotificationsReadUseCase})
-      : super(MarkAllReadInitial()) {
+    : super(MarkAllReadInitial()) {
     on<MarkAllNotificationsReadEvent>((event, emit) async {
       emit(MarkAllReadLoading());
 
-      final result =
-          await markAllNotificationsReadUseCase(NoParams());
+      final result = await markAllNotificationsReadUseCase(NoParams());
 
       result.fold(
         (failure) {

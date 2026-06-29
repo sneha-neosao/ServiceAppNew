@@ -21,13 +21,11 @@ import 'package:service_app/src/core/theme/app_color.dart';
 class CustomerAmcVisitsScreen extends StatefulWidget {
   final String customerId;
 
-  const CustomerAmcVisitsScreen({
-    super.key,
-    required this.customerId,
-  });
+  const CustomerAmcVisitsScreen({super.key, required this.customerId});
 
   @override
-  State<CustomerAmcVisitsScreen> createState() => _CustomerAmcVisitsScreenState();
+  State<CustomerAmcVisitsScreen> createState() =>
+      _CustomerAmcVisitsScreenState();
 }
 
 class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
@@ -41,16 +39,19 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
       ..add(GetCustomerAmcVisitsEvent(customerId: widget.customerId));
 
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 50) {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 50) {
         final state = _bloc.state;
         if (state is CustomerAmcVisitsSuccess) {
           final pagination = state.response.data?.pagination;
           if (pagination != null) {
-            _bloc.add(GetCustomerAmcVisitsEvent(
-              customerId: widget.customerId,
-              page: pagination.page + 1,
-              pageSize: pagination.pageSize,
-            ));
+            _bloc.add(
+              GetCustomerAmcVisitsEvent(
+                customerId: widget.customerId,
+                page: pagination.page + 1,
+                pageSize: pagination.pageSize,
+              ),
+            );
           }
         }
       }
@@ -67,12 +68,8 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(
-          value: _bloc,
-        ),
-        BlocProvider(
-          create: (context) => getIt<AmcReportPdfBloc>(),
-        ),
+        BlocProvider.value(value: _bloc),
+        BlocProvider(create: (context) => getIt<AmcReportPdfBloc>()),
       ],
       child: MultiBlocListener(
         listeners: [
@@ -83,7 +80,9 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
                   context: context,
                   barrierDismissible: false,
                   builder: (_) => const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                    child: CircularProgressIndicator(
+                      color: AppColor.colorFF1565C0,
+                    ),
                   ),
                 );
               } else if (state is AmcReportPdfFailure) {
@@ -94,165 +93,204 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
                 final url = state.pdfUrl;
                 if (url.isNotEmpty) {
                   final uri = Uri.parse(url);
-                  final cacheClearUri = uri.replace(queryParameters: {
-                    ...uri.queryParameters,
-                    'v': DateTime.now().millisecondsSinceEpoch.toString(),
-                  });
-                  launchUrl(cacheClearUri, mode: LaunchMode.externalApplication);
+                  final cacheClearUri = uri.replace(
+                    queryParameters: {
+                      ...uri.queryParameters,
+                      'v': DateTime.now().millisecondsSinceEpoch.toString(),
+                    },
+                  );
+                  launchUrl(
+                    cacheClearUri,
+                    mode: LaunchMode.externalApplication,
+                  );
                 } else {
-                  appSnackBar(context, AppColor.bright_red, 'pdf_url_is_empty'.tr());
+                  appSnackBar(
+                    context,
+                    AppColor.bright_red,
+                    'pdf_url_is_empty'.tr(),
+                  );
                 }
               }
             },
           ),
         ],
         child: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FA),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back,
-                          size: 20,
-                          color: Color(0xFF5C616E),
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'view_all_visits'.tr(),
-                            style: AppFont.style(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFF0D121F),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: BlocBuilder<CustomerAmcVisitsBloc, CustomerAmcVisitsState>(
-          builder: (context, state) {
-            if (state is CustomerAmcVisitsLoading || state is CustomerAmcVisitsInitial) {
-              return const _CustomerAmcVisitsShimmer();
-            }
-
-            if (state is CustomerAmcVisitsError) {
-              return RefreshIndicator(
-                color: const Color(0xFF1565C0),
-                backgroundColor: Colors.white,
-                onRefresh: () async {
-                  context.read<CustomerAmcVisitsBloc>().add(GetCustomerAmcVisitsEvent(customerId: widget.customerId));
-                },
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.7,
-                      child: Center(
-                        child: Text(
-                          state.message,
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 14,
-                            fontFamily: AppFont.family,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-
-            if (state is CustomerAmcVisitsSuccess) {
-              final items = state.response.data?.results ?? [];
-              if (items.isEmpty) {
-                return RefreshIndicator(
-                  color: const Color(0xFF1565C0),
-                  backgroundColor: Colors.white,
-                  onRefresh: () async {
-                    context.read<CustomerAmcVisitsBloc>().add(GetCustomerAmcVisitsEvent(customerId: widget.customerId));
-                  },
-                  child: ListView(
-                    controller: _scrollController,
-                    physics: const AlwaysScrollableScrollPhysics(),
+          backgroundColor: AppColor.colorFFF8F9FA,
+          body: SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                  child: Row(
                     children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.7,
-                        child: Center(
-                          child: Text(
-                            'no_visits_found'.tr(),
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: AppFont.family,
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            size: 20,
+                            color: AppColor.colorFF5C616E,
                           ),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'view_all_visits'.tr(),
+                              style: AppFont.style(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: AppColor.colorFF0D121F,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                );
-              }
-
-              final firstItem = items.first;
-
-              return RefreshIndicator(
-                color: const Color(0xFF1565C0),
-                backgroundColor: Colors.white,
-                onRefresh: () async {
-                  context.read<CustomerAmcVisitsBloc>().add(GetCustomerAmcVisitsEvent(customerId: widget.customerId));
-                },
-                child: ListView(
-                  controller: _scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    _buildHeaderCard(firstItem),
-                    const SizedBox(height: 16),
-                    ...items.map((item) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: _CollapsibleVisitCard(item: item, defaultLocation: firstItem.siteName ?? ''),
-                        )),
-                  ],
                 ),
-              );
-            }
+                Expanded(
+                  child:
+                      BlocBuilder<
+                        CustomerAmcVisitsBloc,
+                        CustomerAmcVisitsState
+                      >(
+                        builder: (context, state) {
+                          if (state is CustomerAmcVisitsLoading ||
+                              state is CustomerAmcVisitsInitial) {
+                            return const _CustomerAmcVisitsShimmer();
+                          }
 
-            return const SizedBox();
-          },
-        ),
-      ),
-    ],
-  ),
-),
+                          if (state is CustomerAmcVisitsError) {
+                            return RefreshIndicator(
+                              color: AppColor.colorFF1565C0,
+                              backgroundColor: Colors.white,
+                              onRefresh: () async {
+                                context.read<CustomerAmcVisitsBloc>().add(
+                                  GetCustomerAmcVisitsEvent(
+                                    customerId: widget.customerId,
+                                  ),
+                                );
+                              },
+                              child: ListView(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                children: [
+                                  SizedBox(
+                                    height:
+                                        MediaQuery.of(context).size.height *
+                                        0.7,
+                                    child: Center(
+                                      child: Text(
+                                        state.message,
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 14,
+                                          fontFamily: AppFont.family,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          if (state is CustomerAmcVisitsSuccess) {
+                            final items = state.response.data?.results ?? [];
+                            if (items.isEmpty) {
+                              return RefreshIndicator(
+                                color: AppColor.colorFF1565C0,
+                                backgroundColor: Colors.white,
+                                onRefresh: () async {
+                                  context.read<CustomerAmcVisitsBloc>().add(
+                                    GetCustomerAmcVisitsEvent(
+                                      customerId: widget.customerId,
+                                    ),
+                                  );
+                                },
+                                child: ListView(
+                                  controller: _scrollController,
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  children: [
+                                    SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                          0.7,
+                                      child: Center(
+                                        child: Text(
+                                          'no_visits_found'.tr(),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontFamily: AppFont.family,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            final firstItem = items.first;
+
+                            return RefreshIndicator(
+                              color: AppColor.colorFF1565C0,
+                              backgroundColor: Colors.white,
+                              onRefresh: () async {
+                                context.read<CustomerAmcVisitsBloc>().add(
+                                  GetCustomerAmcVisitsEvent(
+                                    customerId: widget.customerId,
+                                  ),
+                                );
+                              },
+                              child: ListView(
+                                controller: _scrollController,
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                padding: const EdgeInsets.all(16),
+                                children: [
+                                  _buildHeaderCard(firstItem),
+                                  const SizedBox(height: 16),
+                                  ...items.map(
+                                    (item) => Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 12,
+                                      ),
+                                      child: _CollapsibleVisitCard(
+                                        item: item,
+                                        defaultLocation:
+                                            firstItem.siteName ?? '',
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          return const SizedBox();
+                        },
+                      ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -264,7 +302,7 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
+        border: Border.all(color: AppColor.colorFFF1F2F6),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -283,9 +321,15 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInfoRow('close_call_customer_name_label'.tr(), item.customerName),
+                    _buildInfoRow(
+                      'close_call_customer_name_label'.tr(),
+                      item.customerName,
+                    ),
                     const SizedBox(height: 8),
-                    _buildInfoRow('close_call_site_name_label'.tr(), item.siteName),
+                    _buildInfoRow(
+                      'close_call_site_name_label'.tr(),
+                      item.siteName,
+                    ),
                     const SizedBox(height: 8),
                     _buildInfoRow('total_visits'.tr(), '${item.totalVisits}'),
                     const SizedBox(height: 8),
@@ -320,7 +364,7 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
           TextSpan(
             text: value,
             style: TextStyle(
-              color: const Color(0xFF6B7280),
+              color: AppColor.colorFF6B7280,
               fontSize: 12,
               fontWeight: FontWeight.w400,
               fontFamily: AppFont.family,
@@ -331,22 +375,20 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
     );
   }
 
-
-
   Widget _buildStatusBadge(String status) {
     final statusUpper = status.toUpperCase();
     Color bgColor;
     Color textColor;
 
     if (statusUpper == 'ACTIVE' || statusUpper == 'COMPLETED') {
-      bgColor = const Color(0xFFE8F5E9);
-      textColor = const Color(0xFF4CAF50);
+      bgColor = AppColor.colorFFE8F5E9;
+      textColor = AppColor.colorFF4CAF50;
     } else if (statusUpper == 'PENDING') {
-      bgColor = const Color(0xFFFFF8E1);
-      textColor = const Color(0xFFFFB300);
+      bgColor = AppColor.colorFFFFF8E1;
+      textColor = AppColor.colorFFFFB300;
     } else if (statusUpper == 'EXPIRED') {
-      bgColor = const Color(0xFFFFEBEE);
-      textColor = const Color(0xFFF44336);
+      bgColor = AppColor.colorFFFFEBEE;
+      textColor = AppColor.colorFFF44336;
     } else {
       bgColor = Colors.grey[200]!;
       textColor = Colors.grey[700]!;
@@ -427,7 +469,10 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.close, color: Color(0xFFA5ABB7)),
+                      icon: const Icon(
+                        Icons.close,
+                        color: AppColor.colorFFA5ABB7,
+                      ),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
@@ -435,12 +480,12 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: const BoxDecoration(
-                    color: Color(0xFFE8F5E9),
+                    color: AppColor.colorFFE8F5E9,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.check_circle,
-                    color: Color(0xFF4CAF50),
+                    color: AppColor.colorFF4CAF50,
                     size: 40,
                   ),
                 ),
@@ -451,24 +496,25 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                   style: AppFont.style(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFF0D121F),
+                    color: AppColor.colorFF0D121F,
                   ),
                 ),
                 const SizedBox(height: 8),
                 const Divider(
                   height: 1,
                   thickness: 1,
-                  color: Color(0xFFF1F2F6),
+                  color: AppColor.colorFFF1F2F6,
                 ),
                 const SizedBox(height: 32),
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FB),
+                    color: AppColor.colorFFF8F9FB,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFF1F2F6)),
+                    border: Border.all(color: AppColor.colorFFF1F2F6),
                   ),
-                  child: qrCodeImage != null && qrCodeImage.toString().isNotEmpty
+                  child:
+                      qrCodeImage != null && qrCodeImage.toString().isNotEmpty
                       ? Image.network(
                           qrCodeImage,
                           width: 180,
@@ -478,7 +524,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                       : const Icon(
                           Icons.qr_code_2,
                           size: 180,
-                          color: Color(0xFF0D121F),
+                          color: AppColor.colorFF0D121F,
                         ),
                 ),
                 const SizedBox(height: 24),
@@ -487,7 +533,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
+                    color: AppColor.colorFFA5ABB7,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -505,21 +551,22 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
     Color textColor;
 
     if (statusStr == 'ACTIVE' || statusStr == 'COMPLETED') {
-      bgColor = const Color(0xFFE8F5E9);
-      textColor = const Color(0xFF00A76F);
+      bgColor = AppColor.colorFFE8F5E9;
+      textColor = AppColor.colorFF00A76F;
       statusStr = 'Completed';
     } else if (statusStr == 'PENDING') {
-      bgColor = const Color(0xFFFFEBEE);
-      textColor = const Color(0xFFF44336);
+      bgColor = AppColor.colorFFFFEBEE;
+      textColor = AppColor.colorFFF44336;
       statusStr = 'Pending';
     } else if (statusStr == 'EXPIRED') {
-      bgColor = const Color(0xFFFFEBEE);
-      textColor = const Color(0xFFF44336);
+      bgColor = AppColor.colorFFFFEBEE;
+      textColor = AppColor.colorFFF44336;
       statusStr = 'Expired';
     } else {
       bgColor = Colors.grey[200]!;
       textColor = Colors.grey[700]!;
-      statusStr = statusStr[0].toUpperCase() + statusStr.substring(1).toLowerCase();
+      statusStr =
+          statusStr[0].toUpperCase() + statusStr.substring(1).toLowerCase();
     }
 
     return Container(
@@ -546,7 +593,7 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
+        border: Border.all(color: AppColor.colorFFF1F2F6),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -570,16 +617,22 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                       _buildStatusBadge(widget.item.visitStatus),
                       const SizedBox(width: 10),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFC8E6C9),
+                          color: AppColor.colorFFC8E6C9,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xFF1B5E20), width: 1.5),
+                          border: Border.all(
+                            color: AppColor.colorFF1B5E20,
+                            width: 1.5,
+                          ),
                         ),
                         child: Text(
                           'Visit ${widget.item.visitNumber}/${widget.item.totalVisits}',
                           style: TextStyle(
-                            color: const Color(0xFF1B5E20),
+                            color: AppColor.colorFF1B5E20,
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
                             fontFamily: AppFont.family,
@@ -605,19 +658,38 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
                           },
                           child: const Padding(
                             padding: EdgeInsets.only(left: 8),
-                            child: Icon(Icons.check_circle, color: Colors.green, size: 24),
+                            child: Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 24,
+                            ),
                           ),
                         )
-                      else if (widget.item.qrCodeImage != null || widget.item.qrCodeUrl != null)
+                      else if (widget.item.qrCodeImage != null ||
+                          widget.item.qrCodeUrl != null)
                         GestureDetector(
                           onTap: () => _showQrCodeDialog(context),
                           child: Padding(
                             padding: const EdgeInsets.only(left: 8),
-                            child: Image.asset('assets/images/qr_icon.png', width: 24, height: 24, errorBuilder: (c,e,s) => const Icon(Icons.qr_code, size: 24, color: Colors.orange)),
+                            child: Image.asset(
+                              'assets/images/qr_icon.png',
+                              width: 24,
+                              height: 24,
+                              errorBuilder: (c, e, s) => const Icon(
+                                Icons.qr_code,
+                                size: 24,
+                                color: Colors.orange,
+                              ),
+                            ),
                           ),
                         ),
                       const SizedBox(width: 8),
-                      Icon(_isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: Colors.grey),
+                      Icon(
+                        _isExpanded
+                            ? Icons.keyboard_arrow_up
+                            : Icons.keyboard_arrow_down,
+                        color: Colors.grey,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -635,216 +707,261 @@ class _CollapsibleVisitCardState extends State<_CollapsibleVisitCard> {
             ),
           ),
           if (_isExpanded)
-          BlocBuilder<AmcVisitReportsBloc, AmcVisitReportsState>(
-            bloc: _reportsBloc,
-            builder: (context, state) {
-              if (state is AmcVisitReportsLoadingState) {
-                return const Padding(
-                  padding: EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
-                  child: AmcReportCardShimmer(isFromHistory: true),
-                );
-              }
-              if (state is AmcVisitReportsFailureState) {
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(state.errorMessage, style: const TextStyle(color: Colors.red)),
-                );
-              }
-              if (state is AmcVisitReportsSuccessState) {
-                final reportsCount = state.data.data.reports.length;
-                if (reportsCount == 0) {
-                  return Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text('no_reports_found'.tr()),
+            BlocBuilder<AmcVisitReportsBloc, AmcVisitReportsState>(
+              bloc: _reportsBloc,
+              builder: (context, state) {
+                if (state is AmcVisitReportsLoadingState) {
+                  return const Padding(
+                    padding: EdgeInsets.only(
+                      top: 16.0,
+                      left: 16.0,
+                      right: 16.0,
+                    ),
+                    child: AmcReportCardShimmer(isFromHistory: true),
                   );
                 }
-                return Padding(
-                  padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
-                  child: Column(
-                    children: List.generate(reportsCount, (index) {
-                      final report = state.data.data.reports[index];
-                      final isSubmitted = report.status.toLowerCase() == 'submitted';
-                      String? submittedDateStr;
-                      if (report.submittedAt != null && report.submittedAt!.isNotEmpty) {
-                        try {
-                          final dt = DateTime.parse(report.submittedAt!).toLocal();
-                          submittedDateStr = DateFormat('d MMM yyyy', context.locale.languageCode).format(dt);
-                        } catch (e) {
-                          submittedDateStr = report.submittedAt;
+                if (state is AmcVisitReportsFailureState) {
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      state.errorMessage,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  );
+                }
+                if (state is AmcVisitReportsSuccessState) {
+                  final reportsCount = state.data.data.reports.length;
+                  if (reportsCount == 0) {
+                    return Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text('no_reports_found'.tr()),
+                    );
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                      top: 16.0,
+                      left: 16.0,
+                      right: 16.0,
+                    ),
+                    child: Column(
+                      children: List.generate(reportsCount, (index) {
+                        final report = state.data.data.reports[index];
+                        final isSubmitted =
+                            report.status.toLowerCase() == 'submitted';
+                        String? submittedDateStr;
+                        if (report.submittedAt != null &&
+                            report.submittedAt!.isNotEmpty) {
+                          try {
+                            final dt = DateTime.parse(
+                              report.submittedAt!,
+                            ).toLocal();
+                            submittedDateStr = DateFormat(
+                              'd MMM yyyy',
+                              context.locale.languageCode,
+                            ).format(dt);
+                          } catch (e) {
+                            submittedDateStr = report.submittedAt;
+                          }
                         }
-                      }
 
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.12),
-                              blurRadius: 15,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '${'report'.tr()} ${reportsCount - index}',
-                                  style: AppFont.style(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF0D121F),
-                                  ),
-                                ),
-                                Text(
-                                  submittedDateStr ?? 'not_submitted'.tr(),
-                                  style: AppFont.style(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w800,
-                                    color: const Color(0xFFA5ABB7),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.location_on_outlined,
-                                  size: 16,
-                                  color: Color(0xFFA5ABB7),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    report.siteName ?? widget.defaultLocation,
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.12),
+                                blurRadius: 15,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '${'report'.tr()} ${reportsCount - index}',
                                     style: AppFont.style(
-                                      fontSize: 12,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.w800,
-                                      color: const Color(0xFF7A8699),
+                                      color: AppColor.colorFF0D121F,
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFF9FAFB),
-                                    shape: BoxShape.circle,
+                                  Text(
+                                    submittedDateStr ?? 'not_submitted'.tr(),
+                                    style: AppFont.style(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColor.colorFFA5ABB7,
+                                    ),
                                   ),
-                                  child: const Icon(
-                                    Icons.person_outline,
-                                    size: 20,
-                                    color: Color(0xFFCDD0D8),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.location_on_outlined,
+                                    size: 16,
+                                    color: AppColor.colorFFA5ABB7,
                                   ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      report.siteName ?? widget.defaultLocation,
+                                      style: AppFont.style(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColor.colorFF7A8699,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              const Divider(
+                                height: 1,
+                                thickness: 1,
+                                color: AppColor.colorFFF1F2F6,
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: const BoxDecoration(
+                                      color: AppColor.colorFFF9FAFB,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.person_outline,
+                                      size: 20,
+                                      color: AppColor.colorFFCDD0D8,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          report.technicianRepresentativeName ??
+                                              'unknown_technician'.tr(),
+                                          style: AppFont.style(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w800,
+                                            color: AppColor.colorFF0D121F,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          report.dealerName ?? '',
+                                          style: AppFont.style(
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w800,
+                                            color: AppColor.colorFFA5ABB7,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isSubmitted
+                                          ? AppColor.colorFFE8F5E9
+                                          : AppColor.colorFFFFE0B2,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      isSubmitted
+                                          ? 'submitted'.tr()
+                                          : 'draft'.tr(),
+                                      style: AppFont.style(
+                                        fontSize: 8,
+                                        fontWeight: FontWeight.w800,
+                                        color: isSubmitted
+                                            ? AppColor.colorFF00A76F
+                                            : AppColor.colorFFE65100,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              SizedBox(
+                                width: double.infinity,
+                                height: 44,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    if (report.id != null) {
+                                      context.read<AmcReportPdfBloc>().add(
+                                        FetchAmcReportPdfEvent(
+                                          reportId: report.id!,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColor.colorFF1565C0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        report.technicianRepresentativeName ?? 'unknown_technician'.tr(),
+                                        '${'view_report'.tr()} ${reportsCount - index}',
                                         style: AppFont.style(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w800,
-                                          color: const Color(0xFF0D121F),
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w900,
+                                          color: Colors.white,
                                         ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        report.dealerName ?? '',
-                                        style: AppFont.style(
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.w800,
-                                          color: const Color(0xFFA5ABB7),
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                      const SizedBox(width: 8),
+                                      const Icon(
+                                        Icons.chevron_right,
+                                        color: Colors.white,
+                                        size: 16,
                                       ),
                                     ],
                                   ),
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: isSubmitted ? const Color(0xFFE8F5E9) : const Color(0xFFFFE0B2),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    isSubmitted ? 'submitted'.tr() : 'draft'.tr(),
-                                    style: AppFont.style(
-                                      fontSize: 8,
-                                      fontWeight: FontWeight.w800,
-                                      color: isSubmitted ? const Color(0xFF00A76F) : const Color(0xFFE65100),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            SizedBox(
-                              width: double.infinity,
-                              height: 44,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if (report.id != null) {
-                                    context.read<AmcReportPdfBloc>().add(FetchAmcReportPdfEvent(reportId: report.id!));
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF1565C0),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  elevation: 0,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      '${'view_report'.tr()} ${reportsCount - index}',
-                                      style: AppFont.style(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w900,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    const Icon(Icons.chevron_right, color: Colors.white, size: 16),
-                                  ],
-                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
-                  ),
-                );
-              }
-              return const SizedBox();
-            },
-          ),
-      ],
-    ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+        ],
+      ),
     );
   }
 }
@@ -859,10 +976,13 @@ class _CustomerAmcVisitsShimmer extends StatelessWidget {
       children: [
         _buildHeaderShimmer(),
         const SizedBox(height: 16),
-        ...List.generate(10, (index) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _buildVisitShimmer(),
-        )),
+        ...List.generate(
+          10,
+          (index) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildVisitShimmer(),
+          ),
+        ),
       ],
     );
   }
@@ -873,7 +993,7 @@ class _CustomerAmcVisitsShimmer extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
+        border: Border.all(color: AppColor.colorFFF1F2F6),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -922,7 +1042,7 @@ class _CustomerAmcVisitsShimmer extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
+        border: Border.all(color: AppColor.colorFFF1F2F6),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -957,25 +1077,13 @@ class _CustomerAmcVisitsShimmer extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Container(
-                  width: 20,
-                  height: 20,
-                  color: Colors.white,
-                ),
+                Container(width: 20, height: 20, color: Colors.white),
                 const SizedBox(width: 8),
-                Container(
-                  width: 24,
-                  height: 24,
-                  color: Colors.white,
-                ),
+                Container(width: 24, height: 24, color: Colors.white),
               ],
             ),
             const SizedBox(height: 12),
-            Container(
-              width: 200,
-              height: 16,
-              color: Colors.white,
-            ),
+            Container(width: 200, height: 16, color: Colors.white),
           ],
         ),
       ),

@@ -69,7 +69,8 @@ class ServiceWorkReportStep4Data extends Equatable {
       customerRepresentativeName: json['customer_representative_name'] ?? '',
       customerSignature: json['customer_signature'] ?? '',
       savedWorkPhotos: List<String>.from(json['saved_work_photos'] ?? []),
-      technicianRepresentativeName: json['technician_representative_name'] ?? '',
+      technicianRepresentativeName:
+          json['technician_representative_name'] ?? '',
       qrCodeUrl: json['qr_code_url'] ?? '',
       qrCodeImage: json['qr_code_image'] ?? '',
     );

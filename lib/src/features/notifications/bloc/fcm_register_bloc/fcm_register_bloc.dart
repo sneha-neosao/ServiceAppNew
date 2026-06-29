@@ -8,7 +8,8 @@ import 'fcm_register_state.dart';
 class FcmRegisterBloc extends Bloc<FcmRegisterEvent, FcmRegisterState> {
   final FcmRegisterUseCase fcmRegisterUseCase;
 
-  FcmRegisterBloc({required this.fcmRegisterUseCase}) : super(FcmRegisterInitial()) {
+  FcmRegisterBloc({required this.fcmRegisterUseCase})
+    : super(FcmRegisterInitial()) {
     on<FcmRegisterTriggerEvent>(_onFcmRegisterTrigger);
   }
 

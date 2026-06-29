@@ -22,9 +22,6 @@ class TranslateState extends Equatable {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      "language_code": languageCode,
-      "country_code": countryCode,
-    };
+    return {"language_code": languageCode, "country_code": countryCode};
   }
 }

@@ -7,7 +7,7 @@ void appSnackBar(BuildContext context, Color color, String label) {
   final overlay = Overlay.of(context);
 
   late OverlayEntry entry;
-  
+
   // To handle animations, we need a StatefulBuilder or custom stateful widget.
   entry = OverlayEntry(
     builder: (context) => _AnimatedOverlaySnackBar(
@@ -32,7 +32,8 @@ class _AnimatedOverlaySnackBar extends StatefulWidget {
   });
 
   @override
-  State<_AnimatedOverlaySnackBar> createState() => _AnimatedOverlaySnackBarState();
+  State<_AnimatedOverlaySnackBar> createState() =>
+      _AnimatedOverlaySnackBarState();
 }
 
 class _AnimatedOverlaySnackBarState extends State<_AnimatedOverlaySnackBar>
@@ -80,7 +81,8 @@ class _AnimatedOverlaySnackBarState extends State<_AnimatedOverlaySnackBar>
   @override
   Widget build(BuildContext context) {
     // Determine bottom padding, taking safe area (like keyboards/home indicators) into account.
-    final bottomPadding = MediaQuery.of(context).viewInsets.bottom +
+    final bottomPadding =
+        MediaQuery.of(context).viewInsets.bottom +
         MediaQuery.of(context).padding.bottom +
         24.0;
 
@@ -95,7 +97,10 @@ class _AnimatedOverlaySnackBarState extends State<_AnimatedOverlaySnackBar>
           child: SlideTransition(
             position: _offsetAnimation,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 14.0,
+              ),
               decoration: BoxDecoration(
                 color: widget.color,
                 borderRadius: BorderRadius.circular(4.0),
@@ -104,7 +109,7 @@ class _AnimatedOverlaySnackBarState extends State<_AnimatedOverlaySnackBar>
                     color: Colors.black26,
                     blurRadius: 6.0,
                     offset: Offset(0, 3),
-                  )
+                  ),
                 ],
               ),
               child: Text(

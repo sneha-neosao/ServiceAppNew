@@ -110,12 +110,12 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                           hintText: 'Search here...',
                           prefixIcon: const Icon(
                             Icons.search,
-                            color: Color(0xFFA5ABB7),
+                            color: AppColor.colorFFA5ABB7,
                             size: 20,
                           ),
                           hintStyle: AppFont.style(
                             fontSize: 12,
-                            color: const Color(0xFFA5ABB7),
+                            color: AppColor.colorFFA5ABB7,
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -124,25 +124,25 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFFE5E7EB),
+                              color: AppColor.colorFFE5E7EB,
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFFE5E7EB),
+                              color: AppColor.colorFFE5E7EB,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFF1565C0),
+                              color: AppColor.colorFF1565C0,
                             ),
                           ),
                         ),
                         style: AppFont.style(
                           fontSize: 12,
-                          color: const Color(0xFF0D121F),
+                          color: AppColor.colorFF0D121F,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -172,13 +172,13 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                   border: isSelected
                                       ? const Border(
                                           left: BorderSide(
-                                            color: Color(0xFF1565C0),
+                                            color: AppColor.colorFF1565C0,
                                             width: 4,
                                           ),
                                         )
                                       : null,
                                   color: isSelected
-                                      ? const Color(0xFFF8F9FB)
+                                      ? AppColor.colorFFF8F9FB
                                       : Colors.white,
                                 ),
                                 padding: const EdgeInsets.symmetric(
@@ -200,8 +200,8 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                                   ? FontWeight.bold
                                                   : FontWeight.w600,
                                               color: isSelected
-                                                  ? const Color(0xFF1565C0)
-                                                  : const Color(0xFF0D121F),
+                                                  ? AppColor.colorFF1565C0
+                                                  : AppColor.colorFF0D121F,
                                             ),
                                           ),
                                           const SizedBox(height: 4),
@@ -210,7 +210,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                             style: AppFont.style(
                                               fontSize: 10,
                                               fontWeight: FontWeight.w700,
-                                              color: const Color(0xFFA5ABB7),
+                                              color: AppColor.colorFFA5ABB7,
                                             ),
                                           ),
                                         ],
@@ -223,11 +223,11 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                         borderRadius: BorderRadius.circular(6),
                                         border: Border.all(
                                           color: isSelected
-                                              ? const Color(0xFF1565C0)
-                                              : const Color(0xFFE5E7EB),
+                                              ? AppColor.colorFF1565C0
+                                              : AppColor.colorFFE5E7EB,
                                         ),
                                         color: isSelected
-                                            ? const Color(0xFF1565C0)
+                                            ? AppColor.colorFF1565C0
                                             : Colors.white,
                                       ),
                                       child: isSelected
@@ -259,7 +259,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                             Navigator.pop(ctx);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1565C0),
+                            backgroundColor: AppColor.colorFF1565C0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -315,7 +315,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                       children: [
                         const Icon(
                           Icons.person_add_alt_1_outlined,
-                          color: Color(0xFF1565C0),
+                          color: AppColor.colorFF1565C0,
                           size: 24,
                         ),
                         const SizedBox(width: 12),
@@ -324,7 +324,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                           style: AppFont.style(
                             fontSize: 14,
                             fontWeight: FontWeight.w900,
-                            color: const Color(0xFF0D121F),
+                            color: AppColor.colorFF0D121F,
                           ),
                         ),
                         const Spacer(),
@@ -332,7 +332,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                           onTap: () => Navigator.pop(context),
                           child: const Icon(
                             Icons.close,
-                            color: Color(0xFFA5ABB7),
+                            color: AppColor.colorFFA5ABB7,
                             size: 20,
                           ),
                         ),
@@ -342,7 +342,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                     const Divider(
                       height: 1,
                       thickness: 1,
-                      color: Color(0xFFF1F2F6),
+                      color: AppColor.colorFFF1F2F6,
                     ),
                     const SizedBox(height: 16),
                     // Complaint Number
@@ -352,7 +352,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFFA5ABB7),
+                          color: AppColor.colorFFA5ABB7,
                         ),
                         children: [
                           TextSpan(
@@ -360,7 +360,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                             style: AppFont.style(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF0D121F),
+                              color: AppColor.colorFF0D121F,
                             ),
                           ),
                         ],
@@ -370,7 +370,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                     const Divider(
                       height: 1,
                       thickness: 1,
-                      color: Color(0xFFF1F2F6),
+                      color: AppColor.colorFFF1F2F6,
                     ),
                     const SizedBox(height: 16),
                     // Customer & Site Name
@@ -385,7 +385,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                 style: AppFont.style(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFFA5ABB7),
+                                  color: AppColor.colorFFA5ABB7,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -394,7 +394,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                 style: AppFont.style(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF0D121F),
+                                  color: AppColor.colorFF0D121F,
                                 ),
                               ),
                             ],
@@ -409,7 +409,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                 style: AppFont.style(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFFA5ABB7),
+                                  color: AppColor.colorFFA5ABB7,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -418,7 +418,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                 style: AppFont.style(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF0D121F),
+                                  color: AppColor.colorFF0D121F,
                                 ),
                               ),
                             ],
@@ -430,7 +430,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                     const Divider(
                       height: 1,
                       thickness: 1,
-                      color: Color(0xFFF1F2F6),
+                      color: AppColor.colorFFF1F2F6,
                     ),
                     const SizedBox(height: 16),
                     // Select Multiple Technicians
@@ -439,7 +439,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                       style: AppFont.style(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF6B7280),
+                        color: AppColor.colorFF6B7280,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -478,7 +478,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: const Color(0xFFE5E7EB),
+                                  color: AppColor.colorFFE5E7EB,
                                 ),
                                 color: Colors.white,
                               ),
@@ -493,7 +493,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                     style: AppFont.style(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
-                                      color: const Color(0xFF0D121F),
+                                      color: AppColor.colorFF0D121F,
                                     ),
                                   ),
                                   if (_selectedTechnicians.isNotEmpty)
@@ -505,14 +505,14 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                       },
                                       child: const Icon(
                                         Icons.close,
-                                        color: Color(0xFFA5ABB7),
+                                        color: AppColor.colorFFA5ABB7,
                                         size: 16,
                                       ),
                                     )
                                   else
                                     const Icon(
                                       Icons.keyboard_arrow_down,
-                                      color: Color(0xFFA5ABB7),
+                                      color: AppColor.colorFFA5ABB7,
                                       size: 20,
                                     ),
                                 ],
@@ -535,7 +535,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                             style: AppFont.style(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF6B7280),
+                              color: AppColor.colorFF6B7280,
                             ),
                           ),
                         ),
@@ -575,7 +575,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
 
                                 if (_selectedTechnicians.isEmpty) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                     SnackBar(
+                                    SnackBar(
                                       content: Text(
                                         'assign_tech_validation_msg'.tr(),
                                       ),
@@ -604,7 +604,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                   horizontal: 24,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF1565C0),
+                                  color: AppColor.colorFF1565C0,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Center(

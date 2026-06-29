@@ -38,24 +38,26 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
       emit(CustomerLoadingState());
     }
 
-    final result = await _customerUseCase.call(CustomerParams(
-      page: _currentPage,
-      pageSize: event.pageSize,
-      search: _currentSearch,
-    ));
+    final result = await _customerUseCase.call(
+      CustomerParams(
+        page: _currentPage,
+        pageSize: event.pageSize,
+        search: _currentSearch,
+      ),
+    );
 
     if (result.isLeft()) {
       final failure = result.getLeft().toNullable()!;
       emit(CustomerFailureState(failure.message));
     } else {
       final response = result.getRight().toNullable()!;
-      
+
       if (response.data.isEmpty || response.data.length < event.pageSize) {
         _hasMore = false;
       }
-      
+
       _allCustomers.addAll(response.data);
-      
+
       // We must emit a new CustomerResponse with the accumulated _allCustomers
       final newResponse = CustomerResponse(
         status: response.status,
@@ -63,7 +65,7 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
         message: response.message,
         data: List.from(_allCustomers),
       );
-      
+
       _currentPage++;
       emit(CustomerSuccessState(newResponse));
     }

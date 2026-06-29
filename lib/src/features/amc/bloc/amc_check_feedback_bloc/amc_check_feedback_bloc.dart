@@ -3,7 +3,8 @@ import 'package:service_app/src/features/amc/domain/usecase/get_amc_check_feedba
 import 'amc_check_feedback_event.dart';
 import 'amc_check_feedback_state.dart';
 
-class AmcCheckFeedbackBloc extends Bloc<AmcCheckFeedbackEvent, AmcCheckFeedbackState> {
+class AmcCheckFeedbackBloc
+    extends Bloc<AmcCheckFeedbackEvent, AmcCheckFeedbackState> {
   final GetAmcCheckFeedbackUseCase _useCase;
 
   AmcCheckFeedbackBloc(this._useCase) : super(AmcCheckFeedbackInitialState()) {

@@ -91,13 +91,13 @@ class SessionManager {
 
   static Future<Either<Failure, void>> clear() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     // Backup credentials before clearing
     final username = prefs.getString("saved_username");
     final password = prefs.getString("saved_password");
-    
+
     final success = await prefs.clear();
-    
+
     // Restore credentials
     if (username != null && password != null) {
       await prefs.setString("saved_username", username);
@@ -111,4 +111,3 @@ class SessionManager {
     }
   }
 }
-

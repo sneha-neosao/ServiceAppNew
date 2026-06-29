@@ -16,7 +16,8 @@ class AmcReportsHistorySuccessState extends AmcReportsHistoryState {
   final AmcHistoryResponse response;
   final int timestamp;
 
-  AmcReportsHistorySuccessState(this.response) : timestamp = DateTime.now().millisecondsSinceEpoch;
+  AmcReportsHistorySuccessState(this.response)
+    : timestamp = DateTime.now().millisecondsSinceEpoch;
 
   @override
   List<Object> get props => [response, timestamp];

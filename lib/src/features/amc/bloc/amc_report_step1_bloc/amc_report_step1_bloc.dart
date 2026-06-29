@@ -9,7 +9,7 @@ class AmcReportStep1Bloc
   final PostAmcReportStep1Usecase postAmcReportStep1Usecase;
 
   AmcReportStep1Bloc(this.postAmcReportStep1Usecase)
-      : super(AmcReportStep1InitialState()) {
+    : super(AmcReportStep1InitialState()) {
     on<PostAmcReportStep1Event>((event, emit) async {
       emit(AmcReportStep1LoadingState());
 

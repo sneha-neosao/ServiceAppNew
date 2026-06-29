@@ -8,11 +8,14 @@ abstract class ServiceWorkReportTechniciansState extends Equatable {
   List<Object?> get props => [];
 }
 
-class ServiceWorkReportTechniciansInitial extends ServiceWorkReportTechniciansState {}
+class ServiceWorkReportTechniciansInitial
+    extends ServiceWorkReportTechniciansState {}
 
-class ServiceWorkReportTechniciansLoading extends ServiceWorkReportTechniciansState {}
+class ServiceWorkReportTechniciansLoading
+    extends ServiceWorkReportTechniciansState {}
 
-class ServiceWorkReportTechniciansLoaded extends ServiceWorkReportTechniciansState {
+class ServiceWorkReportTechniciansLoaded
+    extends ServiceWorkReportTechniciansState {
   final AssignedTechnicianResponse response;
 
   const ServiceWorkReportTechniciansLoaded(this.response);
@@ -21,7 +24,8 @@ class ServiceWorkReportTechniciansLoaded extends ServiceWorkReportTechniciansSta
   List<Object?> get props => [response];
 }
 
-class ServiceWorkReportTechniciansError extends ServiceWorkReportTechniciansState {
+class ServiceWorkReportTechniciansError
+    extends ServiceWorkReportTechniciansState {
   final String message;
 
   const ServiceWorkReportTechniciansError(this.message);

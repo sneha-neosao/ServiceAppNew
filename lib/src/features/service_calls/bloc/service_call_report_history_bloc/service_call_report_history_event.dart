@@ -32,14 +32,14 @@ class FetchServiceCallReportHistory extends ServiceCallReportHistoryEvent {
 
   @override
   List<Object?> get props => [
-        customerId,
-        siteId,
-        date,
-        startDate,
-        endDate,
-        page,
-        pageSize,
-        search,
-        reportType,
-      ];
+    customerId,
+    siteId,
+    date,
+    startDate,
+    endDate,
+    page,
+    pageSize,
+    search,
+    reportType,
+  ];
 }

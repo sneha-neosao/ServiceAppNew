@@ -5,12 +5,18 @@ import 'service_work_report_step4_autofill_event.dart';
 import 'service_work_report_step4_autofill_state.dart';
 
 class ServiceWorkReportStep4AutofillBloc
-    extends Bloc<ServiceWorkReportStep4AutofillEvent, ServiceWorkReportStep4AutofillState> {
+    extends
+        Bloc<
+          ServiceWorkReportStep4AutofillEvent,
+          ServiceWorkReportStep4AutofillState
+        > {
   final ServiceWorkReportStep4AutoFillUsecase usecase;
 
   ServiceWorkReportStep4AutofillBloc(this.usecase)
-      : super(ServiceWorkReportStep4AutofillInitial()) {
-    on<GetServiceWorkReportStep4AutofillEvent>(_onGetServiceWorkReportStep4AutofillEvent);
+    : super(ServiceWorkReportStep4AutofillInitial()) {
+    on<GetServiceWorkReportStep4AutofillEvent>(
+      _onGetServiceWorkReportStep4AutofillEvent,
+    );
   }
 
   Future<void> _onGetServiceWorkReportStep4AutofillEvent(

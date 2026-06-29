@@ -6,12 +6,7 @@ class FcmRegisterResponse {
   final dynamic data;
   final String? message;
 
-  FcmRegisterResponse({
-    this.status,
-    this.success,
-    this.data,
-    this.message,
-  });
+  FcmRegisterResponse({this.status, this.success, this.data, this.message});
 
   factory FcmRegisterResponse.fromRawJson(String str) =>
       FcmRegisterResponse.fromJson(json.decode(str));
@@ -27,9 +22,9 @@ class FcmRegisterResponse {
       );
 
   Map<String, dynamic> toJson() => {
-        "status": status,
-        "success": success,
-        "data": data,
-        "message": message,
-      };
+    "status": status,
+    "success": success,
+    "data": data,
+    "message": message,
+  };
 }

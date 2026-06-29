@@ -124,7 +124,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             children: [
                               const Icon(
                                 Icons.business_outlined,
-                                color: Color(0xFF1565C0),
+                                color: AppColor.colorFF1565C0,
                                 size: 24,
                               ),
                               const SizedBox(width: 12),
@@ -133,7 +133,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 style: AppFont.style(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w900,
-                                  color: const Color(0xFF0D121F),
+                                  color: AppColor.colorFF0D121F,
                                 ),
                               ),
                               const Spacer(),
@@ -141,7 +141,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 onTap: () => Navigator.pop(ctx),
                                 child: const Icon(
                                   Icons.close,
-                                  color: Color(0xFFA5ABB7),
+                                  color: AppColor.colorFFA5ABB7,
                                   size: 20,
                                 ),
                               ),
@@ -151,7 +151,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           const Divider(
                             height: 1,
                             thickness: 1,
-                            color: Color(0xFFF1F2F6),
+                            color: AppColor.colorFFF1F2F6,
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -159,7 +159,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             style: AppFont.style(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF424B5C),
+                              color: AppColor.colorFF424B5C,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -169,7 +169,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                               hintText: 'enter_customer_name'.tr(),
                               hintStyle: AppFont.style(
                                 fontSize: 12,
-                                color: const Color(0xFFA5ABB7),
+                                color: AppColor.colorFFA5ABB7,
                               ),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 16,
@@ -178,19 +178,19 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: const BorderSide(
-                                  color: Color(0xFFE5E7EB),
+                                  color: AppColor.colorFFE5E7EB,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: const BorderSide(
-                                  color: Color(0xFFE5E7EB),
+                                  color: AppColor.colorFFE5E7EB,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: const BorderSide(
-                                  color: Color(0xFF1565C0),
+                                  color: AppColor.colorFF1565C0,
                                 ),
                               ),
                             ),
@@ -206,7 +206,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                   style: AppFont.style(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF6B7280),
+                                    color: AppColor.colorFF6B7280,
                                   ),
                                 ),
                               ),
@@ -252,7 +252,8 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                         builder: (dialogCtx) {
                                           return MergeCustomerDialogWidget(
                                             name: controller.text.trim(),
-                                            bloc: _createNewCustomerBloc, // reuse the same bloc
+                                            bloc:
+                                                _createNewCustomerBloc, // reuse the same bloc
                                           );
                                         },
                                       );
@@ -287,7 +288,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                             }
                                           },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF0B68B9),
+                                      backgroundColor: AppColor.colorFF0B68B9,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
@@ -393,7 +394,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                         children: [
                           const Icon(
                             Icons.location_on_outlined,
-                            color: Color(0xFF1565C0),
+                            color: AppColor.colorFF1565C0,
                             size: 24,
                           ),
                           const SizedBox(width: 12),
@@ -402,7 +403,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             style: AppFont.style(
                               fontSize: 14,
                               fontWeight: FontWeight.w900,
-                              color: const Color(0xFF0D121F),
+                              color: AppColor.colorFF0D121F,
                             ),
                           ),
                           const Spacer(),
@@ -410,7 +411,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             onTap: () => Navigator.pop(ctx),
                             child: const Icon(
                               Icons.close,
-                              color: Color(0xFFA5ABB7),
+                              color: AppColor.colorFFA5ABB7,
                               size: 20,
                             ),
                           ),
@@ -420,7 +421,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                       const Divider(
                         height: 1,
                         thickness: 1,
-                        color: Color(0xFFF1F2F6),
+                        color: AppColor.colorFFF1F2F6,
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -428,7 +429,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFFA5ABB7),
+                          color: AppColor.colorFFA5ABB7,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -437,7 +438,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF424B5C),
+                          color: AppColor.colorFF424B5C,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -447,7 +448,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           hintText: 'enter_site_name'.tr(),
                           hintStyle: AppFont.style(
                             fontSize: 12,
-                            color: const Color(0xFFA5ABB7),
+                            color: AppColor.colorFFA5ABB7,
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -456,19 +457,19 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFFE5E7EB),
+                              color: AppColor.colorFFE5E7EB,
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFFE5E7EB),
+                              color: AppColor.colorFFE5E7EB,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFF1565C0),
+                              color: AppColor.colorFF1565C0,
                             ),
                           ),
                         ),
@@ -484,7 +485,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                               style: AppFont.style(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w800,
-                                color: const Color(0xFF6B7280),
+                                color: AppColor.colorFF6B7280,
                               ),
                             ),
                           ),
@@ -546,7 +547,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                         }
                                       },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF0B68B9),
+                                  backgroundColor: AppColor.colorFF0B68B9,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -633,12 +634,12 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           hintText: 'search'.tr(),
                           prefixIcon: const Icon(
                             Icons.search,
-                            color: Color(0xFFA5ABB7),
+                            color: AppColor.colorFFA5ABB7,
                             size: 20,
                           ),
                           hintStyle: AppFont.style(
                             fontSize: 12,
-                            color: const Color(0xFFA5ABB7),
+                            color: AppColor.colorFFA5ABB7,
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -647,25 +648,25 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFFE5E7EB),
+                              color: AppColor.colorFFE5E7EB,
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFFE5E7EB),
+                              color: AppColor.colorFFE5E7EB,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFF1565C0),
+                              color: AppColor.colorFF1565C0,
                             ),
                           ),
                         ),
                         style: AppFont.style(
                           fontSize: 12,
-                          color: const Color(0xFF0D121F),
+                          color: AppColor.colorFF0D121F,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -697,13 +698,13 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                   border: isSelected
                                       ? const Border(
                                           left: BorderSide(
-                                            color: Color(0xFF1565C0),
+                                            color: AppColor.colorFF1565C0,
                                             width: 4,
                                           ),
                                         )
                                       : null,
                                   color: isSelected
-                                      ? const Color(0xFFF8F9FB)
+                                      ? AppColor.colorFFF8F9FB
                                       : Colors.white,
                                 ),
                                 padding: const EdgeInsets.symmetric(
@@ -725,8 +726,8 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                                   ? FontWeight.bold
                                                   : FontWeight.w600,
                                               color: isSelected
-                                                  ? const Color(0xFF1565C0)
-                                                  : const Color(0xFF0D121F),
+                                                  ? AppColor.colorFF1565C0
+                                                  : AppColor.colorFF0D121F,
                                             ),
                                           ),
                                           const SizedBox(height: 4),
@@ -735,7 +736,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                             style: AppFont.style(
                                               fontSize: 10,
                                               fontWeight: FontWeight.w700,
-                                              color: const Color(0xFFA5ABB7),
+                                              color: AppColor.colorFFA5ABB7,
                                             ),
                                           ),
                                         ],
@@ -749,11 +750,11 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                         borderRadius: BorderRadius.circular(6),
                                         border: Border.all(
                                           color: isSelected
-                                              ? const Color(0xFF1565C0)
-                                              : const Color(0xFFE5E7EB),
+                                              ? AppColor.colorFF1565C0
+                                              : AppColor.colorFFE5E7EB,
                                         ),
                                         color: isSelected
-                                            ? const Color(0xFF1565C0)
+                                            ? AppColor.colorFF1565C0
                                             : Colors.white,
                                       ),
                                       child: isSelected
@@ -785,7 +786,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             Navigator.pop(ctx);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1565C0),
+                            backgroundColor: AppColor.colorFF1565C0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -839,7 +840,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                     children: [
                       const Icon(
                         Icons.person_add_alt_1_outlined,
-                        color: Color(0xFF1565C0),
+                        color: AppColor.colorFF1565C0,
                         size: 24,
                       ),
                       const SizedBox(width: 12),
@@ -849,7 +850,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           style: AppFont.style(
                             fontSize: 14,
                             fontWeight: FontWeight.w900,
-                            color: const Color(0xFF0D121F),
+                            color: AppColor.colorFF0D121F,
                           ),
                         ),
                       ),
@@ -857,7 +858,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                         onTap: () => Navigator.pop(context),
                         child: const Icon(
                           Icons.close,
-                          color: Color(0xFFA5ABB7),
+                          color: AppColor.colorFFA5ABB7,
                           size: 20,
                         ),
                       ),
@@ -867,7 +868,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                 const Divider(
                   height: 1,
                   thickness: 1,
-                  color: Color(0xFFF1F2F6),
+                  color: AppColor.colorFFF1F2F6,
                 ),
 
                 // Body
@@ -882,7 +883,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           style: AppFont.style(
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFFA5ABB7),
+                            color: AppColor.colorFFA5ABB7,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -891,7 +892,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           style: AppFont.style(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
-                            color: const Color(0xFF0D121F),
+                            color: AppColor.colorFF0D121F,
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -904,7 +905,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 style: AppFont.style(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF424B5C),
+                                  color: AppColor.colorFF424B5C,
                                 ),
                                 children: [
                                   TextSpan(
@@ -915,8 +916,8 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                               ),
                             ),
                             AppAddNewTextButtonWidget(
-                                onPressed: _showAddCustomerDialog
-                            )
+                              onPressed: _showAddCustomerDialog,
+                            ),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -934,7 +935,8 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             return SearchableDropdown<String>(
                               items: _customers,
                               value: _selectedCustomer,
-                              hintText: 'service_calls_filter_select_customer'.tr(),
+                              hintText: 'service_calls_filter_select_customer'
+                                  .tr(),
                               isLoading: isLoading,
                               itemAsString: (item) => item,
                               onClear: () {
@@ -973,7 +975,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 style: AppFont.style(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF424B5C),
+                                  color: AppColor.colorFF424B5C,
                                 ),
                                 children: [
                                   TextSpan(
@@ -984,8 +986,8 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                               ),
                             ),
                             AppAddNewTextButtonWidget(
-                                onPressed: _showAddSiteDialog
-                            )
+                              onPressed: _showAddSiteDialog,
+                            ),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -1028,7 +1030,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             style: AppFont.style(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF424B5C),
+                              color: AppColor.colorFF424B5C,
                             ),
                             children: [
                               TextSpan(
@@ -1055,7 +1057,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: const Color(0xFFE5E7EB),
+                                    color: AppColor.colorFFE5E7EB,
                                   ),
                                 ),
                                 child: const Center(
@@ -1064,7 +1066,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                     height: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      color: Color(0xFF1565C0),
+                                      color: AppColor.colorFF1565C0,
                                     ),
                                   ),
                                 ),
@@ -1103,7 +1105,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: const Color(0xFFE5E7EB),
+                                    color: AppColor.colorFFE5E7EB,
                                   ),
                                 ),
                                 padding: const EdgeInsets.symmetric(
@@ -1115,7 +1117,8 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                     Expanded(
                                       child: Text(
                                         selectedCount == 0
-                                            ? 'reports_filter_select_technician'.tr()
+                                            ? 'reports_filter_select_technician'
+                                                  .tr()
                                             : '$selectedCount ${'selected'.tr()}',
                                         style: AppFont.style(
                                           fontSize: 14,
@@ -1123,14 +1126,14 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                               ? FontWeight.w700
                                               : FontWeight.w900,
                                           color: selectedCount == 0
-                                              ? const Color(0xFFA5ABB7)
-                                              : const Color(0xFF0D121F),
+                                              ? AppColor.colorFFA5ABB7
+                                              : AppColor.colorFF0D121F,
                                         ),
                                       ),
                                     ),
                                     const Icon(
                                       Icons.keyboard_arrow_down,
-                                      color: Color(0xFFA5ABB7),
+                                      color: AppColor.colorFFA5ABB7,
                                       size: 18,
                                     ),
                                   ],
@@ -1147,7 +1150,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                 const Divider(
                   height: 1,
                   thickness: 1,
-                  color: Color(0xFFF1F2F6),
+                  color: AppColor.colorFFF1F2F6,
                 ),
 
                 // Footer
@@ -1163,7 +1166,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                           style: AppFont.style(
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFF6B7280),
+                            color: AppColor.colorFF6B7280,
                           ),
                         ),
                       ),
@@ -1207,7 +1210,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
 
                               if (_selectedTechnicians.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                   SnackBar(
+                                  SnackBar(
                                     content: Text(
                                       'assign_tech_validation_msg'.tr(),
                                     ),
@@ -1220,7 +1223,9 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                               if (_selectedCustomer == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text('please_select_customer'.tr()),
+                                    content: Text(
+                                      'please_select_customer'.tr(),
+                                    ),
                                     backgroundColor: AppColor.bright_red,
                                   ),
                                 );

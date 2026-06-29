@@ -3,7 +3,8 @@ import 'package:service_app/src/features/amc/domain/usecase/post_amc_visit_compl
 import 'amc_visit_complete_event.dart';
 import 'amc_visit_complete_state.dart';
 
-class AmcVisitCompleteBloc extends Bloc<AmcVisitCompleteEvent, AmcVisitCompleteState> {
+class AmcVisitCompleteBloc
+    extends Bloc<AmcVisitCompleteEvent, AmcVisitCompleteState> {
   final PostAmcVisitCompleteUseCase _useCase;
 
   AmcVisitCompleteBloc(this._useCase) : super(AmcVisitCompleteInitialState()) {
@@ -11,7 +12,8 @@ class AmcVisitCompleteBloc extends Bloc<AmcVisitCompleteEvent, AmcVisitCompleteS
       emit(AmcVisitCompleteLoadingState());
       final result = await _useCase(event.visitId);
       result.fold(
-        (failure) => emit(AmcVisitCompleteFailureState((failure as dynamic).message)),
+        (failure) =>
+            emit(AmcVisitCompleteFailureState((failure as dynamic).message)),
         (data) => emit(AmcVisitCompleteSuccessState(data)),
       );
     });

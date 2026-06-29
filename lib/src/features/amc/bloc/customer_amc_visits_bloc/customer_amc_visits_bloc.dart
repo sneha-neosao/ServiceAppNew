@@ -5,7 +5,8 @@ import '../../domain/usecase/get_customer_amc_visits_usecase.dart';
 import 'customer_amc_visits_event.dart';
 import 'customer_amc_visits_state.dart';
 
-class CustomerAmcVisitsBloc extends Bloc<CustomerAmcVisitsEvent, CustomerAmcVisitsState> {
+class CustomerAmcVisitsBloc
+    extends Bloc<CustomerAmcVisitsEvent, CustomerAmcVisitsState> {
   final GetCustomerAmcVisitsUseCase getCustomerAmcVisitsUseCase;
 
   int _currentPage = 1;
@@ -14,7 +15,7 @@ class CustomerAmcVisitsBloc extends Bloc<CustomerAmcVisitsEvent, CustomerAmcVisi
   bool _hasMore = true;
 
   CustomerAmcVisitsBloc({required this.getCustomerAmcVisitsUseCase})
-      : super(CustomerAmcVisitsInitial()) {
+    : super(CustomerAmcVisitsInitial()) {
     on<GetCustomerAmcVisitsEvent>(_onGetCustomerAmcVisitsEvent);
   }
 
@@ -43,31 +44,30 @@ class CustomerAmcVisitsBloc extends Bloc<CustomerAmcVisitsEvent, CustomerAmcVisi
 
     final result = await getCustomerAmcVisitsUseCase(params);
 
-    result.fold(
-      (failure) => emit(CustomerAmcVisitsError(failure.message)),
-      (response) {
-        final dataList = response.data?.results ?? [];
-        if (dataList.isEmpty || dataList.length < event.pageSize) {
-          _hasMore = false;
-        }
+    result.fold((failure) => emit(CustomerAmcVisitsError(failure.message)), (
+      response,
+    ) {
+      final dataList = response.data?.results ?? [];
+      if (dataList.isEmpty || dataList.length < event.pageSize) {
+        _hasMore = false;
+      }
 
-        _allVisits.addAll(dataList);
+      _allVisits.addAll(dataList);
 
-        final newData = CustomerAmcVisitsData(
-          results: List.from(_allVisits),
-          pagination: response.data?.pagination,
-        );
+      final newData = CustomerAmcVisitsData(
+        results: List.from(_allVisits),
+        pagination: response.data?.pagination,
+      );
 
-        final newResponse = CustomerAmcVisitsResponse(
-          status: response.status,
-          success: response.success,
-          message: response.message,
-          data: newData,
-        );
+      final newResponse = CustomerAmcVisitsResponse(
+        status: response.status,
+        success: response.success,
+        message: response.message,
+        data: newData,
+      );
 
-        _currentPage++;
-        emit(CustomerAmcVisitsSuccess(newResponse));
-      },
-    );
+      _currentPage++;
+      emit(CustomerAmcVisitsSuccess(newResponse));
+    });
   }
 }

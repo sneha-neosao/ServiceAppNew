@@ -35,6 +35,7 @@ import 'package:service_app/src/features/notifications/bloc/unread_count_bloc/un
 import 'package:service_app/src/features/notifications/bloc/unread_count_bloc/unread_count_event.dart';
 import 'package:go_router/go_router.dart';
 import 'package:service_app/src/routes/app_route_path.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
@@ -65,8 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ..add(const GetUnreadNotificationCountEvent());
     _checkAndRegisterFcmToken();
   }
-
-
 
   Future<void> _checkAndRegisterFcmToken() async {
     final String? newToken = await NoficationService.getToken();
@@ -103,42 +102,52 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
     List<String> perms = [];
     if (_profileDetailsBloc.state is ProfileDetailsSuccessState) {
-      perms = (_profileDetailsBloc.state as ProfileDetailsSuccessState).data.data.permissions;
+      perms = (_profileDetailsBloc.state as ProfileDetailsSuccessState)
+          .data
+          .data
+          .permissions;
     } else {
       // Default to all if not loaded yet, or you can default to none
       perms = ['commissioning_work', 'service_calls', 'amcs'];
     }
 
     if (perms.contains('commissioning_work')) {
-      items.add(const _NavItem(
-        labelKey: 'home_nav_commissioning',
-        iconAsset: 'assets/icons/mycommissioning_unselected_icon.png',
-        activeIconAsset: 'assets/icons/mycommissioning_selected_icon.png',
-        originalIndex: 1,
-      ));
+      items.add(
+        const _NavItem(
+          labelKey: 'home_nav_commissioning',
+          iconAsset: 'assets/icons/mycommissioning_unselected_icon.png',
+          activeIconAsset: 'assets/icons/mycommissioning_selected_icon.png',
+          originalIndex: 1,
+        ),
+      );
     }
 
     if (perms.contains('service_calls')) {
-      items.add(const _NavItem(
-        labelKey: 'home_nav_service_calls',
-        iconAsset: 'assets/icons/servicecalls_unselected_icon.png',
-        activeIconAsset: 'assets/icons/servicecalls_selected_icon.png',
-        originalIndex: 2,
-      ));
+      items.add(
+        const _NavItem(
+          labelKey: 'home_nav_service_calls',
+          iconAsset: 'assets/icons/servicecalls_unselected_icon.png',
+          activeIconAsset: 'assets/icons/servicecalls_selected_icon.png',
+          originalIndex: 2,
+        ),
+      );
     }
 
-    items.add(const _NavItem(
-      labelKey: 'home_nav_reports',
-      iconAsset: 'assets/icons/reporthistory_unselected_icon.png',
-      activeIconAsset: 'assets/icons/reporthistory_selected_icon.png',
-      originalIndex: 3,
-    ));
+    items.add(
+      const _NavItem(
+        labelKey: 'home_nav_reports',
+        iconAsset: 'assets/icons/reporthistory_unselected_icon.png',
+        activeIconAsset: 'assets/icons/reporthistory_selected_icon.png',
+        originalIndex: 3,
+      ),
+    );
 
     return items;
   }
 
   bool _showSystemBars = true;
-  final GlobalKey<MyCommissioningScreenState> _myCommissioningKey = GlobalKey<MyCommissioningScreenState>();
+  final GlobalKey<MyCommissioningScreenState> _myCommissioningKey =
+      GlobalKey<MyCommissioningScreenState>();
 
   void _onTabTapped(int index) {
     setState(() {
@@ -154,386 +163,449 @@ class _HomeScreenState extends State<HomeScreen> {
       listeners: [
         BlocListener<AppSettingsBloc, AppSettingsState>(
           bloc: _appSettingsBloc,
-      listener: (context, state) async {
-        if (state is AppSettingsSuccess) {
-          try {
-            PackageInfo packageInfo = await PackageInfo.fromPlatform();
-            final storeVersion = packageInfo.version;
+          listener: (context, state) async {
+            if (state is AppSettingsSuccess) {
+              try {
+                PackageInfo packageInfo = await PackageInfo.fromPlatform();
+                final storeVersion = packageInfo.version;
 
-            String? currentVersion;
-            bool isCompulsory = false;
-            String? updateMessage;
-            String? link;
+                String? currentVersion;
+                bool isCompulsory = false;
+                String? updateMessage;
+                String? link;
 
-            if (Platform.isAndroid) {
-              currentVersion = state.data.data?.androidApp?.version;
-              isCompulsory = state.data.data?.androidApp?.forceUpdate ?? false;
-              updateMessage = state.data.data?.androidApp?.updateMessage;
-              link = state.data.data?.androidApp?.playStoreLink;
-            } else if (Platform.isIOS) {
-              currentVersion = state.data.data?.iosApp?.version;
-              isCompulsory = state.data.data?.iosApp?.forceUpdate ?? false;
-              updateMessage = state.data.data?.iosApp?.updateMessage;
-              link = state.data.data?.iosApp?.appStoreLink;
+                if (Platform.isAndroid) {
+                  currentVersion = state.data.data?.androidApp?.version;
+                  isCompulsory =
+                      state.data.data?.androidApp?.forceUpdate ?? false;
+                  updateMessage = state.data.data?.androidApp?.updateMessage;
+                  link = state.data.data?.androidApp?.playStoreLink;
+                } else if (Platform.isIOS) {
+                  currentVersion = state.data.data?.iosApp?.version;
+                  isCompulsory = state.data.data?.iosApp?.forceUpdate ?? false;
+                  updateMessage = state.data.data?.iosApp?.updateMessage;
+                  link = state.data.data?.iosApp?.appStoreLink;
+                }
+
+                if (currentVersion != null && currentVersion != storeVersion) {
+                  _updateWarningDialog(
+                    context,
+                    message: updateMessage ?? "new_version_is_available".tr(),
+                    isCompulsory: isCompulsory,
+                    link: link,
+                  );
+                }
+              } catch (e) {
+                print("Error fetching installed version: $e");
+              }
             }
-
-            if (currentVersion != null && currentVersion != storeVersion) {
-              _updateWarningDialog(
-                context,
-                message: updateMessage ?? "new_version_is_available".tr(),
-                isCompulsory: isCompulsory,
-                link: link,
-              );
+          },
+        ),
+        BlocListener<ProfileDetailsBloc, ProfileDetailsState>(
+          bloc: _profileDetailsBloc,
+          listener: (context, state) {
+            if (state is ProfileDetailsSuccessState) {
+              final profileData = state.data;
+              if (profileData.status == 300) {
+                _maintenanceWarningDialog(
+                  context,
+                  message: profileData.message ?? "Account issue",
+                );
+              }
             }
-          } catch (e) {
-            print("Error fetching installed version: $e");
-          }
-        }
-      },
-    ),
-    BlocListener<ProfileDetailsBloc, ProfileDetailsState>(
-      bloc: _profileDetailsBloc,
-      listener: (context, state) {
-        if (state is ProfileDetailsSuccessState) {
-          final profileData = state.data;
-          if (profileData.status == 300) {
-            _maintenanceWarningDialog(context,
-                message: profileData.message ?? "Account issue");
-          }
-        }
-      },
-    ),
-  ],
-  child: PopScope(
-      canPop: _selectedIndex == 0,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
+          },
+        ),
+      ],
+      child: PopScope(
+        canPop: _selectedIndex == 0,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
 
-        if (_selectedIndex != 0) {
-          setState(() {
-            _selectedIndex = 0;
-            _showCreateReport = false;
-            _showSystemBars = true;
-          });
-        }
-      },
-      child: BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
-        bloc: _profileDetailsBloc,
-        builder: (context, state) {
-          final currentItems = _currentNavItems;
-          final int originalIndex = (currentItems.isNotEmpty && _selectedIndex < currentItems.length)
-              ? currentItems[_selectedIndex].originalIndex
-              : 0;
+          if (_selectedIndex != 0) {
+            setState(() {
+              _selectedIndex = 0;
+              _showCreateReport = false;
+              _showSystemBars = true;
+            });
+          }
+        },
+        child: BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
+          bloc: _profileDetailsBloc,
+          builder: (context, state) {
+            final currentItems = _currentNavItems;
+            final int originalIndex =
+                (currentItems.isNotEmpty &&
+                    _selectedIndex < currentItems.length)
+                ? currentItems[_selectedIndex].originalIndex
+                : 0;
 
-          return Stack(
-            children: [
-              Scaffold(
-                backgroundColor: Colors.white,
-        body: Column(
-          children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            height: _showSystemBars ? 155 : 0,
-            clipBehavior: Clip.hardEdge,
-            decoration: const BoxDecoration(),
-            child: Stack(
+            return Stack(
               children: [
-                // ── Background + content ─────────────────────────────────────────
-                Container(
-                  height: 155,
-                  color: const Color(0xFFE9F5FF),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: 38,
-                        left: 16,
-                        right: 16,
-                      ),
-                      child: SafeArea(
-                        bottom: false,
-                        child: Row(
+                Scaffold(
+                  backgroundColor: Colors.white,
+                  body: Column(
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        height: _showSystemBars ? 155 : 0,
+                        clipBehavior: Clip.hardEdge,
+                        decoration: const BoxDecoration(),
+                        child: Stack(
                           children: [
-                            // ── Logo ───────────────────────────────────────────
-                            Image.asset(
-                              'assets/images/logo_tightcrop.png',
-                              width: 135,
-                              fit: BoxFit.fill,
-                            ),
-                            const Spacer(),
-                            // ── + button ───────────────────────────────────────
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                    _selectedIndex = 0;
-                                    _showCreateReport = false;
-                                    _showSystemBars = true;
-                                  });
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => CreateReportScreen(
-                                      onBack: () => Navigator.pop(context),
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFF0B68B9),
-                                  shape: BoxShape.circle,
-                                ),
+                            // ── Background + content ─────────────────────────────────────────
+                            Container(
+                              height: 155,
+                              color: AppColor.colorFFE9F5FF,
+                              child: Align(
+                                alignment: Alignment.bottomCenter,
                                 child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Image.asset('assets/icons/add_icon.png'),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            // ── Notification ───────────────────────────────────
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => NotificationScreen(
-                                      onBack: () => Navigator.pop(context),
-                                    ),
+                                  padding: const EdgeInsets.only(
+                                    bottom: 38,
+                                    left: 16,
+                                    right: 16,
                                   ),
-                                ).then((_) {
-                                  // Refresh count after returning from notifications
-                                  _unreadCountBloc.add(
-                                    const GetUnreadNotificationCountEvent(),
-                                  );
-                                });
-                              },
-                              child: BlocBuilder<UnreadCountBloc, UnreadCountState>(
-                                bloc: _unreadCountBloc,
-                                builder: (context, state) {
-                                  return Stack(
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xFF0B68B9),
-                                          shape: BoxShape.circle,
+                                  child: SafeArea(
+                                    bottom: false,
+                                    child: Row(
+                                      children: [
+                                        // ── Logo ───────────────────────────────────────────
+                                        Image.asset(
+                                          'assets/images/logo_tightcrop.png',
+                                          width: 135,
+                                          fit: BoxFit.fill,
                                         ),
-                                        child: const Icon(
-                                          Icons.notifications_outlined,
-                                          color: Colors.white,
-                                          size: 26,
-                                        ),
-                                      ),
-                                      if (state is UnreadCountLoading)
-                                        Positioned(
-                                          top: -4,
-                                          right: -4,
-                                          child: Shimmer.fromColors(
-                                            baseColor: Colors.grey[300]!,
-                                            highlightColor: Colors.grey[100]!,
-                                            child: Container(
-                                              width: 18,
-                                              height: 18,
-                                              decoration: const BoxDecoration(
-                                                color: Colors.white,
-                                                shape: BoxShape.circle,
+                                        const Spacer(),
+                                        // ── + button ───────────────────────────────────────
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              _selectedIndex = 0;
+                                              _showCreateReport = false;
+                                              _showSystemBars = true;
+                                            });
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                    CreateReportScreen(
+                                                      onBack: () =>
+                                                          Navigator.pop(
+                                                            context,
+                                                          ),
+                                                    ),
                                               ),
-                                            ),
-                                          ),
-                                        )
-                                      else if (state is UnreadCountLoaded &&
-                                          state.unreadCount > 0)
-                                        Positioned(
-                                          top: -4,
-                                          right: -4,
+                                            );
+                                          },
                                           child: Container(
-                                            width: 18,
-                                            height: 18,
+                                            width: 40,
+                                            height: 40,
                                             decoration: const BoxDecoration(
-                                              color: Colors.red,
+                                              color: AppColor.colorFF0B68B9,
                                               shape: BoxShape.circle,
                                             ),
-                                            child: Center(
-                                              child: Text(
-                                                state.unreadCount > 99
-                                                    ? '99+'
-                                                    : '${state.unreadCount}',
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 7,
-                                                  fontWeight: FontWeight.w800,
-                                                ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(
+                                                10.0,
+                                              ),
+                                              child: Image.asset(
+                                                'assets/icons/add_icon.png',
                                               ),
                                             ),
                                           ),
                                         ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            // ── Profile avatar ─────────────────────────────────
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => ProfileScreen(
-                                      onBack: () => Navigator.pop(context),
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFF0B68B9),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: state is ProfileDetailsLoadingState || state is ProfileDetailsInitialState
-                                    ? Shimmer.fromColors(
-                                        baseColor: Colors.grey[300]!,
-                                        highlightColor: Colors.grey[100]!,
-                                        child: Container(
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.circle,
+                                        const SizedBox(width: 8),
+                                        // ── Notification ───────────────────────────────────
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                    NotificationScreen(
+                                                      onBack: () =>
+                                                          Navigator.pop(
+                                                            context,
+                                                          ),
+                                                    ),
+                                              ),
+                                            ).then((_) {
+                                              // Refresh count after returning from notifications
+                                              _unreadCountBloc.add(
+                                                const GetUnreadNotificationCountEvent(),
+                                              );
+                                            });
+                                          },
+                                          child: BlocBuilder<UnreadCountBloc, UnreadCountState>(
+                                            bloc: _unreadCountBloc,
+                                            builder: (context, state) {
+                                              return Stack(
+                                                clipBehavior: Clip.none,
+                                                children: [
+                                                  Container(
+                                                    width: 40,
+                                                    height: 40,
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                          color: AppColor
+                                                              .colorFF0B68B9,
+                                                          shape:
+                                                              BoxShape.circle,
+                                                        ),
+                                                    child: const Icon(
+                                                      Icons
+                                                          .notifications_outlined,
+                                                      color: Colors.white,
+                                                      size: 26,
+                                                    ),
+                                                  ),
+                                                  if (state
+                                                      is UnreadCountLoading)
+                                                    Positioned(
+                                                      top: -4,
+                                                      right: -4,
+                                                      child: Shimmer.fromColors(
+                                                        baseColor:
+                                                            Colors.grey[300]!,
+                                                        highlightColor:
+                                                            Colors.grey[100]!,
+                                                        child: Container(
+                                                          width: 18,
+                                                          height: 18,
+                                                          decoration:
+                                                              const BoxDecoration(
+                                                                color: Colors
+                                                                    .white,
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  else if (state
+                                                          is UnreadCountLoaded &&
+                                                      state.unreadCount > 0)
+                                                    Positioned(
+                                                      top: -4,
+                                                      right: -4,
+                                                      child: Container(
+                                                        width: 18,
+                                                        height: 18,
+                                                        decoration:
+                                                            const BoxDecoration(
+                                                              color: Colors.red,
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                            ),
+                                                        child: Center(
+                                                          child: Text(
+                                                            state.unreadCount >
+                                                                    99
+                                                                ? '99+'
+                                                                : '${state.unreadCount}',
+                                                            style:
+                                                                const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 7,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w800,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                ],
+                                              );
+                                            },
                                           ),
                                         ),
-                                      )
-                                    : const Icon(
-                                        Icons.person_outline,
-                                        color: Colors.white,
-                                        size: 26,
-                                      ),
+                                        const SizedBox(width: 8),
+                                        // ── Profile avatar ─────────────────────────────────
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => ProfileScreen(
+                                                  onBack: () =>
+                                                      Navigator.pop(context),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Container(
+                                            width: 40,
+                                            height: 40,
+                                            decoration: const BoxDecoration(
+                                              color: AppColor.colorFF0B68B9,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child:
+                                                state is ProfileDetailsLoadingState ||
+                                                    state is ProfileDetailsInitialState
+                                                ? Shimmer.fromColors(
+                                                    baseColor:
+                                                        Colors.grey[300]!,
+                                                    highlightColor:
+                                                        Colors.grey[100]!,
+                                                    child: Container(
+                                                      decoration:
+                                                          const BoxDecoration(
+                                                            color: Colors.white,
+                                                            shape:
+                                                                BoxShape.circle,
+                                                          ),
+                                                    ),
+                                                  )
+                                                : const Icon(
+                                                    Icons.person_outline,
+                                                    color: Colors.white,
+                                                    size: 26,
+                                                  ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // ── Upper-left corner decoration ──────────────────────────────
+                            Positioned(
+                              top: -35,
+                              left: -47,
+                              child: IgnorePointer(
+                                child: Image.asset(
+                                  'assets/icons/upper_left_corner_image.png',
+                                  height: 163,
+                                  width: 181,
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ),
+                            // ── Upper-right corner decoration ─────────────────────────────
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: IgnorePointer(
+                                child: Image.asset(
+                                  'assets/icons/upper_right_corner_image.png',
+                                  height: 160,
+                                  width: 140,
+                                  fit: BoxFit.fill,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                // ── Upper-left corner decoration ──────────────────────────────
-                Positioned(
-                  top: -35,
-                  left: -47,
-                  child: IgnorePointer(
-                    child: Image.asset(
-                      'assets/icons/upper_left_corner_image.png',
-                      height: 163,
-                      width: 181,
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ),
-                // ── Upper-right corner decoration ─────────────────────────────
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: IgnorePointer(
-                    child: Image.asset(
-                      'assets/icons/upper_right_corner_image.png',
-                      height: 160,
-                      width: 140,
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            height: _showSystemBars ? 0 : MediaQuery.of(context).padding.top,
-          ),
-          Expanded(
-            child: SafeArea(
-              top: false,
-              bottom: true,
-              child: _buildCurrentView(),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: state is ProfileDetailsLoadingState || state is ProfileDetailsInitialState
-          ? AnimatedSize(
-              duration: const Duration(milliseconds: 300),
-              alignment: Alignment.topCenter,
-              child: Align(
-                alignment: Alignment.topCenter,
-                heightFactor: _showSystemBars ? 1.0 : 0.0,
-                child: SafeArea(
-                  top: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 10, 8, 12),
-                    child: Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(
-                        height: 72,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(32),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        height: _showSystemBars
+                            ? 0
+                            : MediaQuery.of(context).padding.top,
+                      ),
+                      Expanded(
+                        child: SafeArea(
+                          top: false,
+                          bottom: true,
+                          child: _buildCurrentView(),
                         ),
+                      ),
+                    ],
+                  ),
+                  bottomNavigationBar:
+                      state is ProfileDetailsLoadingState ||
+                          state is ProfileDetailsInitialState
+                      ? AnimatedSize(
+                          duration: const Duration(milliseconds: 300),
+                          alignment: Alignment.topCenter,
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            heightFactor: _showSystemBars ? 1.0 : 0.0,
+                            child: SafeArea(
+                              top: false,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  8,
+                                  10,
+                                  8,
+                                  12,
+                                ),
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: Container(
+                                    height: 72,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(32),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      : AnimatedSize(
+                          duration: const Duration(milliseconds: 300),
+                          alignment: Alignment.topCenter,
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            heightFactor: _showSystemBars ? 1.0 : 0.0,
+                            child: SafeArea(
+                              top: false,
+                              child: _CustomBottomNavBar(
+                                selectedIndex: _selectedIndex,
+                                onTap: _onTabTapped,
+                                navItems: _currentNavItems,
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
+                if (originalIndex == 1)
+                  Positioned(
+                    bottom: 146,
+                    right: 22,
+                    child: FloatingActionButton(
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddCommissioningScreen(
+                              onBack: () => Navigator.pop(context),
+                            ),
+                          ),
+                        );
+                        _myCommissioningKey.currentState?.refreshList();
+                      },
+                      backgroundColor: AppColor.colorFF0B68B9,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.white,
+                        size: 30,
                       ),
                     ),
                   ),
-                ),
-              ),
-            )
-          : AnimatedSize(
-              duration: const Duration(milliseconds: 300),
-              alignment: Alignment.topCenter,
-              child: Align(
-                alignment: Alignment.topCenter,
-                heightFactor: _showSystemBars ? 1.0 : 0.0,
-                child: SafeArea(
-                  top: false,
-                  child: _CustomBottomNavBar(
-                    selectedIndex: _selectedIndex,
-                    onTap: _onTabTapped,
-                    navItems: _currentNavItems,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          if (originalIndex == 1)
-            Positioned(
-              bottom: 146,
-              right: 22,
-              child: FloatingActionButton(
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddCommissioningScreen(onBack: () => Navigator.pop(context)),
-                    ),
-                  );
-                  _myCommissioningKey.currentState?.refreshList();
-                },
-                backgroundColor: const Color(0xFF0B68B9),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: const Icon(Icons.add, color: Colors.white, size: 30),
-              ),
-            ),
-          ],
-        );
-        },
+              ],
+            );
+          },
+        ),
       ),
-    ),
     );
   }
 
-  void _updateWarningDialog(BuildContext context,
-      {required String message, required bool isCompulsory, String? link}) {
+  void _updateWarningDialog(
+    BuildContext context, {
+    required String message,
+    required bool isCompulsory,
+    String? link,
+  }) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -542,7 +614,9 @@ class _HomeScreenState extends State<HomeScreen> {
           canPop: false,
           child: Dialog(
             backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -566,7 +640,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: AppFont.style(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1A1A1A),
+                      color: AppColor.colorFF1A1A1A,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -576,7 +650,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: AppFont.style(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: const Color(0xFF424B5C),
+                      color: AppColor.colorFF424B5C,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -586,7 +660,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.of(dialogContext).pop(false);
                       }
                       if (link != null && link.isNotEmpty) {
-                        launchUrl(Uri.parse(link), mode: LaunchMode.externalApplication);
+                        launchUrl(
+                          Uri.parse(link),
+                          mode: LaunchMode.externalApplication,
+                        );
                       }
                     },
                     child: Container(
@@ -594,7 +671,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-                        color: const Color(0xFF0B68B9),
+                        color: AppColor.colorFF0B68B9,
                       ),
                       child: Center(
                         child: Text(
@@ -618,14 +695,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           color: Colors.white,
-                          border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
+                          border: Border.all(
+                            color: AppColor.colorFFE0E0E0,
+                            width: 1,
+                          ),
                         ),
                         child: Center(
                           child: Text(
                             "cancel".tr(),
                             style: AppFont.style(
                               fontSize: 12,
-                              color: const Color(0xFF1A1A1A),
+                              color: AppColor.colorFF1A1A1A,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -641,7 +721,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _maintenanceWarningDialog(BuildContext context, {required String message}) {
+  void _maintenanceWarningDialog(
+    BuildContext context, {
+    required String message,
+  }) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -653,7 +736,7 @@ class _HomeScreenState extends State<HomeScreen> {
               if (state is AuthLogoutSuccessState) {
                 final nav = Navigator.of(loginContext, rootNavigator: true);
                 final router = GoRouter.of(loginContext);
-                
+
                 nav.pop(); // close dialog
                 router.goNamed(AppRoute.loginScreen.name);
               }
@@ -662,150 +745,165 @@ class _HomeScreenState extends State<HomeScreen> {
               canPop: false,
               child: Dialog(
                 backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // ── Icon ───────────────────────────────────────────────────────
-                      Container(
-                        width: 64,
-                        height: 64,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFFF1F0),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.error_outline,
-                          color: Color(0xFFFF4D4F),
-                          size: 32,
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 20),
-
-                      // ── Title ───────────────────────────────────────────────────────
-                      Text(
-                        'maintenance_mode'.tr(),
-                        style: AppFont.style(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF0D121F),
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // ── Subtitle ────────────────────────────────────────────────────
-                      Text(
-                        message,
-                        textAlign: TextAlign.center,
-                        style: AppFont.style(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF5C616E),
-                          height: 1.4,
-                        ),
-                      ),
-
-                      const SizedBox(height: 32),
-
-                      // ── Buttons ─────────────────────────────────────────────────────
-                      Row(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                insetPadding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 24,
+                ),
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Exit Button
-                          Expanded(
-                            child: SizedBox(
-                              height: 48,
-                              child: TextButton(
-                                onPressed: () {
-                                  Navigator.of(dialogContext).pop();
-                                  SystemNavigator.pop();
-                                },
-                                style: TextButton.styleFrom(
-                                  backgroundColor: const Color(0xFFF6F6F6),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text(
-                                    'exit'.tr(),
-                                    maxLines: 1,
-                                    style: AppFont.style(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w800,
-                                      color: const Color(0xFF0D121F),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                          // ── Icon ───────────────────────────────────────────────────────
+                          Container(
+                            width: 64,
+                            height: 64,
+                            decoration: const BoxDecoration(
+                              color: AppColor.colorFFFFF1F0,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.error_outline,
+                              color: AppColor.colorFFFF4D4F,
+                              size: 32,
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          // Log Out Button
-                          Expanded(
-                            child: BlocBuilder<AuthLoginBloc, AuthLoginState>(
-                              builder: (loginContext, state) {
-                                final isLoading = state is AuthLogoutLoadingState;
-                                return SizedBox(
+
+                          const SizedBox(height: 20),
+
+                          // ── Title ───────────────────────────────────────────────────────
+                          Text(
+                            'maintenance_mode'.tr(),
+                            style: AppFont.style(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: AppColor.colorFF0D121F,
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          // ── Subtitle ────────────────────────────────────────────────────
+                          Text(
+                            message,
+                            textAlign: TextAlign.center,
+                            style: AppFont.style(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColor.colorFF5C616E,
+                              height: 1.4,
+                            ),
+                          ),
+
+                          const SizedBox(height: 32),
+
+                          // ── Buttons ─────────────────────────────────────────────────────
+                          Row(
+                            children: [
+                              // Exit Button
+                              Expanded(
+                                child: SizedBox(
                                   height: 48,
-                                  child: ElevatedButton(
-                                    onPressed: isLoading
-                                        ? null
-                                        : () {
-                                            loginContext.read<AuthLoginBloc>().add(AuthLogoutEvent());
-                                          },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF0B68B9),
-                                      foregroundColor: Colors.white,
-                                      elevation: 0,
-                                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.of(dialogContext).pop();
+                                      SystemNavigator.pop();
+                                    },
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: AppColor.colorFFF6F6F6,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                     ),
-                                    child: isLoading
-                                        ? const SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2,
-                                            ),
-                                          )
-                                        : FittedBox(
-                                            fit: BoxFit.scaleDown,
-                                            child: Text(
-                                              'logout_dialog_btn_confirm'.tr(),
-                                              maxLines: 1,
-                                              style: AppFont.style(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w800,
-                                                color: Colors.white,
-                                              ),
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        'exit'.tr(),
+                                        maxLines: 1,
+                                        style: AppFont.style(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w800,
+                                          color: AppColor.colorFF0D121F,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              // Log Out Button
+                              Expanded(
+                                child: BlocBuilder<AuthLoginBloc, AuthLoginState>(
+                                  builder: (loginContext, state) {
+                                    final isLoading =
+                                        state is AuthLogoutLoadingState;
+                                    return SizedBox(
+                                      height: 48,
+                                      child: ElevatedButton(
+                                        onPressed: isLoading
+                                            ? null
+                                            : () {
+                                                loginContext
+                                                    .read<AuthLoginBloc>()
+                                                    .add(AuthLogoutEvent());
+                                              },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              AppColor.colorFF0B68B9,
+                                          foregroundColor: Colors.white,
+                                          elevation: 0,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
                                             ),
                                           ),
-                                  ),
-                                );
-                              },
-                            ),
+                                        ),
+                                        child: isLoading
+                                            ? const SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      color: Colors.white,
+                                                      strokeWidth: 2,
+                                                    ),
+                                              )
+                                            : FittedBox(
+                                                fit: BoxFit.scaleDown,
+                                                child: Text(
+                                                  'logout_dialog_btn_confirm'
+                                                      .tr(),
+                                                  maxLines: 1,
+                                                  style: AppFont.style(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-        ),
         );
       },
     );
@@ -816,11 +914,16 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_selectedIndex >= currentItems.length) {
       _selectedIndex = 0; // fallback
     }
-    final originalIndex = currentItems.isNotEmpty ? currentItems[_selectedIndex].originalIndex : 0;
+    final originalIndex = currentItems.isNotEmpty
+        ? currentItems[_selectedIndex].originalIndex
+        : 0;
 
     List<String> perms = [];
     if (_profileDetailsBloc.state is ProfileDetailsSuccessState) {
-      perms = (_profileDetailsBloc.state as ProfileDetailsSuccessState).data.data.permissions;
+      perms = (_profileDetailsBloc.state as ProfileDetailsSuccessState)
+          .data
+          .data
+          .permissions;
     } else {
       perms = ['commissioning_work', 'service_calls', 'amcs'];
     }
@@ -849,7 +952,8 @@ class _HomeScreenState extends State<HomeScreen> {
           if (notification.metrics.axis == Axis.vertical) {
             if (notification.metrics.pixels <= 0) {
               if (!_showSystemBars) setState(() => _showSystemBars = true);
-            } else if (!notification.metrics.outOfRange && notification.scrollDelta != null) {
+            } else if (!notification.metrics.outOfRange &&
+                notification.scrollDelta != null) {
               if (notification.scrollDelta! > 2) {
                 // User scrolls down the list (content goes up) -> hide bars
                 if (_showSystemBars) setState(() => _showSystemBars = false);
@@ -867,14 +971,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return child;
   }
 
-
-
   Widget _buildHomeBody() {
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenHeight = constraints.maxHeight;
         return RefreshIndicator(
-          color: const Color(0xFF0B68B9),
+          color: AppColor.colorFF0B68B9,
           onRefresh: () async {
             _upcomingAmcBloc.add(const UpcomingAmcGetEvent('Today'));
             _profileDetailsBloc.add(const ProfileDetailsGetEvent());
@@ -885,121 +987,136 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: screenHeight),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 40,
+                ),
                 child: IntrinsicHeight(
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
-                  bloc: _profileDetailsBloc,
-                  builder: (context, state) {
-                    if (state is ProfileDetailsLoadingState ||
-                        state is ProfileDetailsInitialState) {
-                      return Column(
-                        crossAxisAlignment:
-                        CrossAxisAlignment.center,
-                        children: [
-                          Shimmer.fromColors(
-                            baseColor: Colors.grey[300]!,
-                            highlightColor: Colors.grey[100]!,
-                            child: Container(
-                              width: 200,
-                              height: 37,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                BorderRadius.circular(8),
+                      BlocBuilder<ProfileDetailsBloc, ProfileDetailsState>(
+                        bloc: _profileDetailsBloc,
+                        builder: (context, state) {
+                          if (state is ProfileDetailsLoadingState ||
+                              state is ProfileDetailsInitialState) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: Container(
+                                    width: 200,
+                                    height: 37,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: Container(
+                                    width: 250,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+
+                          String name = 'home_greeting_name'.tr();
+                          String dealerName = '';
+
+                          if (state is ProfileDetailsSuccessState) {
+                            final data = state.data.data;
+                            if (data.name.isNotEmpty) {
+                              name = data.name;
+                            }
+                            if (data.dealer.name.isNotEmpty) {
+                              dealerName = data.dealer.name;
+                            }
+                          }
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                name,
+                                style: AppFont.style(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColor.colorFF1A1A1A,
+                                ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Shimmer.fromColors(
-                            baseColor: Colors.grey[300]!,
-                            highlightColor: Colors.grey[100]!,
-                            child: Container(
-                              width: 250,
-                              height: 20,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                BorderRadius.circular(8),
+                              const SizedBox(height: 10),
+                              Text(
+                                _getGreetingMessage().tr(args: [dealerName]),
+                                style: AppFont.style(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                            ),
-                          ),
-                        ],
-                      );
-                    }
+                            ],
+                          );
+                        },
+                      ),
+                      const Spacer(),
 
-                    String name = 'home_greeting_name'.tr();
-                    String dealerName = '';
-
-                    if (state is ProfileDetailsSuccessState) {
-                      final data = state.data.data;
-                      if (data.name.isNotEmpty) {
-                        name = data.name;
-                      }
-                      if (data.dealer.name.isNotEmpty) {
-                        dealerName = data.dealer.name;
-                      }
-                    }
-
-                    return Column(
-                      crossAxisAlignment:
-                      CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          name,
-                          style: AppFont.style(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1A1A1A),
-                          ),
+                      // AMC Card
+                      if (_profileDetailsBloc.state
+                              is ProfileDetailsSuccessState &&
+                          (_profileDetailsBloc.state
+                                  as ProfileDetailsSuccessState)
+                              .data
+                              .data
+                              .permissions
+                              .contains('amcs'))
+                        UpcomingAmcCard(
+                          upcomingAmcBloc: _upcomingAmcBloc,
+                          onScheduleTap: () {
+                            String initialFilter = 'Today';
+                            if (_upcomingAmcBloc.state
+                                is UpcomingAmcSuccessState) {
+                              final f =
+                                  (_upcomingAmcBloc.state
+                                          as UpcomingAmcSuccessState)
+                                      .data
+                                      .data
+                                      ?.filter;
+                              if (f != null && f.isNotEmpty) {
+                                initialFilter =
+                                    f[0].toUpperCase() +
+                                    f.substring(1).toLowerCase();
+                              }
+                            }
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => AmcWorkflowScreen(
+                                  initialFilter: initialFilter,
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                        const SizedBox(height: 10),
-                        Text(
-                          _getGreetingMessage()
-                              .tr(args: [dealerName]),
-                          style: AppFont.style(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    );
-                  },
-                ),
-                const Spacer(),
-
-                // AMC Card
-                if (_profileDetailsBloc.state is ProfileDetailsSuccessState && (_profileDetailsBloc.state as ProfileDetailsSuccessState).data.data.permissions.contains('amcs'))
-                  UpcomingAmcCard(
-                    upcomingAmcBloc: _upcomingAmcBloc,
-                    onScheduleTap: () {
-                      String initialFilter = 'Today';
-                      if (_upcomingAmcBloc.state is UpcomingAmcSuccessState) {
-                        final f = (_upcomingAmcBloc.state as UpcomingAmcSuccessState).data.data?.filter;
-                        if (f != null && f.isNotEmpty) {
-                          initialFilter = f[0].toUpperCase() + f.substring(1).toLowerCase();
-                        }
-                      }
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => AmcWorkflowScreen(initialFilter: initialFilter),
-                        ),
-                      );
-                    },
+                      const Spacer(),
+                    ],
                   ),
-                const Spacer(),
-              ],
+                ),
+              ),
             ),
           ),
-        ),
-        ),
-        ),
         );
       },
     );
@@ -1012,7 +1129,7 @@ class _HomeScreenState extends State<HomeScreen> {
         style: AppFont.style(
           fontSize: 20,
           fontWeight: FontWeight.w600,
-          color: const Color(0xFF9E9E9E),
+          color: AppColor.colorFF9E9E9E,
         ),
       ),
     );
@@ -1020,7 +1137,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _getAppBarTitle() {
     final currentItems = _currentNavItems;
-    final originalIndex = currentItems.isNotEmpty ? currentItems[_selectedIndex].originalIndex : 0;
+    final originalIndex = currentItems.isNotEmpty
+        ? currentItems[_selectedIndex].originalIndex
+        : 0;
     switch (originalIndex) {
       case 1:
         return 'commissioning_appbar_title'.tr();
@@ -1083,7 +1202,7 @@ class _CustomBottomNavBar extends StatelessWidget {
 
     return Container(
       // page background colour visible above the pill
-      // color: const Color(0xFFE9F5FF),
+      // color: AppColor.colorFFE9F5FF,
       // top padding = half indicator height so it has room to overflow upward
       padding: EdgeInsets.fromLTRB(8, _indicatorSize / 2, 8, 12),
       child: Stack(
@@ -1093,7 +1212,7 @@ class _CustomBottomNavBar extends StatelessWidget {
           Container(
             height: _barHeight,
             decoration: BoxDecoration(
-              color: const Color(0xFF0B68B9),
+              color: AppColor.colorFF0B68B9,
               borderRadius: BorderRadius.circular(32),
             ),
             child: Padding(

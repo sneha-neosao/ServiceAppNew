@@ -8,7 +8,7 @@ class ServiceCallCheckFeedbackBloc
   final ServiceCallCheckFeedbackUsecase usecase;
 
   ServiceCallCheckFeedbackBloc({required this.usecase})
-      : super(ServiceCallCheckFeedbackInitial()) {
+    : super(ServiceCallCheckFeedbackInitial()) {
     on<FetchServiceCallCheckFeedbackEvent>(_onFetchServiceCallCheckFeedback);
   }
 

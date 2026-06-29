@@ -29,8 +29,6 @@ class MarkAllReadData {
   const MarkAllReadData({required this.updatedCount});
 
   factory MarkAllReadData.fromJson(Map<String, dynamic> json) {
-    return MarkAllReadData(
-      updatedCount: json['updated_count'] as int,
-    );
+    return MarkAllReadData(updatedCount: json['updated_count'] as int);
   }
 }

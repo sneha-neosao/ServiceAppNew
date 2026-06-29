@@ -109,24 +109,24 @@ class ServiceCallsStep3Widget extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: parent._pendingCustomerController,
-              style: AppFont.style(fontSize: 11, color: const Color(0xFF0D121F)),
+              style: AppFont.style(fontSize: 11, color: AppColor.colorFF0D121F),
               decoration: InputDecoration(
                 hintText: 'enter_customer_name'.tr(),
-                hintStyle: AppFont.style(fontSize: 11, color: const Color(0xFFA5ABB7)),
+                hintStyle: AppFont.style(fontSize: 11, color: AppColor.colorFFA5ABB7),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFFF1F2F6)),
+                  borderSide: const BorderSide(color: AppColor.colorFFF1F2F6),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFFF1F2F6)),
+                  borderSide: const BorderSide(color: AppColor.colorFFF1F2F6),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF0B68B9)),
+                  borderSide: const BorderSide(color: AppColor.colorFF0B68B9),
                 ),
               ),
               onSubmitted: (_) => parent._fetchServiceCalls(isRefresh: true, isPendingOnly: true),
@@ -140,24 +140,24 @@ class ServiceCallsStep3Widget extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: parent._pendingSiteController,
-              style: AppFont.style(fontSize: 11, color: const Color(0xFF0D121F)),
+              style: AppFont.style(fontSize: 11, color: AppColor.colorFF0D121F),
               decoration: InputDecoration(
                 hintText: 'enter_site_name'.tr(),
-                hintStyle: AppFont.style(fontSize: 11, color: const Color(0xFFA5ABB7)),
+                hintStyle: AppFont.style(fontSize: 11, color: AppColor.colorFFA5ABB7),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFFF1F2F6)),
+                  borderSide: const BorderSide(color: AppColor.colorFFF1F2F6),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFFF1F2F6)),
+                  borderSide: const BorderSide(color: AppColor.colorFFF1F2F6),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF0B68B9)),
+                  borderSide: const BorderSide(color: AppColor.colorFF0B68B9),
                 ),
               ),
               onSubmitted: (_) => parent._fetchServiceCalls(isRefresh: true, isPendingOnly: true),

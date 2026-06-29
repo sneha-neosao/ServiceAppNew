@@ -3,14 +3,12 @@ import 'package:service_app/src/features/my_commissioning/domain/usecase/commiss
 import 'commissioning_report_pdf_event.dart';
 import 'commissioning_report_pdf_state.dart';
 
-
-
 class CommissioningReportPdfBloc
     extends Bloc<CommissioningReportPdfEvent, CommissioningReportPdfState> {
   final CommissioningReportPdfUseCase usecase;
 
   CommissioningReportPdfBloc({required this.usecase})
-      : super(CommissioningReportPdfInitial()) {
+    : super(CommissioningReportPdfInitial()) {
     on<FetchCommissioningReportPdfEvent>(_onFetchCommissioningReportPdf);
   }
 

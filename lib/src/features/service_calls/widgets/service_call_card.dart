@@ -1,3 +1,4 @@
+import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
@@ -39,7 +40,7 @@ class ServiceCallCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
+        border: Border.all(color: AppColor.colorFFF1F2F6),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -64,7 +65,7 @@ class ServiceCallCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF1F8FF),
+                        color: AppColor.colorFFF1F8FF,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -72,7 +73,7 @@ class ServiceCallCard extends StatelessWidget {
                         style: AppFont.style(
                           fontSize: 9,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF1565C0),
+                          color: AppColor.colorFF1565C0,
                         ),
                       ),
                     ),
@@ -84,7 +85,7 @@ class ServiceCallCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE8F5E9),
+                        color: AppColor.colorFFE8F5E9,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -92,7 +93,7 @@ class ServiceCallCard extends StatelessWidget {
                         style: AppFont.style(
                           fontSize: 9,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF2E7D32),
+                          color: AppColor.colorFF2E7D32,
                         ),
                       ),
                     ),
@@ -104,7 +105,7 @@ class ServiceCallCard extends StatelessWidget {
                       style: AppFont.style(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFFA5ABB7),
+                        color: AppColor.colorFFA5ABB7,
                       ),
                     ),
                 ],
@@ -125,7 +126,7 @@ class ServiceCallCard extends StatelessWidget {
                         style: AppFont.style(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF0D121F),
+                          color: AppColor.colorFF0D121F,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -135,7 +136,7 @@ class ServiceCallCard extends StatelessWidget {
                           const Icon(
                             Icons.location_on_outlined,
                             size: 14,
-                            color: Color(0xFFA5ABB7),
+                            color: AppColor.colorFFA5ABB7,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
@@ -144,7 +145,7 @@ class ServiceCallCard extends StatelessWidget {
                               style: AppFont.style(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w800,
-                                color: const Color(0xFFA5ABB7),
+                                color: AppColor.colorFFA5ABB7,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -157,7 +158,11 @@ class ServiceCallCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 if (type == ServiceCallType.ongoing) ...[
-                  _buildIconButton(Icons.edit_outlined, onTap: onEdit, icon_color: Colors.blue),
+                  _buildIconButton(
+                    Icons.edit_outlined,
+                    onTap: onEdit,
+                    icon_color: Colors.blue,
+                  ),
                   const SizedBox(width: 8),
                 ],
                 _buildIconButton(Icons.visibility_outlined, onTap: onView),
@@ -172,17 +177,18 @@ class ServiceCallCard extends StatelessWidget {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F6F9),
+                  color: AppColor.colorFFF5F6F9,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       assignedTo != null && assignedTo!.contains(',')
-                          ? Icons.people_outline   // multiple technicians
-                          : Icons.person_outline,  // single technician
+                          ? Icons
+                                .people_outline // multiple technicians
+                          : Icons.person_outline, // single technician
                       size: 16,
-                      color: const Color(0xFF1565C0),
+                      color: AppColor.colorFF1565C0,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -191,7 +197,7 @@ class ServiceCallCard extends StatelessWidget {
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF424B5C),
+                          color: AppColor.colorFF424B5C,
                         ),
                       ),
                     ),
@@ -239,17 +245,25 @@ class ServiceCallCard extends StatelessWidget {
     );
   }
 
-  Widget _buildIconButton(IconData icon, {VoidCallback? onTap, Color? icon_color}) {
+  Widget _buildIconButton(
+    IconData icon, {
+    VoidCallback? onTap,
+    Color? icon_color,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 32,
         height: 32,
         decoration: BoxDecoration(
-          color: const Color(0xFFF5F6F9),
+          color: AppColor.colorFFF5F6F9,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, size: 18, color: icon_color ?? const Color(0xFFA5ABB7)),
+        child: Icon(
+          icon,
+          size: 18,
+          color: icon_color ?? AppColor.colorFFA5ABB7,
+        ),
       ),
     );
   }
@@ -258,7 +272,7 @@ class ServiceCallCard extends StatelessWidget {
     return Container(
       height: 44,
       decoration: BoxDecoration(
-        color: const Color(0xFF1565C0),
+        color: AppColor.colorFF1565C0,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(
@@ -292,7 +306,7 @@ class ServiceCallCard extends StatelessWidget {
     return Container(
       height: 44,
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F6F9),
+        color: AppColor.colorFFF5F6F9,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -306,7 +320,7 @@ class ServiceCallCard extends StatelessWidget {
               style: AppFont.style(
                 fontSize: 10,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFF5C616E),
+                color: AppColor.colorFF5C616E,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -321,9 +335,9 @@ class ServiceCallCard extends StatelessWidget {
     return Container(
       height: 44,
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F6F9),
+        color: AppColor.colorFFF5F6F9,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
+        border: Border.all(color: AppColor.colorFFE0E0E0),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -331,7 +345,7 @@ class ServiceCallCard extends StatelessWidget {
           const Icon(
             Icons.check_circle_outline,
             size: 18,
-            color: Color(0xFFA5ABB7),
+            color: AppColor.colorFFA5ABB7,
           ),
           const SizedBox(width: 8),
           Flexible(
@@ -340,7 +354,7 @@ class ServiceCallCard extends StatelessWidget {
               style: AppFont.style(
                 fontSize: 10,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFFA5ABB7),
+                color: AppColor.colorFFA5ABB7,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -355,10 +369,7 @@ class ServiceCallCard extends StatelessWidget {
 class ServiceCallCardShimmer extends StatelessWidget {
   final ServiceCallType type;
 
-  const ServiceCallCardShimmer({
-    super.key,
-    required this.type,
-  });
+  const ServiceCallCardShimmer({super.key, required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -366,7 +377,7 @@ class ServiceCallCardShimmer extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F2F6)),
+        border: Border.all(color: AppColor.colorFFF1F2F6),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -420,11 +431,7 @@ class ServiceCallCardShimmer extends StatelessWidget {
                           color: Colors.white,
                         ),
                         const SizedBox(height: 8),
-                        Container(
-                          width: 150,
-                          height: 16,
-                          color: Colors.white,
-                        ),
+                        Container(width: 150, height: 16, color: Colors.white),
                       ],
                     ),
                   ),
@@ -477,7 +484,8 @@ class ServiceCallCardShimmer extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                   ],
-                  if (type == ServiceCallType.ongoing || type == ServiceCallType.active)
+                  if (type == ServiceCallType.ongoing ||
+                      type == ServiceCallType.active)
                     Expanded(
                       child: Container(
                         height: 44,

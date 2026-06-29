@@ -313,7 +313,9 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => CheckFeedbackBloc(usecase: getIt<CommissioningReportCheckFeedbackUsecase>()),
+    () => CheckFeedbackBloc(
+      usecase: getIt<CommissioningReportCheckFeedbackUsecase>(),
+    ),
   );
 
   getIt.registerLazySingleton(
@@ -321,7 +323,9 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => CommissioningReportPdfBloc(usecase: getIt<CommissioningReportPdfUseCase>()),
+    () => CommissioningReportPdfBloc(
+      usecase: getIt<CommissioningReportPdfUseCase>(),
+    ),
   );
 
   getIt.registerLazySingleton(
@@ -329,7 +333,9 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => ServiceCallReportHistoryBloc(usecase: getIt<ServiceCallReportHistoryUsecase>()),
+    () => ServiceCallReportHistoryBloc(
+      usecase: getIt<ServiceCallReportHistoryUsecase>(),
+    ),
   );
 
   getIt.registerLazySingleton(
@@ -337,7 +343,9 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => ServiceCallCheckFeedbackBloc(usecase: getIt<ServiceCallCheckFeedbackUsecase>()),
+    () => ServiceCallCheckFeedbackBloc(
+      usecase: getIt<ServiceCallCheckFeedbackUsecase>(),
+    ),
   );
 
   getIt.registerLazySingleton(
@@ -345,7 +353,8 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => ServiceCallReportPdfBloc(usecase: getIt<ServiceCallReportPdfUseCase>()),
+    () =>
+        ServiceCallReportPdfBloc(usecase: getIt<ServiceCallReportPdfUseCase>()),
   );
 
   getIt.registerLazySingleton(
@@ -674,19 +683,27 @@ void configureDepedencies() {
     () => AmcVisitsListUseCase(getIt<AuthRepositoryImpl>()),
   );
 
-  getIt.registerFactory(() => CustomerAmcVisitsBloc(getCustomerAmcVisitsUseCase: getIt<GetCustomerAmcVisitsUseCase>()));
+  getIt.registerFactory(
+    () => CustomerAmcVisitsBloc(
+      getCustomerAmcVisitsUseCase: getIt<GetCustomerAmcVisitsUseCase>(),
+    ),
+  );
 
   getIt.registerLazySingleton(
     () => GetCustomerAmcVisitsUseCase(repository: getIt<AuthRepositoryImpl>()),
   );
 
-  getIt.registerFactory(() => AmcVisitReportsBloc(getIt<AmcVisitReportsUsecase>()));
+  getIt.registerFactory(
+    () => AmcVisitReportsBloc(getIt<AmcVisitReportsUsecase>()),
+  );
 
   getIt.registerLazySingleton(
     () => AmcVisitReportsUsecase(getIt<AuthRepositoryImpl>()),
   );
 
-  getIt.registerFactory(() => AmcReportsHistoryBloc(getIt<GetAmcReportsHistoryUseCase>()));
+  getIt.registerFactory(
+    () => AmcReportsHistoryBloc(getIt<GetAmcReportsHistoryUseCase>()),
+  );
 
   getIt.registerLazySingleton(
     () => GetAmcReportsHistoryUseCase(getIt<AuthRepositoryImpl>()),
@@ -749,7 +766,9 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => AmcReportPdfBloc(getAmcReportPdfUseCase: getIt<GetAmcReportPdfUseCase>()),
+    () => AmcReportPdfBloc(
+      getAmcReportPdfUseCase: getIt<GetAmcReportPdfUseCase>(),
+    ),
   );
 
   getIt.registerLazySingleton(
@@ -789,7 +808,8 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => AppSettingsBloc(getAppSettingsUseCase: getIt<GetAppSettingsUseCase>()),
+    () =>
+        AppSettingsBloc(getAppSettingsUseCase: getIt<GetAppSettingsUseCase>()),
   );
 
   getIt.registerLazySingleton(
@@ -797,7 +817,9 @@ void configureDepedencies() {
   );
 
   getIt.registerFactory(
-    () => NotificationsBloc(getNotificationsUseCase: getIt<GetNotificationsUseCase>()),
+    () => NotificationsBloc(
+      getNotificationsUseCase: getIt<GetNotificationsUseCase>(),
+    ),
   );
 
   getIt.registerLazySingleton(
@@ -806,8 +828,7 @@ void configureDepedencies() {
 
   getIt.registerFactory(
     () => MarkAllReadBloc(
-      markAllNotificationsReadUseCase:
-          getIt<MarkAllNotificationsReadUseCase>(),
+      markAllNotificationsReadUseCase: getIt<MarkAllNotificationsReadUseCase>(),
     ),
   );
 
@@ -830,7 +851,9 @@ void configureDepedencies() {
   getIt.registerFactory(() => DeleteAccountBloc(getIt()));
 
   getIt.registerFactory(
-    () => DeleteServiceWorkReportBloc(usecase: getIt<DeleteServiceWorkReportUsecase>()),
+    () => DeleteServiceWorkReportBloc(
+      usecase: getIt<DeleteServiceWorkReportUsecase>(),
+    ),
   );
 
   getIt.registerLazySingleton(

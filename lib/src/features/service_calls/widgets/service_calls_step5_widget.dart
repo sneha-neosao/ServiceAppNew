@@ -39,7 +39,7 @@ class ServiceCallsStep5Widget extends StatelessWidget {
                   'service_calls_empty_assigned'.tr(),
                   style: AppFont.style(
                     fontSize: 12,
-                    color: const Color(0xFFA5ABB7),
+                    color: AppColor.colorFFA5ABB7,
                   ),
                 ),
               ),
@@ -55,7 +55,7 @@ class ServiceCallsStep5Widget extends StatelessWidget {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                    child: CircularProgressIndicator(color: AppColor.colorFF1565C0),
                   ),
                 );
               }

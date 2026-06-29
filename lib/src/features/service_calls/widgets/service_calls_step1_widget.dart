@@ -19,7 +19,7 @@ class ServiceCallsStep1Widget extends StatelessWidget {
                 style: AppFont.style(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: const Color(0xFF0D121F),
+                  color: AppColor.colorFF0D121F,
                 ),
               ),
             ],

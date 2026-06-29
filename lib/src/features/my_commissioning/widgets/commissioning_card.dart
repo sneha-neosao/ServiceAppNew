@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 
 class CommissioningCard extends StatelessWidget {
   final String companyName;
@@ -28,13 +29,15 @@ class CommissioningCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F2F6), width: 1),
+        border: Border.all(color: AppColor.colorFFF1F2F6, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.12), // slightly stronger but still soft
-            blurRadius: 12,                        // more blur for smoother edges
-            spreadRadius: 1,                        // light spread to soften
-            offset: const Offset(0, 4),             // downward shadow, less diagonal
+            color: Colors.black.withOpacity(
+              0.12,
+            ), // slightly stronger but still soft
+            blurRadius: 12, // more blur for smoother edges
+            spreadRadius: 1, // light spread to soften
+            offset: const Offset(0, 4), // downward shadow, less diagonal
           ),
         ],
       ),
@@ -56,7 +59,7 @@ class CommissioningCard extends StatelessWidget {
                         style: AppFont.style(
                           fontSize: 14,
                           fontWeight: FontWeight.w900,
-                          color: const Color(0xFF0D121F),
+                          color: AppColor.colorFF0D121F,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -66,7 +69,7 @@ class CommissioningCard extends StatelessWidget {
                           const Icon(
                             Icons.location_on_outlined,
                             size: 14,
-                            color: Color(0xFFA5ABB7),
+                            color: AppColor.colorFFA5ABB7,
                           ),
                           const SizedBox(width: 3),
                           Text(
@@ -74,7 +77,7 @@ class CommissioningCard extends StatelessWidget {
                             style: AppFont.style(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFFA5ABB7),
+                              color: AppColor.colorFFA5ABB7,
                             ),
                           ),
                         ],
@@ -88,7 +91,7 @@ class CommissioningCard extends StatelessWidget {
                             style: AppFont.style(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFFA5ABB7),
+                              color: AppColor.colorFFA5ABB7,
                             ),
                           ),
                           const SizedBox(width: 3),
@@ -108,10 +111,18 @@ class CommissioningCard extends StatelessWidget {
                 const SizedBox(width: 12),
 
                 // Edit icon button
-                _buildIconBtn(icon: Icons.edit_outlined, onTap: onEdit, icon_color: Colors.blue),
+                _buildIconBtn(
+                  icon: Icons.edit_outlined,
+                  onTap: onEdit,
+                  icon_color: Colors.blue,
+                ),
                 const SizedBox(width: 8),
                 // Delete icon button
-                _buildIconBtn(icon: Icons.delete_outline, onTap: onDelete, icon_color: Colors.red),
+                _buildIconBtn(
+                  icon: Icons.delete_outline,
+                  onTap: onDelete,
+                  icon_color: Colors.red,
+                ),
               ],
             ),
 
@@ -122,17 +133,18 @@ class CommissioningCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8F9FB),
+                color: AppColor.colorFFF8F9FB,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 children: [
                   Icon(
                     members.contains(',')
-                        ? Icons.people_outline   // multiple technicians
-                        : Icons.person_outline,   // single technician
+                        ? Icons
+                              .people_outline // multiple technicians
+                        : Icons.person_outline, // single technician
                     size: 18,
-                    color: const Color(0xFF1565C0),
+                    color: AppColor.colorFF1565C0,
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -141,7 +153,7 @@ class CommissioningCard extends StatelessWidget {
                       style: AppFont.style(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF3A4152),
+                        color: AppColor.colorFF3A4152,
                       ),
                     ),
                   ),
@@ -158,7 +170,7 @@ class CommissioningCard extends StatelessWidget {
                 height: 44,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1565C0),
+                  color: AppColor.colorFF1565C0,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
@@ -189,16 +201,20 @@ class CommissioningCard extends StatelessWidget {
     );
   }
 
-  Widget _buildIconBtn({required IconData icon, required VoidCallback onTap, required Color icon_color}) {
+  Widget _buildIconBtn({
+    required IconData icon,
+    required VoidCallback onTap,
+    required Color icon_color,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 38,
         height: 38,
         decoration: BoxDecoration(
-          color: const Color(0xFFF8F9FB),
+          color: AppColor.colorFFF8F9FB,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFFF1F2F6), width: 1),
+          border: Border.all(color: AppColor.colorFFF1F2F6, width: 1),
         ),
         child: Icon(icon, size: 18, color: icon_color),
       ),

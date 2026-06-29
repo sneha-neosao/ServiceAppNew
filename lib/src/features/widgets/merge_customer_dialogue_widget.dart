@@ -27,26 +27,25 @@ class MergeCustomerDialogWidget extends StatelessWidget {
       listener: (ctx, state) {
         if (state is CreateNewCustomerSuccessState) {
           Navigator.pop(ctx); // Close dialog
-          appSnackBar(
-            context, AppColor.green,
-            state.data.message,
-          );
+          appSnackBar(context, AppColor.green, state.data.message);
           final newName = state.data.data?.name ?? name;
           // 🔹 Update your state here (customers list, ids, etc.)
         } else if (state is CreateNewCustomerFailureState) {
           Navigator.pop(ctx);
-          appSnackBar(
-            context, AppColor.bright_red,
-            state.message,
-          );
+          appSnackBar(context, AppColor.bright_red, state.message);
         }
       },
       builder: (ctx, state) {
         final isLoading = state is CreateNewCustomerLoadingState;
         return Dialog(
           backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 24,
+          ),
           child: Stack(
             children: [
               Padding(
@@ -59,11 +58,14 @@ class MergeCustomerDialogWidget extends StatelessWidget {
                       width: 64,
                       height: 64,
                       decoration: const BoxDecoration(
-                        color: Color(0xFFFFF7E6),
+                        color: AppColor.colorFFFFF7E6,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.error_outline,
-                          color: Color(0xFFFF9800), size: 32),
+                      child: const Icon(
+                        Icons.error_outline,
+                        color: AppColor.colorFFFF9800,
+                        size: 32,
+                      ),
                     ),
                     const SizedBox(height: 20),
 
@@ -73,7 +75,7 @@ class MergeCustomerDialogWidget extends StatelessWidget {
                       style: AppFont.style(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF0D121F),
+                        color: AppColor.colorFF0D121F,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -85,7 +87,7 @@ class MergeCustomerDialogWidget extends StatelessWidget {
                       style: AppFont.style(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF5C616E),
+                        color: AppColor.colorFF5C616E,
                         height: 1.4,
                       ),
                     ),
@@ -98,9 +100,11 @@ class MergeCustomerDialogWidget extends StatelessWidget {
                           child: SizedBox(
                             height: 48,
                             child: TextButton(
-                              onPressed: isLoading ? null : () => Navigator.pop(ctx),
+                              onPressed: isLoading
+                                  ? null
+                                  : () => Navigator.pop(ctx),
                               style: TextButton.styleFrom(
-                                backgroundColor: const Color(0xFFF6F6F6),
+                                backgroundColor: AppColor.colorFFF6F6F6,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -110,7 +114,7 @@ class MergeCustomerDialogWidget extends StatelessWidget {
                                 style: AppFont.style(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF0D121F),
+                                  color: AppColor.colorFF0D121F,
                                 ),
                               ),
                             ),
@@ -124,17 +128,17 @@ class MergeCustomerDialogWidget extends StatelessWidget {
                               onPressed: isLoading
                                   ? null
                                   : () {
-                                bloc.add(
-                                  CreateNewCustomerSubmitEvent(
-                                    CreateNewCustomerParams(
-                                      name: name,
-                                      mergeExisting: true,
-                                    ),
-                                  ),
-                                );
-                              },
+                                      bloc.add(
+                                        CreateNewCustomerSubmitEvent(
+                                          CreateNewCustomerParams(
+                                            name: name,
+                                            mergeExisting: true,
+                                          ),
+                                        ),
+                                      );
+                                    },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFE65100),
+                                backgroundColor: AppColor.colorFFE65100,
                                 foregroundColor: Colors.white,
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(
@@ -143,21 +147,21 @@ class MergeCustomerDialogWidget extends StatelessWidget {
                               ),
                               child: isLoading
                                   ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
                                   : Text(
-                                'yes'.tr(),
-                                style: AppFont.style(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
-                              ),
+                                      'yes'.tr(),
+                                      style: AppFont.style(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                             ),
                           ),
                         ),
@@ -173,7 +177,11 @@ class MergeCustomerDialogWidget extends StatelessWidget {
                 right: 12,
                 child: GestureDetector(
                   onTap: isLoading ? null : () => Navigator.pop(ctx),
-                  child: const Icon(Icons.close, size: 20, color: Color(0xFFB0B8C8)),
+                  child: const Icon(
+                    Icons.close,
+                    size: 20,
+                    color: AppColor.colorFFB0B8C8,
+                  ),
                 ),
               ),
             ],

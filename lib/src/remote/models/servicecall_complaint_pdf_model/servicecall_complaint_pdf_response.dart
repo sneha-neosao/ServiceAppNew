@@ -38,14 +38,10 @@ class ServiceCallComplaintPdfData {
   ServiceCallComplaintPdfData({required this.pdfUrl});
 
   factory ServiceCallComplaintPdfData.fromJson(Map<String, dynamic> json) {
-    return ServiceCallComplaintPdfData(
-      pdfUrl: json['pdf_url'] ?? '',
-    );
+    return ServiceCallComplaintPdfData(pdfUrl: json['pdf_url'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'pdf_url': pdfUrl,
-    };
+    return {'pdf_url': pdfUrl};
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 
 class SearchableDropdown<T> extends StatefulWidget {
   final List<T> items;
@@ -59,7 +60,8 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
   @override
   void didUpdateWidget(covariant SearchableDropdown<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.items != oldWidget.items || widget.isLoading != oldWidget.isLoading) {
+    if (widget.items != oldWidget.items ||
+        widget.isLoading != oldWidget.isLoading) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           if (widget.filterFn != null) {
@@ -68,9 +70,12 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                 .toList();
           } else {
             _itemsNotifier.value = widget.items
-                .where((item) => widget.itemAsString(item)
-                    .toLowerCase()
-                    .contains(_lastSearch.toLowerCase()))
+                .where(
+                  (item) => widget
+                      .itemAsString(item)
+                      .toLowerCase()
+                      .contains(_lastSearch.toLowerCase()),
+                )
                 .toList();
           }
           _loadingNotifier.value = widget.isLoading;
@@ -115,143 +120,153 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
               height: MediaQuery.of(ctx).size.height * 0.5,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
-              children: [
-                // Search Field
-                if (widget.isSearchable) ...[
-                  TextField(
-                    controller: searchController,
-                    autofocus: true,
-                    onChanged: (val) {
-                      _lastSearch = val;
-                      if (widget.onSearchChanged != null) {
-                        _loadingNotifier.value = true;
-                        widget.onSearchChanged?.call(val);
-                      }
-                      if (widget.filterFn != null) {
-                        _itemsNotifier.value = widget.items
-                            .where((item) => widget.filterFn!(item, val))
-                            .toList();
-                      } else {
-                        _itemsNotifier.value = widget.items
-                            .where((item) => widget.itemAsString(item)
-                                .toLowerCase()
-                                .contains(val.toLowerCase()))
-                            .toList();
-                      }
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Search...',
-                      hintStyle: AppFont.style(
+                children: [
+                  // Search Field
+                  if (widget.isSearchable) ...[
+                    TextField(
+                      controller: searchController,
+                      autofocus: true,
+                      onChanged: (val) {
+                        _lastSearch = val;
+                        if (widget.onSearchChanged != null) {
+                          _loadingNotifier.value = true;
+                          widget.onSearchChanged?.call(val);
+                        }
+                        if (widget.filterFn != null) {
+                          _itemsNotifier.value = widget.items
+                              .where((item) => widget.filterFn!(item, val))
+                              .toList();
+                        } else {
+                          _itemsNotifier.value = widget.items
+                              .where(
+                                (item) => widget
+                                    .itemAsString(item)
+                                    .toLowerCase()
+                                    .contains(val.toLowerCase()),
+                              )
+                              .toList();
+                        }
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Search...',
+                        hintStyle: AppFont.style(
+                          fontSize: 10,
+                          color: AppColor.colorFFA5ABB7,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: AppColor.colorFFE5E7EB,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: AppColor.colorFFE5E7EB,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: AppColor.colorFF1565C0,
+                          ),
+                        ),
+                      ),
+                      style: AppFont.style(
                         fontSize: 10,
-                        color: const Color(0xFFA5ABB7),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF1565C0)),
+                        color: AppColor.colorFF0D121F,
                       ),
                     ),
-                    style: AppFont.style(
-                      fontSize: 10,
-                      color: const Color(0xFF0D121F),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
+                    const SizedBox(height: 12),
+                  ],
 
-                // List View
-                Expanded(
-                  child: ValueListenableBuilder<bool>(
-                    valueListenable: _loadingNotifier,
-                    builder: (context, isLoading, _) {
-                      return ValueListenableBuilder<List<T>>(
-                        valueListenable: _itemsNotifier,
-                        builder: (context, items, _) {
-                          if (isLoading) {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: Color(0xFF0B68B9),
-                              ),
-                            );
-                          }
-
-                          if (items.isEmpty) {
-                            return Center(
-                              child: Text(
-                                'No data found',
-                                style: AppFont.style(
-                                  fontSize: 12,
-                                  color: const Color(0xFFA5ABB7),
+                  // List View
+                  Expanded(
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: _loadingNotifier,
+                      builder: (context, isLoading, _) {
+                        return ValueListenableBuilder<List<T>>(
+                          valueListenable: _itemsNotifier,
+                          builder: (context, items, _) {
+                            if (isLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColor.colorFF0B68B9,
                                 ),
-                              ),
-                            );
-                          }
+                              );
+                            }
 
-                          return ListView.builder(
-                            controller: scrollController,
-                            itemCount: items.length + (isLoading ? 1 : 0),
-                            itemBuilder: (context, index) {
-                              if (index == items.length) {
-                                return const Padding(
-                                  padding: EdgeInsets.all(16.0),
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: Color(0xFF0B68B9),
-                                    ),
-                                  ),
-                                );
-                              }
-
-                              final item = items[index];
-                              final isSelected = item == widget.value;
-
-                              return InkWell(
-                                onTap: () {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                  widget.onChanged?.call(item);
-                                  Navigator.pop(ctx);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 12,
-                                  ),
-                                  child: Text(
-                                    widget.itemAsString(item),
-                                    style: AppFont.style(
-                                      fontSize: 12,
-                                      fontWeight: isSelected
-                                          ? FontWeight.w900
-                                          : FontWeight.w500,
-                                      color: isSelected
-                                          ? const Color(0xFF1565C0)
-                                          : const Color(0xFF0D121F),
-                                    ),
+                            if (items.isEmpty) {
+                              return Center(
+                                child: Text(
+                                  'No data found',
+                                  style: AppFont.style(
+                                    fontSize: 12,
+                                    color: AppColor.colorFFA5ABB7,
                                   ),
                                 ),
                               );
-                            },
-                          );
-                        },
-                      );
-                    },
+                            }
+
+                            return ListView.builder(
+                              controller: scrollController,
+                              itemCount: items.length + (isLoading ? 1 : 0),
+                              itemBuilder: (context, index) {
+                                if (index == items.length) {
+                                  return const Padding(
+                                    padding: EdgeInsets.all(16.0),
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: AppColor.colorFF0B68B9,
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                final item = items[index];
+                                final isSelected = item == widget.value;
+
+                                return InkWell(
+                                  onTap: () {
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                    widget.onChanged?.call(item);
+                                    Navigator.pop(ctx);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 12,
+                                    ),
+                                    child: Text(
+                                      widget.itemAsString(item),
+                                      style: AppFont.style(
+                                        fontSize: 12,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w900
+                                            : FontWeight.w500,
+                                        color: isSelected
+                                            ? AppColor.colorFF1565C0
+                                            : AppColor.colorFF0D121F,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          )
         );
       },
     );
@@ -269,7 +284,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(widget.isFilter ? 10 : 12),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
+            border: Border.all(color: AppColor.colorFFE5E7EB),
           ),
         ),
       );
@@ -282,9 +297,9 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
       child: Container(
         height: widget.isFilter ? 44 : 56,
         decoration: BoxDecoration(
-          color: widget.enabled ? Colors.white : const Color(0xFFF1F2F6),
+          color: widget.enabled ? Colors.white : AppColor.colorFFF1F2F6,
           borderRadius: BorderRadius.circular(widget.isFilter ? 10 : 12),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
+          border: Border.all(color: AppColor.colorFFE5E7EB),
         ),
         padding: EdgeInsets.symmetric(
           horizontal: widget.isFilter ? 12 : 20,
@@ -308,9 +323,9 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                       : FontWeight.w500,
                   color: widget.value != null
                       ? (widget.isFilter
-                            ? const Color(0xFFA5ABB7)
-                            : const Color(0xFF0D121F))
-                      : const Color(0xFFA5ABB7),
+                            ? AppColor.colorFFA5ABB7
+                            : AppColor.colorFF0D121F)
+                      : AppColor.colorFFA5ABB7,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -325,7 +340,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
                   padding: EdgeInsets.symmetric(horizontal: 4.0),
                   child: Icon(
                     Icons.close,
-                    color: Color(0xFFA5ABB7),
+                    color: AppColor.colorFFA5ABB7,
                     size: 18,
                   ),
                 ),
@@ -333,7 +348,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
             else if (widget.showArrow && !widget.readOnly)
               const Icon(
                 Icons.keyboard_arrow_down,
-                color: Color(0xFFA5ABB7),
+                color: AppColor.colorFFA5ABB7,
                 size: 18,
               ),
           ],

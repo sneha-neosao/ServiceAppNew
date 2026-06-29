@@ -7,17 +7,31 @@ part 'amc_report_pdf_state.dart';
 class AmcReportPdfBloc extends Bloc<AmcReportPdfEvent, AmcReportPdfState> {
   final GetAmcReportPdfUseCase getAmcReportPdfUseCase;
 
-  AmcReportPdfBloc({required this.getAmcReportPdfUseCase}) : super(AmcReportPdfInitial()) {
+  AmcReportPdfBloc({required this.getAmcReportPdfUseCase})
+    : super(AmcReportPdfInitial()) {
     on<FetchAmcReportPdfEvent>((event, emit) async {
       emit(AmcReportPdfLoading());
       final result = await getAmcReportPdfUseCase(event.reportId);
       result.fold(
         (failure) => emit(AmcReportPdfFailure(error: failure.message)),
         (response) {
-          if (response.success && response.data != null && response.data!.pdfUrl.isNotEmpty) {
-            emit(AmcReportPdfSuccess(pdfUrl: response.data!.pdfUrl, message: response.message));
+          if (response.success &&
+              response.data != null &&
+              response.data!.pdfUrl.isNotEmpty) {
+            emit(
+              AmcReportPdfSuccess(
+                pdfUrl: response.data!.pdfUrl,
+                message: response.message,
+              ),
+            );
           } else {
-            emit(AmcReportPdfFailure(error: response.message.isNotEmpty ? response.message : "Failed to load PDF"));
+            emit(
+              AmcReportPdfFailure(
+                error: response.message.isNotEmpty
+                    ? response.message
+                    : "Failed to load PDF",
+              ),
+            );
           }
         },
       );

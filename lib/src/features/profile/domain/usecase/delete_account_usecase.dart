@@ -13,9 +13,6 @@ class DeleteAccountUseCase implements UseCase<DeleteAccountResponse, NoParams> {
   Future<Either<Failure, DeleteAccountResponse>> call(NoParams params) async {
     final result = await _authRepository.deleteAccount();
 
-    return result.fold(
-      (failure) => Left(failure),
-      (data) => Right(data),
-    );
+    return result.fold((failure) => Left(failure), (data) => Right(data));
   }
 }

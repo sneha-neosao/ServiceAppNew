@@ -15,9 +15,10 @@ class AmcVisitsListResponse {
     return AmcVisitsListResponse(
       status: json['status'] ?? 0,
       success: json['success'] ?? false,
-      data: (json['data'] as List<dynamic>?)
-          ?.map((e) => AmcVisitData.fromJson(e))
-          .toList() ??
+      data:
+          (json['data'] as List<dynamic>?)
+              ?.map((e) => AmcVisitData.fromJson(e))
+              .toList() ??
           [],
       message: json['message'] ?? '',
     );

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/home/bloc/upcoming_amc_bloc/upcoming_amc_bloc.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 
 class UpcomingAmcCard extends StatelessWidget {
   final UpcomingAmcBloc upcomingAmcBloc;
@@ -40,12 +41,12 @@ class UpcomingAmcCard extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFDF5E6),
+                  color: AppColor.colorFFFDF5E6,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.description_outlined,
-                  color: Color(0xFFD38C22),
+                  color: AppColor.colorFFD38C22,
                   size: 24,
                 ),
               ),
@@ -56,7 +57,7 @@ class UpcomingAmcCard extends StatelessWidget {
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF0A2342),
+                    color: AppColor.colorFF0A2342,
                     letterSpacing: 0.3,
                   ),
                 ),
@@ -72,12 +73,9 @@ class UpcomingAmcCard extends StatelessWidget {
           const SizedBox(height: 20),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 14,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: const Color(0xFFFDF8E8),
+              color: AppColor.colorFFFDF8E8,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -109,7 +107,7 @@ class UpcomingAmcCard extends StatelessWidget {
                             style: AppFont.style(
                               fontSize: 30,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFFD38C22),
+                              color: AppColor.colorFFD38C22,
                             ),
                           );
                         }
@@ -118,7 +116,7 @@ class UpcomingAmcCard extends StatelessWidget {
                           style: AppFont.style(
                             fontSize: 30,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFFD38C22),
+                            color: AppColor.colorFFD38C22,
                           ),
                         );
                       },
@@ -129,7 +127,7 @@ class UpcomingAmcCard extends StatelessWidget {
                       style: AppFont.style(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF985A05),
+                        color: AppColor.colorFF985A05,
                       ),
                     ),
                   ],
@@ -145,7 +143,7 @@ class UpcomingAmcCard extends StatelessWidget {
                     ),
                     child: const Icon(
                       Icons.chevron_right,
-                      color: Color(0xFFD38C22),
+                      color: AppColor.colorFFD38C22,
                       size: 22,
                     ),
                   ),
@@ -162,22 +160,32 @@ class UpcomingAmcCard extends StatelessWidget {
 class UpcomingAmcDropdownPill extends StatefulWidget {
   final String label;
   final ValueChanged<String>? onChanged;
-  const UpcomingAmcDropdownPill({required this.label, this.onChanged, super.key});
+  const UpcomingAmcDropdownPill({
+    required this.label,
+    this.onChanged,
+    super.key,
+  });
   @override
-  State<UpcomingAmcDropdownPill> createState() => _UpcomingAmcDropdownPillState();
+  State<UpcomingAmcDropdownPill> createState() =>
+      _UpcomingAmcDropdownPillState();
 }
 
 class _UpcomingAmcDropdownPillState extends State<UpcomingAmcDropdownPill> {
   String? _selectedOption;
   final List<String> _options = ['Today', 'Tomorrow', 'Week', 'Month'];
-  
+
   String _getTranslation(String opt) {
     switch (opt) {
-      case 'Today': return 'filter_today'.tr();
-      case 'Tomorrow': return 'filter_tomorrow'.tr();
-      case 'Week': return 'filter_week'.tr();
-      case 'Month': return 'filter_month'.tr();
-      default: return opt;
+      case 'Today':
+        return 'filter_today'.tr();
+      case 'Tomorrow':
+        return 'filter_tomorrow'.tr();
+      case 'Week':
+        return 'filter_week'.tr();
+      case 'Month':
+        return 'filter_month'.tr();
+      default:
+        return opt;
     }
   }
 
@@ -197,33 +205,38 @@ class _UpcomingAmcDropdownPillState extends State<UpcomingAmcDropdownPill> {
           .map(
             (opt) => PopupMenuItem(
               value: opt,
-              child: Text(_getTranslation(opt), style: AppFont.style(color: Colors.black, fontSize: 12)),
+              child: Text(
+                _getTranslation(opt),
+                style: AppFont.style(color: Colors.black, fontSize: 12),
+              ),
             ),
           )
           .toList(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFFF8F9FB),
+          color: AppColor.colorFFF8F9FB,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFFF1F2F6)),
+          border: Border.all(color: AppColor.colorFFF1F2F6),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              _selectedOption == null ? widget.label : _getTranslation(_selectedOption!),
+              _selectedOption == null
+                  ? widget.label
+                  : _getTranslation(_selectedOption!),
               style: AppFont.style(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF0A2342),
+                color: AppColor.colorFF0A2342,
               ),
             ),
             const SizedBox(width: 8),
             const Icon(
               Icons.keyboard_arrow_down_rounded,
               size: 18,
-              color: Color(0xFFA5ABB7),
+              color: AppColor.colorFFA5ABB7,
             ),
           ],
         ),

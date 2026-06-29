@@ -166,10 +166,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
   Future<void> _showAddSiteBottomSheet() async {
     if (_selectedCustomer == null) {
-      appSnackBar(
-        context, AppColor.bright_red,
-        'merged_with_existing'.tr(),
-      );
+      appSnackBar(context, AppColor.bright_red, 'merged_with_existing'.tr());
       return;
     }
 
@@ -191,7 +188,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
     if (customerId.isEmpty) {
       appSnackBar(
-        context, AppColor.bright_red,
+        context,
+        AppColor.bright_red,
         'invalid_customer_selector'.tr(),
       );
       return;
@@ -299,7 +297,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
     if (technicianIds.isEmpty) {
       appSnackBar(
-        context, AppColor.bright_red,
+        context,
+        AppColor.bright_red,
         "assign_tech_validation_msg".tr(),
       );
       return;
@@ -379,7 +378,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                          border: Border.all(color: AppColor.colorFFE5E7EB),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.04),
@@ -392,7 +391,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           icon: const Icon(
                             Icons.arrow_back,
                             size: 20,
-                            color: Color(0xFF5C616E),
+                            color: AppColor.colorFF5C616E,
                           ),
                           onPressed: widget.onBack,
                         ),
@@ -402,7 +401,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                         width: 4,
                         height: 24,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0B68B9),
+                          color: AppColor.colorFF0B68B9,
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -415,7 +414,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           style: AppFont.style(
                             fontSize: 15,
                             fontWeight: FontWeight.w900,
-                            color: const Color(0xFF0D121F),
+                            color: AppColor.colorFF0D121F,
                           ),
                         ),
                       ),
@@ -426,7 +425,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                 const Divider(
                   height: 1,
                   thickness: 1,
-                  color: Color(0xFFF1F2F6),
+                  color: AppColor.colorFFF1F2F6,
                 ),
 
                 // ── Form body ────────────────────────────────────────────────
@@ -465,7 +464,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                       } else if (state
                           is CommissioningWorkDetailsFailureState) {
                         appSnackBar(
-                          context, AppColor.bright_red,
+                          context,
+                          AppColor.bright_red,
                           state.message,
                         );
                       }
@@ -545,7 +545,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                       }
                                       if (customerId != null) {
                                         _sitesBloc.add(
-                                          SitesGetEvent(customer_id: customerId),
+                                          SitesGetEvent(
+                                            customer_id: customerId,
+                                          ),
                                         );
                                       }
                                     }
@@ -557,7 +559,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                       _sites.clear();
                                       _equipmentController.clear();
                                       _technicianControllers = [
-                                        TextEditingController()
+                                        TextEditingController(),
                                       ];
                                     });
                                   },
@@ -665,7 +667,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                       _selectedSite = null;
                                       _equipmentController.clear();
                                       _technicianControllers = [
-                                        TextEditingController()
+                                        TextEditingController(),
                                       ];
                                     });
                                   },
@@ -696,13 +698,17 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                             ValueListenableBuilder<TextEditingValue>(
                               valueListenable: _equipmentController,
                               builder: (context, equipmentValue, _) {
-                                final bool isTechnicianEnabled = equipmentValue.text.trim().isNotEmpty;
+                                final bool isTechnicianEnabled = equipmentValue
+                                    .text
+                                    .trim()
+                                    .isNotEmpty;
                                 return IgnorePointer(
                                   ignoring: !isTechnicianEnabled,
                                   child: BlocBuilder<TechnicianBloc, TechnicianState>(
                                     bloc: _technicianBloc,
                                     builder: (context, state) {
-                                      bool isLoading = state is TechnicianLoadingState;
+                                      bool isLoading =
+                                          state is TechnicianLoadingState;
 
                                       if (isLoading) {
                                         return Shimmer.fromColors(
@@ -713,30 +719,47 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                             width: double.infinity,
                                             decoration: BoxDecoration(
                                               color: Colors.white,
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(color: const Color(0xFFE5E7EB)),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: AppColor.colorFFE5E7EB,
+                                              ),
                                             ),
                                           ),
                                         );
                                       }
 
-                                      int selectedCount = _technicianControllers.where((c) => c.text.isNotEmpty).length;
+                                      int selectedCount = _technicianControllers
+                                          .where((c) => c.text.isNotEmpty)
+                                          .length;
 
                                       return GestureDetector(
                                         onTap: () {
-                                          FocusManager.instance.primaryFocus?.unfocus();
+                                          FocusManager.instance.primaryFocus
+                                              ?.unfocus();
                                           if (state is TechnicianSuccessState) {
-                                            _showMultiSelectTechnicianBottomSheet(state.data.data);
+                                            _showMultiSelectTechnicianBottomSheet(
+                                              state.data.data,
+                                            );
                                           }
                                         },
                                         child: Container(
                                           height: 56,
                                           decoration: BoxDecoration(
-                                            color: isTechnicianEnabled ? Colors.white : const Color(0xFFF1F2F6),
-                                            borderRadius: BorderRadius.circular(12),
-                                            border: Border.all(color: const Color(0xFFE5E7EB)),
+                                            color: isTechnicianEnabled
+                                                ? Colors.white
+                                                : AppColor.colorFFF1F2F6,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color: AppColor.colorFFE5E7EB,
+                                            ),
                                           ),
-                                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 20,
+                                            vertical: 4,
+                                          ),
                                           child: Row(
                                             children: [
                                               Expanded(
@@ -746,16 +769,22 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                                       : '$selectedCount ${'selected'.tr()}',
                                                   style: AppFont.style(
                                                     fontSize: 13,
-                                                    fontWeight: selectedCount == 0
+                                                    fontWeight:
+                                                        selectedCount == 0
                                                         ? FontWeight.w500
                                                         : FontWeight.w900,
                                                     color: selectedCount == 0
-                                                        ? const Color(0xFFA5ABB7)
-                                                        : const Color(0xFF0D121F),
+                                                        ? AppColor.colorFFA5ABB7
+                                                        : AppColor
+                                                              .colorFF0D121F,
                                                   ),
                                                 ),
                                               ),
-                                              const Icon(Icons.keyboard_arrow_down, color: Color(0xFFA5ABB7), size: 18),
+                                              const Icon(
+                                                Icons.keyboard_arrow_down,
+                                                color: AppColor.colorFFA5ABB7,
+                                                size: 18,
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -835,7 +864,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                                       Text(
                                                         widget.editWorkId !=
                                                                 null
-                                                            ? 'save_changes'.tr()
+                                                            ? 'save_changes'
+                                                                  .tr()
                                                             : 'assign'.tr(),
                                                         style: AppFont.style(
                                                           fontSize: 12,
@@ -891,7 +921,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
               style: AppFont.style(
                 fontSize: 9.5,
                 fontWeight: FontWeight.w900,
-                color: const Color(0xFFA2AEC0),
+                color: AppColor.colorFFA2AEC0,
                 letterSpacing: 0.8,
               ),
               children: [
@@ -907,9 +937,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
             ),
           ),
           if (showAdd && onAddTap != null)
-            AppAddNewTextButtonWidget(
-                onPressed: onAddTap
-            )
+            AppAddNewTextButtonWidget(onPressed: onAddTap),
         ],
       ),
     );
@@ -964,23 +992,23 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
       child: Container(
         height: 56,
         decoration: BoxDecoration(
-          color: enabled ? Colors.white : const Color(0xFFF1F2F6),
+          color: enabled ? Colors.white : AppColor.colorFFF1F2F6,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFF1F2F6)),
+          border: Border.all(color: AppColor.colorFFF1F2F6),
         ),
         child: TextField(
           controller: controller,
           style: AppFont.style(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: const Color(0xFF0D121F),
+            color: AppColor.colorFF0D121F,
           ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: AppFont.style(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: const Color(0xFFA5ABB7),
+              color: AppColor.colorFFA5ABB7,
             ),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(
@@ -1074,7 +1102,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(color: AppColor.colorFFE5E7EB),
       ),
     );
   }
@@ -1083,10 +1111,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => MergeCustomerDialogWidget(
-        name: name,
-        bloc: _createNewCustomerBloc,
-      ),
+      builder: (_) =>
+          MergeCustomerDialogWidget(name: name, bloc: _createNewCustomerBloc),
     );
   }
 
@@ -1110,7 +1136,8 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           builder: (context, setModalState) {
             final filteredList = allTechnicians.where((t) {
               return t.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-                     (t.id?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false);
+                  (t.id?.toLowerCase().contains(searchQuery.toLowerCase()) ??
+                      false);
             }).toList();
 
             return SafeArea(
@@ -1121,7 +1148,10 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                 ),
                 child: Container(
                   height: MediaQuery.of(ctx).size.height * 0.6,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                   child: Column(
                     children: [
                       // Search Field
@@ -1133,10 +1163,14 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                         },
                         decoration: InputDecoration(
                           hintText: 'search'.tr(),
-                          prefixIcon: const Icon(Icons.search, color: Color(0xFFA5ABB7), size: 20),
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: AppColor.colorFFA5ABB7,
+                            size: 20,
+                          ),
                           hintStyle: AppFont.style(
                             fontSize: 12,
-                            color: const Color(0xFFA5ABB7),
+                            color: AppColor.colorFFA5ABB7,
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -1144,20 +1178,26 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                            borderSide: const BorderSide(
+                              color: AppColor.colorFFE5E7EB,
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                            borderSide: const BorderSide(
+                              color: AppColor.colorFFE5E7EB,
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFF1565C0)),
+                            borderSide: const BorderSide(
+                              color: AppColor.colorFF1565C0,
+                            ),
                           ),
                         ),
                         style: AppFont.style(
                           fontSize: 12,
-                          color: const Color(0xFF0D121F),
+                          color: AppColor.colorFF0D121F,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -1168,7 +1208,9 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                           itemCount: filteredList.length,
                           itemBuilder: (context, index) {
                             final item = filteredList[index];
-                            final isSelected = tempSelectedIds.contains(item.id);
+                            final isSelected = tempSelectedIds.contains(
+                              item.id,
+                            );
 
                             return InkWell(
                               onTap: () {
@@ -1182,10 +1224,17 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                               },
                               child: Container(
                                 decoration: BoxDecoration(
-                                  border: isSelected ? const Border(
-                                    left: BorderSide(color: Color(0xFF1565C0), width: 4),
-                                  ) : null,
-                                  color: isSelected ? const Color(0xFFF8F9FB) : Colors.white,
+                                  border: isSelected
+                                      ? const Border(
+                                          left: BorderSide(
+                                            color: AppColor.colorFF1565C0,
+                                            width: 4,
+                                          ),
+                                        )
+                                      : null,
+                                  color: isSelected
+                                      ? AppColor.colorFFF8F9FB
+                                      : Colors.white,
                                 ),
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
@@ -1195,14 +1244,19 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                   children: [
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             item.name,
                                             style: AppFont.style(
                                               fontSize: 14,
-                                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                                              color: isSelected ? const Color(0xFF1565C0) : const Color(0xFF0D121F),
+                                              fontWeight: isSelected
+                                                  ? FontWeight.bold
+                                                  : FontWeight.w600,
+                                              color: isSelected
+                                                  ? AppColor.colorFF1565C0
+                                                  : AppColor.colorFF0D121F,
                                             ),
                                           ),
                                           const SizedBox(height: 4),
@@ -1211,7 +1265,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                             style: AppFont.style(
                                               fontSize: 10,
                                               fontWeight: FontWeight.w700,
-                                              color: const Color(0xFFA5ABB7),
+                                              color: AppColor.colorFFA5ABB7,
                                             ),
                                           ),
                                         ],
@@ -1224,12 +1278,20 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(6),
                                         border: Border.all(
-                                          color: isSelected ? const Color(0xFF1565C0) : const Color(0xFFE5E7EB),
+                                          color: isSelected
+                                              ? AppColor.colorFF1565C0
+                                              : AppColor.colorFFE5E7EB,
                                         ),
-                                        color: isSelected ? const Color(0xFF1565C0) : Colors.white,
+                                        color: isSelected
+                                            ? AppColor.colorFF1565C0
+                                            : Colors.white,
                                       ),
                                       child: isSelected
-                                          ? const Icon(Icons.check, size: 16, color: Colors.white)
+                                          ? const Icon(
+                                              Icons.check,
+                                              size: 16,
+                                              color: Colors.white,
+                                            )
                                           : null,
                                     ),
                                   ],
@@ -1248,22 +1310,29 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                             setState(() {
                               _technicianControllers.clear();
                               if (tempSelectedIds.isEmpty) {
-                                _technicianControllers.add(TextEditingController());
+                                _technicianControllers.add(
+                                  TextEditingController(),
+                                );
                               } else {
                                 for (var id in tempSelectedIds) {
-                                  _technicianControllers.add(TextEditingController(text: id));
+                                  _technicianControllers.add(
+                                    TextEditingController(text: id),
+                                  );
                                 }
                               }
                             });
                             Navigator.pop(ctx);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1565C0),
+                            backgroundColor: AppColor.colorFF1565C0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                             minimumSize: const Size(0, 36),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                           ),
                           child: Text(
                             'create_report_btn_done'.tr(),

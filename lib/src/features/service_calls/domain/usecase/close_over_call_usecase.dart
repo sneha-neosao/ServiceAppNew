@@ -28,7 +28,12 @@ class CloseOverCallParams extends Equatable {
   }
 
   @override
-  List<Object?> get props => [complaintId, serviceCallDetails, customerId, siteId];
+  List<Object?> get props => [
+    complaintId,
+    serviceCallDetails,
+    customerId,
+    siteId,
+  ];
 }
 
 class CloseOverCallUsecase

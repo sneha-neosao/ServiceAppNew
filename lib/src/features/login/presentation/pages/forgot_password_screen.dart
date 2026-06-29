@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/features/login/widgets/forgot_password_input.dart';
 import 'package:service_app/src/routes/app_route_path.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -41,7 +42,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   style: AppFont.style(
                     fontSize: 30,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF1A1A1A),
+                    color: AppColor.colorFF1A1A1A,
                     height: 1.15,
                   ),
                 ),
@@ -51,7 +52,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   style: AppFont.style(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
-                    color: const Color(0xFF6B6B6B),
+                    color: AppColor.colorFF6B6B6B,
                     height: 1.55,
                   ),
                 ),
@@ -64,7 +65,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   style: AppFont.style(
                     fontSize: 9,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1A1A1A),
+                    color: AppColor.colorFF1A1A1A,
                     letterSpacing: 1.2,
                   ),
                 ),
@@ -83,7 +84,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       // TODO: handle send reset link logic
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1A1A1A),
+                      backgroundColor: AppColor.colorFF1A1A1A,
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -120,7 +121,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         const Icon(
                           Icons.chevron_left,
                           size: 18,
-                          color: Color(0xFF6B6B6B),
+                          color: AppColor.colorFF6B6B6B,
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -128,7 +129,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           style: AppFont.style(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF1A1A1A),
+                            color: AppColor.colorFF1A1A1A,
                           ),
                         ),
                       ],
@@ -145,7 +146,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     style: AppFont.style(
                       fontSize: 9,
                       fontWeight: FontWeight.w500,
-                      color: const Color(0xFFBDBDBD),
+                      color: AppColor.colorFFBDBDBD,
                       letterSpacing: 1.1,
                     ),
                   ),

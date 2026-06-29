@@ -12,7 +12,8 @@ class ServiceWorkReportStep2AutoFillUsecase
 
   @override
   Future<Either<Failure, ServiceWorkReportStep2Response>> call(
-      String reportId) async {
+    String reportId,
+  ) async {
     return await repository.serviceWorkReportStep2AutoFill(reportId);
   }
 }

@@ -66,10 +66,16 @@ class AmcReportStep3Data extends Equatable {
       technicianRemarks: json['technician_remarks']?.toString() ?? '',
       customerRemarks: json['customer_remarks']?.toString() ?? '',
       technicianSignature: json['technician_signature']?.toString(),
-      customerRepresentativeName: json['customer_representative_name']?.toString() ?? '',
+      customerRepresentativeName:
+          json['customer_representative_name']?.toString() ?? '',
       customerSignature: json['customer_signature']?.toString(),
-      savedWorkPhotos: (json['saved_work_photos'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
-      technicianRepresentativeName: json['technician_representative_name']?.toString() ?? '',
+      savedWorkPhotos:
+          (json['saved_work_photos'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      technicianRepresentativeName:
+          json['technician_representative_name']?.toString() ?? '',
       qrCodeUrl: json['qr_code_url']?.toString(),
       qrCodeBase64: json['qr_code_base64']?.toString(),
     );
@@ -92,15 +98,15 @@ class AmcReportStep3Data extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        technicianRemarks,
-        customerRemarks,
-        technicianSignature,
-        customerRepresentativeName,
-        customerSignature,
-        savedWorkPhotos,
-        technicianRepresentativeName,
-        qrCodeUrl,
-        qrCodeBase64,
-      ];
+    id,
+    technicianRemarks,
+    customerRemarks,
+    technicianSignature,
+    customerRepresentativeName,
+    customerSignature,
+    savedWorkPhotos,
+    technicianRepresentativeName,
+    qrCodeUrl,
+    qrCodeBase64,
+  ];
 }

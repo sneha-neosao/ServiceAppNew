@@ -34,8 +34,12 @@ class _LoginInputWidgetState extends State<LoginInputWidget> {
       _savedUsername = creds['username'] ?? '';
       _savedPassword = creds['password'] ?? '';
       // Update form bloc so it has these values without needing onChange
-      context.read<AuthLoginFormBloc>().add(LoginFormEmailChangedEvent(_savedUsername));
-      context.read<AuthLoginFormBloc>().add(LoginFormPasswordChangedEvent(_savedPassword));
+      context.read<AuthLoginFormBloc>().add(
+        LoginFormEmailChangedEvent(_savedUsername),
+      );
+      context.read<AuthLoginFormBloc>().add(
+        LoginFormPasswordChangedEvent(_savedPassword),
+      );
     }
     if (mounted) {
       setState(() {
@@ -81,4 +85,3 @@ class _LoginInputWidgetState extends State<LoginInputWidget> {
     );
   }
 }
-

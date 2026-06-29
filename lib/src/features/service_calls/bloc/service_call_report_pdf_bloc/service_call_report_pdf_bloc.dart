@@ -8,7 +8,7 @@ class ServiceCallReportPdfBloc
   final ServiceCallReportPdfUseCase usecase;
 
   ServiceCallReportPdfBloc({required this.usecase})
-      : super(ServiceCallReportPdfInitial()) {
+    : super(ServiceCallReportPdfInitial()) {
     on<FetchServiceCallReportPdfEvent>(_onFetchServiceCallReportPdf);
   }
 

@@ -18,8 +18,8 @@ class TechnicianResponse {
       message: json['message'] ?? '',
       data: (json['data'] != null && json['data']['results'] != null)
           ? (json['data']['results'] as List<dynamic>)
-              .map((e) => Technician.fromJson(e))
-              .toList()
+                .map((e) => Technician.fromJson(e))
+                .toList()
           : [],
     );
   }

@@ -30,16 +30,16 @@ class ServiceWorkReportStep4Params extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        customerRepresentativeName,
-        customerRemarks,
-        technicianRemarks,
-        technicianRepresentative,
-        qrCodeUrl,
-        workPhotosPaths,
-        customerSignaturePath,
-        technicianSignaturePath,
-      ];
+    id,
+    customerRepresentativeName,
+    customerRemarks,
+    technicianRemarks,
+    technicianRepresentative,
+    qrCodeUrl,
+    workPhotosPaths,
+    customerSignaturePath,
+    technicianSignaturePath,
+  ];
 }
 
 class ServiceWorkReportStep4Usecase

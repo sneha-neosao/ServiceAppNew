@@ -48,7 +48,8 @@ class CloseOverCallDialog extends StatefulWidget {
 }
 
 class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
-  final GlobalKey<ScaffoldMessengerState> _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldKey =
+      GlobalKey<ScaffoldMessengerState>();
   final TextEditingController _resolutionController = TextEditingController();
   bool _isError = false;
   late CloseOverCallBloc _bloc;
@@ -59,10 +60,10 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
 
   List<String> _customers = [];
   String? _selectedCustomer;
-  
+
   List<String> _sites = [];
   String? _selectedSite;
-  
+
   final Map<String, String> _createdCustomerIds = {};
   final Map<String, String> _createdSiteIds = {};
 
@@ -183,390 +184,418 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
             child: GestureDetector(
               onTap: () {},
               child: Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      backgroundColor: Colors.white,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEBF5FF),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.phone_disabled_outlined,
-                    color: Color(0xFF1565C0),
-                    size: 24,
-                  ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'close_call_dialog_title'.tr(),
-                        style: AppFont.style(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w900,
-                          color: const Color(0xFF0D121F),
-                        ),
-                      ),
-                      Text(
-                        '${widget.complaintNo} - ${widget.customerName}',
-                        style: AppFont.style(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFFA5ABB7),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(
-                    Icons.close,
-                    color: Color(0xFFA5ABB7),
-                    size: 20,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // Info Container (hidden)
-            // Container(
-            //   padding: const EdgeInsets.all(16),
-            //   decoration: BoxDecoration(
-            //     color: const Color(0xFFF9FAFB),
-            //     borderRadius: BorderRadius.circular(12),
-            //     border: Border.all(color: const Color(0xFFF1F2F6)),
-            //   ),
-            //   child: Row(
-            //     children: [
-            //       Expanded(
-            //         child: _buildInfoColumn('close_call_complaint_no_label'.tr(), widget.complaintNo),
-            //       ),
-            //       Expanded(
-            //         child: _buildInfoColumn(
-            //           'close_call_customer_name_label'.tr(),
-            //           widget.customerName,
-            //         ),
-            //       ),
-            //       Expanded(
-            //         child: _buildInfoColumn('close_call_site_name_label'.tr(), widget.siteName),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            // const SizedBox(height: 24),
-
-            // Dropdowns
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    text: 'create_report_customer_name'.tr(),
-                    style: AppFont.style(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF424B5C),
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'asterisk'.tr(),
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    ],
-                  ),
-                ),
-                AppAddNewTextButtonWidget(
-                  onPressed: _showAddCustomerDialog
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            BlocBuilder<CustomerBloc, CustomerState>(
-              bloc: _customerBloc,
-              builder: (context, state) {
-                bool isLoading = state is CustomerLoadingState;
-                if (state is CustomerSuccessState) {
-                  _customers.clear();
-                  final apiNames = state.data.data.map((e) => e.name).toList();
-                  _customers.addAll(apiNames);
-                }
-                return SearchableDropdown<String>(
-                  items: _customers,
-                  value: _selectedCustomer,
-                  hintText: 'service_calls_filter_select_customer'.tr(),
-                  isLoading: isLoading,
-                  itemAsString: (item) => item,
-                  onClear: () {
-                    setState(() {
-                      _selectedCustomer = null;
-                      _selectedSite = null;
-                      _sites.clear();
-                    });
-                  },
-                  onChanged: (val) {
-                    setState(() {
-                      _selectedCustomer = val;
-                      _selectedSite = null;
-                      _sites.clear();
-                    });
-                    if (val != null && state is CustomerSuccessState) {
-                      final customer = state.data.data.firstWhere((c) => c.name == val);
-                      _sitesBloc.add(SitesGetEvent(customer_id: customer.id));
-                    }
-                  },
-                );
-              },
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    text: 'close_call_site_name_label'.tr(),
-                    style: AppFont.style(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF424B5C),
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'asterisk'.tr(),
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    ],
-                  ),
-                ),
-                AppAddNewTextButtonWidget(
-                  onPressed: _showAddSiteDialog
-                )
-              ],
-            ),
-            const SizedBox(height: 8),
-            BlocBuilder<SitesBloc, SitesState>(
-              bloc: _sitesBloc,
-              builder: (context, state) {
-                bool isLoading = state is SitesLoadingState;
-                if (state is SitesSuccessState) {
-                  _sites.clear();
-                  final apiNames = state.data.data.map((e) => e.name).toList();
-                  _sites.addAll(apiNames);
-                }
-                return SearchableDropdown<String>(
-                  items: _sites,
-                  value: _selectedSite,
-                  hintText: 'reports_filter_select_site'.tr(),
-                  isLoading: isLoading,
-                  readOnly: _selectedCustomer == null,
-                  enabled: _selectedCustomer != null,
-                  itemAsString: (item) => item,
-                  onClear: () {
-                    setState(() {
-                      _selectedSite = null;
-                    });
-                  },
-                  onChanged: (val) {
-                    setState(() {
-                      _selectedSite = val;
-                    });
-                  },
-                );
-              },
-            ),
-            const SizedBox(height: 24),
-
-            // Resolution Text Field
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    text: '${'close_call_resolution_label'.tr()} ',
-                    style: AppFont.style(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFFA5ABB7),
-                    ),
-                    children: const [
-                      TextSpan(
-                        text: '*',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    ],
-                  ),
-                ),
-                SpeechToTextMicButton(controller: _resolutionController),
-              ],
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _resolutionController,
-              minLines: 3,
-              maxLines: null,
-              keyboardType: TextInputType.multiline,
-              style: AppFont.style(fontSize: 12, color: Colors.black),
-              onChanged: (val) {
-                if (_isError && val.trim().length >= 10) {
-                  setState(() => _isError = false);
-                }
-              },
-              decoration: InputDecoration(
-                hintText:
-                    'close_call_resolution_hint'.tr(),
-                hintStyle: AppFont.style(
-                  fontSize: 12,
-                  color: const Color(0xFFD1D5DB),
-                ),
-                contentPadding: const EdgeInsets.all(12),
-                border: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: _isError ? Colors.red : const Color(0xFFE5E7EB),
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: _isError ? Colors.red : const Color(0xFF1565C0),
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  size: 14,
-                  color: _isError ? Colors.red : const Color(0xFFEF4444),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  'close_call_min_chars'.tr(),
-                  style: AppFont.style(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w800,
-                    color: _isError ? Colors.red : const Color(0xFFEF4444),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Action Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    'cancel'.tr(),
-                    style: AppFont.style(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF6B7280),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                BlocConsumer<CloseOverCallBloc, CloseOverCallState>(
-                  bloc: _bloc,
-                  listener: (context, state) {
-                    if (state is CloseOverCallSuccessState) {
-                      widget.onSuccess();
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                         SnackBar(
-                          content: Text(state.data.message),
-                          backgroundColor: AppColor.green,
-                        ),
-                      );
-                      Navigator.pop(context);
-                    } else if (state is CloseOverCallFailureState) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(state.message),
-                          backgroundColor: AppColor.bright_red,
-                        ),
-                      );
-                    }
-                  },
-                  builder: (context, state) {
-                    return GestureDetector(
-                      onTap: () {
-                        if (state is! CloseOverCallLoadingState) {
-                          _submit();
-                        }
-                      },
-                      child: Container(
-                        height: 44,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          color: const Color(
-                            0xFF1565C0,
-                          ), // Make it primary blue when active
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
+                backgroundColor: Colors.white,
+                insetPadding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (state is CloseOverCallLoadingState)
-                              const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            else
-                              const Icon(
-                                Icons.phone_disabled_outlined,
-                                size: 18,
-                                color: Colors.white,
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppColor.colorFFEBF5FF,
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'close_call_btn'.tr(),
-                              style: AppFont.style(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
+                              child: const Icon(
+                                Icons.phone_disabled_outlined,
+                                color: AppColor.colorFF1565C0,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'close_call_dialog_title'.tr(),
+                                    style: AppFont.style(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w900,
+                                      color: AppColor.colorFF0D121F,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${widget.complaintNo} - ${widget.customerName}',
+                                    style: AppFont.style(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColor.colorFFA5ABB7,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: const Icon(
+                                Icons.close,
+                                color: AppColor.colorFFA5ABB7,
+                                size: 20,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    );
-                  },
+                        const SizedBox(height: 20),
+
+                        // Info Container (hidden)
+                        // Container(
+                        //   padding: const EdgeInsets.all(16),
+                        //   decoration: BoxDecoration(
+                        //     color: AppColor.colorFFF9FAFB,
+                        //     borderRadius: BorderRadius.circular(12),
+                        //     border: Border.all(color: AppColor.colorFFF1F2F6),
+                        //   ),
+                        //   child: Row(
+                        //     children: [
+                        //       Expanded(
+                        //         child: _buildInfoColumn('close_call_complaint_no_label'.tr(), widget.complaintNo),
+                        //       ),
+                        //       Expanded(
+                        //         child: _buildInfoColumn(
+                        //           'close_call_customer_name_label'.tr(),
+                        //           widget.customerName,
+                        //         ),
+                        //       ),
+                        //       Expanded(
+                        //         child: _buildInfoColumn('close_call_site_name_label'.tr(), widget.siteName),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+                        // const SizedBox(height: 24),
+
+                        // Dropdowns
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                text: 'create_report_customer_name'.tr(),
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColor.colorFF424B5C,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: 'asterisk'.tr(),
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            AppAddNewTextButtonWidget(
+                              onPressed: _showAddCustomerDialog,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        BlocBuilder<CustomerBloc, CustomerState>(
+                          bloc: _customerBloc,
+                          builder: (context, state) {
+                            bool isLoading = state is CustomerLoadingState;
+                            if (state is CustomerSuccessState) {
+                              _customers.clear();
+                              final apiNames = state.data.data
+                                  .map((e) => e.name)
+                                  .toList();
+                              _customers.addAll(apiNames);
+                            }
+                            return SearchableDropdown<String>(
+                              items: _customers,
+                              value: _selectedCustomer,
+                              hintText: 'service_calls_filter_select_customer'
+                                  .tr(),
+                              isLoading: isLoading,
+                              itemAsString: (item) => item,
+                              onClear: () {
+                                setState(() {
+                                  _selectedCustomer = null;
+                                  _selectedSite = null;
+                                  _sites.clear();
+                                });
+                              },
+                              onChanged: (val) {
+                                setState(() {
+                                  _selectedCustomer = val;
+                                  _selectedSite = null;
+                                  _sites.clear();
+                                });
+                                if (val != null &&
+                                    state is CustomerSuccessState) {
+                                  final customer = state.data.data.firstWhere(
+                                    (c) => c.name == val,
+                                  );
+                                  _sitesBloc.add(
+                                    SitesGetEvent(customer_id: customer.id),
+                                  );
+                                }
+                              },
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                text: 'close_call_site_name_label'.tr(),
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColor.colorFF424B5C,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: 'asterisk'.tr(),
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            AppAddNewTextButtonWidget(
+                              onPressed: _showAddSiteDialog,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        BlocBuilder<SitesBloc, SitesState>(
+                          bloc: _sitesBloc,
+                          builder: (context, state) {
+                            bool isLoading = state is SitesLoadingState;
+                            if (state is SitesSuccessState) {
+                              _sites.clear();
+                              final apiNames = state.data.data
+                                  .map((e) => e.name)
+                                  .toList();
+                              _sites.addAll(apiNames);
+                            }
+                            return SearchableDropdown<String>(
+                              items: _sites,
+                              value: _selectedSite,
+                              hintText: 'reports_filter_select_site'.tr(),
+                              isLoading: isLoading,
+                              readOnly: _selectedCustomer == null,
+                              enabled: _selectedCustomer != null,
+                              itemAsString: (item) => item,
+                              onClear: () {
+                                setState(() {
+                                  _selectedSite = null;
+                                });
+                              },
+                              onChanged: (val) {
+                                setState(() {
+                                  _selectedSite = val;
+                                });
+                              },
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Resolution Text Field
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                text: '${'close_call_resolution_label'.tr()} ',
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColor.colorFFA5ABB7,
+                                ),
+                                children: const [
+                                  TextSpan(
+                                    text: '*',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SpeechToTextMicButton(
+                              controller: _resolutionController,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: _resolutionController,
+                          minLines: 3,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          style: AppFont.style(
+                            fontSize: 12,
+                            color: Colors.black,
+                          ),
+                          onChanged: (val) {
+                            if (_isError && val.trim().length >= 10) {
+                              setState(() => _isError = false);
+                            }
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'close_call_resolution_hint'.tr(),
+                            hintStyle: AppFont.style(
+                              fontSize: 12,
+                              color: AppColor.colorFFD1D5DB,
+                            ),
+                            contentPadding: const EdgeInsets.all(12),
+                            border: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: AppColor.colorFFE5E7EB,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: _isError
+                                    ? Colors.red
+                                    : AppColor.colorFFE5E7EB,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: _isError
+                                    ? Colors.red
+                                    : AppColor.colorFF1565C0,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              size: 14,
+                              color: _isError
+                                  ? Colors.red
+                                  : AppColor.colorFFEF4444,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'close_call_min_chars'.tr(),
+                              style: AppFont.style(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w800,
+                                color: _isError
+                                    ? Colors.red
+                                    : AppColor.colorFFEF4444,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Action Buttons
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(
+                                'cancel'.tr(),
+                                style: AppFont.style(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColor.colorFF6B7280,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            BlocConsumer<CloseOverCallBloc, CloseOverCallState>(
+                              bloc: _bloc,
+                              listener: (context, state) {
+                                if (state is CloseOverCallSuccessState) {
+                                  widget.onSuccess();
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(state.data.message),
+                                      backgroundColor: AppColor.green,
+                                    ),
+                                  );
+                                  Navigator.pop(context);
+                                } else if (state is CloseOverCallFailureState) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(state.message),
+                                      backgroundColor: AppColor.bright_red,
+                                    ),
+                                  );
+                                }
+                              },
+                              builder: (context, state) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    if (state is! CloseOverCallLoadingState) {
+                                      _submit();
+                                    }
+                                  },
+                                  child: Container(
+                                    height: 44,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(
+                                        0xFF1565C0,
+                                      ), // Make it primary blue when active
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        if (state is CloseOverCallLoadingState)
+                                          const SizedBox(
+                                            width: 18,
+                                            height: 18,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        else
+                                          const Icon(
+                                            Icons.phone_disabled_outlined,
+                                            size: 18,
+                                            color: Colors.white,
+                                          ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'close_call_btn'.tr(),
+                                          style: AppFont.style(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w800,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ],
-            ),
-          ],
-        ),
-        ),
-      ),
-    ),
+              ),
             ),
           ),
         ),
@@ -583,7 +612,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
           style: AppFont.style(
             fontSize: 8,
             fontWeight: FontWeight.w800,
-            color: const Color(0xFFA5ABB7),
+            color: AppColor.colorFFA5ABB7,
           ),
         ),
         const SizedBox(height: 4),
@@ -592,7 +621,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w900,
-            color: const Color(0xFF0D121F),
+            color: AppColor.colorFF0D121F,
           ),
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
@@ -600,6 +629,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
       ],
     );
   }
+
   Future<void> _showAddCustomerDialog() async {
     final controller = TextEditingController();
     await showDialog(
@@ -611,163 +641,218 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
             backgroundColor: Colors.transparent,
             body: Center(
               child: Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          backgroundColor: Colors.white,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.business_outlined, color: Color(0xFF1565C0), size: 24),
-                    const SizedBox(width: 12),
-                    Text(
-                      'add_new_customer'.tr(),
-                      style: AppFont.style(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF0D121F),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                backgroundColor: Colors.white,
+                insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.business_outlined,
+                            color: AppColor.colorFF1565C0,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'add_new_customer'.tr(),
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                              color: AppColor.colorFF0D121F,
+                            ),
+                          ),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () => Navigator.pop(ctx),
+                            child: const Icon(
+                              Icons.close,
+                              color: AppColor.colorFFA5ABB7,
+                              size: 20,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(ctx),
-                      child: const Icon(Icons.close, color: Color(0xFFA5ABB7), size: 20),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-                const SizedBox(height: 16),
-                Text(
-                  'close_call_customer_name_label'.tr(),
-                  style: AppFont.style(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF424B5C),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    hintText: 'enter_customer_name'.tr(),
-                    hintStyle: AppFont.style(
-                      fontSize: 12,
-                      color: const Color(0xFFA5ABB7),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF1565C0)),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      child: Text(
-                        'cancel'.tr(),
+                      const SizedBox(height: 16),
+                      const Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: AppColor.colorFFF1F2F6,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'close_call_customer_name_label'.tr(),
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF6B7280),
+                          color: AppColor.colorFF424B5C,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    BlocConsumer<CreateNewCustomerBloc, CreateNewCustomerState>(
-                      bloc: _createNewCustomerBloc,
-                      listener: (context, state) {
-                        if (state is CreateNewCustomerSuccessState) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(state.data.message), backgroundColor: AppColor.green),
-                          );
-                          final newName = state.data.data?.name ?? controller.text.trim();
-                          Navigator.pop(ctx);
-                          setState(() {
-                            if (!_customers.contains(newName)) {
-                              _customers.insert(0, newName);
-                            }
-                            if (state.data.data?.id != null) {
-                              _createdCustomerIds[newName] = state.data.data!.id;
-                            }
-                            _selectedCustomer = newName;
-                            _selectedSite = null;
-                            _sites.clear();
-                          });
-                        } else if (state is CreateNewCustomerFailureState) {
-                          if (state.message.contains('merged_with_existing'.tr())) {
-                            Navigator.pop(ctx);
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (dialogCtx) {
-                                return MergeCustomerDialogWidget(
-                                  name: controller.text.trim(),
-                                  bloc: _createNewCustomerBloc,
-                                );
-                              },
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(state.message), backgroundColor: AppColor.bright_red),
-                            );
-                          }
-                        }
-                      },
-                      builder: (context, state) {
-                        final isLoading = state is CreateNewCustomerLoadingState;
-                        return ElevatedButton(
-                          onPressed: isLoading ? null : () {
-                            final text = controller.text.trim();
-                            if (text.isNotEmpty) {
-                              _createNewCustomerBloc.add(
-                                CreateNewCustomerSubmitEvent(
-                                  CreateNewCustomerParams(name: text),
-                                ),
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0B68B9),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                            minimumSize: const Size(0, 40),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: controller,
+                        decoration: InputDecoration(
+                          hintText: 'enter_customer_name'.tr(),
+                          hintStyle: AppFont.style(
+                            fontSize: 12,
+                            color: AppColor.colorFFA5ABB7,
                           ),
-                          child: isLoading 
-                              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                              : Text(
-                                  'save_entry'.tr(),
-                                  style: AppFont.style(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w800,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: AppColor.colorFFE5E7EB,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: AppColor.colorFFE5E7EB,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: AppColor.colorFF1565C0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text(
+                              'cancel'.tr(),
+                              style: AppFont.style(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: AppColor.colorFF6B7280,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          BlocConsumer<
+                            CreateNewCustomerBloc,
+                            CreateNewCustomerState
+                          >(
+                            bloc: _createNewCustomerBloc,
+                            listener: (context, state) {
+                              if (state is CreateNewCustomerSuccessState) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(state.data.message),
+                                    backgroundColor: AppColor.green,
                                   ),
+                                );
+                                final newName =
+                                    state.data.data?.name ??
+                                    controller.text.trim();
+                                Navigator.pop(ctx);
+                                setState(() {
+                                  if (!_customers.contains(newName)) {
+                                    _customers.insert(0, newName);
+                                  }
+                                  if (state.data.data?.id != null) {
+                                    _createdCustomerIds[newName] =
+                                        state.data.data!.id;
+                                  }
+                                  _selectedCustomer = newName;
+                                  _selectedSite = null;
+                                  _sites.clear();
+                                });
+                              } else if (state
+                                  is CreateNewCustomerFailureState) {
+                                if (state.message.contains(
+                                  'merged_with_existing'.tr(),
+                                )) {
+                                  Navigator.pop(ctx);
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (dialogCtx) {
+                                      return MergeCustomerDialogWidget(
+                                        name: controller.text.trim(),
+                                        bloc: _createNewCustomerBloc,
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(state.message),
+                                      backgroundColor: AppColor.bright_red,
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            builder: (context, state) {
+                              final isLoading =
+                                  state is CreateNewCustomerLoadingState;
+                              return ElevatedButton(
+                                onPressed: isLoading
+                                    ? null
+                                    : () {
+                                        final text = controller.text.trim();
+                                        if (text.isNotEmpty) {
+                                          _createNewCustomerBloc.add(
+                                            CreateNewCustomerSubmitEvent(
+                                              CreateNewCustomerParams(
+                                                name: text,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColor.colorFF0B68B9,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 12,
+                                  ),
+                                  minimumSize: const Size(0, 40),
                                 ),
-                        );
-                      },
-                    ),
-                  ],
+                                child: isLoading
+                                    ? const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Text(
+                                        'save_entry'.tr(),
+                                        style: AppFont.style(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
             ),
           ),
         );
@@ -778,7 +863,10 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
   Future<void> _showAddSiteDialog() async {
     if (_selectedCustomer == null) {
       _scaffoldKey.currentState?.showSnackBar(
-        SnackBar(content: Text('please_select_customer'.tr()), backgroundColor: AppColor.bright_red),
+        SnackBar(
+          content: Text('please_select_customer'.tr()),
+          backgroundColor: AppColor.bright_red,
+        ),
       );
       return;
     }
@@ -800,7 +888,10 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
 
     if (customerId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('invalid_customer_or_site_selected'.tr()), backgroundColor: AppColor.bright_red),
+        SnackBar(
+          content: Text('invalid_customer_or_site_selected'.tr()),
+          backgroundColor: AppColor.bright_red,
+        ),
       );
       return;
     }
@@ -815,165 +906,210 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
             backgroundColor: Colors.transparent,
             body: Center(
               child: Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          backgroundColor: Colors.white,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.location_on_outlined, color: Color(0xFF1565C0), size: 24),
-                    const SizedBox(width: 12),
-                    Text(
-                      'add_new_site'.tr(),
-                      style: AppFont.style(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF0D121F),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                backgroundColor: Colors.white,
+                insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            color: AppColor.colorFF1565C0,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'add_new_site'.tr(),
+                            style: AppFont.style(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                              color: AppColor.colorFF0D121F,
+                            ),
+                          ),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () => Navigator.pop(ctx),
+                            child: const Icon(
+                              Icons.close,
+                              color: AppColor.colorFFA5ABB7,
+                              size: 20,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(ctx),
-                      child: const Icon(Icons.close, color: Color(0xFFA5ABB7), size: 20),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-                const SizedBox(height: 16),
-                Text(
-                  '${'customer'.tr()} $_selectedCustomer',
-                  style: AppFont.style(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'close_call_site_name_label'.tr(),
-                  style: AppFont.style(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF424B5C),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    hintText: 'enter_site_name'.tr(),
-                    hintStyle: AppFont.style(
-                      fontSize: 12,
-                      color: const Color(0xFFA5ABB7),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF1565C0)),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      child: Text(
-                        'cancel'.tr(),
+                      const SizedBox(height: 16),
+                      const Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: AppColor.colorFFF1F2F6,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        '${'customer'.tr()} $_selectedCustomer',
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF6B7280),
+                          color: AppColor.colorFFA5ABB7,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    BlocConsumer<CreateNewSiteBloc, CreateNewSiteState>(
-                      bloc: _createNewSiteBloc,
-                      listener: (context, state) {
-                        if (state is CreateNewSiteSuccessState) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(state.data.message), backgroundColor: AppColor.green),
-                          );
-                          final newName = controller.text.trim();
-                          Navigator.pop(ctx);
-                          setState(() {
-                            if (!_sites.contains(newName)) {
-                              _sites.insert(0, newName);
-                            }
-                            if (state.data.data != null) {
-                              for (var s in state.data.data!.sites) {
-                                if (s.name == newName) {
-                                  _createdSiteIds[newName] = s.id;
-                                  break;
-                                }
-                              }
-                            }
-                            _selectedSite = newName;
-                          });
-                        } else if (state is CreateNewSiteFailureState) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(state.message), backgroundColor: AppColor.bright_red),
-                          );
-                        }
-                      },
-                      builder: (context, state) {
-                        final isLoading = state is CreateNewSiteLoadingState;
-                        return ElevatedButton(
-                          onPressed: isLoading ? null : () {
-                            final text = controller.text.trim();
-                            if (text.isNotEmpty) {
-                              _createNewSiteBloc.add(
-                                CreateNewSiteSubmitEvent(
-                                  CreateNewSiteParams(
-                                    customerId: customerId,
-                                    customerName: _selectedCustomer!,
-                                    siteName: text,
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0B68B9),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                            minimumSize: const Size(0, 40),
+                      const SizedBox(height: 16),
+                      Text(
+                        'close_call_site_name_label'.tr(),
+                        style: AppFont.style(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: AppColor.colorFF424B5C,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: controller,
+                        decoration: InputDecoration(
+                          hintText: 'enter_site_name'.tr(),
+                          hintStyle: AppFont.style(
+                            fontSize: 12,
+                            color: AppColor.colorFFA5ABB7,
                           ),
-                          child: isLoading 
-                              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                              : Text(
-                                  'save_entry'.tr(),
-                                  style: AppFont.style(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w800,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: AppColor.colorFFE5E7EB,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: AppColor.colorFFE5E7EB,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: AppColor.colorFF1565C0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text(
+                              'cancel'.tr(),
+                              style: AppFont.style(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: AppColor.colorFF6B7280,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          BlocConsumer<CreateNewSiteBloc, CreateNewSiteState>(
+                            bloc: _createNewSiteBloc,
+                            listener: (context, state) {
+                              if (state is CreateNewSiteSuccessState) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(state.data.message),
+                                    backgroundColor: AppColor.green,
                                   ),
+                                );
+                                final newName = controller.text.trim();
+                                Navigator.pop(ctx);
+                                setState(() {
+                                  if (!_sites.contains(newName)) {
+                                    _sites.insert(0, newName);
+                                  }
+                                  if (state.data.data != null) {
+                                    for (var s in state.data.data!.sites) {
+                                      if (s.name == newName) {
+                                        _createdSiteIds[newName] = s.id;
+                                        break;
+                                      }
+                                    }
+                                  }
+                                  _selectedSite = newName;
+                                });
+                              } else if (state is CreateNewSiteFailureState) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(state.message),
+                                    backgroundColor: AppColor.bright_red,
+                                  ),
+                                );
+                              }
+                            },
+                            builder: (context, state) {
+                              final isLoading =
+                                  state is CreateNewSiteLoadingState;
+                              return ElevatedButton(
+                                onPressed: isLoading
+                                    ? null
+                                    : () {
+                                        final text = controller.text.trim();
+                                        if (text.isNotEmpty) {
+                                          _createNewSiteBloc.add(
+                                            CreateNewSiteSubmitEvent(
+                                              CreateNewSiteParams(
+                                                customerId: customerId,
+                                                customerName:
+                                                    _selectedCustomer!,
+                                                siteName: text,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColor.colorFF0B68B9,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 12,
+                                  ),
+                                  minimumSize: const Size(0, 40),
                                 ),
-                        );
-                      },
-                    ),
-                  ],
+                                child: isLoading
+                                    ? const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Text(
+                                        'save_entry'.tr(),
+                                        style: AppFont.style(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
             ),
           ),
         );

@@ -143,31 +143,32 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     double lpm = 0, lps = 0, m3hr = 0, usgpm = 0;
 
     if (source == 'lpm'.tr()) {
-        lpm = value;
-        lps = lpm / 60;
-        m3hr = lpm * 0.06;
-        usgpm = lpm / 3.78541;
+      lpm = value;
+      lps = lpm / 60;
+      m3hr = lpm * 0.06;
+      usgpm = lpm / 3.78541;
     } else if (source == 'lps'.tr()) {
-        lps = value;
-        lpm = lps * 60;
-        m3hr = lps * 3.6;
-        usgpm = lps * 15.8503;
+      lps = value;
+      lpm = lps * 60;
+      m3hr = lps * 3.6;
+      usgpm = lps * 15.8503;
     } else if (source == 'M3HR') {
-        m3hr = value;
-        lpm = m3hr * 16.6667;
-        lps = m3hr / 3.6;
-        usgpm = m3hr * 4.40287;
+      m3hr = value;
+      lpm = m3hr * 16.6667;
+      lps = m3hr / 3.6;
+      usgpm = m3hr * 4.40287;
     } else if (source == 'usgpm'.tr()) {
-        usgpm = value;
-        lpm = usgpm * 3.78541;
-        lps = usgpm * 0.0630902;
-        m3hr = usgpm * 0.227125;
+      usgpm = value;
+      lpm = usgpm * 3.78541;
+      lps = usgpm * 0.0630902;
+      m3hr = usgpm * 0.227125;
     }
 
     if (source != 'lpm'.tr()) _pumpFlowLpmCtrl.text = lpm.round().toString();
     if (source != 'lps'.tr()) _pumpFlowLpsCtrl.text = lps.round().toString();
     if (source != 'M3HR') _pumpFlowM3hrCtrl.text = m3hr.round().toString();
-    if (source != 'usgpm'.tr()) _pumpFlowUsgpmCtrl.text = usgpm.round().toString();
+    if (source != 'usgpm'.tr())
+      _pumpFlowUsgpmCtrl.text = usgpm.round().toString();
 
     _isAutoCalculatingFlow = false;
   }
@@ -451,14 +452,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
       if (techs.isEmpty) {
         appSnackBar(
-          context, AppColor.bright_red,
+          context,
+          AppColor.bright_red,
           "assign_tech_validation_msg".tr(),
         );
         return;
       }
 
       if (_selectedCustomerId == null) {
-        appSnackBar(context, AppColor.bright_red, "please_select_customer".tr());
+        appSnackBar(
+          context,
+          AppColor.bright_red,
+          "please_select_customer".tr(),
+        );
         return;
       }
       if (_selectedSiteId == null) {
@@ -483,10 +489,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       );
     } else if (_currentStep == 2) {
       if (_reportId == null) {
-        appSnackBar(
-          context, AppColor.bright_red,
-          "report_id_is_missing".tr(),
-        );
+        appSnackBar(context, AppColor.bright_red, "report_id_is_missing".tr());
         return;
       }
       List<Map<String, dynamic>> descList = [];
@@ -542,24 +545,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           return;
         }
         if (_vibration == null) {
-          appSnackBar(
-            context, AppColor.bright_red,
-            'val_sel_vibration'.tr(),
-          );
+          appSnackBar(context, AppColor.bright_red, 'val_sel_vibration'.tr());
           return;
         }
         if (_mechSeal == null) {
-          appSnackBar(
-            context, AppColor.bright_red,
-            'val_sel_mech_seal'.tr(),
-          );
+          appSnackBar(context, AppColor.bright_red, 'val_sel_mech_seal'.tr());
           return;
         }
         if (_pumpDry == null) {
-          appSnackBar(
-            context, AppColor.bright_red,
-            'val_sel_pump_dry'.tr(),
-          );
+          appSnackBar(context, AppColor.bright_red, 'val_sel_pump_dry'.tr());
           return;
         }
       }
@@ -571,38 +565,27 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           return;
         }
         if (_strainerValve == null) {
-          appSnackBar(
-            context, AppColor.bright_red,
-            'val_sel_strainer'.tr(),
-          );
+          appSnackBar(context, AppColor.bright_red, 'val_sel_strainer'.tr());
           return;
         }
         if (_suctionLine == null) {
           appSnackBar(
-            context, AppColor.bright_red,
+            context,
+            AppColor.bright_red,
             'val_sel_suction_line'.tr(),
           );
           return;
         }
         if (_deliveryLine == null) {
-          appSnackBar(
-            context, AppColor.bright_red,
-            'val_sel_del_line'.tr(),
-          );
+          appSnackBar(context, AppColor.bright_red, 'val_sel_del_line'.tr());
           return;
         }
         if (_suctionDelivery == null) {
-          appSnackBar(
-            context, AppColor.bright_red,
-            'val_sel_suction_del'.tr(),
-          );
+          appSnackBar(context, AppColor.bright_red, 'val_sel_suction_del'.tr());
           return;
         }
         if (_pressureSwitch == null) {
-          appSnackBar(
-            context, AppColor.bright_red,
-            'val_sel_pressure'.tr(),
-          );
+          appSnackBar(context, AppColor.bright_red, 'val_sel_pressure'.tr());
           return;
         }
       }
@@ -610,10 +593,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       // Validate electrical section
       if (!_elecNA) {
         if (_elecFaults == null) {
-          appSnackBar(
-            context, AppColor.bright_red,
-            'val_sel_elec_faults'.tr(),
-          );
+          appSnackBar(context, AppColor.bright_red, 'val_sel_elec_faults'.tr());
           return;
         }
         if (_voltage == null) {
@@ -630,7 +610,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         }
         if (_panelWiring == null) {
           appSnackBar(
-            context, AppColor.bright_red,
+            context,
+            AppColor.bright_red,
             'val_sel_panel_wiring'.tr(),
           );
           return;
@@ -729,14 +710,16 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       }
       if (_technicianNameController.text.trim().isEmpty) {
         appSnackBar(
-          context, AppColor.bright_red,
+          context,
+          AppColor.bright_red,
           "Technician Representative name is required",
         );
         return;
       }
       if (_customerRepNameCtrl.text.trim().isEmpty) {
         appSnackBar(
-          context, AppColor.bright_red,
+          context,
+          AppColor.bright_red,
           "Customer Representative name is required",
         );
         return;
@@ -745,7 +728,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           (_existingCustomerSignatureUrl == null ||
               _existingCustomerSignatureUrl!.isEmpty)) {
         appSnackBar(
-          context, AppColor.bright_red,
+          context,
+          AppColor.bright_red,
           "Customer Signature is required",
         );
         return;
@@ -754,7 +738,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           (_existingTechnicianSignatureUrl == null ||
               _existingTechnicianSignatureUrl!.isEmpty)) {
         appSnackBar(
-          context, AppColor.bright_red,
+          context,
+          AppColor.bright_red,
           "Technician Signature is required",
         );
         return;
@@ -845,12 +830,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         width: 64,
                         height: 64,
                         decoration: const BoxDecoration(
-                          color: Color(0xFFFFF1F0),
+                          color: AppColor.colorFFFFF1F0,
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
                           Icons.error_outline,
-                          color: Color(0xFFFF4D4F),
+                          color: AppColor.colorFFFF4D4F,
                           size: 32,
                         ),
                       ),
@@ -863,7 +848,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         style: AppFont.style(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF0D121F),
+                          color: AppColor.colorFF0D121F,
                         ),
                       ),
 
@@ -876,7 +861,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF5C616E),
+                          color: AppColor.colorFF5C616E,
                           height: 1.4,
                         ),
                       ),
@@ -893,7 +878,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                               child: TextButton(
                                 onPressed: () => Navigator.pop(context, false),
                                 style: TextButton.styleFrom(
-                                  backgroundColor: const Color(0xFFF6F6F6),
+                                  backgroundColor: AppColor.colorFFF6F6F6,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -903,7 +888,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                   style: AppFont.style(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF0D121F),
+                                    color: AppColor.colorFF0D121F,
                                   ),
                                 ),
                               ),
@@ -927,7 +912,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                       } else if (state
                                           is DeleteServiceWorkReportFailure) {
                                         appSnackBar(
-                                          context, AppColor.bright_red,
+                                          context,
+                                          AppColor.bright_red,
                                           state.message,
                                         );
                                         Navigator.pop(
@@ -1005,7 +991,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       child: const Icon(
                         Icons.close,
                         size: 20,
-                        color: Color(0xFFB0B8C8),
+                        color: AppColor.colorFFB0B8C8,
                       ),
                     ),
                   ),
@@ -1041,7 +1027,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.close, color: Color(0xFFA5ABB7)),
+                      icon: const Icon(
+                        Icons.close,
+                        color: AppColor.colorFFA5ABB7,
+                      ),
                       onPressed: () {
                         Navigator.of(context).pop();
                         widget.onBack();
@@ -1052,12 +1041,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: const BoxDecoration(
-                    color: Color(0xFFE8F5E9),
+                    color: AppColor.colorFFE8F5E9,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.check_circle,
-                    color: Color(0xFF4CAF50),
+                    color: AppColor.colorFF4CAF50,
                     size: 40,
                   ),
                 ),
@@ -1068,22 +1057,22 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   style: AppFont.style(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFF0D121F),
+                    color: AppColor.colorFF0D121F,
                   ),
                 ),
                 const SizedBox(height: 8),
                 const Divider(
                   height: 1,
                   thickness: 1,
-                  color: Color(0xFFF1F2F6),
+                  color: AppColor.colorFFF1F2F6,
                 ),
                 const SizedBox(height: 32),
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FB),
+                    color: AppColor.colorFFF8F9FB,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFF1F2F6)),
+                    border: Border.all(color: AppColor.colorFFF1F2F6),
                   ),
                   child: qrCodeUrl.isNotEmpty
                       ? Image.network(
@@ -1095,7 +1084,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       : const Icon(
                           Icons.qr_code_2,
                           size: 180,
-                          color: Color(0xFF0D121F),
+                          color: AppColor.colorFF0D121F,
                         ),
                 ),
                 const SizedBox(height: 24),
@@ -1105,7 +1094,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
+                    color: AppColor.colorFFA5ABB7,
                   ),
                 ),
               ],
@@ -1231,7 +1220,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           listener: (context, state) {
             if (state is ServiceWorkReportStep4Loaded) {
               appSnackBar(
-                context, AppColor.green,
+                context,
+                AppColor.green,
                 state.response.message ?? 'Report submitted successfully',
               );
               _showSuccessDialog(qrCodeUrl: state.response.data.qrCodeImage);
@@ -1465,7 +1455,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                                   icon: const Icon(
                                                     Icons.arrow_back,
                                                     size: 20,
-                                                    color: Color(0xFF5C616E),
+                                                    color:
+                                                        AppColor.colorFF5C616E,
                                                   ),
                                                   onPressed: _handleBack,
                                                 ),
@@ -1533,7 +1524,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                     const Divider(
                                       height: 1,
                                       thickness: 1,
-                                      color: Color(0xFFF1F2F6),
+                                      color: AppColor.colorFFF1F2F6,
                                     ),
 
                                     // ── Form Body ─────────────────────────────────────────────────────
@@ -1554,7 +1545,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                         color: Colors.white,
                                         border: Border(
                                           top: BorderSide(
-                                            color: Color(0xFFF1F2F6),
+                                            color: AppColor.colorFFF1F2F6,
                                           ),
                                         ),
                                       ),
@@ -1568,7 +1559,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                                   const Icon(
                                                     Icons.arrow_back,
                                                     size: 18,
-                                                    color: Color(0xFFA5ABB7),
+                                                    color:
+                                                        AppColor.colorFFA5ABB7,
                                                   ),
                                                   const SizedBox(width: 8),
                                                   Text(
@@ -1624,7 +1616,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                                     horizontal: 32,
                                                   ),
                                               decoration: BoxDecoration(
-                                                color: const Color(0xFF1565C0),
+                                                color: AppColor.colorFF1565C0,
                                                 borderRadius:
                                                     BorderRadius.circular(10),
                                                 boxShadow: [
@@ -1790,7 +1782,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           hintText: 'Search...',
                           hintStyle: AppFont.style(
                             fontSize: 12,
-                            color: const Color(0xFFA5ABB7),
+                            color: AppColor.colorFFA5ABB7,
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -1799,25 +1791,25 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFFE5E7EB),
+                              color: AppColor.colorFFE5E7EB,
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFFE5E7EB),
+                              color: AppColor.colorFFE5E7EB,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: const BorderSide(
-                              color: Color(0xFF1565C0),
+                              color: AppColor.colorFF1565C0,
                             ),
                           ),
                         ),
                         style: AppFont.style(
                           fontSize: 12,
-                          color: const Color(0xFF0D121F),
+                          color: AppColor.colorFF0D121F,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -1844,7 +1836,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                   style: AppFont.style(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: const Color(0xFF0D121F),
+                                    color: AppColor.colorFF0D121F,
                                   ),
                                 ),
                               ),
@@ -1915,7 +1907,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               style: AppFont.style(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFFA5ABB7),
+                color: AppColor.colorFFA5ABB7,
               ),
             ),
           ),
@@ -1992,7 +1984,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           style: AppFont.style(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
-                            color: const Color(0xFF0D121F),
+                            color: AppColor.colorFF0D121F,
                           ),
                         ),
                         GestureDetector(
@@ -2000,16 +1992,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF8F9FB),
+                              color: AppColor.colorFFF8F9FB,
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color(0xFFF1F2F6),
-                              ),
+                              border: Border.all(color: AppColor.colorFFF1F2F6),
                             ),
                             child: const Icon(
                               Icons.close,
                               size: 16,
-                              color: Color(0xFFA5ABB7),
+                              color: AppColor.colorFFA5ABB7,
                             ),
                           ),
                         ),
@@ -2021,7 +2011,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       style: AppFont.style(
                         fontSize: 8,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFFA5ABB7),
+                        color: AppColor.colorFFA5ABB7,
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -2033,17 +2023,17 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       style: AppFont.style(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF0D121F),
+                        color: AppColor.colorFF0D121F,
                       ),
                       decoration: InputDecoration(
                         hintText: 'enter_customer_name'.tr(),
                         hintStyle: AppFont.style(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: const Color(0xFFA5ABB7),
+                          color: AppColor.colorFFA5ABB7,
                         ),
                         filled: true,
-                        fillColor: const Color(0xFFF8F9FB),
+                        fillColor: AppColor.colorFFF8F9FB,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 14,
@@ -2051,19 +2041,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: const BorderSide(
-                            color: Color(0xFFE5E7EB),
+                            color: AppColor.colorFFE5E7EB,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: const BorderSide(
-                            color: Color(0xFFE5E7EB),
+                            color: AppColor.colorFFE5E7EB,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: const BorderSide(
-                            color: Color(0xFF1565C0),
+                            color: AppColor.colorFF1565C0,
                             width: 1.5,
                           ),
                         ),
@@ -2111,7 +2101,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                 ),
                               ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1565C0),
+                          backgroundColor: AppColor.colorFF1565C0,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
@@ -2146,13 +2136,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     );
   }
 
-
   void _showAddSiteBottomSheet() async {
     if (_selectedCustomerId == null || _selectedCustomerId!.isEmpty) {
-      appSnackBar(
-        context, AppColor.bright_red,
-        'please_select_customer'.tr(),
-      );
+      appSnackBar(context, AppColor.bright_red, 'please_select_customer'.tr());
       return;
     }
     String customerId = _selectedCustomerId!;
@@ -2216,7 +2202,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           style: AppFont.style(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
-                            color: const Color(0xFF0D121F),
+                            color: AppColor.colorFF0D121F,
                           ),
                         ),
                         GestureDetector(
@@ -2224,16 +2210,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF8F9FB),
+                              color: AppColor.colorFFF8F9FB,
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                color: const Color(0xFFF1F2F6),
-                              ),
+                              border: Border.all(color: AppColor.colorFFF1F2F6),
                             ),
                             child: const Icon(
                               Icons.close,
                               size: 16,
-                              color: Color(0xFFA5ABB7),
+                              color: AppColor.colorFFA5ABB7,
                             ),
                           ),
                         ),
@@ -2245,7 +2229,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       style: AppFont.style(
                         fontSize: 8,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFFA5ABB7),
+                        color: AppColor.colorFFA5ABB7,
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -2257,17 +2241,17 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       style: AppFont.style(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF0D121F),
+                        color: AppColor.colorFF0D121F,
                       ),
                       decoration: InputDecoration(
                         hintText: 'enter_site_name'.tr(),
                         hintStyle: AppFont.style(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: const Color(0xFFA5ABB7),
+                          color: AppColor.colorFFA5ABB7,
                         ),
                         filled: true,
-                        fillColor: const Color(0xFFF8F9FB),
+                        fillColor: AppColor.colorFFF8F9FB,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 14,
@@ -2275,19 +2259,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: const BorderSide(
-                            color: Color(0xFFE5E7EB),
+                            color: AppColor.colorFFE5E7EB,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: const BorderSide(
-                            color: Color(0xFFE5E7EB),
+                            color: AppColor.colorFFE5E7EB,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: const BorderSide(
-                            color: Color(0xFF1565C0),
+                            color: AppColor.colorFF1565C0,
                             width: 1.5,
                           ),
                         ),
@@ -2339,7 +2323,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                 ),
                               ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1565C0),
+                          backgroundColor: AppColor.colorFF1565C0,
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
@@ -2484,11 +2468,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   //   decoration: BoxDecoration(
                   //     color: Colors.white,
                   //     borderRadius: BorderRadius.circular(12),
-                  //     border: Border.all(color: const Color(0xFFF1F2F6)),
+                  //     border: Border.all(color: AppColor.colorFFF1F2F6),
                   //   ),
                   //   child: const Icon(
                   //     Icons.business_outlined,
-                  //     color: Color(0xFFA5ABB7),
+                  //     color: AppColor.colorFFA5ABB7,
                   //   ),
                   // ),
                   const SizedBox(width: 16),
@@ -2501,7 +2485,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   //       //   style: AppFont.style(
                   //       //     fontSize: 10,
                   //       //     fontWeight: FontWeight.w800,
-                  //       //     color: const Color(0xFFA5ABB7),
+                  //       //     color: AppColor.colorFFA5ABB7,
                   //       //   ),
                   //       // ),
                   //       // Text(
@@ -2509,7 +2493,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   //       //   style: AppFont.style(
                   //       //     fontSize: 13,
                   //       //     fontWeight: FontWeight.w900,
-                  //       //     color: const Color(0xFF0D121F),
+                  //       //     color: AppColor.colorFF0D121F,
                   //       //   ),
                   //       // ),
                   //     ],
@@ -2523,15 +2507,18 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         style: AppFont.style(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFFA5ABB7),
+                          color: AppColor.colorFFA5ABB7,
                         ),
                       ),
                       Text(
-                        DateFormat('d MMMM yyyy', context.locale.languageCode).format(DateTime.now()),
+                        DateFormat(
+                          'd MMMM yyyy',
+                          context.locale.languageCode,
+                        ).format(DateTime.now()),
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
-                          color: const Color(0xFF0D121F),
+                          color: AppColor.colorFF0D121F,
                         ),
                       ),
                     ],
@@ -2548,13 +2535,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               children: [
                 _buildLabel('create_report_tech_name'.tr(), isMandatory: true),
                 AppAddNewTextButtonWidget(
-                    onPressed: () {
-                      setState(() {
-                        _technicians.add(TextEditingController());
-                        _technicianIds.add(null);
-                      });
-                    }
-                )
+                  onPressed: () {
+                    setState(() {
+                      _technicians.add(TextEditingController());
+                      _technicianIds.add(null);
+                    });
+                  },
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -2609,7 +2596,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                   hintStyle: AppFont.style(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
-                                    color: const Color(0xFFA5ABB7),
+                                    color: AppColor.colorFFA5ABB7,
                                   ),
                                   contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 16,
@@ -2618,19 +2605,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                     borderSide: const BorderSide(
-                                      color: Color(0xFFE5E7EB),
+                                      color: AppColor.colorFFE5E7EB,
                                     ),
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                     borderSide: const BorderSide(
-                                      color: Color(0xFFE5E7EB),
+                                      color: AppColor.colorFFE5E7EB,
                                     ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                     borderSide: const BorderSide(
-                                      color: Color(0xFF1565C0),
+                                      color: AppColor.colorFF1565C0,
                                     ),
                                   ),
                                   suffixIcon: isLoading
@@ -2641,14 +2628,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                             height: 16,
                                             child: CircularProgressIndicator(
                                               strokeWidth: 2,
-                                              color: Color(0xFF1565C0),
+                                              color: AppColor.colorFF1565C0,
                                             ),
                                           ),
                                         )
                                       : IconButton(
                                           icon: const Icon(
                                             Icons.keyboard_arrow_down,
-                                            color: Color(0xFFA5ABB7),
+                                            color: AppColor.colorFFA5ABB7,
                                           ),
                                           onPressed: () {
                                             _showTechnicianBottomSheet(
@@ -2663,7 +2650,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                 style: AppFont.style(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
-                                  color: const Color(0xFF0D121F),
+                                  color: AppColor.colorFF0D121F,
                                 ),
                               ),
                             ],
@@ -2685,13 +2672,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           width: 54,
                           height: 54,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFF0F0),
+                            color: AppColor.colorFFFFF0F0,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFFFFD6D6)),
+                            border: Border.all(color: AppColor.colorFFFFD6D6),
                           ),
                           child: const Icon(
                             Icons.delete_outline,
-                            color: Color(0xFFE53935),
+                            color: AppColor.colorFFE53935,
                             size: 24,
                           ),
                         ),
@@ -2713,8 +2700,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   isMandatory: true,
                 ),
                 AppAddNewTextButtonWidget(
-                    onPressed: _showAddCustomerBottomSheet
-                )
+                  onPressed: _showAddCustomerBottomSheet,
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -2789,9 +2776,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildLabel('create_report_site_name'.tr(), isMandatory: true),
-                AppAddNewTextButtonWidget(
-                    onPressed: _showAddSiteBottomSheet
-                )
+                AppAddNewTextButtonWidget(onPressed: _showAddSiteBottomSheet),
               ],
             ),
             const SizedBox(height: 12),
@@ -2815,7 +2800,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 return SearchableDropdown<String>(
                   enabled: _selectedCustomer != 'select_customer'.tr(),
                   items: validItems,
-                  value: _selectedSite == 'select_site'.tr() ? null : _selectedSite,
+                  value: _selectedSite == 'select_site'.tr()
+                      ? null
+                      : _selectedSite,
                   hintText: 'select_site'.tr(),
                   itemAsString: (item) => item,
                   isLoading: isLoading,
@@ -2894,7 +2881,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             ),
 
             const SizedBox(height: 4),
-            const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+            const Divider(
+              height: 1,
+              thickness: 1,
+              color: AppColor.colorFFF1F2F6,
+            ),
             const SizedBox(height: 4),
 
             // Member Presents
@@ -2902,9 +2893,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildLabel('create_report_member_presents'.tr()),
-                AppAddNewTextButtonWidget(
-                    onPressed: _addMemberField
-                )
+                AppAddNewTextButtonWidget(onPressed: _addMemberField),
               ],
             ),
             const SizedBox(height: 12),
@@ -2923,9 +2912,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF9FAFB),
+                          color: AppColor.colorFFF9FAFB,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                          border: Border.all(color: AppColor.colorFFE5E7EB),
                         ),
                         child: Row(
                           children: [
@@ -2935,14 +2924,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                 style: AppFont.style(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w900,
-                                  color: const Color(0xFF0D121F),
+                                  color: AppColor.colorFF0D121F,
                                 ),
                                 decoration: InputDecoration(
                                   hintText: 'enter_member_name'.tr(),
                                   hintStyle: AppFont.style(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w800,
-                                    color: const Color(0xFFA5ABB7),
+                                    color: AppColor.colorFFA5ABB7,
                                   ),
                                   border: InputBorder.none,
                                   isDense: true,
@@ -2965,13 +2954,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           width: 54,
                           height: 54,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFF0F0),
+                            color: AppColor.colorFFFFF0F0,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFFFFD6D6)),
+                            border: Border.all(color: AppColor.colorFFFFD6D6),
                           ),
                           child: const Icon(
                             Icons.delete_outline,
-                            color: Color(0xFFE53935),
+                            color: AppColor.colorFFE53935,
                             size: 24,
                           ),
                         ),
@@ -2991,9 +2980,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               height: 150,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8F9FB),
+                color: AppColor.colorFFF8F9FB,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFF1F2F6)),
+                border: Border.all(color: AppColor.colorFFF1F2F6),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -3005,14 +2994,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       style: AppFont.style(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF0D121F),
+                        color: AppColor.colorFF0D121F,
                       ),
                       decoration: InputDecoration(
                         hintText: 'amc_report_agenda'.tr(),
                         hintStyle: AppFont.style(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFFA5ABB7),
+                          color: AppColor.colorFFA5ABB7,
                         ),
                         border: InputBorder.none,
                         isDense: true,
@@ -3048,7 +3037,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               style: AppFont.style(
                 fontSize: 14,
                 fontWeight: FontWeight.w900,
-                color: const Color(0xFF0D121F),
+                color: AppColor.colorFF0D121F,
               ),
             ),
             Row(
@@ -3061,13 +3050,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: _isTechnicalNA
-                            ? const Color(0xFF1565C0)
-                            : const Color(0xFFA5ABB7),
+                            ? AppColor.colorFF1565C0
+                            : AppColor.colorFFA5ABB7,
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(4),
                       color: _isTechnicalNA
-                          ? const Color(0xFF1565C0)
+                          ? AppColor.colorFF1565C0
                           : Colors.white,
                     ),
                     child: _isTechnicalNA
@@ -3081,7 +3070,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   style: AppFont.style(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
+                    color: AppColor.colorFFA5ABB7,
                   ),
                 ),
               ],
@@ -3120,7 +3109,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Expanded(child: _buildUnitField(_pumpFlowLpmCtrl, 'lpm'.tr())),
+                    Expanded(
+                      child: _buildUnitField(_pumpFlowLpmCtrl, 'lpm'.tr()),
+                    ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: _buildUnitField(_pumpFlowM3hrCtrl, 'm3_hr'.tr()),
@@ -3130,7 +3121,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Expanded(child: _buildUnitField(_pumpFlowLpsCtrl, 'lps'.tr())),
+                    Expanded(
+                      child: _buildUnitField(_pumpFlowLpsCtrl, 'lps'.tr()),
+                    ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: _buildUnitField(_pumpFlowUsgpmCtrl, 'usgpm'.tr()),
@@ -3155,7 +3148,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 const Divider(
                   height: 1,
                   thickness: 1,
-                  color: Color(0xFFF1F2F6),
+                  color: AppColor.colorFFF1F2F6,
                 ),
                 const SizedBox(height: 24),
 
@@ -3188,7 +3181,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 const Divider(
                   height: 1,
                   thickness: 1,
-                  color: Color(0xFFF1F2F6),
+                  color: AppColor.colorFFF1F2F6,
                 ),
                 const SizedBox(height: 24),
 
@@ -3209,7 +3202,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     style: AppFont.style(
                       fontSize: 13,
                       fontWeight: FontWeight.w900,
-                      color: const Color(0xFFA5ABB7),
+                      color: AppColor.colorFFA5ABB7,
                     ),
                   ),
                 ),
@@ -3228,7 +3221,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                             style: AppFont.style(
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFFA5ABB7),
+                              color: AppColor.colorFFA5ABB7,
                             ),
                           ),
                         ),
@@ -3245,12 +3238,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                     10,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFF8F9FB),
+                                    color: AppColor.colorFFF8F9FB,
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
                                       color: hasFocus
-                                          ? const Color(0xFF1565C0)
-                                          : const Color(0xFFF1F2F6),
+                                          ? AppColor.colorFF1565C0
+                                          : AppColor.colorFFF1F2F6,
                                       width: hasFocus ? 1.5 : 1,
                                     ),
                                   ),
@@ -3267,14 +3260,16 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                           style: AppFont.style(
                                             fontSize: 13,
                                             fontWeight: FontWeight.w700,
-                                            color: const Color(0xFF0D121F),
+                                            color: AppColor.colorFF0D121F,
                                           ),
                                           decoration: InputDecoration(
-                                            hintText: 'commissioning_work_description_hint'.tr(),
+                                            hintText:
+                                                'commissioning_work_description_hint'
+                                                    .tr(),
                                             hintStyle: AppFont.style(
                                               fontSize: 13,
                                               fontWeight: FontWeight.w700,
-                                              color: const Color(0xFFA5ABB7),
+                                              color: AppColor.colorFFA5ABB7,
                                             ),
                                             border: InputBorder.none,
                                             isDense: true,
@@ -3329,22 +3324,22 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       style: AppFont.style(
         fontSize: 13,
         fontWeight: FontWeight.w900,
-        color: const Color(0xFF0D121F),
+        color: AppColor.colorFF0D121F,
       ),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: AppFont.style(
           fontSize: 13,
           fontWeight: FontWeight.w800,
-          color: const Color(0xFFA5ABB7),
+          color: AppColor.colorFFA5ABB7,
         ),
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(vertical: 8),
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFFF1F2F6)),
+          borderSide: BorderSide(color: AppColor.colorFFF1F2F6),
         ),
         focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF1565C0), width: 1.5),
+          borderSide: BorderSide(color: AppColor.colorFF1565C0, width: 1.5),
         ),
       ),
     );
@@ -3360,7 +3355,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           style: AppFont.style(
             fontSize: 9,
             fontWeight: FontWeight.w800,
-            color: const Color(0xFFA5ABB7),
+            color: AppColor.colorFFA5ABB7,
           ),
         ),
         const SizedBox(height: 2),
@@ -3373,16 +3368,16 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           style: AppFont.style(
             fontSize: 13,
             fontWeight: FontWeight.w900,
-            color: const Color(0xFF0D121F),
+            color: AppColor.colorFF0D121F,
           ),
           decoration: const InputDecoration(
             isDense: true,
             contentPadding: EdgeInsets.symmetric(vertical: 8),
             enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFF1F2F6)),
+              borderSide: BorderSide(color: AppColor.colorFFF1F2F6),
             ),
             focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFF1565C0), width: 1.5),
+              borderSide: BorderSide(color: AppColor.colorFF1565C0, width: 1.5),
             ),
           ),
         ),
@@ -3401,7 +3396,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           style: AppFont.style(
             fontSize: 12,
             fontWeight: FontWeight.w900,
-            color: const Color(0xFF0D121F),
+            color: AppColor.colorFF0D121F,
           ),
         ),
         const SizedBox(height: 28),
@@ -3564,7 +3559,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         // Section header row
         Row(
           children: [
-            Icon(icon, size: 20, color: const Color(0xFF0D121F)),
+            Icon(icon, size: 20, color: AppColor.colorFF0D121F),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -3572,7 +3567,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 style: AppFont.style(
                   fontSize: 13,
                   fontWeight: FontWeight.w900,
-                  color: const Color(0xFF0D121F),
+                  color: AppColor.colorFF0D121F,
                 ),
               ),
             ),
@@ -3587,12 +3582,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: isNA
-                            ? const Color(0xFF1565C0)
-                            : const Color(0xFFA5ABB7),
+                            ? AppColor.colorFF1565C0
+                            : AppColor.colorFFA5ABB7,
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(4),
-                      color: isNA ? const Color(0xFF1565C0) : Colors.white,
+                      color: isNA ? AppColor.colorFF1565C0 : Colors.white,
                     ),
                     child: isNA
                         ? const Icon(Icons.check, size: 14, color: Colors.white)
@@ -3604,7 +3599,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     style: AppFont.style(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFFA5ABB7),
+                      color: AppColor.colorFFA5ABB7,
                     ),
                   ),
                 ],
@@ -3613,7 +3608,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ],
         ),
         const SizedBox(height: 4),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
         const SizedBox(height: 12),
 
         // Items — disabled when NA is checked
@@ -3653,7 +3648,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   style: AppFont.style(
                     fontSize: 11,
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFF3A4152),
+                    color: AppColor.colorFF3A4152,
                   ),
                 ),
                 const TextSpan(
@@ -3686,12 +3681,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         height: 22,
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? const Color(0xFF1565C0)
+                              ? AppColor.colorFF1565C0
                               : Colors.white,
                           border: Border.all(
                             color: isSelected
-                                ? const Color(0xFF1565C0)
-                                : const Color(0xFFCDD0D8),
+                                ? AppColor.colorFF1565C0
+                                : AppColor.colorFFCDD0D8,
                             width: 1.5,
                           ),
                           borderRadius: BorderRadius.circular(5),
@@ -3711,8 +3706,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
                           color: isSelected
-                              ? const Color(0xFF1565C0)
-                              : const Color(0xFF6B7280),
+                              ? AppColor.colorFF1565C0
+                              : AppColor.colorFF6B7280,
                         ),
                       ),
                     ],
@@ -3736,7 +3731,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w800,
-            color: const Color(0xFF6B7280),
+            color: AppColor.colorFF6B7280,
           ),
         ),
         const SizedBox(height: 10),
@@ -3753,7 +3748,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w800,
-            color: const Color(0xFF6B7180),
+            color: AppColor.colorFF6B7180,
           ),
         ),
         const SizedBox(height: 10),
@@ -3763,7 +3758,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         ),
 
         const SizedBox(height: 36),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
         const SizedBox(height: 28),
 
         // ── Recorded By ────────────────────────────────────────────
@@ -3772,7 +3767,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           style: AppFont.style(
             fontSize: 14,
             fontWeight: FontWeight.w900,
-            color: const Color(0xFF0D121F),
+            color: AppColor.colorFF0D121F,
           ),
         ),
         const SizedBox(height: 24),
@@ -3783,12 +3778,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           style: AppFont.style(
             fontSize: 9,
             fontWeight: FontWeight.w900,
-            color: const Color(0xFFA5ABB7),
+            color: AppColor.colorFFA5ABB7,
             letterSpacing: 0.8,
           ),
         ),
         const SizedBox(height: 16),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
         const SizedBox(height: 16),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -3803,7 +3798,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       style: AppFont.style(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF8E9BAE),
+                        color: AppColor.colorFF8E9BAE,
                       ),
                     ),
                     const TextSpan(
@@ -3819,7 +3814,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+            const Text(':', style: TextStyle(color: AppColor.colorFF8E9BAE)),
             const SizedBox(width: 8),
             Expanded(
               child: SearchableDropdown<String>(
@@ -3866,12 +3861,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           style: AppFont.style(
             fontSize: 9,
             fontWeight: FontWeight.w900,
-            color: const Color(0xFFA5ABB7),
+            color: AppColor.colorFFA5ABB7,
             letterSpacing: 0.8,
           ),
         ),
         const SizedBox(height: 16),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
         const SizedBox(height: 16),
         // Editable name field
         Row(
@@ -3887,7 +3882,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       style: AppFont.style(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF8E9BAE),
+                        color: AppColor.colorFF8E9BAE,
                       ),
                     ),
                     const TextSpan(
@@ -3903,7 +3898,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+            const Text(':', style: TextStyle(color: AppColor.colorFF8E9BAE)),
             const SizedBox(width: 8),
             Expanded(
               child: TextField(
@@ -3911,21 +3906,21 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 style: AppFont.style(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF0D121F),
+                  color: AppColor.colorFF0D121F,
                 ),
                 decoration: InputDecoration(
                   hintText: 'commissioning_enter_name'.tr(),
                   hintStyle: AppFont.style(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
-                    color: const Color(0xFFA5ABB7),
+                    color: AppColor.colorFFA5ABB7,
                   ),
                   enabledBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFD8DCE6)),
+                    borderSide: BorderSide(color: AppColor.colorFFD8DCE6),
                   ),
                   focusedBorder: const UnderlineInputBorder(
                     borderSide: BorderSide(
-                      color: Color(0xFF1565C0),
+                      color: AppColor.colorFF1565C0,
                       width: 1.5,
                     ),
                   ),
@@ -3958,7 +3953,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         ),
 
         const SizedBox(height: 36),
-        const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+        const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
         const SizedBox(height: 28),
 
         // ── Upload / Capture Work Photos ──────────────────────────────
@@ -3970,7 +3965,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 style: AppFont.style(
                   fontSize: 13,
                   fontWeight: FontWeight.w900,
-                  color: const Color(0xFF0D121F),
+                  color: AppColor.colorFF0D121F,
                 ),
               ),
               const TextSpan(
@@ -4078,7 +4073,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 }
               },
               child: CustomPaint(
-                painter: _DashedBorderPainter(color: const Color(0xFFCDD0D8)),
+                painter: _DashedBorderPainter(color: AppColor.colorFFCDD0D8),
                 child: Container(
                   width: 110,
                   height: 110,
@@ -4086,14 +4081,18 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.add, size: 28, color: Color(0xFFA5ABB7)),
+                      const Icon(
+                        Icons.add,
+                        size: 28,
+                        color: AppColor.colorFFA5ABB7,
+                      ),
                       const SizedBox(height: 6),
                       Text(
                         'upload'.tr(),
                         style: AppFont.style(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFFA5ABB7),
+                          color: AppColor.colorFFA5ABB7,
                         ),
                       ),
                     ],
@@ -4114,7 +4113,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 }
               },
               child: CustomPaint(
-                painter: _DashedBorderPainter(color: const Color(0xFFCDD0D8)),
+                painter: _DashedBorderPainter(color: AppColor.colorFFCDD0D8),
                 child: Container(
                   width: 110,
                   height: 110,
@@ -4125,7 +4124,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       const Icon(
                         Icons.camera_alt_outlined,
                         size: 28,
-                        color: Color(0xFFA5ABB7),
+                        color: AppColor.colorFFA5ABB7,
                       ),
                       const SizedBox(height: 6),
                       Text(
@@ -4133,7 +4132,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         style: AppFont.style(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFFA5ABB7),
+                          color: AppColor.colorFFA5ABB7,
                         ),
                       ),
                     ],
@@ -4156,9 +4155,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
+        color: AppColor.colorFFF9FAFB,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(color: AppColor.colorFFE5E7EB),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -4171,14 +4170,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               style: AppFont.style(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: const Color(0xFF0D121F),
+                color: AppColor.colorFF0D121F,
               ),
               decoration: InputDecoration(
                 hintText: hint,
                 hintStyle: AppFont.style(
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
-                  color: const Color(0xFFA5ABB7),
+                  color: AppColor.colorFFA5ABB7,
                 ),
                 border: InputBorder.none,
                 isDense: true,
@@ -4204,7 +4203,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           style: AppFont.style(
             fontSize: 11,
             fontWeight: FontWeight.w800,
-            color: const Color(0xFF5C6672),
+            color: AppColor.colorFF5C6672,
           ),
         ),
         if (isMandatory)
@@ -4213,7 +4212,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             style: AppFont.style(
               fontSize: 11,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFFE53935),
+              color: AppColor.colorFFE53935,
             ),
           ),
       ],
@@ -4240,7 +4239,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     style: AppFont.style(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF8E9BAE),
+                      color: AppColor.colorFF8E9BAE,
                     ),
                     children: [
                       TextSpan(
@@ -4259,12 +4258,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF8E9BAE),
+                    color: AppColor.colorFF8E9BAE,
                   ),
                 ),
         ),
         const SizedBox(width: 8),
-        const Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
+        const Text(':', style: TextStyle(color: AppColor.colorFF8E9BAE)),
         const SizedBox(width: 8),
         Expanded(
           child: GestureDetector(
@@ -4276,9 +4275,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             child: Container(
               height: 120,
               decoration: BoxDecoration(
-                color: const Color(0xFFF9FAFB),
+                color: AppColor.colorFFF9FAFB,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFE5E7EB)),
+                border: Border.all(color: AppColor.colorFFE5E7EB),
               ),
               child: Stack(
                 children: [
@@ -4314,7 +4313,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         children: [
                           const Icon(
                             Icons.edit_outlined,
-                            color: Color(0xFFA5ABB7),
+                            color: AppColor.colorFFA5ABB7,
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -4322,7 +4321,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                             style: AppFont.style(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFFCDD0D8),
+                              color: AppColor.colorFFCDD0D8,
                             ),
                           ),
                         ],
@@ -4364,7 +4363,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   ) async {
     final SignatureController signatureController = SignatureController(
       penStrokeWidth: 4,
-      penColor: const Color(0xFF0D121F),
+      penColor: AppColor.colorFF0D121F,
       exportBackgroundColor: Colors.white,
     );
     showModalBottomSheet(
@@ -4394,7 +4393,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         style: AppFont.style(
                           fontSize: 14,
                           fontWeight: FontWeight.w900,
-                          color: const Color(0xFF0D121F),
+                          color: AppColor.colorFF0D121F,
                         ),
                       ),
                       IconButton(
@@ -4407,16 +4406,16 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   Container(
                     height: 200,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF9FAFB),
+                      color: AppColor.colorFFF9FAFB,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                      border: Border.all(color: AppColor.colorFFE5E7EB),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Signature(
                         controller: signatureController,
                         height: 200,
-                        backgroundColor: const Color(0xFFF9FAFB),
+                        backgroundColor: AppColor.colorFFF9FAFB,
                       ),
                     ),
                   ),
@@ -4433,9 +4432,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: const Color(0xFFCDD0D8),
-                              ),
+                              border: Border.all(color: AppColor.colorFFCDD0D8),
                             ),
                             child: Center(
                               child: Text(
@@ -4443,7 +4440,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                 style: AppFont.style(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF6B7280),
+                                  color: AppColor.colorFF6B7280,
                                 ),
                               ),
                             ),
@@ -4456,7 +4453,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           onTap: () async {
                             if (signatureController.isEmpty) {
                               appSnackBar(
-                                context, AppColor.bright_red,
+                                context,
+                                AppColor.bright_red,
                                 'commissioning_please_draw_signature'.tr(),
                               );
                               return;
@@ -4478,7 +4476,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           child: Container(
                             height: 44,
                             decoration: BoxDecoration(
-                              color: const Color(0xFF1565C0),
+                              color: AppColor.colorFF1565C0,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Center(
@@ -4544,4 +4542,3 @@ class _DashedBorderPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-

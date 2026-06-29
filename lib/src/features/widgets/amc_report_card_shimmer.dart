@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 
 class AmcReportCardShimmer extends StatelessWidget {
   final bool isFromHistory;
@@ -13,7 +14,9 @@ class AmcReportCardShimmer extends StatelessWidget {
       child: Column(
         children: List.generate(
           8,
-          (index) => isFromHistory ? _buildHistoryCardShimmer() : _buildRegularCardShimmer(),
+          (index) => isFromHistory
+              ? _buildHistoryCardShimmer()
+              : _buildRegularCardShimmer(),
         ),
       ),
     );
@@ -21,11 +24,7 @@ class AmcReportCardShimmer extends StatelessWidget {
 
   Widget _buildHistoryCardShimmer() {
     return Container(
-      margin: const EdgeInsets.only(
-        left: 20,
-        right: 20,
-        bottom: 16,
-      ),
+      margin: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -87,7 +86,7 @@ class AmcReportCardShimmer extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+          const Divider(height: 1, thickness: 1, color: AppColor.colorFFF1F2F6),
           const SizedBox(height: 16),
           // Technician Row
           Row(
@@ -152,11 +151,7 @@ class AmcReportCardShimmer extends StatelessWidget {
 
   Widget _buildRegularCardShimmer() {
     return Container(
-      margin: const EdgeInsets.only(
-        left: 20,
-        right: 20,
-        bottom: 16,
-      ),
+      margin: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,

@@ -12,15 +12,16 @@ import 'package:service_app/src/core/constants/list_translation_locale.dart';
 import 'package:service_app/src/core/services/notification_service.dart';
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // title
-    description:
-    'This channel is used for important notifications.', // description
-    importance: Importance.high,
-    playSound: true);
+  'high_importance_channel', // id
+  'High Importance Notifications', // title
+  description:
+      'This channel is used for important notifications.', // description
+  importance: Importance.high,
+  playSound: true,
+);
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -53,7 +54,6 @@ Future<void> main() async {
         : HydratedStorageDirectory((await getTemporaryDirectory()).path),
   );
 
-
   // ✅ Initialize local notifications
   NoficationService.initLocalNotifications();
 
@@ -77,7 +77,13 @@ Future<void> main() async {
 
   runApp(
     EasyLocalization(
-      supportedLocales: const [englishLocale, marathiLocale, hindiLocale, gujaratiLocale, kannadaLocale],
+      supportedLocales: const [
+        englishLocale,
+        marathiLocale,
+        hindiLocale,
+        gujaratiLocale,
+        kannadaLocale,
+      ],
       path: "assets/translations",
       startLocale: englishLocale,
       child: const MyApp(),

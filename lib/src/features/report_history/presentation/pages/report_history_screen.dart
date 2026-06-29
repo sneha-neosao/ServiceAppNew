@@ -91,26 +91,32 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     final String? dateStr = _selectedDate != null
         ? '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}'
         : null;
-    _serviceCallHistoryBloc.add(FetchServiceCallReportHistory(
-      customerId: _selectedCustomerId,
-      siteId: _selectedSiteId,
-      date: dateStr,
-      search: _searchController.text.trim().isNotEmpty ? _searchController.text.trim() : null,
-    ));
+    _serviceCallHistoryBloc.add(
+      FetchServiceCallReportHistory(
+        customerId: _selectedCustomerId,
+        siteId: _selectedSiteId,
+        date: dateStr,
+        search: _searchController.text.trim().isNotEmpty
+            ? _searchController.text.trim()
+            : null,
+      ),
+    );
   }
 
   void _fetchAmcHistory() {
     final String? dateStr = _selectedDate != null
         ? '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}'
         : null;
-    _amcReportsHistoryBloc.add(GetAmcReportsHistoryEvent(
-      customerName: _selectedCustomerName,
-      siteName: _selectedSiteName,
-      dateFrom: dateStr,
-      dateTo: dateStr,
-      page: 1,
-      pageSize: 10,
-    ));
+    _amcReportsHistoryBloc.add(
+      GetAmcReportsHistoryEvent(
+        customerName: _selectedCustomerName,
+        siteName: _selectedSiteName,
+        dateFrom: dateStr,
+        dateTo: dateStr,
+        page: 1,
+        pageSize: 10,
+      ),
+    );
   }
 
   void _fetchCurrentTabHistory() {
@@ -188,8 +194,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
         await dir.create(recursive: true);
       }
 
-      String fileName =
-          'Report_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      String fileName = 'Report_${DateTime.now().millisecondsSinceEpoch}.pdf';
       if (url.contains('.pdf')) {
         fileName = url.split('/').last.split('?').first;
       }
@@ -197,16 +202,13 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       final savePath = '${dir.path}/$fileName';
 
       if (mounted) {
-        appSnackBar(context, const Color(0xFF1565C0), 'downloading_report'.tr());
+        appSnackBar(context, AppColor.colorFF1565C0, 'downloading_report'.tr());
       }
 
       await Dio().download(url, savePath);
 
       if (mounted) {
-        appSnackBar(
-          context, AppColor.green,
-          '${'download_to'.tr()} $savePath',
-        );
+        appSnackBar(context, AppColor.green, '${'download_to'.tr()} $savePath');
       }
     } catch (e) {
       if (mounted) {
@@ -241,7 +243,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 context: context,
                 barrierDismissible: false,
                 builder: (_) => const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                  child: CircularProgressIndicator(
+                    color: AppColor.colorFF1565C0,
+                  ),
                 ),
               );
             } else if (state is CommissioningReportPdfError) {
@@ -253,16 +257,25 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               if (url != null && url.isNotEmpty) {
                 if (state.action == PdfAction.view) {
                   final uri = Uri.parse(url);
-                  final cacheClearUri = uri.replace(queryParameters: {
-                    ...uri.queryParameters,
-                    'v': DateTime.now().millisecondsSinceEpoch.toString(),
-                  });
-                  launchUrl(cacheClearUri, mode: LaunchMode.externalApplication);
+                  final cacheClearUri = uri.replace(
+                    queryParameters: {
+                      ...uri.queryParameters,
+                      'v': DateTime.now().millisecondsSinceEpoch.toString(),
+                    },
+                  );
+                  launchUrl(
+                    cacheClearUri,
+                    mode: LaunchMode.externalApplication,
+                  );
                 } else if (state.action == PdfAction.download) {
                   _downloadPdf(url);
                 }
               } else {
-                appSnackBar(context, AppColor.bright_red, 'pdf_url_is_empty'.tr());
+                appSnackBar(
+                  context,
+                  AppColor.bright_red,
+                  'pdf_url_is_empty'.tr(),
+                );
               }
             }
           },
@@ -275,7 +288,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 context: context,
                 barrierDismissible: false,
                 builder: (_) => const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF1565C0)),
+                  child: CircularProgressIndicator(
+                    color: AppColor.colorFF1565C0,
+                  ),
                 ),
               );
             } else if (state is ServiceCallReportPdfError) {
@@ -287,16 +302,25 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               if (url != null && url.isNotEmpty) {
                 if (state.action == ServiceCallPdfAction.view) {
                   final uri = Uri.parse(url);
-                  final cacheClearUri = uri.replace(queryParameters: {
-                    ...uri.queryParameters,
-                    'v': DateTime.now().millisecondsSinceEpoch.toString(),
-                  });
-                  launchUrl(cacheClearUri, mode: LaunchMode.externalApplication);
+                  final cacheClearUri = uri.replace(
+                    queryParameters: {
+                      ...uri.queryParameters,
+                      'v': DateTime.now().millisecondsSinceEpoch.toString(),
+                    },
+                  );
+                  launchUrl(
+                    cacheClearUri,
+                    mode: LaunchMode.externalApplication,
+                  );
                 } else if (state.action == ServiceCallPdfAction.download) {
                   _downloadPdf(url);
                 }
               } else {
-                appSnackBar(context, AppColor.bright_red, 'pdf_url_is_empty'.tr());
+                appSnackBar(
+                  context,
+                  AppColor.bright_red,
+                  'pdf_url_is_empty'.tr(),
+                );
               }
             }
           },
@@ -305,8 +329,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       child: Container(
         color: Colors.white,
         child: NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              return [
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
               //   SliverToBoxAdapter(
               //     child: Padding(
               //     padding: const EdgeInsets.fromLTRB(24, 16, 16, 12),
@@ -317,7 +341,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               //           style: AppFont.style(
               //             fontSize: 16,
               //             fontWeight: FontWeight.w800,
-              //             color: const Color(0xFF0D121F),
+              //             color: AppColor.colorFF0D121F,
               //           ),
               //         ),
               //       ],
@@ -327,89 +351,99 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               SliverPersistentHeader(
                 pinned: true,
                 delegate: _StickyReportFilterDelegate(
-                  height: _selectedTab == -1 
-                      ? 64.0 
+                  height: _selectedTab == -1
+                      ? 64.0
                       : (_selectedTab == 1 ? 390.0 : 335.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // ── Segmented Tab Control ───────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
-              child: Container(
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF1F2F6),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Stack(
-                  children: [
-                    if (tabCount > 0)
-                      AnimatedAlign(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        alignment: Alignment(alignX, 0),
-                        child: FractionallySizedBox(
-                          widthFactor: 1.0 / tabCount,
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 2,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.05),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          top: 16,
+                        ),
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: AppColor.colorFFF1F2F6,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Stack(
+                            children: [
+                              if (tabCount > 0)
+                                AnimatedAlign(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                  alignment: Alignment(alignX, 0),
+                                  child: FractionallySizedBox(
+                                    widthFactor: 1.0 / tabCount,
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 2,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(10),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(
+                                              alpha: 0.05,
+                                            ),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ],
-                            ),
+                              Row(
+                                children: [
+                                  if (widget.permissions.contains(
+                                    'commissioning_work',
+                                  ))
+                                    Expanded(
+                                      child: _buildSegmentTab(
+                                        0,
+                                        'reports_tab_commissioning'.tr(),
+                                      ),
+                                    ),
+                                  if (widget.permissions.contains(
+                                    'service_calls',
+                                  ))
+                                    Expanded(
+                                      child: _buildSegmentTab(
+                                        1,
+                                        'reports_tab_service'.tr(),
+                                      ),
+                                    ),
+                                  if (widget.permissions.contains('amcs'))
+                                    Expanded(
+                                      child: _buildSegmentTab(
+                                        2,
+                                        'reports_tab_amc'.tr(),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    Row(
-                      children: [
-                        if (widget.permissions.contains('commissioning_work'))
-                          Expanded(
-                            child: _buildSegmentTab(
-                              0,
-                              'reports_tab_commissioning'.tr(),
+
+                      // ── Filter Section ──────────────────────────────────────────────────
+                      _selectedTab == -1
+                          ? const SizedBox.shrink()
+                          : _buildFilterSection(
+                              _selectedTab == 0
+                                  ? '${'reports_tab_commissioning'.tr()} ${'home_nav_reports'.tr()}'
+                                  : _selectedTab == 1
+                                  ? '${'reports_tab_service'.tr()} ${'home_nav_reports'.tr()}'
+                                  : '${'reports_tab_amc'.tr()} ${'home_nav_reports'.tr()}',
                             ),
-                          ),
-                        if (widget.permissions.contains('service_calls'))
-                          Expanded(
-                            child: _buildSegmentTab(
-                              1,
-                              'reports_tab_service'.tr(),
-                            ),
-                          ),
-                        if (widget.permissions.contains('amcs'))
-                          Expanded(
-                            child: _buildSegmentTab(2, 'reports_tab_amc'.tr()),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-
-
-            // ── Filter Section ──────────────────────────────────────────────────
-            _selectedTab == -1 
-                ? const SizedBox.shrink()
-                : _buildFilterSection(
-                    _selectedTab == 0
-                        ? '${'reports_tab_commissioning'.tr()} ${'home_nav_reports'.tr()}'
-                        : _selectedTab == 1
-                            ? '${'reports_tab_service'.tr()} ${'home_nav_reports'.tr()}'
-                            : '${'reports_tab_amc'.tr()} ${'home_nav_reports'.tr()}',
-                  ),
-
                     ],
                   ),
                 ),
@@ -417,9 +451,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             ];
           },
           body: Container(
-            color: const Color(0xFFF8F9FB),
+            color: AppColor.colorFFF8F9FB,
             child: RefreshIndicator(
-              color: const Color(0xFF0B68B9),
+              color: AppColor.colorFF0B68B9,
               onRefresh: () async {
                 if (_selectedTab == 0) {
                   _fetchReportHistory();
@@ -442,7 +476,12 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         if (state is CommissioningReportHistoryLoadingState ||
                             state is CommissioningReportHistoryInitialState) {
                           return ListView.separated(
-                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+                            padding: const EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              top: 16,
+                              bottom: 100,
+                            ),
                             itemCount: 3,
                             separatorBuilder: (context, index) =>
                                 const SizedBox(height: 16),
@@ -462,14 +501,15 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                     style: AppFont.style(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: const Color(0xFFA5ABB7),
+                                      color: AppColor.colorFFA5ABB7,
                                     ),
                                   ),
                                 ),
                               ),
                             ],
                           );
-                        } else if (state is CommissioningReportHistorySuccessState) {
+                        } else if (state
+                            is CommissioningReportHistorySuccessState) {
                           final items = state.data.data.results;
                           if (items.isEmpty) {
                             return ListView(
@@ -483,7 +523,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                       style: AppFont.style(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
-                                        color: const Color(0xFFA5ABB7),
+                                        color: AppColor.colorFFA5ABB7,
                                       ),
                                     ),
                                   ),
@@ -492,7 +532,12 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                             );
                           }
                           return ListView.separated(
-                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+                            padding: const EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              top: 16,
+                              bottom: 100,
+                            ),
                             itemCount: items.length,
                             separatorBuilder: (context, index) =>
                                 const SizedBox(height: 16),
@@ -502,7 +547,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                               try {
                                 final dt = DateTime.parse(item.submittedAt);
                                 formattedDate = DateFormat(
-                                  'd MMMM yyyy', context.locale.languageCode
+                                  'd MMMM yyyy',
+                                  context.locale.languageCode,
                                 ).format(dt);
                               } catch (_) {}
 
@@ -558,7 +604,12 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         if (state is ServiceCallReportHistoryLoading ||
                             state is ServiceCallReportHistoryInitial) {
                           return ListView.separated(
-                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+                            padding: const EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              top: 16,
+                              bottom: 100,
+                            ),
                             itemCount: 3,
                             separatorBuilder: (context, index) =>
                                 const SizedBox(height: 16),
@@ -577,7 +628,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                     style: AppFont.style(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: const Color(0xFFA5ABB7),
+                                      color: AppColor.colorFFA5ABB7,
                                     ),
                                   ),
                                 ),
@@ -598,7 +649,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                       style: AppFont.style(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
-                                        color: const Color(0xFFA5ABB7),
+                                        color: AppColor.colorFFA5ABB7,
                                       ),
                                     ),
                                   ),
@@ -607,7 +658,12 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                             );
                           }
                           return ListView.separated(
-                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+                            padding: const EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              top: 16,
+                              bottom: 100,
+                            ),
                             itemCount: items.length,
                             separatorBuilder: (context, index) =>
                                 const SizedBox(height: 16),
@@ -617,7 +673,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                               try {
                                 final dt = DateTime.parse(item.submittedAt);
                                 formattedDate = DateFormat(
-                                  'd MMMM yyyy', context.locale.languageCode
+                                  'd MMMM yyyy',
+                                  context.locale.languageCode,
                                 ).format(dt);
                               } catch (_) {}
 
@@ -625,7 +682,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                 id: item.complaintNumber,
                                 complaintNo: item.complaintNumber,
                                 reportId: item.id,
-                                feedbackReportId: item.reportDetailId.isNotEmpty ? item.reportDetailId : item.id,
+                                feedbackReportId: item.reportDetailId.isNotEmpty
+                                    ? item.reportDetailId
+                                    : item.id,
                                 type: ReportType.service,
                                 companyName: item.customerName,
                                 location: item.siteName,
@@ -634,7 +693,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                 technicianId: item.dealerName,
                                 feedbackSubmitted: item.feedbackSubmitted,
                                 qrCodeImage: item.qrCodeImage,
-                                status: item.reportType.isNotEmpty ? item.reportType : item.status,
+                                status: item.reportType.isNotEmpty
+                                    ? item.reportType
+                                    : item.status,
                                 onViewPdfTap: (id) {
                                   _serviceCallPdfBloc.add(
                                     FetchServiceCallReportPdfEvent(
@@ -664,7 +725,12 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         if (state is AmcReportsHistoryLoadingState ||
                             state is AmcReportsHistoryInitial) {
                           return ListView.separated(
-                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+                            padding: const EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              top: 16,
+                              bottom: 100,
+                            ),
                             itemCount: 3,
                             separatorBuilder: (context, index) =>
                                 const SizedBox(height: 16),
@@ -683,7 +749,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                     style: AppFont.style(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: const Color(0xFFA5ABB7),
+                                      color: AppColor.colorFFA5ABB7,
                                     ),
                                   ),
                                 ),
@@ -704,7 +770,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                       style: AppFont.style(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
-                                        color: const Color(0xFFA5ABB7),
+                                        color: AppColor.colorFFA5ABB7,
                                       ),
                                     ),
                                   ),
@@ -713,7 +779,12 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                             );
                           }
                           return ListView.separated(
-                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+                            padding: const EdgeInsets.only(
+                              left: 16,
+                              right: 16,
+                              top: 16,
+                              bottom: 100,
+                            ),
                             itemCount: items.length,
                             separatorBuilder: (context, index) =>
                                 const SizedBox(height: 16),
@@ -722,7 +793,10 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                               String formattedDate = item.submittedAt;
                               try {
                                 final dt = DateTime.parse(item.submittedAt);
-                                formattedDate = DateFormat('d MMMM yyyy', context.locale.languageCode).format(dt);
+                                formattedDate = DateFormat(
+                                  'd MMMM yyyy',
+                                  context.locale.languageCode,
+                                ).format(dt);
                               } catch (_) {}
 
                               return _ReportCard(
@@ -734,8 +808,10 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                 date: formattedDate,
                                 technician: item.technicianRepresentativeName,
                                 technicianId: item.dealerName,
-                                feedbackSubmitted: false, // item.feedbackSubmitted not in AmcHistoryData
-                                qrCodeImage: null, // item.qrCodeImage not in AmcHistoryData
+                                feedbackSubmitted:
+                                    false, // item.feedbackSubmitted not in AmcHistoryData
+                                qrCodeImage:
+                                    null, // item.qrCodeImage not in AmcHistoryData
                                 status: item.status,
                                 totalVisits: item.totalVisits,
                                 completedVisits: item.completedVisits,
@@ -743,9 +819,10 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => CustomerAmcVisitsScreen(
-                                        customerId: item.customerId,
-                                      ),
+                                      builder: (context) =>
+                                          CustomerAmcVisitsScreen(
+                                            customerId: item.customerId,
+                                          ),
                                     ),
                                   );
                                 },
@@ -756,14 +833,14 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         return const SizedBox();
                       },
                     ),
-            ),        // closes RefreshIndicator
-          ),          // closes body Container
-        ),            // closes NestedScrollView
-      ),              // closes child Container
-    );               // closes MultiBlocListener
+            ), // closes RefreshIndicator
+          ), // closes body Container
+        ), // closes NestedScrollView
+      ), // closes child Container
+    ); // closes MultiBlocListener
   }
 
-  Widget _buildSegmentTab(int index, String label,) {
+  Widget _buildSegmentTab(int index, String label) {
     bool isSelected = _selectedTab == index;
     return GestureDetector(
       onTap: () {
@@ -796,8 +873,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               fontSize: 10,
               fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
               color: isSelected
-                  ? const Color(0xFF1565C0)
-                  : const Color(0xFFA5ABB7),
+                  ? AppColor.colorFF1565C0
+                  : AppColor.colorFFA5ABB7,
             ),
           ),
         ),
@@ -817,7 +894,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 style: AppFont.style(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: const Color(0xFF0D121F),
+                  color: AppColor.colorFF0D121F,
                 ),
               ),
             ],
@@ -829,7 +906,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFF1F2F6)),
+            border: Border.all(color: AppColor.colorFFF1F2F6),
           ),
           child: Column(
             children: [
@@ -848,7 +925,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           items: customers,
                           value: _selectedCustomerId != null
                               ? customers
-                                        .where((c) => c.id == _selectedCustomerId)
+                                        .where(
+                                          (c) => c.id == _selectedCustomerId,
+                                        )
                                         .isEmpty
                                     ? null
                                     : customers.firstWhere(
@@ -862,7 +941,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           filterFn: (item, filter) => true,
                           onSearchChanged: (v) {
                             _customerBloc.add(
-                              CustomerGetEvent(search: v, page: 1, pageSize: 10),
+                              CustomerGetEvent(
+                                search: v,
+                                page: 1,
+                                pageSize: 10,
+                              ),
                             );
                           },
                           onLoadMore: (lastSearch) {
@@ -876,7 +959,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           },
                           // icon: const Icon(
                           //   Icons.person_outline,
-                          //   color: Color(0xFFA5ABB7),
+                          //   color: AppColor.colorFFA5ABB7,
                           //   size: 18,
                           // ),
                           onChanged: (customer) {
@@ -993,9 +1076,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                             return Theme(
                               data: Theme.of(context).copyWith(
                                 colorScheme: const ColorScheme.light(
-                                  primary: Color(0xFF1565C0),
+                                  primary: AppColor.colorFF1565C0,
                                   onPrimary: Colors.white,
-                                  onSurface: Color(0xFF0D121F),
+                                  onSurface: AppColor.colorFF0D121F,
                                 ),
                               ),
                               child: child!,
@@ -1013,11 +1096,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                          border: Border.all(color: AppColor.colorFFE5E7EB),
                         ),
                         child: Row(
                           children: [
-                            // const Icon(Icons.calendar_today_outlined, color: Color(0xFFA5ABB7), size: 18),
+                            // const Icon(Icons.calendar_today_outlined, color: AppColor.colorFFA5ABB7, size: 18),
                             // const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -1027,8 +1110,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                 style: AppFont.style(
                                   fontSize: 12,
                                   color: _selectedDate != null
-                                      ? const Color(0xFF0D121F)
-                                      : const Color(0xFFA5ABB7),
+                                      ? AppColor.colorFF0D121F
+                                      : AppColor.colorFFA5ABB7,
                                   fontWeight: FontWeight.w500,
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -1040,7 +1123,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                                   setState(() => _selectedDate = null);
                                   _fetchCurrentTabHistory();
                                 },
-                                child: const Icon(Icons.close, color: Color(0xFFA5ABB7), size: 16),
+                                child: const Icon(
+                                  Icons.close,
+                                  color: AppColor.colorFFA5ABB7,
+                                  size: 16,
+                                ),
                               ),
                           ],
                         ),
@@ -1060,7 +1147,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           items: technicians,
                           value: _selectedTechnicianId != null
                               ? technicians
-                                        .where((t) => t.id == _selectedTechnicianId)
+                                        .where(
+                                          (t) => t.id == _selectedTechnicianId,
+                                        )
                                         .isEmpty
                                     ? null
                                     : technicians.firstWhere(
@@ -1073,7 +1162,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                           isFilter: true,
                           // icon: const Icon(
                           //   Icons.person_outline,
-                          //   color: Color(0xFFA5ABB7),
+                          //   color: AppColor.colorFFA5ABB7,
                           //   size: 18,
                           // ),
                           onChanged: (tech) {
@@ -1109,7 +1198,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF3F8FF),
+                    color: AppColor.colorFFF3F8FF,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -1117,7 +1206,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     children: [
                       const Icon(
                         Icons.refresh,
-                        color: Color(0xFF1565C0),
+                        color: AppColor.colorFF1565C0,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -1126,7 +1215,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         style: AppFont.style(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF1565C0),
+                          color: AppColor.colorFF1565C0,
                         ),
                       ),
                     ],
@@ -1151,18 +1240,18 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(color: AppColor.colorFFE5E7EB),
       ),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFFA5ABB7), size: 18),
+          Icon(icon, color: AppColor.colorFFA5ABB7, size: 18),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               label,
               style: AppFont.style(
                 fontSize: 12,
-                color: const Color(0xFFA5ABB7),
+                color: AppColor.colorFFA5ABB7,
                 fontWeight: FontWeight.w500,
               ),
               overflow: TextOverflow.ellipsis,
@@ -1174,13 +1263,13 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               height: 14,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: Color(0xFF1565C0),
+                color: AppColor.colorFF1565C0,
               ),
             )
           else
             const Icon(
               Icons.keyboard_arrow_down,
-              color: Color(0xFFA5ABB7),
+              color: AppColor.colorFFA5ABB7,
               size: 18,
             ),
         ],
@@ -1195,7 +1284,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(color: AppColor.colorFFE5E7EB),
       ),
       child: Row(
         children: [
@@ -1206,7 +1295,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 hintText: label,
                 hintStyle: AppFont.style(
                   fontSize: 12,
-                  color: const Color(0xFFA5ABB7),
+                  color: AppColor.colorFFA5ABB7,
                   fontWeight: FontWeight.w500,
                 ),
                 border: InputBorder.none,
@@ -1215,7 +1304,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               ),
               style: AppFont.style(
                 fontSize: 12,
-                color: const Color(0xFF0D121F),
+                color: AppColor.colorFF0D121F,
                 fontWeight: FontWeight.w500,
               ),
               textInputAction: TextInputAction.search,
@@ -1284,18 +1373,18 @@ class _ReportCard extends StatelessWidget {
 
     switch (type) {
       case ReportType.commissioning:
-        badgeBg = const Color(0xFFE3F2FD);
-        badgeText = const Color(0xFF1565C0);
+        badgeBg = AppColor.colorFFE3F2FD;
+        badgeText = AppColor.colorFF1565C0;
         badgeLabel = 'reports_tab_commissioning'.tr();
         break;
       case ReportType.service:
-        badgeBg = const Color(0xFFFFF1EB);
-        badgeText = const Color(0xFFFF6D00);
+        badgeBg = AppColor.colorFFFFF1EB;
+        badgeText = AppColor.colorFFFF6D00;
         badgeLabel = 'reports_tab_service'.tr();
         break;
       case ReportType.amc:
-        badgeBg = const Color(0xFFE8F5E9);
-        badgeText = const Color(0xFF2E7D32);
+        badgeBg = AppColor.colorFFE8F5E9;
+        badgeText = AppColor.colorFF2E7D32;
         badgeLabel = 'reports_tab_amc'.tr();
         break;
     }
@@ -1333,7 +1422,7 @@ class _ReportCard extends StatelessWidget {
                   style: AppFont.style(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF0D121F),
+                    color: AppColor.colorFF0D121F,
                   ),
                 ),
                 Text(
@@ -1341,7 +1430,7 @@ class _ReportCard extends StatelessWidget {
                   style: AppFont.style(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
+                    color: AppColor.colorFFA5ABB7,
                   ),
                 ),
               ],
@@ -1353,7 +1442,7 @@ class _ReportCard extends StatelessWidget {
                 const Icon(
                   Icons.location_on_outlined,
                   size: 16,
-                  color: Color(0xFFA5ABB7),
+                  color: AppColor.colorFFA5ABB7,
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -1361,7 +1450,7 @@ class _ReportCard extends StatelessWidget {
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF7A8699),
+                    color: AppColor.colorFF7A8699,
                   ),
                 ),
               ],
@@ -1376,7 +1465,7 @@ class _ReportCard extends StatelessWidget {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0F7FF),
+                  color: AppColor.colorFFF0F7FF,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
@@ -1386,7 +1475,7 @@ class _ReportCard extends StatelessWidget {
                       style: AppFont.style(
                         fontSize: 11,
                         fontWeight: FontWeight.w900,
-                        color: const Color(0xFF1565C0),
+                        color: AppColor.colorFF1565C0,
                       ),
                     ),
                     const Spacer(),
@@ -1405,9 +1494,11 @@ class _ReportCard extends StatelessWidget {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFE0B2), // soft orange background
-                          foregroundColor: const Color(0xFFE65100), // text/icon color
-                          elevation: 2,                             // subtle shadow
+                          backgroundColor:
+                              AppColor.colorFFFFE0B2, // soft orange background
+                          foregroundColor:
+                              AppColor.colorFFE65100, // text/icon color
+                          elevation: 2, // subtle shadow
                           minimumSize: Size.zero,
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           shape: RoundedRectangleBorder(
@@ -1419,7 +1510,7 @@ class _ReportCard extends StatelessWidget {
                           style: AppFont.style(
                             fontSize: 9,
                             fontWeight: FontWeight.w900,
-                            color: const Color(0xFFE65100),
+                            color: AppColor.colorFFE65100,
                             letterSpacing: 0.5,
                           ),
                         ),
@@ -1438,7 +1529,7 @@ class _ReportCard extends StatelessWidget {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F6F9),
+                  color: AppColor.colorFFF5F6F9,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
@@ -1452,7 +1543,7 @@ class _ReportCard extends StatelessWidget {
                             style: AppFont.style(
                               fontSize: 9,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFFA5ABB7),
+                              color: AppColor.colorFFA5ABB7,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -1461,7 +1552,7 @@ class _ReportCard extends StatelessWidget {
                             style: AppFont.style(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF424B5C),
+                              color: AppColor.colorFF424B5C,
                             ),
                           ),
                         ],
@@ -1476,7 +1567,7 @@ class _ReportCard extends StatelessWidget {
                             style: AppFont.style(
                               fontSize: 9,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFFA5ABB7),
+                              color: AppColor.colorFFA5ABB7,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -1485,7 +1576,7 @@ class _ReportCard extends StatelessWidget {
                             style: AppFont.style(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF424B5C),
+                              color: AppColor.colorFF424B5C,
                             ),
                           ),
                         ],
@@ -1503,7 +1594,7 @@ class _ReportCard extends StatelessWidget {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F6F9),
+                  color: AppColor.colorFFF5F6F9,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
@@ -1513,7 +1604,7 @@ class _ReportCard extends StatelessWidget {
                           ? Icons.people_outline
                           : Icons.person_outline,
                       size: 16,
-                      color: const Color(0xFF1565C0),
+                      color: AppColor.colorFF1565C0,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -1525,7 +1616,7 @@ class _ReportCard extends StatelessWidget {
                             style: AppFont.style(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF424B5C),
+                              color: AppColor.colorFF424B5C,
                             ),
                           ),
                           if (technicianId.isNotEmpty) ...[
@@ -1535,10 +1626,10 @@ class _ReportCard extends StatelessWidget {
                               style: AppFont.style(
                                 fontSize: 9,
                                 fontWeight: FontWeight.w800,
-                                color: const Color(0xFFA5ABB7),
+                                color: AppColor.colorFFA5ABB7,
                               ),
                             ),
-                          ]
+                          ],
                         ],
                       ),
                     ),
@@ -1565,7 +1656,8 @@ class _ReportCard extends StatelessWidget {
         Expanded(
           child: InkWell(
             onTap: () {
-              if ((type == ReportType.commissioning || type == ReportType.service) &&
+              if ((type == ReportType.commissioning ||
+                      type == ReportType.service) &&
                   onViewPdfTap != null &&
                   reportId != null) {
                 onViewPdfTap!(reportId!);
@@ -1576,7 +1668,7 @@ class _ReportCard extends StatelessWidget {
             child: Container(
               height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF1565C0),
+                color: AppColor.colorFF1565C0,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -1591,20 +1683,26 @@ class _ReportCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Icon(Icons.chevron_right, size: 16, color: Colors.white),
+                  const Icon(
+                    Icons.chevron_right,
+                    size: 16,
+                    color: Colors.white,
+                  ),
                 ],
               ),
             ),
           ),
         ),
-        if (type == ReportType.commissioning || type == ReportType.service || (type == ReportType.amc && feedbackSubmitted)) ...[
+        if (type == ReportType.commissioning ||
+            type == ReportType.service ||
+            (type == ReportType.amc && feedbackSubmitted)) ...[
           const SizedBox(width: 12),
           // if (type == ReportType.service) ...[
           //   SizedBox(
           //     width: 44,
           //     child: _buildIconActionButton(
           //       icon: Icons.remove_red_eye_outlined,
-          //       iconColor: const Color(0xFF6B7280),
+          //       iconColor: AppColor.colorFF6B7280,
           //       onTap: () {
           //         if (reportId != null) {
           //           showDialog(
@@ -1624,50 +1722,52 @@ class _ReportCard extends StatelessWidget {
           // ],
           SizedBox(
             width: 44,
-            child: (type == ReportType.service &&
+            child:
+                (type == ReportType.service &&
                     (status?.toLowerCase() == 'closed over call' ||
-                     status?.toLowerCase() == 'closed_over_call'))
+                        status?.toLowerCase() == 'closed_over_call'))
                 ? const SizedBox()
                 : feedbackSubmitted
-                    ? _buildIconActionButton(
-                        icon: Icons.check_circle,
-                        iconColor: Colors.green,
-                        onTap: () {
-                          final fbId = feedbackReportId ?? reportId;
-                          if (fbId != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FeedbackDetailsScreen(
-                                  reportId: fbId,
-                                  isServiceCall: type == ReportType.service,
-                                  isAmc: type == ReportType.amc,
-                                  title: type == ReportType.service
-                                      ? 'service_call_feedback_details'.tr()
-                                      : type == ReportType.amc
-                                          ? 'amc_feedback_details'.tr()
-                                          : 'commissioning_feedback_details'.tr(),
-                                  onBack: () => Navigator.pop(context),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                      )
-                    : _buildIconActionButton(
-                        icon: Icons.qr_code_2_outlined,
-                        iconColor: const Color(0xFFF59E0B),
-                        onTap: () {
-                          if (qrCodeImage != null && qrCodeImage!.isNotEmpty) {
-                            _showQrCodeDialog(context);
-                          } else {
-                            appSnackBar(
-                              context, AppColor.bright_red,
-                              'reports_qr_not_available'.tr(),
-                            );
-                          }
-                        },
-                      ),
+                ? _buildIconActionButton(
+                    icon: Icons.check_circle,
+                    iconColor: Colors.green,
+                    onTap: () {
+                      final fbId = feedbackReportId ?? reportId;
+                      if (fbId != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FeedbackDetailsScreen(
+                              reportId: fbId,
+                              isServiceCall: type == ReportType.service,
+                              isAmc: type == ReportType.amc,
+                              title: type == ReportType.service
+                                  ? 'service_call_feedback_details'.tr()
+                                  : type == ReportType.amc
+                                  ? 'amc_feedback_details'.tr()
+                                  : 'commissioning_feedback_details'.tr(),
+                              onBack: () => Navigator.pop(context),
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  )
+                : _buildIconActionButton(
+                    icon: Icons.qr_code_2_outlined,
+                    iconColor: AppColor.colorFFF59E0B,
+                    onTap: () {
+                      if (qrCodeImage != null && qrCodeImage!.isNotEmpty) {
+                        _showQrCodeDialog(context);
+                      } else {
+                        appSnackBar(
+                          context,
+                          AppColor.bright_red,
+                          'reports_qr_not_available'.tr(),
+                        );
+                      }
+                    },
+                  ),
           ),
         ],
       ],
@@ -1686,7 +1786,7 @@ class _ReportCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFFE5E7EB), width: 1.2),
+          border: Border.all(color: AppColor.colorFFE5E7EB, width: 1.2),
         ),
         child: Center(child: Icon(icon, size: 22, color: iconColor)),
       ),
@@ -1700,33 +1800,45 @@ class _ReportCard extends StatelessWidget {
 
     final lowerStatus = statusStr.trim().toLowerCase();
 
-    if (lowerStatus == 'service call report' || lowerStatus == 'service_call_report' || lowerStatus == 'service call' || lowerStatus == 'service_call') {
-      borderColor = const Color(0xFFA5D6A7); // Light Green
-      bgColor = const Color(0xFFE8F5E9);
-      textColor = const Color(0xFF00695C); // Teal Green
-    } else if (lowerStatus == 'service work report' || lowerStatus == 'service_work_report' || lowerStatus == 'service work' || lowerStatus == 'service_work') {
-      borderColor = const Color(0xFFFFCDD2); // Light Red
-      bgColor = const Color(0xFFFFEBEE);
-      textColor = const Color(0xFFB71C1C); // Red
-    } else if (lowerStatus == 'closed over call' || lowerStatus == 'closed_over_call') {
-      borderColor = const Color(0xFFBBDEFB); // Light Blue
-      bgColor = const Color(0xFFE3F2FD);
-      textColor = const Color(0xFF1565C0); // Blue
-    } else if (lowerStatus == 'existing complaint report' || lowerStatus == 'existing_complaint_report' || lowerStatus == 'existing complaint') {
-      borderColor = const Color(0xFFFFE0B2); // Light Orange
-      bgColor = const Color(0xFFFFF3E0);
-      textColor = const Color(0xFFE65100); // Orange
+    if (lowerStatus == 'service call report' ||
+        lowerStatus == 'service_call_report' ||
+        lowerStatus == 'service call' ||
+        lowerStatus == 'service_call') {
+      borderColor = AppColor.colorFFA5D6A7; // Light Green
+      bgColor = AppColor.colorFFE8F5E9;
+      textColor = AppColor.colorFF00695C; // Teal Green
+    } else if (lowerStatus == 'service work report' ||
+        lowerStatus == 'service_work_report' ||
+        lowerStatus == 'service work' ||
+        lowerStatus == 'service_work') {
+      borderColor = AppColor.colorFFFFCDD2; // Light Red
+      bgColor = AppColor.colorFFFFEBEE;
+      textColor = AppColor.colorFFB71C1C; // Red
+    } else if (lowerStatus == 'closed over call' ||
+        lowerStatus == 'closed_over_call') {
+      borderColor = AppColor.colorFFBBDEFB; // Light Blue
+      bgColor = AppColor.colorFFE3F2FD;
+      textColor = AppColor.colorFF1565C0; // Blue
+    } else if (lowerStatus == 'existing complaint report' ||
+        lowerStatus == 'existing_complaint_report' ||
+        lowerStatus == 'existing complaint') {
+      borderColor = AppColor.colorFFFFE0B2; // Light Orange
+      bgColor = AppColor.colorFFFFF3E0;
+      textColor = AppColor.colorFFE65100; // Orange
     } else {
-      borderColor = const Color(0xFFE5E7EB); // Grey
-      bgColor = const Color(0xFFF3F4F6);
-      textColor = const Color(0xFF6B7280);
+      borderColor = AppColor.colorFFE5E7EB; // Grey
+      bgColor = AppColor.colorFFF3F4F6;
+      textColor = AppColor.colorFF6B7280;
     }
 
     String displayStatus = statusStr.replaceAll('_', ' ');
-    displayStatus = displayStatus.split(' ').map((word) {
-      if (word.isEmpty) return word;
-      return '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}';
-    }).join(' ');
+    displayStatus = displayStatus
+        .split(' ')
+        .map((word) {
+          if (word.isEmpty) return word;
+          return '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}';
+        })
+        .join(' ');
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -1763,7 +1875,10 @@ class _ReportCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.close, color: Color(0xFFA5ABB7)),
+                      icon: const Icon(
+                        Icons.close,
+                        color: AppColor.colorFFA5ABB7,
+                      ),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
@@ -1771,12 +1886,12 @@ class _ReportCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: const BoxDecoration(
-                    color: Color(0xFFE8F5E9),
+                    color: AppColor.colorFFE8F5E9,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.check_circle,
-                    color: Color(0xFF4CAF50),
+                    color: AppColor.colorFF4CAF50,
                     size: 40,
                   ),
                 ),
@@ -1785,28 +1900,28 @@ class _ReportCard extends StatelessWidget {
                   type == ReportType.service
                       ? 'service_call_report_feedback'.tr()
                       : type == ReportType.amc
-                          ? 'amc_report_feedback'.tr()
-                          : 'commissioning_work_report_feedback'.tr(),
+                      ? 'amc_report_feedback'.tr()
+                      : 'commissioning_work_report_feedback'.tr(),
                   textAlign: TextAlign.center,
                   style: AppFont.style(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFF0D121F),
+                    color: AppColor.colorFF0D121F,
                   ),
                 ),
                 const SizedBox(height: 8),
                 const Divider(
                   height: 1,
                   thickness: 1,
-                  color: Color(0xFFF1F2F6),
+                  color: AppColor.colorFFF1F2F6,
                 ),
                 const SizedBox(height: 32),
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FB),
+                    color: AppColor.colorFFF8F9FB,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFF1F2F6)),
+                    border: Border.all(color: AppColor.colorFFF1F2F6),
                   ),
                   child: qrCodeImage != null && qrCodeImage!.isNotEmpty
                       ? Image.network(
@@ -1818,7 +1933,7 @@ class _ReportCard extends StatelessWidget {
                       : const Icon(
                           Icons.qr_code_2,
                           size: 180,
-                          color: Color(0xFF0D121F),
+                          color: AppColor.colorFF0D121F,
                         ),
                 ),
                 const SizedBox(height: 24),
@@ -1827,7 +1942,7 @@ class _ReportCard extends StatelessWidget {
                   style: AppFont.style(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFFA5ABB7),
+                    color: AppColor.colorFFA5ABB7,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -1844,17 +1959,15 @@ class _StickyReportFilterDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
   final double height;
 
-  _StickyReportFilterDelegate({
-    required this.child,
-    required this.height,
-  });
+  _StickyReportFilterDelegate({required this.child, required this.height});
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      color: Colors.white,
-      child: child,
-    );
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(color: Colors.white, child: child);
   }
 
   @override

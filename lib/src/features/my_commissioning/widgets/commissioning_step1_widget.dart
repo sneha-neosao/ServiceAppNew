@@ -25,13 +25,13 @@ class Step1Widget extends StatelessWidget {
               //   width: 48,
               //   height: 48,
               //   decoration: BoxDecoration(
-              //     color: const Color(0xFFF8F9FB),
+              //     color: AppColor.colorFFF8F9FB,
               //     borderRadius: BorderRadius.circular(8),
-              //     border: Border.all(color: const Color(0xFFF1F2F6)),
+              //     border: Border.all(color: AppColor.colorFFF1F2F6),
               //   ),
               //   child: const Icon(
               //     Icons.business_outlined,
-              //     color: Color(0xFFA5ABB7),
+              //     color: AppColor.colorFFA5ABB7,
               //     size: 24,
               //   ),
               // ),
@@ -46,7 +46,7 @@ class Step1Widget extends StatelessWidget {
               //         style: AppFont.style(
               //           fontSize: 14,
               //           fontWeight: FontWeight.w900,
-              //           color: const Color(0xFF0D121F),
+              //           color: AppColor.colorFF0D121F,
               //         ),
               //       ),
               //     ],
@@ -60,7 +60,7 @@ class Step1Widget extends StatelessWidget {
                     style: AppFont.style(
                       fontSize: 10,
                       fontWeight: FontWeight.w900,
-                      color: const Color(0xFF8E9BAE),
+                      color: AppColor.colorFF8E9BAE,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -69,7 +69,7 @@ class Step1Widget extends StatelessWidget {
                     style: AppFont.style(
                       fontSize: 14,
                       fontWeight: FontWeight.w900,
-                      color: const Color(0xFF0D121F),
+                      color: AppColor.colorFF0D121F,
                     ),
                   ),
                 ],
@@ -91,7 +91,7 @@ class Step1Widget extends StatelessWidget {
                     style: AppFont.style(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF5C6672),
+                      color: AppColor.colorFF5C6672,
                     ),
                   ),
                   const TextSpan(
@@ -153,7 +153,7 @@ class Step1Widget extends StatelessWidget {
                               hintStyle: AppFont.style(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFFA5ABB7),
+                                color: AppColor.colorFFA5ABB7,
                               ),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 16,
@@ -162,17 +162,17 @@ class Step1Widget extends StatelessWidget {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide:
-                                    const BorderSide(color: Color(0xFFE5E7EB)),
+                                    const BorderSide(color: AppColor.colorFFE5E7EB),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide:
-                                    const BorderSide(color: Color(0xFFE5E7EB)),
+                                    const BorderSide(color: AppColor.colorFFE5E7EB),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide:
-                                    const BorderSide(color: Color(0xFF1565C0)),
+                                    const BorderSide(color: AppColor.colorFF1565C0),
                               ),
                               suffixIcon: isLoading
                                   ? const Padding(
@@ -182,14 +182,14 @@ class Step1Widget extends StatelessWidget {
                                         height: 16,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
-                                          color: Color(0xFF1565C0),
+                                          color: AppColor.colorFF1565C0,
                                         ),
                                       ),
                                     )
                                   : IconButton(
                                       icon: const Icon(
                                         Icons.keyboard_arrow_down,
-                                        color: Color(0xFFA5ABB7),
+                                        color: AppColor.colorFFA5ABB7,
                                       ),
                                       onPressed: () {
                                         parent._showTechnicianBottomSheet(
@@ -204,7 +204,7 @@ class Step1Widget extends StatelessWidget {
                             style: AppFont.style(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: const Color(0xFF0D121F),
+                              color: AppColor.colorFF0D121F,
                             ),
                           ),
                         ],
@@ -226,12 +226,12 @@ class Step1Widget extends StatelessWidget {
                       width: 54,
                       height: 54,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFF0F0),
+                        color: AppColor.colorFFFFF0F0,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
                         Icons.delete_outline,
-                        color: Color(0xFFFF5252),
+                        color: AppColor.colorFFFF5252,
                         size: 24,
                       ),
                     ),

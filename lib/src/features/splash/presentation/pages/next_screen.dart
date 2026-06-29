@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
 import 'package:service_app/src/routes/app_route_path.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 
 class NextScreen extends StatefulWidget {
   const NextScreen({super.key});
@@ -228,10 +229,10 @@ class _SlideItem extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Color(0x55000000), // subtle top tint
-                Color(0x22000000), // mid transparent
-                Color(0xBB000000), // heavy bottom for text
-                Color(0xDD000000),
+                AppColor.color55000000, // subtle top tint
+                AppColor.color22000000, // mid transparent
+                AppColor.colorBB000000, // heavy bottom for text
+                AppColor.colorDD000000,
               ],
               stops: [0.0, 0.35, 0.7, 1.0],
             ),
@@ -297,7 +298,7 @@ class _AnimatedDot extends StatelessWidget {
           height: dotSize,
           decoration: BoxDecoration(
             color: isActive
-                ? const Color(0xFF1565C0)
+                ? AppColor.colorFF1565C0
                 : Colors.grey.withValues(alpha: 0.6),
             borderRadius: BorderRadius.circular(dotSize / 2),
           ),
