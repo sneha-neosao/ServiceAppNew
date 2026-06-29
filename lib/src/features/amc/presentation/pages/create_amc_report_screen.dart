@@ -40,6 +40,7 @@ import 'package:service_app/src/features/amc/bloc/amc_report_step2_autofill_bloc
 import 'package:service_app/src/features/amc/bloc/amc_report_step2_autofill_bloc/amc_report_step2_autofill_state.dart';
 import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step2_usecase.dart';
 import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step3_usecase.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 class CreateAmcReportScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSubmit;
@@ -325,12 +326,11 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
               }
               appSnackBar(
-                context,
-                const Color(0xFF4CAF50),
+                context, AppColor.green,
                 state.data.message,
               );
             } else if (state is AmcReportStep1FailureState) {
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
         ),
@@ -383,7 +383,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               }
 
             } else if (state is AmcReportStep1AutofillFailureState) {
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
         ),
@@ -402,12 +402,11 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
               }
               appSnackBar(
-                context,
-                const Color(0xFF4CAF50),
+                context, AppColor.green,
                 state.data.message,
               );
             } else if (state is AmcReportStep2ErrorState) {
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
         ),
@@ -459,7 +458,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 _operationSelected = decodeMapToList(state.data.data.operationChecklist);
               });
             } else if (state is AmcReportStep2AutofillFailureState) {
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
         ),
@@ -473,10 +472,10 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
             }
 
             if (state is AmcReportStep3SuccessState) {
-              appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+              appSnackBar(context, AppColor.green, state.data.message);
               widget.onSubmit();
             } else if (state is AmcReportStep3ErrorState) {
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
         ),
@@ -484,7 +483,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           bloc: _assignedTechniciansBloc,
           listener: (context, state) {
             if (state is AmcAssignedTechniciansFailureState) {
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
         ),
@@ -492,7 +491,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           bloc: _technicianBloc,
           listener: (context, state) {
             if (state is TechnicianFailureState) {
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
         ),
@@ -2258,7 +2257,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       if (selectedTechs.isEmpty) {
                         appSnackBar(
                           context,
-                           Color(0xFFF44336),
+                          AppColor.bright_red,
                           'assign_tech_validation_msg'.tr(),
                         );
                         return;
@@ -2273,88 +2272,88 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                       )));
                     } else if (_currentStep == 2) {
                       if (_currentReportId == null) {
-                        appSnackBar(context, const Color(0xFFF44336), 'report_id_is_missing'.tr());
+                        appSnackBar(context, AppColor.bright_red, 'report_id_is_missing'.tr());
                         return;
                       }
 
                       if (!_mechNA) {
                         if (!_mechanicalSelected.contains('pump_foundation_bolt_tight'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_pump_foundation'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_pump_foundation'.tr()); return;
                         }
                         if (!_mechanicalSelected.contains('coupling_alignment_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_coupling'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_coupling'.tr()); return;
                         }
                         if (!_mechanicalSelected.contains('bearing_noise_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_bearing_noise'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_bearing_noise'.tr()); return;
                         }
                         if (!_mechanicalSelected.contains('abnormal_sound_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_abnormal_sound'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_abnormal_sound'.tr()); return;
                         }
                         if (!_mechanicalSelected.contains('mechanical_seal_gland_leakage_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_mech_seal'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_mech_seal'.tr()); return;
                         }
                         if (_vibrationSelected == null) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_vibration'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_vibration'.tr()); return;
                         }
                         if (!_mechanicalSelected.contains('pump_cleaned'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_pump_cleaned'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_pump_cleaned'.tr()); return;
                         }
                         if (!_mechanicalSelected.contains('pump_not_running_dry'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_pump_dry'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_pump_dry'.tr()); return;
                         }
                       }
                       if (!_pipeNA) {
                         if (!_pipelineSelected.contains('suction_line_leakage_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_suction_line'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_suction_line'.tr()); return;
                         }
                         if (!_pipelineSelected.contains('delivery_line_leakage_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_delivery_line'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_delivery_line'.tr()); return;
                         }
                         if (!_pipelineSelected.contains('valve_working_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_nrv'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_nrv'.tr()); return;
                         }
                         if (!_pipelineSelected.contains('strainer_cleaned'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_strainer'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_strainer'.tr()); return;
                         }
                         if (!_pipelineSelected.contains('valve_condition_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_suction_del_valve'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_suction_del_valve'.tr()); return;
                         }
                         if (!_pipelineSelected.contains('pressure_switch_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_pressure_switch'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_pressure_switch'.tr()); return;
                         }
                       }
                       if (!_elecNA) {
                         if (!_electricalSelected.contains('panel_cleaned'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_panel_cleaned'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_panel_cleaned'.tr()); return;
                         }
                         if (!_electricalSelected.contains('contactor_relay_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_contactor'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_contactor'.tr()); return;
                         }
                         if (!_electricalSelected.contains('overload_setting_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_overload'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_overload'.tr()); return;
                         }
                         if (!_electricalSelected.contains('loose_wiring_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_loose_wiring'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_loose_wiring'.tr()); return;
                         }
                         if (!_electricalSelected.contains('phase_voltage_current_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_phase_voltage'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_phase_voltage'.tr()); return;
                         }
                         if (!_electricalSelected.contains('earthing_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_earthing'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_earthing'.tr()); return;
                         }
                       }
                       if (!_operationNA) {
                         if (!_operationSelected.contains('pump_started_manual'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_pump_manual'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_pump_manual'.tr()); return;
                         }
                         if (!_operationSelected.contains('auto_operation_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_auto_operation'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_auto_operation'.tr()); return;
                         }
                         if (!_operationSelected.contains('water_flow_pressure_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_water_flow'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_water_flow'.tr()); return;
                         }
                         if (!_operationSelected.contains('rotation_direction_checked'.tr())) {
-                          appSnackBar(context, const Color(0xFFF44336), 'val_amc_rotation'.tr()); return;
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_rotation'.tr()); return;
                         }
                       }
 
@@ -2391,32 +2390,32 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                     } else {
                       // Submit action
                       if (_currentReportId == null) {
-                        appSnackBar(context, const Color(0xFFF44336), "report_id_is_missing".tr());
+                        appSnackBar(context, AppColor.bright_red, "report_id_is_missing".tr());
                         return;
                       }
 
                       if (_customerRepNameController.text.trim().isEmpty) {
-                        appSnackBar(context, const Color(0xFFF44336), "customer_rep_name_required".tr());
+                        appSnackBar(context, AppColor.bright_red, "customer_rep_name_required".tr());
                         return;
                       }
 
                       if (_selectedTechnicianRepId == null) {
-                        appSnackBar(context, const Color(0xFFF44336), "technician_rep_required".tr());
+                        appSnackBar(context, AppColor.bright_red, "technician_rep_required".tr());
                         return;
                       }
 
                       if (_technicianSignatureFile == null && _existingTechnicianSignatureUrl == null) {
-                        appSnackBar(context, const Color(0xFFF44336), "technician_signature_required".tr());
+                        appSnackBar(context, AppColor.bright_red, "technician_signature_required".tr());
                         return;
                       }
 
                       if (_customerSignatureFile == null && _existingCustomerSignatureUrl == null) {
-                        appSnackBar(context, const Color(0xFFF44336), "customer_signature_required".tr());
+                        appSnackBar(context, AppColor.bright_red, "customer_signature_required".tr());
                         return;
                       }
 
                       if (_workPhotos.isEmpty && _existingWorkPhotosUrls.isEmpty) {
-                        appSnackBar(context, const Color(0xFFF44336), "work_photos_required".tr());
+                        appSnackBar(context, AppColor.bright_red, "work_photos_required".tr());
                         return;
                       }
 

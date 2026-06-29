@@ -1,3 +1,4 @@
+import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -118,7 +119,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           bloc: _createNewCustomerBloc,
           listener: (ctx, state) {
             if (state is CreateNewCustomerSuccessState) {
-              appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+              appSnackBar(context, AppColor.green, state.data.message);
               final newName = state.data.data?.name ?? _pendingNewCustomerName;
               Navigator.pop(ctx);
               setState(() {
@@ -137,7 +138,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                 Navigator.pop(ctx); // Close the bottom sheet immediately
                 _showMergeCustomerDialog(context, _pendingNewCustomerName);
               } else {
-                appSnackBar(ctx, const Color(0xFFF44336), state.message);
+                appSnackBar(ctx, AppColor.bright_red, state.message);
               }
             }
           },
@@ -166,8 +167,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
   Future<void> _showAddSiteBottomSheet() async {
     if (_selectedCustomer == null) {
       appSnackBar(
-        context,
-        const Color(0xFFF44336),
+        context, AppColor.bright_red,
         'merged_with_existing'.tr(),
       );
       return;
@@ -191,8 +191,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
     if (customerId.isEmpty) {
       appSnackBar(
-        context,
-        const Color(0xFFF44336),
+        context, AppColor.bright_red,
         'invalid_customer_selector'.tr(),
       );
       return;
@@ -210,7 +209,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           bloc: _createNewSiteBloc,
           listener: (ctx, state) {
             if (state is CreateNewSiteSuccessState) {
-              appSnackBar(ctx, const Color(0xFF4CAF50), state.data.message);
+              appSnackBar(ctx, AppColor.green, state.data.message);
               final newName = state.data.data?.sites.first.name ?? "";
               Navigator.pop(ctx);
               setState(() {
@@ -228,7 +227,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                 _selectedSite = newName;
               });
             } else if (state is CreateNewSiteFailureState) {
-              appSnackBar(ctx, const Color(0xFFF44336), state.message);
+              appSnackBar(ctx, AppColor.bright_red, state.message);
             }
           },
           builder: (ctx, state) {
@@ -300,8 +299,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
 
     if (technicianIds.isEmpty) {
       appSnackBar(
-        context,
-        const Color(0xFFF44336),
+        context, AppColor.bright_red,
         "assign_tech_validation_msg".tr(),
       );
       return;
@@ -337,10 +335,10 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           bloc: _createBloc,
           listener: (context, state) {
             if (state is CommissioningWorkCreateSuccessState) {
-              appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+              appSnackBar(context, AppColor.green, state.data.message);
               widget.onBack();
             } else if (state is CommissioningWorkCreateFailureState) {
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
         ),
@@ -348,10 +346,10 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
           bloc: _updateBloc,
           listener: (context, state) {
             if (state is CommissioningWorkUpdateSuccessState) {
-              appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+              appSnackBar(context, AppColor.green, state.data.message);
               widget.onBack();
             } else if (state is CommissioningWorkUpdateFailureState) {
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
         ),
@@ -467,8 +465,7 @@ class _AddCommissioningScreenState extends State<AddCommissioningScreen> {
                       } else if (state
                           is CommissioningWorkDetailsFailureState) {
                         appSnackBar(
-                          context,
-                          const Color(0xFFF44336),
+                          context, AppColor.bright_red,
                           state.message,
                         );
                       }

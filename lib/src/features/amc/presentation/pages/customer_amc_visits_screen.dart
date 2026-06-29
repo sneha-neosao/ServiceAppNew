@@ -16,6 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:service_app/src/features/report_history/presentation/pages/feedback_details_screen.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 
 class CustomerAmcVisitsScreen extends StatefulWidget {
   final String customerId;
@@ -87,7 +88,7 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
                 );
               } else if (state is AmcReportPdfFailure) {
                 Navigator.pop(context);
-                appSnackBar(context, const Color(0xFFF44336), state.error);
+                appSnackBar(context, AppColor.bright_red, state.error);
               } else if (state is AmcReportPdfSuccess) {
                 Navigator.pop(context);
                 final url = state.pdfUrl;
@@ -99,7 +100,7 @@ class _CustomerAmcVisitsScreenState extends State<CustomerAmcVisitsScreen> {
                   });
                   launchUrl(cacheClearUri, mode: LaunchMode.externalApplication);
                 } else {
-                  appSnackBar(context, const Color(0xFFF44336), 'pdf_url_is_empty'.tr());
+                  appSnackBar(context, AppColor.bright_red, 'pdf_url_is_empty'.tr());
                 }
               }
             },

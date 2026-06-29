@@ -638,7 +638,7 @@ class _CreateCommissioningReportScreenState
         if (!widget.isServiceReport && _selectedWarranty == null) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_select_warranty'.tr(),
           );
           return;
@@ -944,13 +944,13 @@ class _CreateCommissioningReportScreenState
       // Validate mechanical section
       if (!_mechNA) {
         if (_bearingNoise == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_bearing'.tr());
+          appSnackBar(context, AppColor.bright_red, 'val_sel_bearing'.tr());
           return;
         }
         if (_vibration == null) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_sel_vibration'.tr(),
           );
           return;
@@ -958,7 +958,7 @@ class _CreateCommissioningReportScreenState
         if (_mechSeal == null) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_sel_mech_seal'.tr(),
           );
           return;
@@ -966,7 +966,7 @@ class _CreateCommissioningReportScreenState
         if (_pumpDry == null) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_sel_pump_dry'.tr(),
           );
           return;
@@ -975,13 +975,13 @@ class _CreateCommissioningReportScreenState
       // Validate pipeline section
       if (!_pipeNA) {
         if (_nrvValve == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_nrv'.tr());
+          appSnackBar(context, AppColor.bright_red, 'val_sel_nrv'.tr());
           return;
         }
         if (_strainerValve == null) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_sel_strainer'.tr(),
           );
           return;
@@ -989,7 +989,7 @@ class _CreateCommissioningReportScreenState
         if (_suctionLine == null) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_sel_suction_line'.tr(),
           );
           return;
@@ -997,7 +997,7 @@ class _CreateCommissioningReportScreenState
         if (_deliveryLine == null) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_sel_del_line'.tr(),
           );
           return;
@@ -1005,7 +1005,7 @@ class _CreateCommissioningReportScreenState
         if (_suctionDelivery == null) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_sel_suction_del'.tr(),
           );
           return;
@@ -1013,7 +1013,7 @@ class _CreateCommissioningReportScreenState
         if (_pressureSwitch == null) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_sel_pressure'.tr(),
           );
           return;
@@ -1024,27 +1024,27 @@ class _CreateCommissioningReportScreenState
         if (_elecFaults == null) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_sel_elec_faults'.tr(),
           );
           return;
         }
         if (_voltage == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_voltage'.tr());
+          appSnackBar(context, AppColor.bright_red, 'val_sel_voltage'.tr());
           return;
         }
         if (_phase == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_phase'.tr());
+          appSnackBar(context, AppColor.bright_red, 'val_sel_phase'.tr());
           return;
         }
         if (_current == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_current'.tr());
+          appSnackBar(context, AppColor.bright_red, 'val_sel_current'.tr());
           return;
         }
         if (_panelWiring == null) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_sel_panel_wiring'.tr(),
           );
           return;
@@ -1113,7 +1113,7 @@ class _CreateCommissioningReportScreenState
             _selectedTechnicianRepId!.isEmpty) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_sel_tech_rep'.tr(),
           );
           return;
@@ -1121,7 +1121,7 @@ class _CreateCommissioningReportScreenState
         if (techSignaturePath == null || techSignaturePath.isEmpty) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_add_tech_sig'.tr(),
           );
           return;
@@ -1129,7 +1129,7 @@ class _CreateCommissioningReportScreenState
         if (_customerRepNameController.text.trim().isEmpty) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_enter_cust_rep'.tr(),
           );
           return;
@@ -1137,7 +1137,7 @@ class _CreateCommissioningReportScreenState
         if (custSignaturePath == null || custSignaturePath.isEmpty) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_add_cust_sig'.tr(),
           );
           return;
@@ -1145,7 +1145,7 @@ class _CreateCommissioningReportScreenState
         if (workPhotosPaths.isEmpty) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_upload_photo'.tr(),
           );
           return;
@@ -1168,7 +1168,7 @@ class _CreateCommissioningReportScreenState
             _selectedTechnicianRepId!.isEmpty) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_sel_tech_rep'.tr(),
           );
           return;
@@ -1178,7 +1178,7 @@ class _CreateCommissioningReportScreenState
                 _existingTechnicianSignatureUrl!.isEmpty)) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_add_tech_sig'.tr(),
           );
           return;
@@ -1186,7 +1186,7 @@ class _CreateCommissioningReportScreenState
         if (_customerRepNameController.text.trim().isEmpty) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_enter_cust_rep'.tr(),
           );
           return;
@@ -1196,7 +1196,7 @@ class _CreateCommissioningReportScreenState
                 _existingCustomerSignatureUrl!.isEmpty)) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_add_cust_sig'.tr(),
           );
           return;
@@ -1205,7 +1205,7 @@ class _CreateCommissioningReportScreenState
         if (allWorkPhotos.isEmpty) {
           appSnackBar(
             context,
-            const Color(0xFFF44336),
+            AppColor.bright_red,
             'val_upload_photo'.tr(),
           );
           return;
@@ -1440,7 +1440,7 @@ class _CreateCommissioningReportScreenState
         bloc: _submitServiceCallStep3Bloc,
         listener: (context, state) {
           if (state is ServiceCallReportStep3SuccessState) {
-            appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+            appSnackBar(context, AppColor.green, state.data.message);
             setState(() {
               _currentStep++;
               if (_currentStep == 4 && _commissioningReportId != null) {
@@ -1450,14 +1450,14 @@ class _CreateCommissioningReportScreenState
               }
             });
           } else if (state is ServiceCallReportStep3FailureState) {
-            appSnackBar(context, const Color(0xFFF44336), state.message);
+            appSnackBar(context, AppColor.bright_red, state.message);
           }
         },
         child: BlocListener<ServiceCallReportStep2Bloc, ServiceCallReportStep2State>(
           bloc: _submitServiceCallStep2Bloc,
           listener: (context, state) {
             if (state is ServiceCallReportStep2SuccessState) {
-              appSnackBar(context, const Color(0xFF4CAF50), state.data.message);
+              appSnackBar(context, AppColor.green, state.data.message);
               setState(() {
                 _currentStep++;
                 if (_currentStep == 3 && _commissioningReportId != null) {
@@ -1467,7 +1467,7 @@ class _CreateCommissioningReportScreenState
                 }
               });
             } else if (state is ServiceCallReportStep2FailureState) {
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
           child: BlocListener<CommissioningStep2Bloc, CommissioningStep2State>(
@@ -1476,7 +1476,7 @@ class _CreateCommissioningReportScreenState
               if (state is CommissioningStep2SuccessState) {
                 appSnackBar(
                   context,
-                  const Color(0xFF4CAF50),
+                  AppColor.green,
                   state.data.message,
                 );
                 setState(() {
@@ -1488,7 +1488,7 @@ class _CreateCommissioningReportScreenState
                   }
                 });
               } else if (state is CommissioningStep2FailureState) {
-                appSnackBar(context, const Color(0xFFF44336), state.message);
+                appSnackBar(context, AppColor.bright_red, state.message);
               }
             },
             child: BlocListener<CommissioningStep1Bloc, CommissioningStep1State>(
@@ -1497,7 +1497,7 @@ class _CreateCommissioningReportScreenState
                 if (state is CommissioningStep1lSuccessState) {
                   appSnackBar(
                     context,
-                    const Color(0xFF4CAF50),
+                    AppColor.green,
                     state.data.message,
                   );
                   _commissioningReportId = state.data.data.id;
@@ -1510,7 +1510,7 @@ class _CreateCommissioningReportScreenState
                     }
                   });
                 } else if (state is CommissioningStep1FailureState) {
-                  appSnackBar(context, const Color(0xFFF44336), state.message);
+                  appSnackBar(context, AppColor.bright_red, state.message);
                 }
               },
               child: BlocListener<ServiceCallReportStep1Bloc, ServiceCallReportStep1State>(
@@ -1519,7 +1519,7 @@ class _CreateCommissioningReportScreenState
                   if (state is ServiceCallReportStep1SuccessState) {
                     appSnackBar(
                       context,
-                      const Color(0xFF4CAF50),
+                      AppColor.green,
                       state.data.message,
                     );
                     _commissioningReportId = state.data.data.id;
@@ -1535,7 +1535,7 @@ class _CreateCommissioningReportScreenState
                   } else if (state is ServiceCallReportStep1FailureState) {
                     appSnackBar(
                       context,
-                      const Color(0xFFF44336),
+                      AppColor.bright_red,
                       state.message,
                     );
                   }
@@ -1546,7 +1546,7 @@ class _CreateCommissioningReportScreenState
                     if (state is CommissioningStep3SuccessState) {
                       appSnackBar(
                         context,
-                        const Color(0xFF4CAF50),
+                        AppColor.green,
                         state.data.message,
                       );
                       setState(() {
@@ -1561,7 +1561,7 @@ class _CreateCommissioningReportScreenState
                     } else if (state is CommissioningStep3FailureState) {
                       appSnackBar(
                         context,
-                        const Color(0xFFF44336),
+                        AppColor.bright_red,
                         state.message,
                       );
                     }
@@ -1702,7 +1702,7 @@ class _CreateCommissioningReportScreenState
                                           is ServiceCallReportStep4SuccessState) {
                                         appSnackBar(
                                           context,
-                                          const Color(0xFF4CAF50),
+                                          AppColor.green,
                                           state.data.message,
                                         );
                                         setState(() {
@@ -1718,7 +1718,7 @@ class _CreateCommissioningReportScreenState
                                           is ServiceCallReportStep4FailureState) {
                                         appSnackBar(
                                           context,
-                                          const Color(0xFFF44336),
+                                          AppColor.bright_red,
                                           state.message,
                                         );
                                       }
@@ -1734,7 +1734,7 @@ class _CreateCommissioningReportScreenState
                                                 is CommissioningStep4SuccessState) {
                                               appSnackBar(
                                                 context,
-                                                const Color(0xFF4CAF50),
+                                                AppColor.green,
                                                 state.data.message,
                                               );
                                               setState(() {
@@ -1751,7 +1751,7 @@ class _CreateCommissioningReportScreenState
                                                 is CommissioningStep4FailureState) {
                                               appSnackBar(
                                                 context,
-                                                const Color(0xFFF44336),
+                                                AppColor.bright_red,
                                                 state.message,
                                               );
                                             }
@@ -1866,9 +1866,7 @@ class _CreateCommissioningReportScreenState
                                                                   is ServiceCallReportStep5SuccessState) {
                                                                 appSnackBar(
                                                                   context,
-                                                                  const Color(
-                                                                    0xFF4CAF50,
-                                                                  ),
+                                                                  AppColor.green,
                                                                   state
                                                                       .data
                                                                       .message,
@@ -1893,9 +1891,7 @@ class _CreateCommissioningReportScreenState
                                                                   is ServiceCallReportStep5FailureState) {
                                                                 appSnackBar(
                                                                   context,
-                                                                  const Color(
-                                                                    0xFFF44336,
-                                                                  ),
+                                                                  AppColor.bright_red,
                                                                   state.message,
                                                                 );
                                                               }
@@ -1916,9 +1912,7 @@ class _CreateCommissioningReportScreenState
                                                                             is CommissioningStep5SuccessState) {
                                                                           appSnackBar(
                                                                             context,
-                                                                            const Color(
-                                                                              0xFF4CAF50,
-                                                                            ),
+                                                                            AppColor.green,
                                                                             state.data.message,
                                                                           );
                                                                           setState(() {
@@ -1941,9 +1935,7 @@ class _CreateCommissioningReportScreenState
                                                                             is CommissioningStep5FailureState) {
                                                                           appSnackBar(
                                                                             context,
-                                                                            const Color(
-                                                                              0xFFF44336,
-                                                                            ),
+                                                                            AppColor.bright_red,
                                                                             state.message,
                                                                           );
                                                                         }
@@ -2140,9 +2132,7 @@ class _CreateCommissioningReportScreenState
                                                                                               is ServiceCallReportStep6SuccessState) {
                                                                                             appSnackBar(
                                                                                               context,
-                                                                                              const Color(
-                                                                                                0xFF4CAF50,
-                                                                                              ),
+                                                                                              AppColor.green,
                                                                                               state.data.message,
                                                                                             );
                                                                                             // If ServiceCallStep6Response is ever updated to include data, it would be passed here
@@ -2153,9 +2143,7 @@ class _CreateCommissioningReportScreenState
                                                                                               is ServiceCallReportStep6FailureState) {
                                                                                             appSnackBar(
                                                                                               context,
-                                                                                              const Color(
-                                                                                                0xFFF44336,
-                                                                                              ),
+                                                                                              AppColor.bright_red,
                                                                                               state.message,
                                                                                             );
                                                                                           }
@@ -2175,9 +2163,7 @@ class _CreateCommissioningReportScreenState
                                                                                                     is CommissioningStep6SuccessState) {
                                                                                                   appSnackBar(
                                                                                                     context,
-                                                                                                    const Color(
-                                                                                                      0xFF4CAF50,
-                                                                                                    ),
+                                                                                                    AppColor.green,
                                                                                                     state.data.message,
                                                                                                   );
                                                                                                   _showSuccessDialog(
@@ -2187,9 +2173,7 @@ class _CreateCommissioningReportScreenState
                                                                                                     is CommissioningStep6FailureState) {
                                                                                                   appSnackBar(
                                                                                                     context,
-                                                                                                    const Color(
-                                                                                                      0xFFF44336,
-                                                                                                    ),
+                                                                                                    AppColor.bright_red,
                                                                                                     state.message,
                                                                                                   );
                                                                                                 }

@@ -1,3 +1,4 @@
+import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
@@ -89,7 +90,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                 );
               } else if (state is AmcReportPdfFailure) {
                 Navigator.pop(context);
-                appSnackBar(context, const Color(0xFFF44336), state.error);
+                appSnackBar(context, AppColor.bright_red, state.error);
               } else if (state is AmcReportPdfSuccess) {
                 Navigator.pop(context);
                 final url = state.pdfUrl;
@@ -101,7 +102,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                   });
                   launchUrl(cacheClearUri, mode: LaunchMode.externalApplication);
                 } else {
-                  appSnackBar(context, const Color(0xFFF44336), 'pdf_url_is_empty'.tr());
+                  appSnackBar(context, AppColor.bright_red, 'pdf_url_is_empty'.tr());
                 }
               }
             },
@@ -109,10 +110,10 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
           BlocListener<DeleteAmcReportBloc, DeleteAmcReportState>(
             listener: (context, state) {
               if (state is DeleteAmcReportSuccessState) {
-                appSnackBar(context, const Color(0xFF00A76F), state.data.message ?? 'report_deleted_successfully'.tr());
+                appSnackBar(context, AppColor.green, state.data.message ?? 'report_deleted_successfully'.tr());
                 _reportsBloc.add(AmcVisitReportsGetEvent(visitId: widget.visitId));
               } else if (state is DeleteAmcReportFailureState) {
-                appSnackBar(context, const Color(0xFFF44336), state.message);
+                appSnackBar(context, AppColor.bright_red, state.message);
               }
             },
           ),

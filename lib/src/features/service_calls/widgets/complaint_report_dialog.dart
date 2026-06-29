@@ -12,6 +12,7 @@ import 'package:service_app/src/features/service_calls/bloc/service_call_complai
 import 'package:service_app/src/features/service_calls/bloc/service_call_complaint_pdf_bloc/service_call_complaint_pdf_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/service_call_complaint_pdf_bloc/service_call_complaint_pdf_state.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 
 class ComplaintReportDialog extends StatefulWidget {
   final String complaintId;
@@ -52,7 +53,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
         if (state is ServiceCallComplaintPdfLoading) {
           // Loading is handled inline on the button
         } else if (state is ServiceCallComplaintPdfError) {
-          appSnackBar(context, const Color(0xFFF44336), state.message);
+          appSnackBar(context, AppColor.bright_red, state.message);
         } else if (state is ServiceCallComplaintPdfLoaded) {
           final url = state.response.data?.pdfUrl;
           if (url != null && url.isNotEmpty) {
@@ -63,7 +64,7 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
             });
             launchUrl(cacheClearUri, mode: LaunchMode.externalApplication);
           } else {
-            appSnackBar(context, const Color(0xFFF44336), 'pdf_url_is_empty'.tr());
+            appSnackBar(context, AppColor.bright_red, 'pdf_url_is_empty'.tr());
           }
         }
       },

@@ -10,6 +10,7 @@ import 'package:service_app/src/features/profile/bloc/delete_account_bloc/delete
 import 'package:service_app/src/features/profile/bloc/delete_account_bloc/delete_account_event.dart';
 import 'package:service_app/src/features/profile/bloc/delete_account_bloc/delete_account_state.dart';
 import 'package:service_app/src/routes/app_route_path.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 
 class ProfileLogoutDialog extends StatelessWidget {
   const ProfileLogoutDialog({super.key});
@@ -264,7 +265,7 @@ class ProfileDeleteDialog extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(state.data.message),
-                            backgroundColor: const Color(0xFF4CAF50),
+                            backgroundColor: AppColor.green,
                           ),
                         );
                         final nav = Navigator.of(context, rootNavigator: true);
@@ -276,7 +277,7 @@ class ProfileDeleteDialog extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(state.message),
-                            backgroundColor: const Color(0xFFF44336),
+                            backgroundColor: AppColor.bright_red,
                           ),
                         );
                       }

@@ -11,6 +11,7 @@ import 'package:service_app/src/features/service_calls/bloc/assign_technician_se
 import 'package:service_app/src/features/service_calls/bloc/assign_technician_service_calls_bloc/assign_technician_service_calls_event.dart';
 import 'package:service_app/src/features/service_calls/bloc/assign_technician_service_calls_bloc/assign_technician_service_calls_state.dart';
 import 'package:service_app/src/features/service_calls/domain/usecase/assign_technician_service_calls_usecase.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 
 class ReassignTechnicianDialog extends StatefulWidget {
   final String complaintId;
@@ -551,7 +552,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('assign_tech_success_msg'),
-                                  backgroundColor: Colors.green,
+                                  backgroundColor: AppColor.green,
                                 ),
                               );
                               Navigator.pop(context);
@@ -560,7 +561,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(state.message),
-                                  backgroundColor: Colors.red,
+                                  backgroundColor: AppColor.bright_red,
                                 ),
                               );
                             }
@@ -578,7 +579,7 @@ class _ReassignTechnicianDialogState extends State<ReassignTechnicianDialog> {
                                       content: Text(
                                         'assign_tech_validation_msg'.tr(),
                                       ),
-                                      backgroundColor: Colors.red,
+                                      backgroundColor: AppColor.bright_red,
                                     ),
                                   );
                                   return;

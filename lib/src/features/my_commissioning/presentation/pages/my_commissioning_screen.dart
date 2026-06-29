@@ -1,3 +1,4 @@
+import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/features/widgets/app_alert_dialogue_widget.dart';
@@ -252,16 +253,14 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
               if (state is CommissioningWorkDeleteSuccessState) {
                 Navigator.pop(dialogContext);
                 appSnackBar(
-                  context,
-                  const Color(0xFF4CAF50),
+                  context, AppColor.green,
                   state.message,
                 );
                 _bloc.add(CommissioningWorkListGetEvent());
               } else if (state is CommissioningWorkDeleteFailureState) {
                 Navigator.pop(dialogContext);
                 appSnackBar(
-                  context,
-                  const Color(0xFFF44336),
+                  context, AppColor.bright_red,
                   state.message,
                 );
               }

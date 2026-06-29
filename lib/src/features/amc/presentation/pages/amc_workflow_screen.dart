@@ -1,3 +1,4 @@
+import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/features/amc/presentation/pages/amc_schedule_screen.dart';
@@ -99,7 +100,7 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
               );
             } else if (state is AmcVisitCompleteSuccessState) {
               Navigator.pop(context); // pop loader
-              appSnackBar(context, Colors.green, state.data.message ?? 'amc_visit_marked_complete_successfully'.tr());
+              appSnackBar(context, AppColor.green, state.data.message ?? 'amc_visit_marked_complete_successfully'.tr());
               if (widget.isFromHistory) {
                 Navigator.pop(context);
               } else {
@@ -109,7 +110,7 @@ class _AmcWorkflowScreenState extends State<AmcWorkflowScreen> {
               }
             } else if (state is AmcVisitCompleteFailureState) {
               Navigator.pop(context); // pop loader
-              appSnackBar(context, Colors.red, state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
           child: Scaffold(

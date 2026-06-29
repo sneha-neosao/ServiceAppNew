@@ -1,3 +1,4 @@
+import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/features/widgets/list_card_shimmer.dart';
@@ -203,14 +204,13 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
 
       if (mounted) {
         appSnackBar(
-          context,
-          const Color(0xFF4CAF50),
+          context, AppColor.green,
           '${'download_to'.tr()} $savePath',
         );
       }
     } catch (e) {
       if (mounted) {
-        appSnackBar(context, const Color(0xFFF44336), 'Download failed: $e');
+        appSnackBar(context, AppColor.bright_red, 'Download failed: $e');
       }
     }
   }
@@ -246,7 +246,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               );
             } else if (state is CommissioningReportPdfError) {
               Navigator.pop(context);
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             } else if (state is CommissioningReportPdfLoaded) {
               Navigator.pop(context);
               final url = state.response.data?.pdfUrl;
@@ -262,7 +262,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                   _downloadPdf(url);
                 }
               } else {
-                appSnackBar(context, const Color(0xFFF44336), 'pdf_url_is_empty'.tr());
+                appSnackBar(context, AppColor.bright_red, 'pdf_url_is_empty'.tr());
               }
             }
           },
@@ -280,7 +280,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               );
             } else if (state is ServiceCallReportPdfError) {
               Navigator.pop(context);
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             } else if (state is ServiceCallReportPdfLoaded) {
               Navigator.pop(context);
               final url = state.response.data?.pdfUrl;
@@ -296,7 +296,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                   _downloadPdf(url);
                 }
               } else {
-                appSnackBar(context, const Color(0xFFF44336), 'pdf_url_is_empty'.tr());
+                appSnackBar(context, AppColor.bright_red, 'pdf_url_is_empty'.tr());
               }
             }
           },
@@ -1662,8 +1662,7 @@ class _ReportCard extends StatelessWidget {
                             _showQrCodeDialog(context);
                           } else {
                             appSnackBar(
-                              context,
-                              const Color(0xFFF44336),
+                              context, AppColor.bright_red,
                               'reports_qr_not_available'.tr(),
                             );
                           }

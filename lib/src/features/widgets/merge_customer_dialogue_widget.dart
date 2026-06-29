@@ -1,3 +1,4 @@
+import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,8 +28,7 @@ class MergeCustomerDialogWidget extends StatelessWidget {
         if (state is CreateNewCustomerSuccessState) {
           Navigator.pop(ctx); // Close dialog
           appSnackBar(
-            context,
-            const Color(0xFF4CAF50),
+            context, AppColor.green,
             state.data.message,
           );
           final newName = state.data.data?.name ?? name;
@@ -36,8 +36,7 @@ class MergeCustomerDialogWidget extends StatelessWidget {
         } else if (state is CreateNewCustomerFailureState) {
           Navigator.pop(ctx);
           appSnackBar(
-            context,
-            const Color(0xFFF44336),
+            context, AppColor.bright_red,
             state.message,
           );
         }

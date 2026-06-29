@@ -25,6 +25,7 @@ import 'package:service_app/src/features/common/domain/usecase/create_new_site_u
 import 'package:service_app/src/features/widgets/app_add_new_text_button_widget.dart';
 import 'package:service_app/src/features/widgets/merge_customer_dialogue_widget.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 
 class CloseOverCallDialog extends StatefulWidget {
   final String complaintId;
@@ -80,7 +81,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
       _scaffoldKey.currentState?.showSnackBar(
         SnackBar(
           content: Text('please_enter_resolution_details'.tr()),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColor.bright_red,
         ),
       );
       setState(() {
@@ -93,7 +94,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
       _scaffoldKey.currentState?.showSnackBar(
         SnackBar(
           content: Text('please_select_customer'.tr()),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColor.bright_red,
         ),
       );
       return;
@@ -103,7 +104,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
       _scaffoldKey.currentState?.showSnackBar(
         SnackBar(
           content: Text('please_select_site'.tr()),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColor.bright_red,
         ),
       );
       return;
@@ -143,7 +144,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
       _scaffoldKey.currentState?.showSnackBar(
         SnackBar(
           content: Text('invalid_customer_or_site_selected'.tr()),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColor.bright_red,
         ),
       );
       return;
@@ -498,7 +499,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                       ScaffoldMessenger.of(context).showSnackBar(
                          SnackBar(
                           content: Text(state.data.message),
-                          backgroundColor: Colors.green,
+                          backgroundColor: AppColor.green,
                         ),
                       );
                       Navigator.pop(context);
@@ -506,7 +507,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(state.message),
-                          backgroundColor: Colors.red,
+                          backgroundColor: AppColor.bright_red,
                         ),
                       );
                     }
@@ -694,7 +695,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                       listener: (context, state) {
                         if (state is CreateNewCustomerSuccessState) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(state.data.message), backgroundColor: Colors.green),
+                            SnackBar(content: Text(state.data.message), backgroundColor: AppColor.green),
                           );
                           final newName = state.data.data?.name ?? controller.text.trim();
                           Navigator.pop(ctx);
@@ -724,7 +725,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+                              SnackBar(content: Text(state.message), backgroundColor: AppColor.bright_red),
                             );
                           }
                         }
@@ -777,7 +778,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
   Future<void> _showAddSiteDialog() async {
     if (_selectedCustomer == null) {
       _scaffoldKey.currentState?.showSnackBar(
-        SnackBar(content: Text('please_select_customer'.tr()), backgroundColor: Colors.red),
+        SnackBar(content: Text('please_select_customer'.tr()), backgroundColor: AppColor.bright_red),
       );
       return;
     }
@@ -799,7 +800,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
 
     if (customerId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('invalid_customer_or_site_selected'.tr()), backgroundColor: Colors.red),
+        SnackBar(content: Text('invalid_customer_or_site_selected'.tr()), backgroundColor: AppColor.bright_red),
       );
       return;
     }
@@ -907,7 +908,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                       listener: (context, state) {
                         if (state is CreateNewSiteSuccessState) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(state.data.message), backgroundColor: Colors.green),
+                            SnackBar(content: Text(state.data.message), backgroundColor: AppColor.green),
                           );
                           final newName = controller.text.trim();
                           Navigator.pop(ctx);
@@ -927,7 +928,7 @@ class _CloseOverCallDialogState extends State<CloseOverCallDialog> {
                           });
                         } else if (state is CreateNewSiteFailureState) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+                            SnackBar(content: Text(state.message), backgroundColor: AppColor.bright_red),
                           );
                         }
                       },

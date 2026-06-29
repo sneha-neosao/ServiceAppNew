@@ -1,3 +1,4 @@
+import 'package:service_app/src/core/theme/app_color.dart';
 import 'dart:io';
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
@@ -450,19 +451,18 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
       if (techs.isEmpty) {
         appSnackBar(
-          context,
-          const Color(0xFFF44336),
+          context, AppColor.bright_red,
           "assign_tech_validation_msg".tr(),
         );
         return;
       }
 
       if (_selectedCustomerId == null) {
-        appSnackBar(context, const Color(0xFFF44336), "please_select_customer".tr());
+        appSnackBar(context, AppColor.bright_red, "please_select_customer".tr());
         return;
       }
       if (_selectedSiteId == null) {
-        appSnackBar(context, const Color(0xFFF44336), "please_select_site".tr());
+        appSnackBar(context, AppColor.bright_red, "please_select_site".tr());
         return;
       }
 
@@ -484,8 +484,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     } else if (_currentStep == 2) {
       if (_reportId == null) {
         appSnackBar(
-          context,
-          const Color(0xFFF44336),
+          context, AppColor.bright_red,
           "report_id_is_missing".tr(),
         );
         return;
@@ -539,29 +538,26 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       // Validate mechanical section
       if (!_mechNA) {
         if (_bearingNoise == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_bearing'.tr());
+          appSnackBar(context, AppColor.bright_red, 'val_sel_bearing'.tr());
           return;
         }
         if (_vibration == null) {
           appSnackBar(
-            context,
-            const Color(0xFFF44336),
+            context, AppColor.bright_red,
             'val_sel_vibration'.tr(),
           );
           return;
         }
         if (_mechSeal == null) {
           appSnackBar(
-            context,
-            const Color(0xFFF44336),
+            context, AppColor.bright_red,
             'val_sel_mech_seal'.tr(),
           );
           return;
         }
         if (_pumpDry == null) {
           appSnackBar(
-            context,
-            const Color(0xFFF44336),
+            context, AppColor.bright_red,
             'val_sel_pump_dry'.tr(),
           );
           return;
@@ -571,45 +567,40 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       // Validate pipeline section
       if (!_pipeNA) {
         if (_nrvValve == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_nrv'.tr());
+          appSnackBar(context, AppColor.bright_red, 'val_sel_nrv'.tr());
           return;
         }
         if (_strainerValve == null) {
           appSnackBar(
-            context,
-            const Color(0xFFF44336),
+            context, AppColor.bright_red,
             'val_sel_strainer'.tr(),
           );
           return;
         }
         if (_suctionLine == null) {
           appSnackBar(
-            context,
-            const Color(0xFFF44336),
+            context, AppColor.bright_red,
             'val_sel_suction_line'.tr(),
           );
           return;
         }
         if (_deliveryLine == null) {
           appSnackBar(
-            context,
-            const Color(0xFFF44336),
+            context, AppColor.bright_red,
             'val_sel_del_line'.tr(),
           );
           return;
         }
         if (_suctionDelivery == null) {
           appSnackBar(
-            context,
-            const Color(0xFFF44336),
+            context, AppColor.bright_red,
             'val_sel_suction_del'.tr(),
           );
           return;
         }
         if (_pressureSwitch == null) {
           appSnackBar(
-            context,
-            const Color(0xFFF44336),
+            context, AppColor.bright_red,
             'val_sel_pressure'.tr(),
           );
           return;
@@ -620,28 +611,26 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       if (!_elecNA) {
         if (_elecFaults == null) {
           appSnackBar(
-            context,
-            const Color(0xFFF44336),
+            context, AppColor.bright_red,
             'val_sel_elec_faults'.tr(),
           );
           return;
         }
         if (_voltage == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_voltage'.tr());
+          appSnackBar(context, AppColor.bright_red, 'val_sel_voltage'.tr());
           return;
         }
         if (_phase == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_phase'.tr());
+          appSnackBar(context, AppColor.bright_red, 'val_sel_phase'.tr());
           return;
         }
         if (_current == null) {
-          appSnackBar(context, const Color(0xFFF44336), 'val_sel_current'.tr());
+          appSnackBar(context, AppColor.bright_red, 'val_sel_current'.tr());
           return;
         }
         if (_panelWiring == null) {
           appSnackBar(
-            context,
-            const Color(0xFFF44336),
+            context, AppColor.bright_red,
             'val_sel_panel_wiring'.tr(),
           );
           return;
@@ -735,21 +724,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       );
     } else if (_currentStep == 4) {
       if (_reportId == null) {
-        appSnackBar(context, const Color(0xFFF44336), "Missing report ID.");
+        appSnackBar(context, AppColor.bright_red, "Missing report ID.");
         return;
       }
       if (_technicianNameController.text.trim().isEmpty) {
         appSnackBar(
-          context,
-          const Color(0xFFF44336),
+          context, AppColor.bright_red,
           "Technician Representative name is required",
         );
         return;
       }
       if (_customerRepNameCtrl.text.trim().isEmpty) {
         appSnackBar(
-          context,
-          const Color(0xFFF44336),
+          context, AppColor.bright_red,
           "Customer Representative name is required",
         );
         return;
@@ -758,8 +745,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           (_existingCustomerSignatureUrl == null ||
               _existingCustomerSignatureUrl!.isEmpty)) {
         appSnackBar(
-          context,
-          const Color(0xFFF44336),
+          context, AppColor.bright_red,
           "Customer Signature is required",
         );
         return;
@@ -768,8 +754,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           (_existingTechnicianSignatureUrl == null ||
               _existingTechnicianSignatureUrl!.isEmpty)) {
         appSnackBar(
-          context,
-          const Color(0xFFF44336),
+          context, AppColor.bright_red,
           "Technician Signature is required",
         );
         return;
@@ -942,8 +927,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                       } else if (state
                                           is DeleteServiceWorkReportFailure) {
                                         appSnackBar(
-                                          context,
-                                          Colors.red,
+                                          context, AppColor.bright_red,
                                           state.message,
                                         );
                                         Navigator.pop(
@@ -1174,7 +1158,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 );
               }
             } else if (state is ServiceWorkReportStep1Failure) {
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
         ),
@@ -1191,7 +1175,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 );
               }
             } else if (state is ServiceWorkReportStep2Failure) {
-              appSnackBar(context, const Color(0xFFF44336), state.error);
+              appSnackBar(context, AppColor.bright_red, state.error);
             }
           },
         ),
@@ -1238,7 +1222,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 );
               }
             } else if (state is ServiceWorkReportStep3Failure) {
-              appSnackBar(context, const Color(0xFFF44336), state.error);
+              appSnackBar(context, AppColor.bright_red, state.error);
             }
           },
         ),
@@ -1247,13 +1231,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           listener: (context, state) {
             if (state is ServiceWorkReportStep4Loaded) {
               appSnackBar(
-                context,
-                const Color(0xFF4CAF50),
+                context, AppColor.green,
                 state.response.message ?? 'Report submitted successfully',
               );
               _showSuccessDialog(qrCodeUrl: state.response.data.qrCodeImage);
             } else if (state is ServiceWorkReportStep4Error) {
-              appSnackBar(context, const Color(0xFFF44336), state.message);
+              appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
         ),
@@ -1956,7 +1939,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           bloc: _createNewCustomerBloc,
           listener: (ctx, state) {
             if (state is CreateNewCustomerSuccessState) {
-              appSnackBar(ctx, const Color(0xFF4CAF50), state.data.message);
+              appSnackBar(ctx, AppColor.green, state.data.message);
               final newName = state.data.data?.name ?? controller.text.trim();
               Navigator.pop(ctx);
               setState(() {
@@ -1982,7 +1965,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 Navigator.pop(ctx); // Close the bottom sheet immediately
                 _showMergeCustomerDialog(context, controller.text.trim());
               } else {
-                appSnackBar(ctx, const Color(0xFFF44336), state.message);
+                appSnackBar(ctx, AppColor.bright_red, state.message);
               }
             }
           },
@@ -2167,8 +2150,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   void _showAddSiteBottomSheet() async {
     if (_selectedCustomerId == null || _selectedCustomerId!.isEmpty) {
       appSnackBar(
-        context,
-        const Color(0xFFF44336),
+        context, AppColor.bright_red,
         'please_select_customer'.tr(),
       );
       return;
@@ -2190,7 +2172,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           bloc: _createNewSiteBloc,
           listener: (ctx, state) {
             if (state is CreateNewSiteSuccessState) {
-              appSnackBar(ctx, const Color(0xFF4CAF50), state.data.message);
+              appSnackBar(ctx, AppColor.green, state.data.message);
               final newName = controller.text.trim();
               Navigator.pop(ctx);
               setState(() {
@@ -2208,7 +2190,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 _selectedSite = newName;
               });
             } else if (state is CreateNewSiteFailureState) {
-              appSnackBar(ctx, const Color(0xFFF44336), state.message);
+              appSnackBar(ctx, AppColor.bright_red, state.message);
             }
           },
           builder: (ctx, state) {
@@ -2465,7 +2447,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             }
           }
         } else if (state is ServiceWorkReportStep1AutofillFailure) {
-          appSnackBar(context, const Color(0xFFF44336), state.message);
+          appSnackBar(context, AppColor.bright_red, state.message);
         }
       },
       builder: (context, autofillState) {
@@ -4474,8 +4456,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           onTap: () async {
                             if (signatureController.isEmpty) {
                               appSnackBar(
-                                context,
-                                const Color(0xFFF44336),
+                                context, AppColor.bright_red,
                                 'commissioning_please_draw_signature'.tr(),
                               );
                               return;

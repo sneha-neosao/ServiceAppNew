@@ -1,3 +1,4 @@
+import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -220,7 +221,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(state.data.message),
-                                        backgroundColor: Colors.green,
+                                        backgroundColor: AppColor.green,
                                       ),
                                     );
                                     final newName =
@@ -261,7 +262,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                       ).showSnackBar(
                                         SnackBar(
                                           content: Text(state.message),
-                                          backgroundColor: Colors.red,
+                                          backgroundColor: AppColor.bright_red,
                                         ),
                                       );
                                     }
@@ -336,7 +337,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
       _scaffoldKey.currentState?.showSnackBar(
         SnackBar(
           content: Text('please_select_customer'.tr()),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColor.bright_red,
         ),
       );
       return;
@@ -361,7 +362,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
       _scaffoldKey.currentState?.showSnackBar(
         SnackBar(
           content: Text('error_finding_customer_id'.tr()),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColor.bright_red,
         ),
       );
       return;
@@ -495,7 +496,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(state.data.message),
-                                    backgroundColor: Colors.green,
+                                    backgroundColor: AppColor.green,
                                   ),
                                 );
                                 final newName = controller.text.trim();
@@ -518,7 +519,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(state.message),
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: AppColor.bright_red,
                                   ),
                                 );
                               }
@@ -1181,7 +1182,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('assign_tech_success_msg'.tr()),
-                                backgroundColor: Colors.green,
+                                backgroundColor: AppColor.green,
                               ),
                             );
 
@@ -1192,7 +1193,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(state.message),
-                                backgroundColor: Colors.red,
+                                backgroundColor: AppColor.bright_red,
                               ),
                             );
                           }
@@ -1210,7 +1211,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                     content: Text(
                                       'assign_tech_validation_msg'.tr(),
                                     ),
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: AppColor.bright_red,
                                   ),
                                 );
                                 return;
@@ -1220,7 +1221,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text('please_select_customer'.tr()),
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: AppColor.bright_red,
                                   ),
                                 );
                                 return;
@@ -1229,7 +1230,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text('please_select_site'.tr()),
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: AppColor.bright_red,
                                   ),
                                 );
                                 return;
@@ -1274,7 +1275,7 @@ class _AssignTechnicianDialogState extends State<AssignTechnicianDialog> {
                                     content: Text(
                                       'invalid_customer_or_site_selected'.tr(),
                                     ),
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: AppColor.bright_red,
                                   ),
                                 );
                                 return;

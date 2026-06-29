@@ -14,10 +14,9 @@ class AppColor {
   static const primaryColor = Color(0xFF0B68B9);
   static const hint_text = Color(0xFFA9A9AC);
   static const gray = Color(0xFFA2A2A2);
+  static const pendingAmber = Color(0xFFFFB300,); // Softer golden shade, less aggressive
 
-  static const pendingAmber = Color(
-    0xFFFFB300,
-  ); // Softer golden shade, less aggressive
+  ///app api calls success and failure toast colors
   static const bright_red = Color(0xFFE62222);
   static const green = Color(0xFF188510);
 }
