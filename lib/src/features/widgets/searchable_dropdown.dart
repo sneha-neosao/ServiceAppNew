@@ -264,7 +264,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
         baseColor: Colors.grey[200]!,
         highlightColor: Colors.grey[50]!,
         child: Container(
-          height: widget.isFilter ? 44 : 56,
+          height: widget.isFilter ? 40 : 56,
           width: double.infinity,
           decoration: BoxDecoration(
             color: Colors.white,
@@ -280,7 +280,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>> {
     return GestureDetector(
       onTap: (widget.readOnly || !widget.enabled) ? null : _showBottomSheet,
       child: Container(
-        height: widget.isFilter ? 44 : 56,
+        height: widget.isFilter ? 40 : 56,
         decoration: BoxDecoration(
           color: widget.enabled ? Colors.white : const Color(0xFFF1F2F6),
           borderRadius: BorderRadius.circular(widget.isFilter ? 10 : 12),

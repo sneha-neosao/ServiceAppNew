@@ -329,7 +329,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 delegate: _StickyReportFilterDelegate(
                   height: _selectedTab == -1 
                       ? 64.0 
-                      : (_selectedTab == 1 ? 390.0 : 335.0),
+                      : (_selectedTab == 1 ? 340.0 : 285.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -809,7 +809,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 16, 8),
+          padding: const EdgeInsets.fromLTRB(24, 12, 16, 4),
           child: Row(
             children: [
               Text(
@@ -824,8 +824,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           ),
         ),
         Container(
-          margin: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
@@ -969,14 +969,14 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               // Complaint Number — only for Service tab
               if (_selectedTab == 1) ...[
                 _buildFilterInputFull(
                   'reports_filter_complaint_hint'.tr(),
                   Icons.assignment_outlined,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
               ],
               // Filter Row 2
               Row(
@@ -1008,7 +1008,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                         }
                       },
                       child: Container(
-                        height: 44,
+                        height: 40,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -1089,7 +1089,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               // Clear Filters
               GestureDetector(
                 onTap: () {
@@ -1107,7 +1107,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 },
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF3F8FF),
                     borderRadius: BorderRadius.circular(12),
@@ -1146,7 +1146,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     bool isLoading = false,
   }) {
     return Container(
-      height: 44,
+      height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1190,7 +1190,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
 
   Widget _buildFilterInputFull(String label, IconData icon) {
     return Container(
-      height: 44,
+      height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1211,7 +1211,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 ),
                 border: InputBorder.none,
                 isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
               ),
               style: AppFont.style(
                 fontSize: 12,
