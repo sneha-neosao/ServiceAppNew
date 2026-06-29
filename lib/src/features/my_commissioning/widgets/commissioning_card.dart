@@ -166,8 +166,6 @@ class CommissioningCard extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.check_circle_outline, size: 18, color: Colors.white),
-                      const SizedBox(width: 8),
                       Flexible(
                         child: Text(
                           'commissioning_submit_btn'.tr(),

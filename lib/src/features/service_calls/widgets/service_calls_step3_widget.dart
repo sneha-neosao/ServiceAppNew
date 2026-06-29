@@ -130,7 +130,10 @@ class ServiceCallsStep3Widget extends StatelessWidget {
                 ),
               ),
               onSubmitted: (_) => parent._fetchServiceCalls(isRefresh: true, isPendingOnly: true),
-              onChanged: (_) => parent.updateState(() {}),
+              onChanged: (_) {
+                parent.updateState(() {});
+                parent._fetchServiceCalls(isRefresh: true, isPendingOnly: true);
+              },
             ),
           ),
           const SizedBox(width: 12),
@@ -158,7 +161,10 @@ class ServiceCallsStep3Widget extends StatelessWidget {
                 ),
               ),
               onSubmitted: (_) => parent._fetchServiceCalls(isRefresh: true, isPendingOnly: true),
-              onChanged: (_) => parent.updateState(() {}),
+              onChanged: (_) {
+                parent.updateState(() {});
+                parent._fetchServiceCalls(isRefresh: true, isPendingOnly: true);
+              },
             ),
           ),
         ],

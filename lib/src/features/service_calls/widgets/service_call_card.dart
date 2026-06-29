@@ -226,7 +226,7 @@ class ServiceCallCard extends StatelessWidget {
                             ? 'service_calls_btn_submit'.tr()
                             : 'service_calls_btn_assign'.tr(),
                         type == ServiceCallType.ongoing
-                            ? Icons.check_circle_outline
+                            ? null
                             : Icons.person_outline,
                       ),
                     ),
@@ -254,7 +254,7 @@ class ServiceCallCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPrimaryButton(String label, IconData icon) {
+  Widget _buildPrimaryButton(String label, IconData? icon) {
     return Container(
       height: 44,
       decoration: BoxDecoration(
@@ -266,8 +266,10 @@ class ServiceCallCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 18, color: Colors.white),
-            const SizedBox(width: 8),
+            if (icon != null) ...[
+              Icon(icon, size: 18, color: Colors.white),
+              const SizedBox(width: 8),
+            ],
             Flexible(
               child: Text(
                 label,
