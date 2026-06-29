@@ -53,8 +53,6 @@ Future<void> main() async {
         : HydratedStorageDirectory((await getTemporaryDirectory()).path),
   );
 
-  // ✅ Request notification permissions
-  await NoficationService.requestNotificationPermission();
 
   // ✅ Initialize local notifications
   NoficationService.initLocalNotifications();

@@ -7,6 +7,7 @@ import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import '../../../../configs/injector/injector.dart';
 import '../../../../routes/app_route_path.dart';
+import 'package:service_app/src/core/services/notification_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -42,6 +43,9 @@ class _SplashScreenState extends State<SplashScreen>
   /// Requests camera and photo-library permissions.
   /// Navigation continues regardless of the user's choice.
   Future<void> _requestPermissions() async {
+    // Request notification permissions just before media permissions
+    await NoficationService.requestNotificationPermission();
+
     List<Permission> permissionsToRequest = [];
 
     if ((await Permission.camera.status).isDenied) {
