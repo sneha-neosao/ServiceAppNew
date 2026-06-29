@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:service_app/src/features/common/bloc/customer_bloc/customer_bloc.dart';
 import 'package:service_app/src/features/widgets/searchable_dropdown.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
@@ -76,7 +77,7 @@ class _AmcScheduleScreenState extends State<AmcScheduleScreen> {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColor.white,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:service_app/src/core/utils/speech_to_text_helper.dart';
 
 class SpeechToTextMicButton extends StatelessWidget {
@@ -22,8 +23,8 @@ class SpeechToTextMicButton extends StatelessWidget {
           child: Icon(
             isListening ? Icons.mic : Icons.mic_off_outlined,
             color: isListening
-                ? const Color(0xFF1565C0)
-                : const Color(0xFFA5ABB7),
+                ? AppColor.primaryColor
+                : AppColor.gray,
             size: 20,
           ),
         );
