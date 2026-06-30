@@ -25,6 +25,7 @@ class CommissioningStep6Usecase
 
 class CommissioningStep6Params extends Equatable {
   final String id;
+  final String? assignId;
   final String technicianRemarks;
   final String customerRemarks;
   final String technicianRepresentative;
@@ -35,6 +36,7 @@ class CommissioningStep6Params extends Equatable {
 
   const CommissioningStep6Params({
     required this.id,
+    this.assignId,
     required this.technicianRemarks,
     required this.customerRemarks,
     required this.technicianRepresentative,
@@ -47,6 +49,7 @@ class CommissioningStep6Params extends Equatable {
   @override
   List<Object?> get props => [
     id,
+    assignId,
     technicianRemarks,
     customerRemarks,
     technicianRepresentative,

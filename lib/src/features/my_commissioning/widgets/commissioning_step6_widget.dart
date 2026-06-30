@@ -96,35 +96,31 @@ class Step6Widget extends StatelessWidget {
              Text(':', style: TextStyle(color: Color(0xFF8E9BAE))),
             const SizedBox(width: 8),
             Expanded(
-              child: parent.widget.isServiceReport
-                  ? SearchableDropdown<service_tech_model.AssignedTechnician>(
-                      items: parent._assignedServiceCallTechniciansList,
-                      itemAsString: (t) => t.name,
-                      value: parent._assignedServiceCallTechniciansList
-                          .where((t) => t.assignId == parent._selectedTechnicianRepId)
-                          .firstOrNull,
-                      onChanged: (val) {
-                        parent.updateState(() {
-                          parent._selectedTechnicianRepId = val?.assignId;
-                        });
-                      },
-                      hintText: 'commissioning_select_technician'.tr(),
-                      readOnly: true,
-                    )
-                  : SearchableDropdown<AssignedTechnician>(
-                      items: parent._assignedTechniciansList,
-                      itemAsString: (t) => t.name,
-                      value: parent._assignedTechniciansList
-                          .where((t) => t.assignId == parent._selectedTechnicianRepId)
-                          .firstOrNull,
-                      onChanged: (val) {
-                        parent.updateState(() {
-                          parent._selectedTechnicianRepId = val?.assignId;
-                        });
-                      },
-                      hintText: 'commissioning_select_technician'.tr(),
-                      readOnly: true,
-                    ),
+              child: TextField(
+                controller: parent._technicianNameController,
+                readOnly: true,
+                style: AppFont.style(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF0D121F),
+                ),
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFF8F9FA),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

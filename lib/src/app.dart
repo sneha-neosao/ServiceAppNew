@@ -9,6 +9,7 @@ import 'core/blocs/theme/theme_bloc.dart';
 import 'core/blocs/translate/translate_bloc.dart';
 import 'core/constants/list_translation_locale.dart';
 import 'core/theme/app_theme.dart';
+import 'core/utils/global_keys.dart';
 import 'routes/app_route_conf.dart';
 import 'routes/app_route_path.dart';
 
@@ -86,6 +87,7 @@ class _MyAppState extends State<MyApp> {
             child: BlocBuilder<ThemeBloc, ThemeState>(
               builder: (_, state) {
                 return MaterialApp.router(
+                  scaffoldMessengerKey: scaffoldMessengerKey,
                   debugShowCheckedModeBanner: false,
                   localizationsDelegates: context.localizationDelegates,
                   supportedLocales: context.supportedLocales,

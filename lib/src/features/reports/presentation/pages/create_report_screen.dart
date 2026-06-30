@@ -61,10 +61,10 @@ import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create
 import 'package:service_app/src/features/common/domain/usecase/create_new_site_usecase.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:service_app/src/features/widgets/step_shimmer.dart';
+import 'package:service_app/src/core/database/offline_service_work_db.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:signature/signature.dart';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 
 class CreateReportScreen extends StatefulWidget {
@@ -425,7 +425,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     setState(() => _pickedPhotos.removeAt(index));
   }
 
-  void _nextStep() {
+  void _nextStep() async {
     if (_currentStep == 1) {
       List<Map<String, String>> techs = [];
       var techState = _technicianBloc.state;
@@ -758,6 +758,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           "Technician Signature is required",
         );
         return;
+      }
+
+      if (_loggedInTechnicianAssignId == null) {
+        final dbAssignId = await OfflineServiceWorkDb.instance.getAssignId(_reportId!);
+        if (dbAssignId != null) {
+          _loggedInTechnicianAssignId = dbAssignId;
+        }
       }
 
       List<String> allWorkPhotos = _pickedPhotos.map((e) => e.path).toList();
@@ -1153,6 +1160,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               }
               // Trigger step2 autofill after moving to step 2
               if (_reportId != null) {
+                _serviceWorkReportTechniciansBloc.add(
+                  FetchServiceWorkReportTechniciansEvent(_reportId!),
+                );
                 _serviceWorkReportStep2AutofillBloc.add(
                   GetServiceWorkReportStep2AutofillEvent(_reportId!),
                 );
@@ -1345,6 +1355,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   (tech) => tech.technicianId == _loggedInTechnicianId,
                 );
                 _loggedInTechnicianAssignId = match.assignId;
+                if (_reportId != null) {
+                  OfflineServiceWorkDb.instance.saveAssignId(_reportId!, match.assignId);
+                }
               } catch (_) {
                 // If not found, ignore
               }

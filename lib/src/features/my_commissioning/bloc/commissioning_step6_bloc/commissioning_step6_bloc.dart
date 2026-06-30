@@ -16,6 +16,7 @@ class CommissioningStep6Bloc
       final result = await usecase(
         CommissioningStep6Params(
           id: event.commissioning_report_id,
+          assignId: event.assignId,
           technicianRemarks: event.technicianRemarks,
           customerRemarks: event.customerRemarks,
           technicianRepresentative: event.technicianRepresentative,

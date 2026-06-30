@@ -220,6 +220,7 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
                                       commissioningWorkId: item.id,
                                       initialStepNo: item.stepNo,
                                       reportId: item.reportId,
+                                      defaultTechnicians: item.assignedTechnicians.map((t) => {'id': t.id, 'name': t.name}).toList(),
                                       onBack: () => Navigator.pop(context),
                                     ),
                               ),

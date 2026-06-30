@@ -232,7 +232,10 @@ sealed class RemoteDataSource {
     String token,
   );
 
-  Future<AmcHistoryResponse> amcReportsHistory(String token, {AmcReportsHistoryParams? params});
+  Future<AmcHistoryResponse> amcReportsHistory(
+    String token, {
+    AmcReportsHistoryParams? params,
+  });
 
   Future<AmcReportStep1Response> amcReportStep1AutoFill(
     String reportId,
@@ -416,22 +419,19 @@ sealed class RemoteDataSource {
     String token,
   );
 
-  Future<AmcReportPdfResponse> getAmcReportPdf(
-    String reportId,
-    String token,
-  );
+  Future<AmcReportPdfResponse> getAmcReportPdf(String reportId, String token);
 
-  Future<FeedbackResponse> getAmcCheckFeedback(
-    String amcVisitId,
-    String token,
-  );
+  Future<FeedbackResponse> getAmcCheckFeedback(String amcVisitId, String token);
 
   Future<FeedbackResponse> getServiceCallReportFeedback(
     String reportId,
     String token,
   );
 
-  Future<ServiceCallReportResponse> getServiceCallsReportHistory(String token, {ServiceCallReportHistoryParams? params});
+  Future<ServiceCallReportResponse> getServiceCallsReportHistory(
+    String token, {
+    ServiceCallReportHistoryParams? params,
+  });
 
   Future<CommissioningReportPdfResponse> getServiceCallReportPdf(
     String reportId,
@@ -447,7 +447,10 @@ sealed class RemoteDataSource {
 
   Future<AmcVisitReportsResponse> amcVisitReports(String visitId, String token);
 
-  Future<CustomerAmcVisitsResponse> getCustomerAmcVisits(CustomerAmcVisitsParams params, String token);
+  Future<CustomerAmcVisitsResponse> getCustomerAmcVisits(
+    CustomerAmcVisitsParams params,
+    String token,
+  );
 
   Future<ServiceCallDetailsResponse> serviceCallDetails(
     String id,
@@ -479,7 +482,9 @@ sealed class RemoteDataSource {
 
   Future<MarkAllReadResponse> markAllNotificationsRead({required String token});
 
-  Future<UnreadCountResponse> getUnreadNotificationCount({required String token});
+  Future<UnreadCountResponse> getUnreadNotificationCount({
+    required String token,
+  });
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -714,7 +719,8 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     String token,
   ) async {
     try {
-      String url = '${ApiUrl.upcomingAmcVisits}?filter=${params.filter.toLowerCase()}';
+      String url =
+          '${ApiUrl.upcomingAmcVisits}?filter=${params.filter.toLowerCase()}';
       if (params.pending != null && params.pending!.isNotEmpty) {
         url += '&pending=${params.pending}';
       }
@@ -1018,11 +1024,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       final response = await _helper.execute(
         url: ApiUrl.technicianDeleteAccount,
         method: Method.delete,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       final respData = DeleteAccountResponse.fromJson(response);
@@ -1150,6 +1152,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     try {
       final Map<String, dynamic> map = {
         "id": params.id,
+        "assign_id": params.assignId,
         "technician_remarks": params.technicianRemarks,
         "customer_remarks": params.customerRemarks,
         "technician_representative": params.technicianRepresentative,
@@ -1276,7 +1279,6 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     }
   }
 
-
   @override
   Future<AmcReportStep1Response> amcReportStep1(
     PostAmcReportStep1Params params,
@@ -1348,35 +1350,54 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
       for (var photo in params.workPhotos) {
         if (photo.path.isNotEmpty) {
-          formData.files.add(MapEntry(
-            "work_photos",
-            await MultipartFile.fromFile(photo.path, filename: photo.path.split('/').last),
-          ));
+          formData.files.add(
+            MapEntry(
+              "work_photos",
+              await MultipartFile.fromFile(
+                photo.path,
+                filename: photo.path.split('/').last,
+              ),
+            ),
+          );
         }
       }
 
-      if (params.technicianSignature != null && params.technicianSignature!.path.isNotEmpty) {
-        formData.files.add(MapEntry(
-          "technician_signature",
-          await MultipartFile.fromFile(params.technicianSignature!.path, filename: params.technicianSignature!.path.split('/').last),
-        ));
+      if (params.technicianSignature != null &&
+          params.technicianSignature!.path.isNotEmpty) {
+        formData.files.add(
+          MapEntry(
+            "technician_signature",
+            await MultipartFile.fromFile(
+              params.technicianSignature!.path,
+              filename: params.technicianSignature!.path.split('/').last,
+            ),
+          ),
+        );
       }
 
-      if (params.customerSignature != null && params.customerSignature!.path.isNotEmpty) {
-        formData.files.add(MapEntry(
-          "customer_signature",
-          await MultipartFile.fromFile(params.customerSignature!.path, filename: params.customerSignature!.path.split('/').last),
-        ));
+      if (params.customerSignature != null &&
+          params.customerSignature!.path.isNotEmpty) {
+        formData.files.add(
+          MapEntry(
+            "customer_signature",
+            await MultipartFile.fromFile(
+              params.customerSignature!.path,
+              filename: params.customerSignature!.path.split('/').last,
+            ),
+          ),
+        );
       }
 
       final response = await _helper.execute(
         method: Method.post,
         url: ApiUrl.amcReportStep3,
         data: formData,
-        options: Options(headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'multipart/form-data',
-        }),
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
       );
 
       final respData = AmcReportStep3Response.fromJson(response);
@@ -1393,7 +1414,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<AmcHistoryResponse> amcReportsHistory(String token, {AmcReportsHistoryParams? params}) async {
+  Future<AmcHistoryResponse> amcReportsHistory(
+    String token, {
+    AmcReportsHistoryParams? params,
+  }) async {
     try {
       final Map<String, String> queryParams = {};
       if (params != null) {
@@ -1425,9 +1449,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       final response = await _helper.execute(
         method: Method.get,
         url: '${ApiUrl.amcReportsHistory}$queryString',
-        options: Options(headers: {
-          'Authorization': 'Bearer $token',
-        }),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       final respData = AmcHistoryResponse.fromJson(response);
@@ -2026,7 +2048,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<AssignedTechnicianResponse> serviceWorkReportTechnicians(
-      String reportId, String token) async {
+    String reportId,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
@@ -2854,6 +2878,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       throw ServerException();
     }
   }
+
   @override
   Future<AmcVisitsListResponse> technicianAmcs(String token) async {
     try {
@@ -2878,8 +2903,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       throw ServerException();
     }
   }
+
   @override
-  Future<AmcVisitReportsResponse> amcVisitReports(String visitId, String token) async {
+  Future<AmcVisitReportsResponse> amcVisitReports(
+    String visitId,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
@@ -2904,11 +2933,15 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<CustomerAmcVisitsResponse> getCustomerAmcVisits(CustomerAmcVisitsParams params, String token) async {
+  Future<CustomerAmcVisitsResponse> getCustomerAmcVisits(
+    CustomerAmcVisitsParams params,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,
-        url: '${ApiUrl.customerAmcVisits}${params.customerId}/?page=${params.page}&page_size=${params.pageSize}',
+        url:
+            '${ApiUrl.customerAmcVisits}${params.customerId}/?page=${params.page}&page_size=${params.pageSize}',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
@@ -2929,7 +2962,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<ServiceCallDetailsResponse> serviceCallDetails(String id, String token) async {
+  Future<ServiceCallDetailsResponse> serviceCallDetails(
+    String id,
+    String token,
+  ) async {
     try {
       final response = await _helper.execute(
         method: Method.get,

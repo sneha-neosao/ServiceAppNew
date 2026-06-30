@@ -31,6 +31,8 @@ String mapFailureToMessage(Failure failure) {
       return "Invalid password format";
     case ApiFailure:
       return failure.message;
+    case InternetFailure:
+      return "Please check your internet connection and try again";
     default:
       return "Unexpected error";
   }

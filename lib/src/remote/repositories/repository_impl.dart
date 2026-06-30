@@ -465,7 +465,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -497,7 +497,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -529,7 +529,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -574,7 +574,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -607,7 +607,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -640,7 +640,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -673,7 +673,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -707,7 +707,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -742,7 +742,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -777,7 +777,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -814,7 +814,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -851,7 +851,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -886,7 +886,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -921,7 +921,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -954,7 +954,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -987,7 +987,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1022,7 +1022,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1053,7 +1053,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1085,7 +1085,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1116,7 +1116,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1148,7 +1148,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1181,7 +1181,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1215,7 +1215,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1250,7 +1250,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1278,7 +1278,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1312,7 +1312,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1346,7 +1346,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1380,7 +1380,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1408,7 +1408,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1436,7 +1436,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1468,7 +1468,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1502,7 +1502,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1534,7 +1534,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1569,7 +1569,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1604,7 +1604,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1639,7 +1639,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1674,7 +1674,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1709,7 +1709,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1774,7 +1774,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1809,7 +1809,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1874,7 +1874,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1906,7 +1906,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1938,7 +1938,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -1973,7 +1973,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2008,7 +2008,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2040,7 +2040,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2072,7 +2072,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2109,7 +2109,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2152,7 +2152,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2184,7 +2184,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2216,7 +2216,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2251,7 +2251,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2283,7 +2283,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2318,7 +2318,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2350,7 +2350,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2383,7 +2383,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2417,7 +2417,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2452,7 +2452,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2486,7 +2486,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2520,7 +2520,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2554,7 +2554,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2587,7 +2587,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2621,7 +2621,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2655,7 +2655,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2686,7 +2686,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2745,7 +2745,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2774,7 +2774,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2805,7 +2805,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2836,7 +2836,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2867,7 +2867,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2898,7 +2898,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2926,7 +2926,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2956,7 +2956,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -2986,7 +2986,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -3016,7 +3016,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -3046,7 +3046,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -3087,7 +3087,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -3118,7 +3118,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -3150,7 +3150,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }
@@ -3185,7 +3185,7 @@ class AuthRepositoryImpl implements Repository {
       },
       notConnected: () async {
         try {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
         } on CacheException {
           return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
         }

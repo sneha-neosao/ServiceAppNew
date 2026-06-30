@@ -9,6 +9,7 @@ sealed class CommissioningStep6Event extends Equatable {
 
 class CommissioningStep6SubmitEvent extends CommissioningStep6Event {
   final String commissioning_report_id;
+  final String? assignId;
   final String technicianRemarks;
   final String customerRemarks;
   final String technicianRepresentative;
@@ -19,6 +20,7 @@ class CommissioningStep6SubmitEvent extends CommissioningStep6Event {
 
   const CommissioningStep6SubmitEvent({
     required this.commissioning_report_id,
+    this.assignId,
     required this.technicianRemarks,
     required this.customerRemarks,
     required this.technicianRepresentative,
@@ -31,6 +33,7 @@ class CommissioningStep6SubmitEvent extends CommissioningStep6Event {
   @override
   List<Object?> get props => [
     commissioning_report_id,
+    assignId,
     technicianRemarks,
     customerRemarks,
     technicianRepresentative,
