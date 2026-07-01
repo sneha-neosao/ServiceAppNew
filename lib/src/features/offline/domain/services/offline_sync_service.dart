@@ -46,6 +46,14 @@ class OfflineSyncService {
             jsonDecode(report['step2'] as String) as Map<String, dynamic>;
         logger.i('Syncing Step 2 for report $reportId');
 
+        List<String> memberPresents = [];
+        final memberData = step2Data['member_presents_customer_side'];
+        if (memberData is String) {
+          memberPresents = memberData.isEmpty ? [] : memberData.split(', ').toList();
+        } else if (memberData is List) {
+          memberPresents = memberData.map((e) => e.toString()).toList();
+        }
+
         final params = CommissioningStep2Params(
           id: reportId,
           warrantyPeriodYears:
@@ -53,11 +61,7 @@ class OfflineSyncService {
                 step2Data['warranty_period_years']?.toString() ?? '',
               ) ??
               0,
-          memberPresentsCustomerSide:
-              (step2Data['member_presents_customer_side'] as List<dynamic>?)
-                  ?.map((e) => e.toString())
-                  .toList() ??
-              [],
+          memberPresentsCustomerSide: memberPresents,
           agenda: step2Data['agenda']?.toString() ?? '',
         );
 
