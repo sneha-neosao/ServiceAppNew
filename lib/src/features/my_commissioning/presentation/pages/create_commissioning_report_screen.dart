@@ -2346,6 +2346,13 @@ class _CreateCommissioningReportScreenState
                                                                                                       AppColor.green,
                                                                                                       state.data.message,
                                                                                                     );
+
+                                                                                                    OfflineCommissioningDb.instance.getReport(_commissioningReportId ?? "").then((report) {
+                                                                                                      if (report != null && report['report_state'] == 'online') {
+                                                                                                        OfflineCommissioningDb.instance.deleteReport(_commissioningReportId ?? "");
+                                                                                                      }
+                                                                                                    });
+
                                                                                                     _showSuccessDialog(
                                                                                                       qrCodeImage: state.data.data.qrCodeImage,
                                                                                                     );
