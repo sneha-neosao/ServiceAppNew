@@ -49,13 +49,16 @@ class OfflineCommissioningDb {
     ''');
   }
 
-  Future<void> updateAssignId(String reportId, String assignId) async {
+  Future<void> updateAssignId(String commissioningWorkId, String reportId, String assignId) async {
     final db = await instance.database;
     await db.update(
       'commissioning_report',
-      {'assign_id': assignId},
-      where: 'report_id = ?',
-      whereArgs: [reportId],
+      {
+        'assign_id': assignId,
+        if (reportId.isNotEmpty) 'report_id': reportId,
+      },
+      where: 'commissioning_work_id = ?',
+      whereArgs: [commissioningWorkId],
     );
   }
 
@@ -64,8 +67,8 @@ class OfflineCommissioningDb {
 
     final existingReport = await db.query(
       'commissioning_report',
-      where: 'report_id = ?',
-      whereArgs: [reportId],
+      where: 'commissioning_work_id = ?',
+      whereArgs: [commissioningWorkId],
     );
 
     if (existingReport.isEmpty) {
@@ -83,9 +86,10 @@ class OfflineCommissioningDb {
         'commissioning_report',
         {
           'step$step': jsonEncode(data),
+          if (reportId.isNotEmpty) 'report_id': reportId,
         },
-        where: 'report_id = ?',
-        whereArgs: [reportId],
+        where: 'commissioning_work_id = ?',
+        whereArgs: [commissioningWorkId],
       );
     }
   }

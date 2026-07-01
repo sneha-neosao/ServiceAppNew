@@ -277,25 +277,27 @@ class _HomeScreenState extends State<HomeScreen> {
                             Container(
                               height: 155,
                               color: const Color(0xFFE9F5FF),
-                              child: Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 38,
-                                    left: 16,
-                                    right: 16,
-                                  ),
-                                  child: SafeArea(
-                                    bottom: false,
+                              child: SafeArea(
+                                bottom: false,
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
                                     child: Row(
                                       children: [
                                         // ── Logo ───────────────────────────────────────────
-                                        Image.asset(
-                                          'assets/images/logo_tightcrop.png',
-                                          width: 135,
-                                          fit: BoxFit.fill,
+                                        Expanded(
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Image.asset(
+                                              'assets/images/logo_tightcrop.png',
+                                              width: 135,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
                                         ),
-                                        const Spacer(),
                                         // ── Online / Offline status indicator (tappable) ──
                                         if (_hasOfflineData)
                                           GestureDetector(
@@ -311,50 +313,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                               );
                                             },
                                             child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 10,
-                                                    vertical: 6,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xFFEF4444),
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: const Color(
-                                                      0xFFEF4444,
-                                                    ).withValues(alpha: 0.35),
-                                                    blurRadius: 6,
-                                                    offset: const Offset(0, 2),
-                                                  ),
-                                                ],
+                                              width: 40,
+                                              height: 40,
+                                              decoration: const BoxDecoration(
+                                                color: Color(0xFF0B68B9),
+                                                shape: BoxShape.circle,
                                               ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Container(
-                                                    width: 7,
-                                                    height: 7,
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                          color: Colors.white,
-                                                          shape:
-                                                              BoxShape.circle,
-                                                        ),
-                                                  ),
-                                                  const SizedBox(width: 5),
-                                                  const Text(
-                                                    'Offline',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 11,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      letterSpacing: 0.3,
-                                                    ),
-                                                  ),
-                                                ],
+                                              child: const Icon(
+                                                Icons.cloud_off,
+                                                color: Colors.white,
+                                                size: 24,
                                               ),
                                             ),
                                           ),

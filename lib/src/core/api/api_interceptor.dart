@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:service_app/src/core/api/api_url.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:service_app/src/routes/app_route_path.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 import '../../configs/injector/injector.dart';
 import '../utils/logger.dart';
@@ -14,6 +17,35 @@ class ApiInterceptor extends Interceptor {
   bool isRefreshing = false;
   bool _isLoggingOut = false;
   final List<void Function(String)> _requestsQueue = [];
+
+  String? _deviceName;
+
+  Future<String> _getDeviceName() async {
+    if (_deviceName != null) return _deviceName!;
+
+    try {
+      final deviceInfo = DeviceInfoPlugin();
+      if (Platform.isAndroid) {
+        final androidInfo = await DeviceInfoPlugin().androidInfo;
+
+        print('Brand: ${androidInfo.brand}');
+        print('Manufacturer: ${androidInfo.manufacturer}');
+        print('Model: ${androidInfo.model}');
+        print('Device: ${androidInfo.device}');
+        print('Product: ${androidInfo.product}');
+        _deviceName = androidInfo.model;
+      } else if (Platform.isIOS) {
+        final iosInfo = await deviceInfo.iosInfo;
+        _deviceName = iosInfo.utsname.machine;
+      } else {
+        _deviceName = Platform.operatingSystem;
+      }
+    } catch (e) {
+      print("⚠️ Error getting device name: $e");
+      _deviceName = 'Unknown';
+    }
+    return _deviceName ?? 'Unknown';
+  }
 
   void _addToQueue(void Function(String) callback) {
     _requestsQueue.add(callback);
@@ -34,9 +66,9 @@ class ApiInterceptor extends Interceptor {
 
   @override
   Future<void> onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
+      RequestOptions options,
+      RequestInterceptorHandler handler,
+      ) async {
     final token = await SessionManager.getAuthToken();
 
     options.baseUrl = ApiUrl.baseUrl;
@@ -46,6 +78,10 @@ class ApiInterceptor extends Interceptor {
     if (!skipAuth && token != null) {
       options.headers['Authorization'] = 'Bearer $token';
     }
+
+    final deviceName = await _getDeviceName();
+    print("📱 Device-Name attached to headers: $deviceName");
+    options.headers['Device-Name'] = deviceName;
 
     // 🔥 FULL REQUEST LOG
     //     debugPrint('''
@@ -71,9 +107,9 @@ class ApiInterceptor extends Interceptor {
 
   @override
   Future<void> onError(
-    DioException err,
-    ErrorInterceptorHandler handler,
-  ) async {
+      DioException err,
+      ErrorInterceptorHandler handler,
+      ) async {
     print(
       "🔥 ApiInterceptor.onError CALLED with status: ${err.response?.statusCode}",
     );

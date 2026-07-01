@@ -1685,6 +1685,7 @@ class _CreateCommissioningReportScreenState
 
                     if (loggedInTech != null && loggedInTech.assignId.isNotEmpty) {
                       await OfflineCommissioningDb.instance.updateAssignId(
+                        widget.commissioningWorkId,
                         _commissioningReportId ?? "",
                         loggedInTech.assignId,
                       );
