@@ -1250,6 +1250,7 @@ class _CreateCommissioningReportScreenState
       print(
         "Ã°Å¸Å¡â‚¬ Submitting Step 6: technicianRepresentative = '$_selectedTechnicianRepId'",
       );
+      final savedAssignId = await OfflineCommissioningDb.instance.getAssignIdByWorkId(widget.commissioningWorkId) ?? '';
       await OfflineCommissioningDb.instance.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
@@ -1257,7 +1258,8 @@ class _CreateCommissioningReportScreenState
         {
           "technicianRemarks": _technicianRemarksController.text.trim(),
           "customerRemarks": _customerRemarksController.text.trim(),
-          "technicianRepresentative": _selectedTechnicianRepId ?? '',
+          "technicianRepresentative": savedAssignId.isNotEmpty ? savedAssignId : (_selectedTechnicianRepId ?? ''),
+          "assignId": savedAssignId.isNotEmpty ? savedAssignId : (_selectedTechnicianRepId ?? ''),
           "customerRepresentativeName": _customerRepNameController.text.trim(),
           "technicianSignaturePath": _technicianSignatureFile?.path,
           "customerSignaturePath": _customerSignatureFile?.path,
@@ -1362,6 +1364,7 @@ class _CreateCommissioningReportScreenState
         _submitStep6Bloc.add(
           CommissioningStep6SubmitEvent(
             commissioning_report_id: _commissioningReportId ?? "",
+            assignId: _selectedTechnicianRepId ?? '',
             technicianRemarks: _technicianRemarksController.text.trim(),
             customerRemarks: _customerRemarksController.text.trim(),
             technicianRepresentative: _selectedTechnicianRepId ?? '',
@@ -1678,17 +1681,26 @@ class _CreateCommissioningReportScreenState
                 listener: (context, state) async {
                   if (state is AssignedTechnicianRepresentativeSuccessState) {
                     final assignedList = state.data.data;
+                    if (assignedList.isEmpty) return;
 
+                    // Find the logged-in technician in the list, fall back to first
                     final loggedInTech = assignedList.firstWhere(
-                          (tech) => tech.technicianId == _loggedInTechnicianId,
+                      (tech) => tech.technicianId == _loggedInTechnicianId,
+                      orElse: () => assignedList.first,
                     );
 
-                    if (loggedInTech != null && loggedInTech.assignId.isNotEmpty) {
+                    if (loggedInTech.assignId.isNotEmpty) {
+                      // Save to DB so step 6 offline always has the correct assign_id
                       await OfflineCommissioningDb.instance.updateAssignId(
                         widget.commissioningWorkId,
-                        _commissioningReportId ?? "",
+                        _commissioningReportId ?? '',
                         loggedInTech.assignId,
                       );
+                      // Also keep the in-memory variable in sync
+                      setState(() {
+                        _selectedTechnicianRepId = loggedInTech.assignId;
+                      });
+                      print('✅ assign_id saved to DB: ${loggedInTech.assignId}');
                     }
                   }
                 },

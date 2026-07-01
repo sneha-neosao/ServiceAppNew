@@ -888,11 +888,18 @@ void configureDepedencies() {
   // Offline Sync Service
   getIt.registerLazySingleton(
     () => OfflineSyncService(
+      getIt<CommissioningStep1Usecase>(),
       getIt<CommissioningStep2Usecase>(),
       getIt<CommissioningStep3Usecase>(),
       getIt<CommissioningStep4Usecase>(),
       getIt<CommissioningStep5Usecase>(),
       getIt<CommissioningStep6Usecase>(),
+      getIt<ServiceCallReportStep1Usecase>(),
+      getIt<ServiceCallReportStep2Usecase>(),
+      getIt<ServiceCallReportStep3Usecase>(),
+      getIt<ServiceCallReportStep4Usecase>(),
+      getIt<ServiceCallReportStep5Usecase>(),
+      getIt<ServiceCallReportStep6Usecase>(),
     ),
   );
 

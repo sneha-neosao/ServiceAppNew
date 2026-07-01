@@ -10,7 +10,6 @@ import 'package:service_app/src/app.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/constants/list_translation_locale.dart';
 import 'package:service_app/src/core/services/notification_service.dart';
-import 'package:service_app/src/core/services/offline_sync_service.dart';
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
@@ -64,8 +63,6 @@ Future<void> main() async {
   // ✅ Initialize GETIt service locators, and to define all services
   configureDepedencies();
 
-  // ✅ Initialize offline sync service
-  OfflineSyncService().initialize();
 
   // //check shared preference for base url
   // String? savedBaseUrl = await SessionManager.getBaseUrl();

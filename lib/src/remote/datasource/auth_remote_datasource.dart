@@ -1152,20 +1152,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     try {
       final Map<String, dynamic> map = {
         "id": params.id,
-        "assign_id": params.assignId,
         "technician_remarks": params.technicianRemarks,
         "customer_remarks": params.customerRemarks,
         "technician_representative": params.technicianRepresentative,
         "customer_representative_name": params.customerRepresentativeName,
-        "technician_id": params.technicianRepresentative,
       };
-
-      print("=== Step 6 API Payload ===");
-      print("Parameters: $map");
-      print("Technician Signature Path: ${params.technicianSignaturePath}");
-      print("Customer Signature Path: ${params.customerSignaturePath}");
-      print("Work Photos Paths: ${params.workPhotosPaths}");
-      print("==========================");
 
       if (params.technicianSignaturePath != null &&
           params.technicianSignaturePath!.isNotEmpty) {
@@ -1199,6 +1190,27 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       }
 
       final formData = FormData.fromMap(map);
+
+      print("╔══════════════════════════════════════════════════════════════");
+      print("║ 🚀 COMMISSIONING STEP 6 — ACTUAL FORM DATA BEING SENT");
+      print("╠══════════════════════════════════════════════════════════════");
+      print("║ URL  : ${ApiUrl.commissioningWorkReportStep6}");
+      print("╠══════════════════════════════════════════════════════════════");
+      print("║ TEXT FIELDS:");
+      for (final field in formData.fields) {
+        print("║   ${field.key} = ${field.value}");
+      }
+      print("╠══════════════════════════════════════════════════════════════");
+      print("║ FILES:");
+      if (formData.files.isEmpty) {
+        print("║   (no files attached)");
+      } else {
+        for (final file in formData.files) {
+          print("║   ${file.key} = ${file.value.filename} (${file.value.length ?? '?'} bytes)");
+        }
+      }
+      print("╚══════════════════════════════════════════════════════════════");
+
 
       final response = await _helper.execute(
         url: ApiUrl.commissioningWorkReportStep6,
