@@ -479,6 +479,7 @@ class _CreateCommissioningReportScreenState
 
   Future<void> _initCurrentStep() async {
     int step = await OfflineCommissioningDb.instance.getInitialStep(widget.commissioningWorkId);
+    await _loadStepDataFromDb();
     if (mounted) {
       setState(() {
         _currentStep = step;
@@ -487,6 +488,155 @@ class _CreateCommissioningReportScreenState
       if (_currentStep == 6) {
         _loadAssignIdFromDb();
       }
+    }
+  }
+
+  Future<void> _loadStepDataFromDb() async {
+    final report = await OfflineCommissioningDb.instance.getReportByWorkId(widget.commissioningWorkId);
+    if (report == null) return;
+    
+    if (mounted) {
+      setState(() {
+        // Step 1
+        if (report['step1'] != null) {
+          try {
+            final Map<String, dynamic> step1 = jsonDecode(report['step1']);
+            if (step1['technicianIds'] != null) {
+              final List<dynamic> techs = step1['technicianIds'];
+              _technicians.clear();
+              _technicianIds.clear();
+              for (var t in techs) {
+                _technicians.add(TextEditingController(text: t['name']?.toString() ?? ''));
+                _technicianIds.add(t['id']?.toString());
+              }
+              if (_technicians.isEmpty) {
+                _technicians = [TextEditingController()];
+                _technicianIds = [null];
+              }
+            }
+          } catch (e) {
+            print("Error parsing step1: $e");
+          }
+        }
+
+        // Step 2
+        if (report['step2'] != null) {
+          try {
+            final Map<String, dynamic> step2 = jsonDecode(report['step2']);
+            if (step2['warranty_period_years'] != null) {
+              _selectedWarranty = '${step2['warranty_period_years']}_year';
+            }
+            if (step2['member_presents_customer_side'] != null) {
+              final members = step2['member_presents_customer_side'].toString();
+              if (members.isNotEmpty) {
+                _representatives.clear();
+                _representatives.add(TextEditingController(text: members));
+              }
+            }
+            if (step2['agenda'] != null) {
+              _agendaController.text = step2['agenda'].toString();
+            }
+          } catch (e) {
+            print("Error parsing step2: $e");
+          }
+        }
+
+        // Step 3
+        if (report['step3'] != null) {
+          try {
+            final Map<String, dynamic> step3 = jsonDecode(report['step3']);
+            _isTechnicalDetailsNA = step3['isTechnicalNa'] == true || step3['isTechnicalNa'] == 'true' || step3['isTechnicalNa'] == 1 || step3['isTechnicalNa'] == '1';
+            if (step3['technicalDetails'] != null) {
+              final techDetails = step3['technicalDetails'];
+              _pumpMakeController.text = techDetails['pumpMake']?.toString() ?? "";
+              _pumpModelController.text = techDetails['pumpModel']?.toString() ?? "";
+              _pumpSerialNumberController.text = techDetails['pumpSerialNumber']?.toString() ?? "";
+              _pumpFlowLPMController.text = techDetails['pumpFlowLpm']?.toString() ?? "";
+              _pumpFlowM3HRController.text = techDetails['pumpFlowM3hr']?.toString() ?? "";
+              _pumpFlowLPSController.text = techDetails['pumpFlowLps']?.toString() ?? "";
+              _pumpFlowUSGPMController.text = techDetails['pumpFlowUsgpm']?.toString() ?? "";
+              _pumpHeadMTRController.text = techDetails['pumpHeadMtr']?.toString() ?? "";
+              _driverMakeController.text = techDetails['driverMake']?.toString() ?? "";
+              _driverSerialNumberController.text = techDetails['driverSerialNumber']?.toString() ?? "";
+              _ratingKWController.text = techDetails['ratingKw']?.toString() ?? "";
+              _ratingHPController.text = techDetails['ratingHp']?.toString() ?? "";
+              _rpmController.text = techDetails['rpm']?.toString() ?? "";
+              _controlPanelMakeController.text = techDetails['controlPanelMake']?.toString() ?? "";
+              _panelSerialModelController.text = techDetails['panelSerialModel']?.toString() ?? "";
+            }
+          } catch (e) {
+            print("Error parsing step3: $e");
+          }
+        }
+
+        // Step 4
+        if (report['step4'] != null) {
+          try {
+            final Map<String, dynamic> step4 = jsonDecode(report['step4']);
+            if (step4['descriptions'] != null) {
+              final List<dynamic> desc = step4['descriptions'];
+              if (desc.isNotEmpty) {
+                _workDescriptionControllers.clear();
+                for (var d in desc) {
+                  _workDescriptionControllers.add(TextEditingController(text: d['description']?.toString() ?? ""));
+                }
+              }
+            }
+          } catch (e) {
+            print("Error parsing step4: $e");
+          }
+        }
+
+        // Step 5
+        if (report['step5'] != null) {
+          try {
+            final Map<String, dynamic> step5 = jsonDecode(report['step5']);
+            _mechNA = step5['isMechanicalChecklistNa'] == true || step5['isMechanicalChecklistNa'] == 'true' || step5['isMechanicalChecklistNa'] == 1 || step5['isMechanicalChecklistNa'] == '1';
+            _pipeNA = step5['isPipelineChecklistNa'] == true || step5['isPipelineChecklistNa'] == 'true' || step5['isPipelineChecklistNa'] == 1 || step5['isPipelineChecklistNa'] == '1';
+            _elecNA = step5['isElectricalChecklistNa'] == true || step5['isElectricalChecklistNa'] == 'true' || step5['isElectricalChecklistNa'] == 1 || step5['isElectricalChecklistNa'] == '1';
+            if (step5['savedChecklists'] != null) {
+              final List<dynamic> checklists = step5['savedChecklists'];
+              String mapVal(dynamic v, bool isVibration) {
+                if (v == null) return "";
+                String s = v.toString().toLowerCase().trim();
+                if (s == 'true' || s == '1' || s == 'yes') return isVibration ? 'normal' : 'ok';
+                if (s == 'false' || s == '0' || s == 'no') return isVibration ? 'high' : 'not_ok';
+                if (s == 'not ok') return 'not_ok';
+                return s;
+              }
+              for (var c in checklists) {
+                final key = c['key_checklist']?.toString().toLowerCase().trim() ?? '';
+                final val = c['value_checklist'];
+                final cType = c['check_type']?.toString().toLowerCase().trim() ?? '';
+                
+                if (cType == 'mechanical') {
+                  if (key == 'bearing noise') _bearingNoise = mapVal(val, false);
+                  if (key == 'vibration') _vibration = mapVal(val, true);
+                  if (key == 'mechanical seal') _mechSeal = mapVal(val, false);
+                  if (key == 'pump not running dry') _pumpDry = mapVal(val, false);
+                }
+                if (cType == 'pipeline_hydraulic' || cType == 'pipeline') {
+                  if (key == 'nrv') _nrvValve = mapVal(val, false);
+                  if (key == 'strainer') _strainerValve = mapVal(val, false);
+                  if (key == 'suction line') _suctionLine = mapVal(val, false);
+                  if (key == 'delivery line') _deliveryLine = mapVal(val, false);
+                  if (key == 'suction / delivery valve') _suctionDelivery = mapVal(val, false);
+                  if (key == 'pressure switch') _pressureSwitch = mapVal(val, false);
+                }
+                if (cType == 'electrical') {
+                  if (key == 'electrical faults') _elecFaults = mapVal(val, false);
+                  if (key == 'voltage check') _voltage = mapVal(val, false);
+                  if (key == 'phase check') _phase = mapVal(val, false);
+                  if (key == 'current check') _current = mapVal(val, false);
+                  if (key == 'control panel wiring') _panelWiring = mapVal(val, false);
+                }
+              }
+            }
+          } catch (e) {
+            print("Error parsing step5: $e");
+          }
+        }
+      });
     }
   }
 

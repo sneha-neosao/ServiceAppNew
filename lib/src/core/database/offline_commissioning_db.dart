@@ -137,6 +137,22 @@ class OfflineCommissioningDb {
     }
   }
 
+  Future<Map<String, dynamic>?> getReportByWorkId(String commissioningWorkId) async {
+    final db = await instance.database;
+    final maps = await db.query(
+      'commissioning_report',
+      columns: ['id', 'commissioning_work_id', 'report_id', 'step1', 'step2', 'step3', 'step4', 'step5', 'step6', 'synced', 'assign_id', 'report_state'],
+      where: 'commissioning_work_id = ?',
+      whereArgs: [commissioningWorkId],
+    );
+
+    if (maps.isNotEmpty) {
+      return maps.first;
+    } else {
+      return null;
+    }
+  }
+
   Future<String?> getAssignIdByWorkId(String commissioningWorkId) async {
     final db = await instance.database;
     final maps = await db.query(
