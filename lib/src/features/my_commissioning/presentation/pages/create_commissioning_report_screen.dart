@@ -477,67 +477,19 @@ class _CreateCommissioningReportScreenState
     _representatives = [TextEditingController()];
 
     if (_currentStep == 1) {
-      if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
-        _serviceCallStep1AutoFillBloc.add(
-          ServiceCallReportStep1AutoFillGetEvent(widget.commissioningWorkId),
-        );
-      } else {
-        _step1Bloc.add(
-          CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId),
-        );
-      }
+      // Autofill APIs disabled per user request
     } else if (_currentStep == 2) {
-      if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
-        _serviceCallStep2AutoFillBloc.add(
-          ServiceCallReportStep2AutoFillGetEvent(_commissioningReportId ?? ""),
-        );
-      } else {
-        _step2Bloc.add(
-          CommissioningStep2AutoFillGetEvent(_commissioningReportId ?? ""),
-        );
-      }
+      // Autofill APIs disabled per user request
     } else if (_currentStep == 3) {
-      if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
-        _serviceCallStep3AutoFillBloc.add(
-          ServiceCallReportStep3AutoFillGetEvent(_commissioningReportId ?? ""),
-        );
-      } else {
-        _step3Bloc.add(
-          CommissioningStep3AutoFillGetEvent(_commissioningReportId ?? ""),
-        );
-      }
+      // Autofill APIs disabled per user request
     } else if (_currentStep == 4) {
-      if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
-        _serviceCallStep4AutoFillBloc.add(
-          ServiceCallReportStep4AutoFillGetEvent(_commissioningReportId ?? ""),
-        );
-      } else {
-        _step4Bloc.add(
-          CommissioningStep4AutoFillGetEvent(_commissioningReportId ?? ""),
-        );
-      }
+      // Autofill APIs disabled per user request
     } else if (_currentStep == 5) {
-      if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
-        _serviceCallStep5AutoFillBloc.add(
-          ServiceCallReportStep5AutoFillGetEvent(_commissioningReportId ?? ""),
-        );
-      } else {
-        _step5Bloc.add(
-          CommissioningStep5AutoFillGetEvent(_commissioningReportId ?? ""),
-        );
-      }
+      // Autofill APIs disabled per user request
     } else if (_currentStep == 6) {
       // Load assignId from DB — no assign-technician API call on step 6
       _loadAssignIdFromDb();
-      if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
-        _serviceCallStep6AutoFillBloc.add(
-          ServiceCallReportStep6AutoFillGetEvent(_commissioningReportId ?? ""),
-        );
-      } else {
-        _step6Bloc.add(
-          CommissioningStep6AutoFillGetEvent(_commissioningReportId ?? ""),
-        );
-      }
+      // Autofill APIs disabled per user request
     }
   }
 
@@ -606,53 +558,9 @@ class _CreateCommissioningReportScreenState
   }
 
   void _triggerAutoFillForStep(int step) {
-    if (widget.isServiceReport) {
-      final idToUse = _commissioningReportId ?? "";
-      if (idToUse.isNotEmpty) {
-        if (step == 2) {
-          _serviceCallStep2AutoFillBloc.add(
-            ServiceCallReportStep2AutoFillGetEvent(idToUse),
-          );
-        } else if (step == 3) {
-          _serviceCallStep3AutoFillBloc.add(
-            ServiceCallReportStep3AutoFillGetEvent(idToUse),
-          );
-        } else if (step == 4) {
-          _serviceCallStep4AutoFillBloc.add(
-            ServiceCallReportStep4AutoFillGetEvent(idToUse),
-          );
-        } else if (step == 5) {
-          _serviceCallStep5AutoFillBloc.add(
-            ServiceCallReportStep5AutoFillGetEvent(idToUse),
-          );
-        }
-      }
-    } else {
-      if (_commissioningReportId != null) {
-        if (step == 2) {
-          _step2Bloc.add(
-            CommissioningStep2AutoFillGetEvent(_commissioningReportId ?? ""),
-          );
-        } else if (step == 3) {
-          _step3Bloc.add(
-            CommissioningStep3AutoFillGetEvent(_commissioningReportId ?? ""),
-          );
-        } else if (step == 4) {
-          _step4Bloc.add(
-            CommissioningStep4AutoFillGetEvent(_commissioningReportId ?? ""),
-          );
-        } else if (step == 5) {
-          _step5Bloc.add(
-            CommissioningStep5AutoFillGetEvent(_commissioningReportId ?? ""),
-          );
-        } else if (step == 6) {
-          // Load assignId from DB — no assign-technician API call on step 6
-          _loadAssignIdFromDb();
-          _step6Bloc.add(
-            CommissioningStep6AutoFillGetEvent(_commissioningReportId ?? ""),
-          );
-        }
-      }
+    // Autofill APIs disabled per user request
+    if (step == 6) {
+      _loadAssignIdFromDb();
     }
   }
 
@@ -2995,8 +2903,7 @@ class _CreateCommissioningReportScreenState
               }
             },
             builder: (context, state) {
-              if (state is ServiceCallReportStep1AutoFillLoadingState ||
-                  state is ServiceCallReportStep1AutoFillInitialState) {
+              if (state is ServiceCallReportStep1AutoFillLoadingState) {
                 return const StepShimmer(step: 1);
               }
               final data = state is ServiceCallReportStep1AutoFillSuccessState
@@ -3027,8 +2934,7 @@ class _CreateCommissioningReportScreenState
               }
             },
             builder: (context, state) {
-              if (state is CommissioningStep1AutoFillLoadingState ||
-                  state is CommissioningStep1AutoFillInitialState) {
+              if (state is CommissioningStep1AutoFillLoadingState) {
                 return const StepShimmer(step: 1);
               }
               final data = state is CommissioningStep1AutoFillSuccessState
@@ -3064,8 +2970,7 @@ class _CreateCommissioningReportScreenState
               }
             },
             builder: (context, state) {
-              if (state is ServiceCallReportStep2AutoFillLoadingState ||
-                  state is ServiceCallReportStep2AutoFillInitialState) {
+              if (state is ServiceCallReportStep2AutoFillLoadingState) {
                 return const StepShimmer(step: 2);
               }
               return Step2Widget(parent: this);
@@ -3099,8 +3004,7 @@ class _CreateCommissioningReportScreenState
               }
             },
             builder: (context, state) {
-              if (state is CommissioningStep2AutoFillLoadingState ||
-                  state is CommissioningStep2AutoFillInitialState) {
+              if (state is CommissioningStep2AutoFillLoadingState) {
                 return const StepShimmer(step: 2);
               }
               return Step2Widget(parent: this);
@@ -3115,8 +3019,7 @@ class _CreateCommissioningReportScreenState
           >(
             bloc: _serviceCallStep3AutoFillBloc,
             builder: (context, state) {
-              if (state is ServiceCallReportStep3AutoFillLoadingState ||
-                  state is ServiceCallReportStep3AutoFillInitialState) {
+              if (state is ServiceCallReportStep3AutoFillLoadingState) {
                 return const StepShimmer(step: 3);
               }
               return Step3Widget(parent: this);
@@ -3129,8 +3032,7 @@ class _CreateCommissioningReportScreenState
           >(
             bloc: _step3Bloc,
             builder: (context, state) {
-              if (state is CommissioningStep3AutoFillLoadingState ||
-                  state is CommissioningStep3AutoFillInitialState) {
+              if (state is CommissioningStep3AutoFillLoadingState) {
                 return const StepShimmer(step: 3);
               }
               return Step3Widget(parent: this);
@@ -3145,8 +3047,7 @@ class _CreateCommissioningReportScreenState
           >(
             bloc: _serviceCallStep4AutoFillBloc,
             builder: (context, state) {
-              if (state is ServiceCallReportStep4AutoFillLoadingState ||
-                  state is ServiceCallReportStep4AutoFillInitialState) {
+              if (state is ServiceCallReportStep4AutoFillLoadingState) {
                 return const StepShimmer(step: 4);
               }
               return Step4Widget(parent: this);
@@ -3159,8 +3060,7 @@ class _CreateCommissioningReportScreenState
           >(
             bloc: _step4Bloc,
             builder: (context, state) {
-              if (state is CommissioningStep4AutoFillLoadingState ||
-                  state is CommissioningStep4AutoFillInitialState) {
+              if (state is CommissioningStep4AutoFillLoadingState) {
                 return const StepShimmer(step: 4);
               }
               return Step4Widget(parent: this);
@@ -3175,8 +3075,7 @@ class _CreateCommissioningReportScreenState
           >(
             bloc: _serviceCallStep5AutoFillBloc,
             builder: (context, state) {
-              if (state is ServiceCallReportStep5AutoFillLoadingState ||
-                  state is ServiceCallReportStep5AutoFillInitialState) {
+              if (state is ServiceCallReportStep5AutoFillLoadingState) {
                 return const StepShimmer(step: 5);
               }
               return Step5Widget(parent: this);
@@ -3189,8 +3088,7 @@ class _CreateCommissioningReportScreenState
           >(
             bloc: _step5Bloc,
             builder: (context, state) {
-              if (state is CommissioningStep5AutoFillLoadingState ||
-                  state is CommissioningStep5AutoFillInitialState) {
+              if (state is CommissioningStep5AutoFillLoadingState) {
                 return const StepShimmer(step: 5);
               }
               return Step5Widget(parent: this);
