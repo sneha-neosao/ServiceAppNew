@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:service_app/src/features/offline/domain/services/offline_sync_service.dart';
+import 'package:service_app/src/features/offline/domain/services/offline_service_sync_service.dart';
 import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step1_usecase.dart';
 import 'package:service_app/src/features/amc/domain/usecase/get_amc_report_pdf_usecase.dart';
 import 'package:service_app/src/features/amc/domain/usecase/post_amc_report_step2_usecase.dart';
@@ -894,6 +895,18 @@ void configureDepedencies() {
       getIt<CommissioningStep4Usecase>(),
       getIt<CommissioningStep5Usecase>(),
       getIt<CommissioningStep6Usecase>(),
+      getIt<ServiceCallReportStep1Usecase>(),
+      getIt<ServiceCallReportStep2Usecase>(),
+      getIt<ServiceCallReportStep3Usecase>(),
+      getIt<ServiceCallReportStep4Usecase>(),
+      getIt<ServiceCallReportStep5Usecase>(),
+      getIt<ServiceCallReportStep6Usecase>(),
+    ),
+  );
+
+  // Offline Service Sync Service
+  getIt.registerLazySingleton(
+    () => OfflineServiceSyncService(
       getIt<ServiceCallReportStep1Usecase>(),
       getIt<ServiceCallReportStep2Usecase>(),
       getIt<ServiceCallReportStep3Usecase>(),

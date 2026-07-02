@@ -137,17 +137,12 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Complaint Number
-                              _buildInfoItem('complaint_report_no_label'.tr(), data.complaintNumber, isLarge: true),
-                              const SizedBox(height: 16),
-                              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
-                              const SizedBox(height: 16),
-                              // Grid
+                              // Row 1: Complaint Number & Date Time
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    child: _buildInfoItem('complaint_report_client_label'.tr(), data.customerName),
+                                    child: _buildInfoItem('complaint_report_no_label'.tr(), data.complaintNumber, isLarge: true),
                                   ),
                                   Expanded(
                                     child: _buildInfoItem('complaint_date_and_time'.tr(), dateStr),
@@ -155,23 +150,29 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                 ],
                               ),
                               const SizedBox(height: 16),
+                              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                              const SizedBox(height: 16),
+                              // Row 2: Customer Name & Site Name
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    child: _buildInfoItem('close_call_site_name_label'.tr(), data.siteName),
+                                    child: _buildInfoItem('complaint_report_client_label'.tr(), data.customerName),
                                   ),
                                   Expanded(
-                                    child: _buildInfoItem('contact_person'.tr(), data.name),
+                                    child: _buildInfoItem('close_call_site_name_label'.tr(), data.siteName),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 16),
+                              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
+                              const SizedBox(height: 16),
+                              // Row 3: Contact Person & Contact Number
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    child: _buildInfoItem('equipment_model'.tr(), data.equipmentModelName),
+                                    child: _buildInfoItem('contact_person'.tr(), data.name),
                                   ),
                                   Expanded(
                                     child: _buildInfoItem('contact_number'.tr(), data.contactNumber),
@@ -248,7 +249,8 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                   }).toList(),
                                 ),
                               ],
-                              if (data.attachments.isNotEmpty) ...[
+                              // Combine both attachments and manualReportMedia to ensure all media items are shown
+                              if (data.attachments.isNotEmpty || data.manualReportMedia.isNotEmpty) ...[
                                 const SizedBox(height: 24),
                                 const Divider(height: 1, thickness: 1, color: Color(0xFFF1F2F6)),
                                 const SizedBox(height: 16),
@@ -270,37 +272,42 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
                                     mainAxisSpacing: 12,
                                     childAspectRatio: 1.5,
                                   ),
-                                  itemCount: data.attachments.length,
+                                  itemCount: data.attachments.length + data.manualReportMedia.length,
                                   itemBuilder: (context, index) {
-                                    final imageUrl = data.attachments[index]['image']?.toString() ?? '';
+                                    final item = index < data.attachments.length
+                                        ? data.attachments[index]
+                                        : data.manualReportMedia[index - data.attachments.length];
+                                    final imageUrl = _getImageUrl(item);
+                                    if (imageUrl.isEmpty) return const SizedBox();
                                     return GestureDetector(
                                       onTap: () {
-                                        if (imageUrl.isNotEmpty) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => Scaffold(
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => Scaffold(
+                                              backgroundColor: Colors.black,
+                                              appBar: AppBar(
                                                 backgroundColor: Colors.black,
-                                                appBar: AppBar(
-                                                  backgroundColor: Colors.black,
-                                                  iconTheme: const IconThemeData(color: Colors.white),
-                                                ),
-                                                body: Center(
-                                                  child: InteractiveViewer(
-                                                    child: Image.network(imageUrl),
-                                                  ),
+                                                iconTheme: const IconThemeData(color: Colors.white),
+                                              ),
+                                              body: Center(
+                                                child: InteractiveViewer(
+                                                  child: Image.network(imageUrl),
                                                 ),
                                               ),
                                             ),
-                                          );
-                                        }
+                                          ),
+                                        );
                                       },
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(8),
                                         child: Image.network(
                                           imageUrl,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) => Container(color: Colors.grey[300]),
+                                          errorBuilder: (_, __, ___) => Container(
+                                            color: Colors.grey[200],
+                                            child: const Icon(Icons.broken_image, color: Colors.grey),
+                                          ),
                                         ),
                                       ),
                                     );
@@ -394,13 +401,25 @@ class _ComplaintReportDialogState extends State<ComplaintReportDialog> {
         Text(
           value,
           style: AppFont.style(
-            fontSize: isLarge ? 18 : 11,
+            fontSize: isLarge ? 17 : 11,
             fontWeight: FontWeight.w800,
             color: const Color(0xFF0D121F),
           ),
         ),
       ],
     );
+  }
+
+  String _getImageUrl(dynamic item) {
+    if (item == null) return '';
+    if (item is String) return item;
+    if (item is Map) {
+      return item['image']?.toString() ??
+             item['media']?.toString() ??
+             item['url']?.toString() ??
+             item['file']?.toString() ?? '';
+    }
+    return '';
   }
 
   Widget _buildShimmer() {

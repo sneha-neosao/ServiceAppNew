@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/database/offline_commissioning_db.dart';
+import 'package:service_app/src/core/database/offline_service_reports_db.dart';
 import 'package:service_app/src/features/offline/domain/services/offline_sync_service.dart';
+import 'package:service_app/src/features/offline/domain/services/offline_service_sync_service.dart';
 import 'package:service_app/src/core/network/network_checker.dart';
 import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
@@ -28,8 +30,12 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
 
   Future<void> _loadReports() async {
     setState(() => _loading = true);
-    final reports = await OfflineCommissioningDb.instance
-        .getAllOfflineReports();
+    List<Map<String, dynamic>> reports = [];
+    if (_selectedTab == 0) {
+      reports = await OfflineCommissioningDb.instance.getAllOfflineReports();
+    } else if (_selectedTab == 1) {
+      reports = await OfflineServiceReportsDb.instance.getAllOfflineReports();
+    }
     if (mounted) {
       setState(() {
         _reports = reports;
@@ -67,7 +73,9 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
       ),
     );
 
-    final result = await getIt<OfflineSyncService>().syncReport(reportId);
+    final result = _selectedTab == 0
+        ? await getIt<OfflineSyncService>().syncReport(reportId)
+        : await getIt<OfflineServiceSyncService>().syncReport(reportId);
 
     if (!mounted) return;
     Navigator.pop(context); // close loader
@@ -285,42 +293,55 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
 
             // ── Body ───────────────────────────────────────────────────────
             Expanded(
-              child: _selectedTab == 0
-                  ? (_loading
-                        ? const Center(
-                            child: CircularProgressIndicator(
-                              color: AppColor.primaryColor,
-                            ),
-                          )
-                        : _reports.isEmpty
-                        ? _buildEmpty(
-                            title: 'No Offline Commissioning Reports',
-                            subtitle:
-                                'Commissioning reports saved while offline will appear here.',
-                          )
-                        : RefreshIndicator(
-                            onRefresh: _loadReports,
-                            color: AppColor.primaryColor,
-                            child: ListView.separated(
-                              padding: const EdgeInsets.all(16),
-                              itemCount: _reports.length,
-                              separatorBuilder: (_, index) =>
-                                  const SizedBox(height: 12),
-                              itemBuilder: (context, index) =>
-                                  _buildReportCard(_reports[index]),
-                            ),
-                          ))
-                  : _selectedTab == 1
-                  ? _buildEmpty(
-                      title: 'No Offline Service Call Reports',
-                      subtitle:
-                          'Service call reports saved while offline will appear here.',
+              child: _loading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColor.primaryColor,
+                      ),
                     )
-                  : _buildEmpty(
-                      title: 'No Offline AMC Reports',
-                      subtitle:
-                          'AMC reports saved while offline will appear here.',
-                    ),
+                  : (_selectedTab == 0
+                      ? (_reports.isEmpty
+                          ? _buildEmpty(
+                              title: 'No Offline Commissioning Reports',
+                              subtitle:
+                                  'Commissioning reports saved while offline will appear here.',
+                            )
+                          : RefreshIndicator(
+                              onRefresh: _loadReports,
+                              color: AppColor.primaryColor,
+                              child: ListView.separated(
+                                padding: const EdgeInsets.all(16),
+                                itemCount: _reports.length,
+                                separatorBuilder: (_, index) =>
+                                    const SizedBox(height: 12),
+                                itemBuilder: (context, index) =>
+                                    _buildReportCard(_reports[index]),
+                              ),
+                            ))
+                      : _selectedTab == 1
+                          ? (_reports.isEmpty
+                              ? _buildEmpty(
+                                  title: 'No Offline Service Call Reports',
+                                  subtitle:
+                                      'Service call reports saved while offline will appear here.',
+                                )
+                              : RefreshIndicator(
+                                  onRefresh: _loadReports,
+                                  color: AppColor.primaryColor,
+                                  child: ListView.separated(
+                                    padding: const EdgeInsets.all(16),
+                                    itemCount: _reports.length,
+                                    separatorBuilder: (_, index) =>
+                                        const SizedBox(height: 12),
+                                    itemBuilder: (context, index) =>
+                                        _buildReportCard(_reports[index]),
+                                  ),
+                                ))
+                          : _buildEmpty(
+                              title: 'No Offline AMC Reports',
+                              subtitle:
+                                  'AMC reports saved while offline will appear here.',
+                            )),
             ),
           ],
         ),
@@ -335,6 +356,7 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
         setState(() {
           _selectedTab = index;
         });
+        _loadReports();
       },
       child: Container(
         color: Colors.transparent,

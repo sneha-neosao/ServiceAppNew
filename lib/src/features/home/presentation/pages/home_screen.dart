@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/core/database/offline_commissioning_db.dart';
+import 'package:service_app/src/core/database/offline_service_reports_db.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/features/home/bloc/upcoming_amc_bloc/upcoming_amc_bloc.dart';
 import 'package:shimmer/shimmer.dart';
@@ -73,17 +74,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _pollOfflineData() {
-    // Check once immediately on start
-    OfflineCommissioningDb.instance.getAllOfflineReports().then((reports) {
-      if (mounted) setState(() => _hasOfflineData = reports.isNotEmpty);
-    });
+    _checkOfflineData();
 
     // Poll every 3 seconds for offline DB changes
     _dbPollingTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
-      final reports = await OfflineCommissioningDb.instance
-          .getAllOfflineReports();
-      if (mounted) setState(() => _hasOfflineData = reports.isNotEmpty);
+      _checkOfflineData();
     });
+  }
+
+  Future<void> _checkOfflineData() async {
+    final reportsComm = await OfflineCommissioningDb.instance.getAllOfflineReports();
+    final reportsService = await OfflineServiceReportsDb.instance.getAllOfflineReports();
+    if (mounted) {
+      setState(() => _hasOfflineData = reportsComm.isNotEmpty || reportsService.isNotEmpty);
+    }
   }
 
   Future<void> _checkAndRegisterFcmToken() async {

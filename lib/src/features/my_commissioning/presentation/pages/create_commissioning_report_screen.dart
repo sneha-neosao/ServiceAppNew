@@ -53,6 +53,7 @@ import '../../bloc/commissioning_step6_autofill_bloc/commissioning_step6_autofil
 import '../../bloc/commissioning_step6_autofill_bloc/commissioning_step6_autofill_event.dart';
 import '../../bloc/commissioning_step6_autofill_bloc/commissioning_step6_autofill_state.dart';
 import 'package:service_app/src/core/database/offline_commissioning_db.dart';
+import 'package:service_app/src/core/database/offline_service_reports_db.dart';
 import 'package:service_app/src/core/network/network_checker.dart';
 import '../../bloc/commissioning_step6_bloc/commissioning_step6_bloc.dart';
 import '../../bloc/commissioning_step6_bloc/commissioning_step6_event.dart';
@@ -143,6 +144,9 @@ class CreateCommissioningReportScreen extends StatefulWidget {
 
 class _CreateCommissioningReportScreenState
     extends State<CreateCommissioningReportScreen> {
+  dynamic get _db => widget.isServiceReport
+      ? OfflineServiceReportsDb.instance
+      : OfflineCommissioningDb.instance;
   late int _currentStep = 0;
   bool _hasAppliedInitialStep = false;
   int _highestSubmittedStep = 1;
@@ -409,7 +413,7 @@ class _CreateCommissioningReportScreenState
   /// Called when entering step 6 — we never call the assign-technician API on step 6;
   /// the ID was already saved to DB when step 1 was submitted.
   Future<void> _loadAssignIdFromDb() async {
-    final savedAssignId = await OfflineCommissioningDb.instance
+    final savedAssignId = await _db
         .getAssignIdByWorkId(widget.commissioningWorkId);
     if (savedAssignId != null && savedAssignId.isNotEmpty) {
       if (mounted) {
@@ -478,7 +482,7 @@ class _CreateCommissioningReportScreenState
   }
 
   Future<void> _initCurrentStep() async {
-    int step = await OfflineCommissioningDb.instance.getInitialStep(widget.commissioningWorkId);
+    int step = await _db.getInitialStep(widget.commissioningWorkId);
     await _loadStepDataFromDb();
     if (mounted) {
       setState(() {
@@ -492,7 +496,7 @@ class _CreateCommissioningReportScreenState
   }
 
   Future<void> _loadStepDataFromDb() async {
-    final report = await OfflineCommissioningDb.instance.getReportByWorkId(widget.commissioningWorkId);
+    final report = await _db.getReportByWorkId(widget.commissioningWorkId);
     if (report == null) return;
     
     if (mounted) {
@@ -739,7 +743,7 @@ class _CreateCommissioningReportScreenState
         }
       }
       setState(() => _isSavingOffline = true);
-      await OfflineCommissioningDb.instance.saveStep(
+      await _db.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
         1,
@@ -796,7 +800,7 @@ class _CreateCommissioningReportScreenState
           ? (int.tryParse(_selectedWarranty!.split('_').first) ?? 1)
           : 1;
       setState(() => _isSavingOffline = true);
-      await OfflineCommissioningDb.instance.saveStep(
+      await _db.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
         2,
@@ -876,7 +880,7 @@ class _CreateCommissioningReportScreenState
               panelSerialModel: _panelSerialModelController.text,
             );
       setState(() => _isSavingOffline = true);
-      await OfflineCommissioningDb.instance.saveStep(
+      await _db.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
         3,
@@ -941,7 +945,7 @@ class _CreateCommissioningReportScreenState
       //   return;
       // }
       setState(() => _isSavingOffline = true);
-      await OfflineCommissioningDb.instance.saveStep(
+      await _db.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
         4,
@@ -1270,7 +1274,7 @@ class _CreateCommissioningReportScreenState
         }
       }
       setState(() => _isSavingOffline = true);
-      await OfflineCommissioningDb.instance.saveStep(
+      await _db.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
         5,
@@ -1345,7 +1349,7 @@ class _CreateCommissioningReportScreenState
 
       // Always read assignId from DB — it was saved when step 1 was submitted.
       final savedAssignId =
-          await OfflineCommissioningDb.instance
+          await _db
               .getAssignIdByWorkId(widget.commissioningWorkId) ??
           '';
 
@@ -1358,7 +1362,7 @@ class _CreateCommissioningReportScreenState
       );
 
       setState(() => _isSavingOffline = true);
-      await OfflineCommissioningDb.instance.saveStep(
+      await _db.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
         6,
@@ -1798,7 +1802,7 @@ class _CreateCommissioningReportScreenState
 
                     if (loggedInTech.assignId.isNotEmpty) {
                       // Save to DB so step 6 offline always has the correct assign_id
-                      await OfflineCommissioningDb.instance.updateAssignId(
+                      await _db.updateAssignId(
                         widget.commissioningWorkId,
                         _commissioningReportId ?? '',
                         loggedInTech.assignId,
@@ -2434,6 +2438,13 @@ class _CreateCommissioningReportScreenState
                                                                                                 AppColor.green,
                                                                                                 state.data.message,
                                                                                               );
+
+                                                                                              _db.getReport(_commissioningReportId ?? "").then((report) {
+                                                                                                if (report != null && report['report_state'] == 'online') {
+                                                                                                  _db.deleteReport(_commissioningReportId ?? "");
+                                                                                                }
+                                                                                              });
+
                                                                                               // If ServiceCallStep6Response is ever updated to include data, it would be passed here
                                                                                               _showSuccessDialog(
                                                                                                 qrCodeImage: state.data.data.qrCodeImage,
@@ -2466,9 +2477,9 @@ class _CreateCommissioningReportScreenState
                                                                                                       state.data.message,
                                                                                                     );
 
-                                                                                                    OfflineCommissioningDb.instance.getReport(_commissioningReportId ?? "").then((report) {
+                                                                                                    _db.getReport(_commissioningReportId ?? "").then((report) {
                                                                                                       if (report != null && report['report_state'] == 'online') {
-                                                                                                        OfflineCommissioningDb.instance.deleteReport(_commissioningReportId ?? "");
+                                                                                                        _db.deleteReport(_commissioningReportId ?? "");
                                                                                                       }
                                                                                                     });
 
