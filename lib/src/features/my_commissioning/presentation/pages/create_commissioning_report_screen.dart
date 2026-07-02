@@ -156,6 +156,8 @@ class _CreateCommissioningReportScreenState
   bool _isTechnicalDetailsNA = false;
   int _workDescriptionRows = 5;
   String _warrantySearchQuery = '';
+  /// True while an offline DB save is in progress (steps 1-6).
+  bool _isSavingOffline = false;
   // Ã¢â€â‚¬Ã¢â€â‚¬ Step 5: Preventive Maintenance Checklist Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   // NA toggles per section
   bool _mechNA = false;
@@ -681,6 +683,7 @@ class _CreateCommissioningReportScreenState
           technicianIdsMap.add({"id": id, "name": name});
         }
       }
+      setState(() => _isSavingOffline = true);
       await OfflineCommissioningDb.instance.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
@@ -697,11 +700,13 @@ class _CreateCommissioningReportScreenState
           _highestSubmittedStep = 1;
         }
         setState(() {
+          _isSavingOffline = false;
           _currentStep++;
           _triggerAutoFillForStep(_currentStep);
         });
         return;
       }
+      setState(() => _isSavingOffline = false);
 
       if (widget.isServiceReport) {
         if (_submitServiceCallStep1Bloc.state
@@ -735,6 +740,7 @@ class _CreateCommissioningReportScreenState
       int warrantyYears = _selectedWarranty != null
           ? (int.tryParse(_selectedWarranty!.split('_').first) ?? 1)
           : 1;
+      setState(() => _isSavingOffline = true);
       await OfflineCommissioningDb.instance.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
@@ -754,11 +760,13 @@ class _CreateCommissioningReportScreenState
           _highestSubmittedStep = 2;
         }
         setState(() {
+          _isSavingOffline = false;
           _currentStep++;
           _triggerAutoFillForStep(_currentStep);
         });
         return;
       }
+      setState(() => _isSavingOffline = false);
 
       if (widget.isServiceReport) {
         if (_submitServiceCallStep2Bloc.state
@@ -777,6 +785,7 @@ class _CreateCommissioningReportScreenState
         if (_submitStep2Bloc.state is CommissioningStep2LoadingState) return;
         if (!widget.isServiceReport && _selectedWarranty == null) {
           appSnackBar(context, AppColor.bright_red, 'val_select_warranty'.tr());
+          setState(() => _isSavingOffline = false);
           return;
         }
         int warrantyYears = _selectedWarranty != null
@@ -811,6 +820,7 @@ class _CreateCommissioningReportScreenState
               controlPanelMake: _controlPanelMakeController.text,
               panelSerialModel: _panelSerialModelController.text,
             );
+      setState(() => _isSavingOffline = true);
       await OfflineCommissioningDb.instance.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
@@ -827,11 +837,13 @@ class _CreateCommissioningReportScreenState
           _highestSubmittedStep = 3;
         }
         setState(() {
+          _isSavingOffline = false;
           _currentStep++;
           _triggerAutoFillForStep(_currentStep);
         });
         return;
       }
+      setState(() => _isSavingOffline = false);
 
       if (widget.isServiceReport) {
         if (_submitServiceCallStep3Bloc.state
@@ -873,6 +885,7 @@ class _CreateCommissioningReportScreenState
       //   );
       //   return;
       // }
+      setState(() => _isSavingOffline = true);
       await OfflineCommissioningDb.instance.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
@@ -890,11 +903,13 @@ class _CreateCommissioningReportScreenState
           _highestSubmittedStep = 4;
         }
         setState(() {
+          _isSavingOffline = false;
           _currentStep++;
           _triggerAutoFillForStep(_currentStep);
         });
         return;
       }
+      setState(() => _isSavingOffline = false);
 
       if (widget.isServiceReport) {
         _submitServiceCallStep4Bloc.add(
@@ -1199,6 +1214,7 @@ class _CreateCommissioningReportScreenState
           return;
         }
       }
+      setState(() => _isSavingOffline = true);
       await OfflineCommissioningDb.instance.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
@@ -1227,11 +1243,13 @@ class _CreateCommissioningReportScreenState
           _highestSubmittedStep = 5;
         }
         setState(() {
+          _isSavingOffline = false;
           _currentStep++;
           _triggerAutoFillForStep(_currentStep);
         });
         return;
       }
+      setState(() => _isSavingOffline = false);
 
       if (widget.isServiceReport) {
         _submitServiceCallStep5Bloc.add(
@@ -1284,6 +1302,7 @@ class _CreateCommissioningReportScreenState
         '🡐 Submitting Step 6: effectiveAssignId = \'$effectiveAssignId\'',
       );
 
+      setState(() => _isSavingOffline = true);
       await OfflineCommissioningDb.instance.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
@@ -1309,9 +1328,11 @@ class _CreateCommissioningReportScreenState
         if (_highestSubmittedStep < 6) {
           _highestSubmittedStep = 6;
         }
+        if (mounted) setState(() => _isSavingOffline = false);
         widget.onBack();
         return;
       }
+      setState(() => _isSavingOffline = false);
 
       if (widget.isServiceReport) {
         String? techSignaturePath = _technicianSignatureFile?.path;
@@ -2753,6 +2774,7 @@ class _CreateCommissioningReportScreenState
                                                                                                                                                                                                                         serviceCallStep6AutoFillState,
                                                                                                                                                                                                                       ) {
                                                                                                                                                                                                                         bool isSubmitting =
+                                                                                                                                                                                                                            _isSavingOffline ||
                                                                                                                                                                                                                             (_currentStep ==
                                                                                                                                                                                                                                     1 &&
                                                                                                                                                                                                                                 submitState
