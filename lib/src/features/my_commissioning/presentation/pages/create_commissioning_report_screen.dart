@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 import 'dart:convert';
+import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -199,6 +200,7 @@ class _CreateCommissioningReportScreenState
   late CommissioningStep6Bloc _submitStep6Bloc;
   late AssignedTechnicianRepresentativeBloc _assignedTechniciansBloc;
   late AssignedServicecallTechnicianBloc _assignedServiceCallTechnicianBloc;
+  StreamSubscription? _assignedServiceCallTechnicianSubscription;
   late CommissioningWorkCreateBloc _createBloc;
   late ServiceCallReportStep1Bloc _submitServiceCallStep1Bloc;
   late ServiceCallReportStep1AutoFillBloc _serviceCallStep1AutoFillBloc;
@@ -460,6 +462,35 @@ class _CreateCommissioningReportScreenState
     _assignedTechniciansBloc = getIt<AssignedTechnicianRepresentativeBloc>();
     _assignedServiceCallTechnicianBloc =
         getIt<AssignedServicecallTechnicianBloc>();
+    _assignedServiceCallTechnicianSubscription =
+        _assignedServiceCallTechnicianBloc.stream.listen((state) async {
+      if (state is AssignedServicecallTechnicianSuccessState) {
+        final assignedList = state.data.data;
+        if (assignedList.isEmpty) return;
+
+        // Find the logged-in technician in the list, fall back to first
+        final loggedInTech = assignedList.firstWhere(
+          (tech) => tech.technicianId == _loggedInTechnicianId,
+          orElse: () => assignedList.first,
+        );
+
+        if (loggedInTech.assignId.isNotEmpty) {
+          // Save to DB so step 6 offline always has the correct assign_id
+          await _db.updateAssignId(
+            widget.commissioningWorkId,
+            _commissioningReportId ?? '',
+            loggedInTech.assignId,
+          );
+          // Also keep the in-memory variable in sync
+          if (mounted) {
+            setState(() {
+              _selectedTechnicianRepId = loggedInTech.assignId;
+            });
+          }
+          print('✅ Service Call assign_id saved to DB: ${loggedInTech.assignId}');
+        }
+      }
+    });
     _createBloc = getIt<CommissioningWorkCreateBloc>();
     _submitServiceCallStep1Bloc = getIt<ServiceCallReportStep1Bloc>();
     _agendaController = TextEditingController();
@@ -491,6 +522,20 @@ class _CreateCommissioningReportScreenState
       });
       if (_currentStep == 6) {
         _loadAssignIdFromDb();
+      }
+      if (_currentStep == 1) {
+        final report = await _db.getReportByWorkId(widget.commissioningWorkId);
+        if (report == null) {
+          if (widget.isServiceReport) {
+            _serviceCallStep1AutoFillBloc.add(
+              ServiceCallReportStep1AutoFillGetEvent(widget.commissioningWorkId),
+            );
+          } else {
+            _step1Bloc.add(
+              CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId),
+            );
+          }
+        }
       }
     }
   }
@@ -646,6 +691,7 @@ class _CreateCommissioningReportScreenState
 
   @override
   void dispose() {
+    _assignedServiceCallTechnicianSubscription?.cancel();
     _step1Bloc.close();
     _technicianBloc.close();
     _submitStep1Bloc.close();
@@ -1821,6 +1867,10 @@ class _CreateCommissioningReportScreenState
                     if (state is ServiceCallReportStep1SuccessState) {
                       appSnackBar(context, AppColor.green, state.data.message);
                       _commissioningReportId = state.data.data.id;
+                      // Call assigned technician API for service reports
+                      _assignedServiceCallTechnicianBloc.add(
+                        AssignedServicecallTechnicianGetEvent(state.data.data.id),
+                      );
                       // Move to step 2 for service calls if needed
                       setState(() {
                         _currentStep++;

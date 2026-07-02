@@ -105,7 +105,9 @@ class ServiceCallsStep5Widget extends StatelessWidget {
                         reportId: item.reportId,
                       ),
                     ),
-                  );
+                  ).then((_) {
+                    parent._fetchServiceCalls(isRefresh: true);
+                  });
                 },
               );
             },
