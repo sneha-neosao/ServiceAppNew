@@ -405,6 +405,24 @@ class _CreateCommissioningReportScreenState
     }
   }
 
+  /// Loads the saved assignId from the local DB and sets [_selectedTechnicianRepId].
+  /// Called when entering step 6 — we never call the assign-technician API on step 6;
+  /// the ID was already saved to DB when step 1 was submitted.
+  Future<void> _loadAssignIdFromDb() async {
+    final savedAssignId = await OfflineCommissioningDb.instance
+        .getAssignIdByWorkId(widget.commissioningWorkId);
+    if (savedAssignId != null && savedAssignId.isNotEmpty) {
+      if (mounted) {
+        setState(() {
+          _selectedTechnicianRepId = savedAssignId;
+        });
+      }
+      print('✅ [Step6] assignId loaded from DB: $savedAssignId');
+    } else {
+      print('⚠️ [Step6] No assignId found in DB for workId: ${widget.commissioningWorkId}');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -507,6 +525,8 @@ class _CreateCommissioningReportScreenState
         );
       }
     } else if (_currentStep == 6) {
+      // Load assignId from DB — no assign-technician API call on step 6
+      _loadAssignIdFromDb();
       if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
         _serviceCallStep6AutoFillBloc.add(
           ServiceCallReportStep6AutoFillGetEvent(_commissioningReportId ?? ""),
@@ -624,6 +644,8 @@ class _CreateCommissioningReportScreenState
             CommissioningStep5AutoFillGetEvent(_commissioningReportId ?? ""),
           );
         } else if (step == 6) {
+          // Load assignId from DB — no assign-technician API call on step 6
+          _loadAssignIdFromDb();
           _step6Bloc.add(
             CommissioningStep6AutoFillGetEvent(_commissioningReportId ?? ""),
           );
@@ -1247,10 +1269,21 @@ class _CreateCommissioningReportScreenState
           _submitServiceCallStep6Bloc.state
               is ServiceCallReportStep6LoadingState)
         return;
+
+      // Always read assignId from DB — it was saved when step 1 was submitted.
+      final savedAssignId =
+          await OfflineCommissioningDb.instance
+              .getAssignIdByWorkId(widget.commissioningWorkId) ??
+          '';
+
+      // Keep in-memory value in sync with DB value
+      final effectiveAssignId =
+          savedAssignId.isNotEmpty ? savedAssignId : (_selectedTechnicianRepId ?? '');
+
       print(
-        "Ã°Å¸Å¡â‚¬ Submitting Step 6: technicianRepresentative = '$_selectedTechnicianRepId'",
+        '🡐 Submitting Step 6: effectiveAssignId = \'$effectiveAssignId\'',
       );
-      final savedAssignId = await OfflineCommissioningDb.instance.getAssignIdByWorkId(widget.commissioningWorkId) ?? '';
+
       await OfflineCommissioningDb.instance.saveStep(
         _commissioningReportId ?? "",
         widget.commissioningWorkId,
@@ -1258,8 +1291,8 @@ class _CreateCommissioningReportScreenState
         {
           "technicianRemarks": _technicianRemarksController.text.trim(),
           "customerRemarks": _customerRemarksController.text.trim(),
-          "technicianRepresentative": savedAssignId.isNotEmpty ? savedAssignId : (_selectedTechnicianRepId ?? ''),
-          "assignId": savedAssignId.isNotEmpty ? savedAssignId : (_selectedTechnicianRepId ?? ''),
+          "technicianRepresentative": effectiveAssignId,
+          "assignId": effectiveAssignId,
           "customerRepresentativeName": _customerRepNameController.text.trim(),
           "technicianSignaturePath": _technicianSignatureFile?.path,
           "customerSignaturePath": _customerSignatureFile?.path,
@@ -1299,9 +1332,8 @@ class _CreateCommissioningReportScreenState
         } else if (_existingWorkPhotosUrls.isNotEmpty) {
           workPhotosPaths.addAll(_existingWorkPhotosUrls);
         }
-        // Validation
-        if (_selectedTechnicianRepId == null ||
-            _selectedTechnicianRepId!.isEmpty) {
+        // Validation — use effectiveAssignId so DB value is accepted
+        if (effectiveAssignId.isEmpty) {
           appSnackBar(context, AppColor.bright_red, 'val_sel_tech_rep'.tr());
           return;
         }
@@ -1326,7 +1358,7 @@ class _CreateCommissioningReportScreenState
             reportId: _commissioningReportId ?? "",
             technicianRemarks: _technicianRemarksController.text.trim(),
             customerRemarks: _customerRemarksController.text.trim(),
-            technicianRepresentative: _selectedTechnicianRepId ?? '',
+            technicianRepresentative: effectiveAssignId,
             customerRepresentativeName: _customerRepNameController.text.trim(),
             technicianSignaturePath: techSignaturePath,
             customerSignaturePath: custSignaturePath,
@@ -1334,9 +1366,8 @@ class _CreateCommissioningReportScreenState
           ),
         );
       } else {
-        // Validation for commissioning flow
-        if (_selectedTechnicianRepId == null ||
-            _selectedTechnicianRepId!.isEmpty) {
+        // Commissioning flow validation — use effectiveAssignId so DB value is accepted
+        if (effectiveAssignId.isEmpty) {
           appSnackBar(context, AppColor.bright_red, 'val_sel_tech_rep'.tr());
           return;
         }
@@ -1364,10 +1395,10 @@ class _CreateCommissioningReportScreenState
         _submitStep6Bloc.add(
           CommissioningStep6SubmitEvent(
             commissioning_report_id: _commissioningReportId ?? "",
-            assignId: _selectedTechnicianRepId ?? '',
+            assignId: effectiveAssignId,
             technicianRemarks: _technicianRemarksController.text.trim(),
             customerRemarks: _customerRemarksController.text.trim(),
-            technicianRepresentative: _selectedTechnicianRepId ?? '',
+            technicianRepresentative: effectiveAssignId,
             customerRepresentativeName: _customerRepNameController.text.trim(),
             technicianSignaturePath: _technicianSignatureFile?.path,
             customerSignaturePath: _customerSignatureFile?.path,
