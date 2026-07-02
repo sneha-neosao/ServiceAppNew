@@ -143,9 +143,7 @@ class CreateCommissioningReportScreen extends StatefulWidget {
 
 class _CreateCommissioningReportScreenState
     extends State<CreateCommissioningReportScreen> {
-  late int _currentStep = widget.initialStepNo > 0
-      ? (widget.initialStepNo < 6 ? widget.initialStepNo + 1 : 6)
-      : 1;
+  late int _currentStep = 0;
   bool _hasAppliedInitialStep = false;
   int _highestSubmittedStep = 1;
   String? _commissioningReportId;
@@ -476,20 +474,19 @@ class _CreateCommissioningReportScreenState
     }
     _representatives = [TextEditingController()];
 
-    if (_currentStep == 1) {
-      // Autofill APIs disabled per user request
-    } else if (_currentStep == 2) {
-      // Autofill APIs disabled per user request
-    } else if (_currentStep == 3) {
-      // Autofill APIs disabled per user request
-    } else if (_currentStep == 4) {
-      // Autofill APIs disabled per user request
-    } else if (_currentStep == 5) {
-      // Autofill APIs disabled per user request
-    } else if (_currentStep == 6) {
-      // Load assignId from DB — no assign-technician API call on step 6
-      _loadAssignIdFromDb();
-      // Autofill APIs disabled per user request
+    _initCurrentStep();
+  }
+
+  Future<void> _initCurrentStep() async {
+    int step = await OfflineCommissioningDb.instance.getInitialStep(widget.commissioningWorkId);
+    if (mounted) {
+      setState(() {
+        _currentStep = step;
+        _highestSubmittedStep = step;
+      });
+      if (_currentStep == 6) {
+        _loadAssignIdFromDb();
+      }
     }
   }
 
@@ -2880,6 +2877,8 @@ class _CreateCommissioningReportScreenState
 
   Widget _buildBodyContent() {
     switch (_currentStep) {
+      case 0:
+        return const Center(child: CircularProgressIndicator());
       case 1:
         if (widget.isServiceReport) {
           return BlocConsumer<

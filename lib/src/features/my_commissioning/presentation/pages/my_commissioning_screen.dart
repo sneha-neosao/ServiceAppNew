@@ -218,7 +218,7 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
                                 builder: (context) =>
                                     CreateCommissioningReportScreen(
                                       commissioningWorkId: item.id,
-                                      initialStepNo: item.stepNo,
+                                      // initialStepNo: item.stepNo, // commented out per request
                                       reportId: item.reportId,
                                       defaultTechnicians: item.assignedTechnicians.map((t) => {'id': t.id, 'name': t.name}).toList(),
                                       onBack: () => Navigator.pop(context),

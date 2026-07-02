@@ -174,4 +174,24 @@ class OfflineCommissioningDb {
       whereArgs: [reportId],
     );
   }
+
+  Future<int> getInitialStep(String commissioningWorkId) async {
+    final db = await instance.database;
+    final maps = await db.query(
+      'commissioning_report',
+      columns: ['step1', 'step2', 'step3', 'step4', 'step5'],
+      where: 'commissioning_work_id = ?',
+      whereArgs: [commissioningWorkId],
+    );
+
+    if (maps.isNotEmpty) {
+      final map = maps.first;
+      if (map['step5'] != null) return 6;
+      if (map['step4'] != null) return 5;
+      if (map['step3'] != null) return 4;
+      if (map['step2'] != null) return 3;
+      if (map['step1'] != null) return 2;
+    }
+    return 1;
+  }
 }

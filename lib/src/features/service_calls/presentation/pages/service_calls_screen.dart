@@ -518,7 +518,7 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         onBack: () => Navigator.pop(context),
                         commissioningWorkId: item.id,
                         complaintNo: item.complaintNumber,
-                        initialStepNo: item.step_no ?? 0,
+                        // initialStepNo: item.step_no ?? 0, // commented out per request
                         reportId: item.reportId,
                       ),
                     ),
