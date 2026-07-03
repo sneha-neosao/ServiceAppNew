@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:service_app/src/core/api/api_url.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
@@ -18,33 +19,51 @@ class ApiInterceptor extends Interceptor {
   bool _isLoggingOut = false;
   final List<void Function(String)> _requestsQueue = [];
 
-  String? _deviceName;
 
-  Future<String> _getDeviceName() async {
-    if (_deviceName != null) return _deviceName!;
+  Map<String, dynamic>? _cachedDeviceInfo;
+
+  Future<Map<String, dynamic>> _getDeviceInfo() async {
+    if (_cachedDeviceInfo != null) return _cachedDeviceInfo!;
 
     try {
       final deviceInfo = DeviceInfoPlugin();
       if (Platform.isAndroid) {
-        final androidInfo = await DeviceInfoPlugin().androidInfo;
-
-        print('Brand: ${androidInfo.brand}');
-        print('Manufacturer: ${androidInfo.manufacturer}');
-        print('Model: ${androidInfo.model}');
-        print('Device: ${androidInfo.device}');
-        print('Product: ${androidInfo.product}');
-        _deviceName = androidInfo.model;
+        final androidInfo = await deviceInfo.androidInfo;
+        _cachedDeviceInfo = {
+          'platform': 'android',
+          'brand': androidInfo.brand,
+          'manufacturer': androidInfo.manufacturer,
+          'model': androidInfo.model,
+          'device': androidInfo.device,
+          'product': androidInfo.product,
+          'androidVersion': androidInfo.version.release,
+          'sdkInt': androidInfo.version.sdkInt,
+          'hardware': androidInfo.hardware,
+          'isPhysicalDevice': androidInfo.isPhysicalDevice,
+        };
       } else if (Platform.isIOS) {
         final iosInfo = await deviceInfo.iosInfo;
-        _deviceName = iosInfo.utsname.machine;
+        _cachedDeviceInfo = {
+          'platform': 'ios',
+          'name': iosInfo.name,
+          'model': iosInfo.model,
+          'localizedModel': iosInfo.localizedModel,
+          'systemName': iosInfo.systemName,
+          'systemVersion': iosInfo.systemVersion,
+          'machine': iosInfo.utsname.machine,
+          'isPhysicalDevice': iosInfo.isPhysicalDevice,
+        };
       } else {
-        _deviceName = Platform.operatingSystem;
+        _cachedDeviceInfo = {
+          'platform': Platform.operatingSystem,
+          'model': Platform.operatingSystemVersion,
+        };
       }
     } catch (e) {
-      print("⚠️ Error getting device name: $e");
-      _deviceName = 'Unknown';
+      logger.e('Error getting device info: $e');
+      _cachedDeviceInfo = {'platform': 'unknown', 'model': 'Unknown'};
     }
-    return _deviceName ?? 'Unknown';
+    return _cachedDeviceInfo!;
   }
 
   void _addToQueue(void Function(String) callback) {
@@ -79,9 +98,9 @@ class ApiInterceptor extends Interceptor {
       options.headers['Authorization'] = 'Bearer $token';
     }
 
-    final deviceName = await _getDeviceName();
-    print("📱 Device-Name attached to headers: $deviceName");
-    options.headers['Device-Name'] = deviceName;
+    final deviceInfo = await _getDeviceInfo();
+    options.headers['Device-Name'] = deviceInfo['model']?.toString() ?? 'Unknown';
+    options.headers['Device-Info'] = jsonEncode(deviceInfo);
 
     // 🔥 FULL REQUEST LOG
     //     debugPrint('''
