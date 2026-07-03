@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/src/core/theme/app_color.dart';
+import 'package:service_app/src/routes/app_route_conf.dart';
 
 /// Shows a custom Toast/SnackBar using an OverlayEntry.
 /// This guarantees it will always appear on top of dialogs, bottom sheets, etc.
 void appSnackBar(BuildContext context, Color color, String label) {
-  final overlay = Overlay.of(context);
+  OverlayState? overlay;
+  try {
+    overlay = Overlay.of(context);
+  } catch (_) {
+    // Overlay lookup failed (e.g. if context is the root Navigator context itself)
+  }
+
+  overlay ??= globalNavigator.currentState?.overlay;
+
+  if (overlay == null) {
+    print("⚠️ Cannot show appSnackBar: Overlay is null");
+    return;
+  }
 
   late OverlayEntry entry;
   

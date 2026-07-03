@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/database/offline_commissioning_db.dart';
 import 'package:service_app/src/core/database/offline_service_reports_db.dart';
+import 'package:service_app/src/core/database/offline_amc_reports_db.dart';
 import 'package:service_app/src/features/offline/domain/services/offline_sync_service.dart';
 import 'package:service_app/src/features/offline/domain/services/offline_service_sync_service.dart';
+import 'package:service_app/src/features/offline/domain/services/offline_amc_sync_service.dart';
 import 'package:service_app/src/core/network/network_checker.dart';
 import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
@@ -35,6 +37,8 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
       reports = await OfflineCommissioningDb.instance.getAllOfflineReports();
     } else if (_selectedTab == 1) {
       reports = await OfflineServiceReportsDb.instance.getAllOfflineReports();
+    } else if (_selectedTab == 2) {
+      reports = await OfflineAmcReportsDb.instance.getAllOfflineReports();
     }
     if (mounted) {
       setState(() {
@@ -47,7 +51,8 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
   /// Count how many steps (1–6) have data saved for this report
   int _stepsCompleted(Map<String, dynamic> report) {
     int count = 0;
-    for (int i = 1; i <= 6; i++) {
+    final maxSteps = _selectedTab == 2 ? 3 : 6;
+    for (int i = 1; i <= maxSteps; i++) {
       if (report['step$i'] != null) count++;
     }
     return count;
@@ -75,7 +80,9 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
 
     final result = _selectedTab == 0
         ? await getIt<OfflineSyncService>().syncReport(reportId)
-        : await getIt<OfflineServiceSyncService>().syncReport(reportId);
+        : _selectedTab == 1
+            ? await getIt<OfflineServiceSyncService>().syncReport(reportId)
+            : await getIt<OfflineAmcSyncService>().syncReport(reportId);
 
     if (!mounted) return;
     Navigator.pop(context); // close loader
@@ -337,11 +344,24 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                                         _buildReportCard(_reports[index]),
                                   ),
                                 ))
-                          : _buildEmpty(
-                              title: 'No Offline AMC Reports',
-                              subtitle:
-                                  'AMC reports saved while offline will appear here.',
-                            )),
+                          : (_reports.isEmpty
+                              ? _buildEmpty(
+                                  title: 'No Offline AMC Reports',
+                                  subtitle:
+                                      'AMC reports saved while offline will appear here.',
+                                )
+                              : RefreshIndicator(
+                                  onRefresh: _loadReports,
+                                  color: AppColor.primaryColor,
+                                  child: ListView.separated(
+                                    padding: const EdgeInsets.all(16),
+                                    itemCount: _reports.length,
+                                    separatorBuilder: (_, index) =>
+                                        const SizedBox(height: 12),
+                                    itemBuilder: (context, index) =>
+                                        _buildReportCard(_reports[index]),
+                                  ),
+                                ))),
             ),
           ],
         ),
@@ -428,6 +448,7 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
         report['commissioning_work_id'] as String? ?? '—';
     final synced = (report['synced'] as int?) == 1;
     final stepsCompleted = _stepsCompleted(report);
+    final totalSteps = _selectedTab == 2 ? 3 : 6;
 
     // Parse step1 for the agenda/technician names if available
     String subtitle = 'Report ID: ${_shortId(reportId)}';
@@ -548,7 +569,7 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                       ),
                     ),
                     Text(
-                      '$stepsCompleted / 6',
+                      '$stepsCompleted / $totalSteps',
                       style: AppFont.style(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -559,12 +580,12 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                 ),
                 const SizedBox(height: 6),
                 Row(
-                  children: List.generate(6, (i) {
+                  children: List.generate(totalSteps, (i) {
                     final filled = i < stepsCompleted;
                     return Expanded(
                       child: Container(
                         height: 4,
-                        margin: EdgeInsets.only(right: i < 5 ? 4 : 0),
+                        margin: EdgeInsets.only(right: i < totalSteps - 1 ? 4 : 0),
                         decoration: BoxDecoration(
                           color: filled
                               ? AppColor.primaryColor
@@ -593,13 +614,13 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: (synced || stepsCompleted < 6)
+                    onTap: (synced || stepsCompleted < totalSteps)
                         ? null
                         : () => _syncReport(reportId),
                     child: Container(
                       height: 44,
                       decoration: BoxDecoration(
-                        color: (synced || stepsCompleted < 6)
+                        color: (synced || stepsCompleted < totalSteps)
                             ? Colors.grey[400]
                             : const Color(0xFF1565C0),
                         borderRadius: BorderRadius.circular(10),
@@ -610,7 +631,7 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                           Text(
                             synced
                                 ? 'Synced'
-                                : (stepsCompleted < 6
+                                : (stepsCompleted < totalSteps
                                       ? 'Incomplete'
                                       : 'Sync Report'),
                             style: AppFont.style(

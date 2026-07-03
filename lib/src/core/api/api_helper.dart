@@ -1,5 +1,10 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:service_app/src/core/theme/app_color.dart';
+import 'package:service_app/src/core/network/network_checker.dart';
+import 'package:service_app/src/features/widgets/snackbar_widget.dart';
+import 'package:service_app/src/routes/app_route_conf.dart';
 
 import '../utils/logger.dart';
 import 'api_exception.dart';
@@ -15,6 +20,15 @@ class ApiHelper {
     dynamic options,
   }) async {
     print("🚀 ApiHelper → EXECUTE CALLED");
+
+    final isConnected = await NetworkInfo().checkIsConnected;
+    if (!isConnected) {
+      final context = globalNavigator.currentContext;
+      if (context != null) {
+        appSnackBar(context, AppColor.bright_red, "Please check your internet connection");
+      }
+      throw FetchDataException('No Internet connection');
+    }
 
     // final newToken = await SecureStorage.getAccessToken();
 

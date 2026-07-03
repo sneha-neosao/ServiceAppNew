@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_app/src/core/database/offline_commissioning_db.dart';
 import 'package:service_app/src/core/database/offline_service_reports_db.dart';
+import 'package:service_app/src/core/database/offline_amc_reports_db.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/features/home/bloc/upcoming_amc_bloc/upcoming_amc_bloc.dart';
 import 'package:shimmer/shimmer.dart';
@@ -85,8 +86,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _checkOfflineData() async {
     final reportsComm = await OfflineCommissioningDb.instance.getAllOfflineReports();
     final reportsService = await OfflineServiceReportsDb.instance.getAllOfflineReports();
+    final reportsAmc = await OfflineAmcReportsDb.instance.getAllOfflineReports();
     if (mounted) {
-      setState(() => _hasOfflineData = reportsComm.isNotEmpty || reportsService.isNotEmpty);
+      setState(() => _hasOfflineData =
+          reportsComm.isNotEmpty || reportsService.isNotEmpty || reportsAmc.isNotEmpty);
     }
   }
 

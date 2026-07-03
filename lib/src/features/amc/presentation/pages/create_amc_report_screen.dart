@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:service_app/src/core/network/network_checker.dart';
+import 'package:service_app/src/core/database/offline_amc_reports_db.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -66,7 +68,7 @@ class CreateAmcReportScreen extends StatefulWidget {
 }
 
 class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
-  late int _currentStep;
+  int _currentStep = 1;
   bool _isLoading = false;
   bool _isAutofillLoading = false;
   bool _hasFetchedStep2Autofill = false;
@@ -118,6 +120,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
   @override
   void initState() {
     super.initState();
+    _currentStep = widget.initialStepNo > 0 ? widget.initialStepNo : 1;
     _loadSession();
     _currentReportId = widget.reportId;
     _step1Bloc = getIt<AmcReportStep1Bloc>();
@@ -128,19 +131,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     _technicianBloc = getIt<TechnicianBloc>()..add(TechnicianGetEvent());
     _assignedTechniciansBloc = getIt<AmcAssignedTechniciansBloc>();
 
-    _currentStep = widget.initialStepNo > 0 ? (widget.initialStepNo < 3 ? widget.initialStepNo + 1 : 3) : 1;
-
-    if (widget.reportId != null) {
-      if (_currentStep == 1) {
-        // _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
-      } else if (_currentStep == 2) {
-        _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
-      } else if (_currentStep == 3) {
-        _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
-      }
-    } else {
-      // _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
-    }
+    _initCurrentStep();
   }
 
   @override
@@ -181,6 +172,145 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           }
         });
       }
+    }
+  }
+
+  Future<void> _initCurrentStep() async {
+    int step = await OfflineAmcReportsDb.instance.getInitialStep(widget.visitId);
+    await _loadStepDataFromDb();
+    if (mounted) {
+      setState(() {
+        _currentStep = step;
+      });
+      final report = await OfflineAmcReportsDb.instance.getReportByWorkId(widget.visitId);
+      if (report != null && report['report_id'] != null) {
+        _currentReportId = report['report_id'];
+      }
+      if (_currentStep == 1) {
+        final isOnline = await NetworkInfo().checkIsConnected;
+        if (isOnline && report == null) {
+          _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
+        }
+      }
+    }
+  }
+
+  Future<void> _loadStepDataFromDb() async {
+    final report = await OfflineAmcReportsDb.instance.getReportByWorkId(widget.visitId);
+    if (report == null) return;
+
+    if (mounted) {
+      setState(() {
+        // Step 1
+        if (report['step1'] != null) {
+          try {
+            final Map<String, dynamic> step1 = jsonDecode(report['step1']);
+            if (step1['technicianIds'] != null) {
+              final List<dynamic> techs = step1['technicianIds'];
+              _technicians.clear();
+              _technicianIds.clear();
+              for (var t in techs) {
+                _technicians.add(TextEditingController(text: t['name']?.toString() ?? ''));
+                _technicianIds.add(t['id']?.toString());
+              }
+              if (_technicians.isEmpty) {
+                _technicians.add(TextEditingController());
+                _technicianIds.add(null);
+              }
+            }
+            if (step1['memberPresentsCustomerSide'] != null) {
+              final String members = step1['memberPresentsCustomerSide'].toString();
+              if (members.isNotEmpty) {
+                _memberPresentsControllers.clear();
+                for (var m in members.split(', ')) {
+                  _memberPresentsControllers.add(TextEditingController(text: m));
+                }
+              }
+            }
+            if (step1['agenda'] != null) {
+              _agendaController.text = step1['agenda'].toString();
+            }
+          } catch (e) {
+            print("Error parsing AMC step1: $e");
+          }
+        }
+
+        // Step 2
+        if (report['step2'] != null) {
+          try {
+            final Map<String, dynamic> step2 = jsonDecode(report['step2']);
+            _mechNA = step2['isMechanicalChecklistNa'] == true;
+            _pipeNA = step2['isPipelineHydraulicChecklistNa'] == true;
+            _elecNA = step2['isElectricalChecklistNa'] == true;
+            _operationNA = step2['operationChecklistNa'] == true;
+
+            List<String> mapToList(String? jsonStr) {
+              if (jsonStr == null || jsonStr.isEmpty) return [];
+              try {
+                final map = jsonDecode(jsonStr) as Map<String, dynamic>;
+                return map.keys.toList();
+              } catch (_) {
+                return [];
+              }
+            }
+
+            _mechanicalSelected = mapToList(step2['mechanicalChecklist']);
+            _pipelineSelected = mapToList(step2['pipelineHydraulicChecklist']);
+            _electricalSelected = mapToList(step2['electricalChecklist']);
+            _operationSelected = mapToList(step2['operationChecklist']);
+
+            if (!_mechNA && step2['mechanicalChecklist'] != null) {
+              try {
+                final map = jsonDecode(step2['mechanicalChecklist']) as Map<String, dynamic>;
+                final vibrationKey = map.keys.firstWhere(
+                  (k) => k.toLowerCase().contains('vibration'),
+                  orElse: () => '',
+                );
+                if (vibrationKey.isNotEmpty) {
+                  _vibrationSelected = map[vibrationKey]?.toString().toUpperCase();
+                }
+              } catch (_) {}
+            }
+          } catch (e) {
+            print("Error parsing AMC step2: $e");
+          }
+        }
+
+        // Step 3
+        if (report['step3'] != null) {
+          try {
+            final Map<String, dynamic> step3 = jsonDecode(report['step3']);
+            _technicianRemarksController.text = step3['technicianRemarks']?.toString() ?? '';
+            _customerRemarksController.text = step3['customerRemarks']?.toString() ?? '';
+            _customerRepNameController.text = step3['customerRepresentativeName']?.toString() ?? '';
+            _selectedTechnicianRepId = step3['technicianRepresentative']?.toString();
+
+            if (step3['technicianSignaturePath'] != null) {
+              final path = step3['technicianSignaturePath'].toString();
+              if (path.isNotEmpty) {
+                _technicianSignatureFile = File(path);
+              }
+            }
+            if (step3['customerSignaturePath'] != null) {
+              final path = step3['customerSignaturePath'].toString();
+              if (path.isNotEmpty) {
+                _customerSignatureFile = File(path);
+              }
+            }
+            if (step3['workPhotosPaths'] != null) {
+              final List<dynamic> paths = step3['workPhotosPaths'];
+              _workPhotos.clear();
+              for (var p in paths) {
+                if (p.toString().isNotEmpty) {
+                  _workPhotos.add(File(p.toString()));
+                }
+              }
+            }
+          } catch (e) {
+            print("Error parsing AMC step3: $e");
+          }
+        }
+      });
     }
   }
 
@@ -320,8 +450,31 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
             if (state is AmcReportStep1SuccessState) {
               _currentReportId = state.data.data.id;
+              
+              final List<Map<String, dynamic>> selectedTechs = [];
+              for (int i = 0; i < _technicians.length; i++) {
+                var controller = _technicians[i];
+                if (controller.text.isNotEmpty) {
+                  selectedTechs.add({"id": _technicianIds[i] ?? "", "name": controller.text});
+                }
+              }
+
+              OfflineAmcReportsDb.instance.saveStep(
+                _currentReportId ?? "",
+                widget.visitId,
+                1,
+                {
+                  "technicianIds": selectedTechs,
+                  "memberPresentsCustomerSide": _memberPresentsControllers.map((c) => c.text.trim()).where((t) => t.isNotEmpty).join(", "),
+                  "agenda": _agendaController.text,
+                },
+                reportState: 'online',
+              );
+
+              _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
+
               setState(() => _currentStep++);
-              if (widget.reportId != null && !_hasFetchedStep2Autofill) {
+              if (_currentReportId != null && !_hasFetchedStep2Autofill) {
                 _hasFetchedStep2Autofill = true;
                 _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
               }
@@ -473,6 +626,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
             if (state is AmcReportStep3SuccessState) {
               appSnackBar(context, AppColor.green, state.data.message);
+              OfflineAmcReportsDb.instance.deleteReport(_currentReportId ?? "");
               widget.onSubmit();
             } else if (state is AmcReportStep3ErrorState) {
               appSnackBar(context, AppColor.bright_red, state.message);
@@ -481,8 +635,28 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         ),
         BlocListener<AmcAssignedTechniciansBloc, AmcAssignedTechniciansState>(
           bloc: _assignedTechniciansBloc,
-          listener: (context, state) {
-            if (state is AmcAssignedTechniciansFailureState) {
+          listener: (context, state) async {
+            if (state is AmcAssignedTechniciansSuccessState) {
+              final assignedList = state.data.data;
+              if (assignedList.isEmpty) return;
+
+              final loggedInTech = assignedList.firstWhere(
+                (tech) => tech.technicianId == _loggedInTechnicianId,
+                orElse: () => assignedList.first,
+              );
+
+              if (loggedInTech.assignId.isNotEmpty) {
+                await OfflineAmcReportsDb.instance.updateAssignId(
+                  widget.visitId,
+                  _currentReportId ?? '',
+                  loggedInTech.assignId,
+                );
+                setState(() {
+                  _selectedTechnicianRepId = loggedInTech.assignId;
+                });
+                print('✅ AMC assign_id saved to DB: ${loggedInTech.assignId}');
+              }
+            } else if (state is AmcAssignedTechniciansFailureState) {
               appSnackBar(context, AppColor.bright_red, state.message);
             }
           },
@@ -2231,7 +2405,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
           GestureDetector(
             onTap: _isLoading
                 ? null
-                : () {
+                : () async {
                     if (_currentStep == 1) {
                       List<Map<String, dynamic>> selectedTechs = [];
                       List<dynamic> allTechs = [];
@@ -2263,83 +2437,98 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         return;
                       }
 
-                      _step1Bloc.add(PostAmcReportStep1Event(PostAmcReportStep1Params(
-                        amcVisitId: widget.visitId,
-                        amcReportId: _currentReportId,
-                        technicianIds: selectedTechs,
-                        memberPresentsCustomerSide: _memberPresentsControllers.map((c) => c.text.trim()).where((t) => t.isNotEmpty).join(", "),
-                        agenda: _agendaController.text,
-                      )));
+                      final step1Data = {
+                        "technicianIds": selectedTechs,
+                        "memberPresentsCustomerSide": _memberPresentsControllers.map((c) => c.text.trim()).where((t) => t.isNotEmpty).join(", "),
+                        "agenda": _agendaController.text,
+                      };
+                      setState(() => _isLoading = true);
+                      final isOnline = await NetworkInfo().checkIsConnected;
+                      await OfflineAmcReportsDb.instance.saveStep(
+                        _currentReportId ?? "",
+                        widget.visitId,
+                        1,
+                        step1Data,
+                      );
+                      if (!isOnline) {
+                        setState(() {
+                          _isLoading = false;
+                          _currentReportId = widget.visitId;
+                          _currentStep++;
+                        });
+                        appSnackBar(context, AppColor.green, "Saved offline locally");
+                      } else {
+                        _step1Bloc.add(PostAmcReportStep1Event(PostAmcReportStep1Params(
+                          amcVisitId: widget.visitId,
+                          amcReportId: _currentReportId,
+                          technicianIds: selectedTechs,
+                          memberPresentsCustomerSide: _memberPresentsControllers.map((c) => c.text.trim()).where((t) => t.isNotEmpty).join(", "),
+                          agenda: _agendaController.text,
+                        )));
+                      }
                     } else if (_currentStep == 2) {
+                      final isOnline = await NetworkInfo().checkIsConnected;
                       if (_currentReportId == null) {
-                        appSnackBar(context, AppColor.bright_red, 'report_id_is_missing'.tr());
-                        return;
+                        if (!isOnline) {
+                          _currentReportId = widget.visitId;
+                        } else {
+                          appSnackBar(context, AppColor.bright_red, 'report_id_is_missing'.tr());
+                          return;
+                        }
                       }
 
                       if (!_mechNA) {
                         if (!_mechanicalSelected.contains('pump_foundation_bolt_tight'.tr())) {
                           appSnackBar(context, AppColor.bright_red, 'val_amc_pump_foundation'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains('coupling_alignment_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_coupling'.tr()); return;
+                        if (!_mechanicalSelected.contains('gland_packing_leakage_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_gland_packing'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains('bearing_noise_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_bearing_noise'.tr()); return;
+                        if (!_mechanicalSelected.contains('coupling_bush_condition_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_coupling_bush'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains('abnormal_sound_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_abnormal_sound'.tr()); return;
-                        }
-                        if (!_mechanicalSelected.contains('mechanical_seal_gland_leakage_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_mech_seal'.tr()); return;
+                        if (!_mechanicalSelected.contains('grease_lubrication_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_grease'.tr()); return;
                         }
                         if (_vibrationSelected == null) {
                           appSnackBar(context, AppColor.bright_red, 'val_amc_vibration'.tr()); return;
                         }
-                        if (!_mechanicalSelected.contains('pump_cleaned'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_pump_cleaned'.tr()); return;
-                        }
-                        if (!_mechanicalSelected.contains('pump_not_running_dry'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_pump_dry'.tr()); return;
-                        }
                       }
                       if (!_pipeNA) {
-                        if (!_pipelineSelected.contains('suction_line_leakage_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_suction_line'.tr()); return;
+                        if (!_pipelineSelected.contains('gate_valve_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_gate_valve'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains('delivery_line_leakage_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_delivery_line'.tr()); return;
-                        }
-                        if (!_pipelineSelected.contains('valve_working_checked'.tr())) {
+                        if (!_pipelineSelected.contains('nrv_checked'.tr())) {
                           appSnackBar(context, AppColor.bright_red, 'val_amc_nrv'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains('strainer_cleaned'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_strainer'.tr()); return;
+                        if (!_pipelineSelected.contains('foot_valve_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_foot_valve'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains('valve_condition_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_suction_del_valve'.tr()); return;
+                        if (!_pipelineSelected.contains('suction_strainer_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_suction_strainer'.tr()); return;
                         }
-                        if (!_pipelineSelected.contains('pressure_switch_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_pressure_switch'.tr()); return;
+                        if (!_pipelineSelected.contains('pressure_gauge_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_pressure_gauge'.tr()); return;
                         }
                       }
                       if (!_elecNA) {
-                        if (!_electricalSelected.contains('panel_cleaned'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_panel_cleaned'.tr()); return;
+                        if (!_electricalSelected.contains('panel_cleaning_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_panel_cleaning'.tr()); return;
                         }
-                        if (!_electricalSelected.contains('contactor_relay_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_contactor'.tr()); return;
+                        if (!_electricalSelected.contains('all_connections_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_connections'.tr()); return;
                         }
-                        if (!_electricalSelected.contains('overload_setting_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_overload'.tr()); return;
+                        if (!_electricalSelected.contains('starter_contacts_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_starter'.tr()); return;
                         }
-                        if (!_electricalSelected.contains('loose_wiring_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_loose_wiring'.tr()); return;
+                        if (!_electricalSelected.contains('overload_relay_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_relay'.tr()); return;
                         }
-                        if (!_electricalSelected.contains('phase_voltage_current_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_phase_voltage'.tr()); return;
+                        if (!_electricalSelected.contains('single_phase_preventer_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_preventer'.tr()); return;
                         }
-                        if (!_electricalSelected.contains('earthing_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_earthing'.tr()); return;
+                        if (!_electricalSelected.contains('voltage_current_checked'.tr())) {
+                          appSnackBar(context, AppColor.bright_red, 'val_amc_voltage_current'.tr()); return;
                         }
                       }
                       if (!_operationNA) {
@@ -2348,12 +2537,6 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         }
                         if (!_operationSelected.contains('auto_operation_checked'.tr())) {
                           appSnackBar(context, AppColor.bright_red, 'val_amc_auto_operation'.tr()); return;
-                        }
-                        if (!_operationSelected.contains('water_flow_pressure_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_water_flow'.tr()); return;
-                        }
-                        if (!_operationSelected.contains('rotation_direction_checked'.tr())) {
-                          appSnackBar(context, AppColor.bright_red, 'val_amc_rotation'.tr()); return;
                         }
                       }
 
@@ -2371,27 +2554,58 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         mechMap['vibration_checked'.tr()] = _vibrationSelected!.toLowerCase();
                       }
 
-                      _step2Bloc.add(PostAmcReportStep2Event(PostAmcReportStep2Params(
-                        id: _currentReportId!,
-                        isMechanicalChecklistNa: _mechNA,
-                        isPipelineHydraulicChecklistNa: _pipeNA,
-                        isElectricalChecklistNa: _elecNA,
-                        operationChecklistNa: _operationNA,
-                        mechanicalChecklist: jsonEncode(mechMap),
-                        pipelineHydraulicChecklist: jsonEncode(_pipeNA ? {} : listToMap(_pipelineSelected)),
-                        electricalChecklist: jsonEncode(_elecNA ? {} : listToMap(_electricalSelected)),
-                        operationChecklist: jsonEncode(_operationNA ? {} : listToMap(_operationSelected)),
-                      )));
+                      final step2Data = {
+                        "isMechanicalChecklistNa": _mechNA,
+                        "isPipelineHydraulicChecklistNa": _pipeNA,
+                        "isElectricalChecklistNa": _elecNA,
+                        "operationChecklistNa": _operationNA,
+                        "mechanicalChecklist": jsonEncode(mechMap),
+                        "pipelineHydraulicChecklist": jsonEncode(_pipeNA ? {} : listToMap(_pipelineSelected)),
+                        "electricalChecklist": jsonEncode(_elecNA ? {} : listToMap(_electricalSelected)),
+                        "operationChecklist": jsonEncode(_operationNA ? {} : listToMap(_operationSelected)),
+                      };
+
+                      setState(() => _isLoading = true);
+                      await OfflineAmcReportsDb.instance.saveStep(
+                        _currentReportId ?? "",
+                        widget.visitId,
+                        2,
+                        step2Data,
+                      );
+
+                      if (!isOnline) {
+                        setState(() {
+                          _isLoading = false;
+                          _currentStep++;
+                        });
+                        appSnackBar(context, AppColor.green, "Saved offline locally");
+                      } else {
+                        _step2Bloc.add(PostAmcReportStep2Event(PostAmcReportStep2Params(
+                          id: _currentReportId!,
+                          isMechanicalChecklistNa: _mechNA,
+                          isPipelineHydraulicChecklistNa: _pipeNA,
+                          isElectricalChecklistNa: _elecNA,
+                          operationChecklistNa: _operationNA,
+                          mechanicalChecklist: jsonEncode(mechMap),
+                          pipelineHydraulicChecklist: jsonEncode(_pipeNA ? {} : listToMap(_pipelineSelected)),
+                          electricalChecklist: jsonEncode(_elecNA ? {} : listToMap(_electricalSelected)),
+                          operationChecklist: jsonEncode(_operationNA ? {} : listToMap(_operationSelected)),
+                        )));
+                      }
                     } else if (_currentStep < 3) {
                       setState(() => _currentStep++);
                       if (_currentStep == 3 && _currentReportId != null) {
                         _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
                       }
                     } else {
-                      // Submit action
+                      final isOnline = await NetworkInfo().checkIsConnected;
                       if (_currentReportId == null) {
-                        appSnackBar(context, AppColor.bright_red, "report_id_is_missing".tr());
-                        return;
+                        if (!isOnline) {
+                          _currentReportId = widget.visitId;
+                        } else {
+                          appSnackBar(context, AppColor.bright_red, "report_id_is_missing".tr());
+                          return;
+                        }
                       }
 
                       if (_customerRepNameController.text.trim().isEmpty) {
@@ -2419,21 +2633,40 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         return;
                       }
 
-                      // NOTE: We assume that user will add new files, but if there's an existing signature
-                      // and no new file, it will cause an issue with FormData if it expects File explicitly.
-                      // Given PostAmcReportStep3Params requires File, they must re-sign or we need to handle it.
-                      // Since the user requested the API submission flow for step 3, we will pass the files.
+                      final step3Data = {
+                        "technicianRemarks": _technicianRemarksController.text.trim(),
+                        "customerRemarks": _customerRemarksController.text.trim(),
+                        "workPhotosPaths": _workPhotos.map((f) => f.path).toList(),
+                        "technicianRepresentative": _selectedTechnicianRepId!,
+                        "technicianSignaturePath": _technicianSignatureFile?.path,
+                        "customerRepresentativeName": _customerRepNameController.text.trim(),
+                        "customerSignaturePath": _customerSignatureFile?.path,
+                      };
 
-                      _step3Bloc.add(PostAmcReportStep3Event(PostAmcReportStep3Params(
-                        id: _currentReportId!,
-                        technicianRemarks: _technicianRemarksController.text.trim(),
-                        customerRemarks: _customerRemarksController.text.trim(),
-                        workPhotos: _workPhotos,
-                        technicianRepresentative: _selectedTechnicianRepId!,
-                        technicianSignature: _technicianSignatureFile,
-                        customerRepresentativeName: _customerRepNameController.text.trim(),
-                        customerSignature: _customerSignatureFile,
-                      )));
+                      setState(() => _isLoading = true);
+                      await OfflineAmcReportsDb.instance.saveStep(
+                        _currentReportId ?? "",
+                        widget.visitId,
+                        3,
+                        step3Data,
+                      );
+
+                      if (!isOnline) {
+                        setState(() => _isLoading = false);
+                        appSnackBar(context, AppColor.green, "Saved offline locally");
+                        widget.onSubmit();
+                      } else {
+                        _step3Bloc.add(PostAmcReportStep3Event(PostAmcReportStep3Params(
+                          id: _currentReportId!,
+                          technicianRemarks: _technicianRemarksController.text.trim(),
+                          customerRemarks: _customerRemarksController.text.trim(),
+                          workPhotos: _workPhotos,
+                          technicianRepresentative: _selectedTechnicianRepId!,
+                          technicianSignature: _technicianSignatureFile,
+                          customerRepresentativeName: _customerRepNameController.text.trim(),
+                          customerSignature: _customerSignatureFile,
+                        )));
+                      }
                     }
                   },
             child: Container(
