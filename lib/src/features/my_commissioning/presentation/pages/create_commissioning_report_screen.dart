@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:service_app/src/features/widgets/app_add_new_text_button_widget.dart';
+import 'package:service_app/src/features/widgets/app_alert_dialogue_widget.dart';
 import 'package:service_app/src/features/widgets/step_shimmer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:signature/signature.dart';
@@ -56,6 +57,7 @@ import '../../bloc/commissioning_step6_autofill_bloc/commissioning_step6_autofil
 import 'package:service_app/src/core/database/offline_commissioning_db.dart';
 import 'package:service_app/src/core/database/offline_service_reports_db.dart';
 import 'package:service_app/src/core/network/network_checker.dart';
+import 'package:service_app/src/features/offline/domain/services/offline_sync_service.dart';
 import '../../bloc/commissioning_step6_bloc/commissioning_step6_bloc.dart';
 import '../../bloc/commissioning_step6_bloc/commissioning_step6_event.dart';
 import '../../bloc/commissioning_step6_bloc/commissioning_step6_state.dart';
@@ -257,26 +259,33 @@ class _CreateCommissioningReportScreenState
   final Map<String, String?> _step5ExistingPhotos = {};
   final Map<String, String?> _step5ExistingVideos = {};
   Future<void> _pickMedia(String key, ImageSource source, bool isVideo) async {
-    final ImagePicker picker = ImagePicker();
-    if (isVideo) {
-      final XFile? video = await picker.pickVideo(source: source);
-      if (video != null) {
-        setState(() {
-          _step5Media[key] = File(video.path);
-        });
+    if (_isPickingImage) return;
+    setState(() => _isPickingImage = true);
+    try {
+      final ImagePicker picker = ImagePicker();
+      if (isVideo) {
+        final XFile? video = await picker.pickVideo(source: source);
+        if (video != null) {
+          setState(() {
+            _step5Media[key] = File(video.path);
+          });
+        }
+      } else {
+        final XFile? photo = await picker.pickImage(source: source);
+        if (photo != null) {
+          setState(() {
+            _step5Media[key] = File(photo.path);
+          });
+        }
       }
-    } else {
-      final XFile? photo = await picker.pickImage(source: source);
-      if (photo != null) {
-        setState(() {
-          _step5Media[key] = File(photo.path);
-        });
-      }
+    } finally {
+      setState(() => _isPickingImage = false);
     }
   }
 
   bool _isAutoCalculatingFlow = false;
   bool _isAutoCalculatingRating = false;
+  bool _isPickingImage = false;
 
   void _setupAutoCalculateListeners() {
     _pumpFlowLPMController.addListener(() => _calculateFlow('LPM'));
@@ -682,7 +691,41 @@ class _CreateCommissioningReportScreenState
               }
             }
           } catch (e) {
-            print("Error parsing step5: $e");
+          }
+        }
+        // Step 6
+        if (report['step6'] != null) {
+          try {
+            final Map<String, dynamic> step6 = jsonDecode(report['step6']);
+            if (step6['technicianRemarks'] != null) {
+              _technicianRemarksController.text = step6['technicianRemarks'].toString();
+            }
+            if (step6['customerRemarks'] != null) {
+              _customerRemarksController.text = step6['customerRemarks'].toString();
+            }
+            if (step6['technicianRepresentative'] != null) {
+              _selectedTechnicianRepId = step6['technicianRepresentative'].toString();
+            }
+            if (step6['customerRepresentativeName'] != null) {
+              _customerRepNameController.text = step6['customerRepresentativeName'].toString();
+            }
+            if (step6['technicianSignaturePath'] != null && step6['technicianSignaturePath'].toString().isNotEmpty) {
+              _technicianSignatureFile = File(step6['technicianSignaturePath'].toString());
+            }
+            if (step6['customerSignaturePath'] != null && step6['customerSignaturePath'].toString().isNotEmpty) {
+              _customerSignatureFile = File(step6['customerSignaturePath'].toString());
+            }
+            if (step6['workPhotosPaths'] != null) {
+              final List<dynamic> paths = step6['workPhotosPaths'];
+              _workPhotos.clear();
+              for (var p in paths) {
+                if (p.toString().isNotEmpty) {
+                  _workPhotos.add(File(p.toString()));
+                }
+              }
+            }
+          } catch (e) {
+            print("Error parsing step6: $e");
           }
         }
       });
@@ -839,6 +882,10 @@ class _CreateCommissioningReportScreenState
       }
     } else if (_currentStep == 2) {
       if (_submitStep2Bloc.state is CommissioningStep2LoadingState) return;
+      if (!widget.isServiceReport && _selectedWarranty == null) {
+        appSnackBar(context, AppColor.bright_red, 'val_select_warranty'.tr());
+        return;
+      }
       List<String> repNames = [];
       for (var c in _representatives) {
         if (c.text.trim().isNotEmpty) {
@@ -862,8 +909,15 @@ class _CreateCommissioningReportScreenState
         },
       );
       bool isOnline = await NetworkInfo().checkIsConnected;
+      if (!widget.isServiceReport) {
+        isOnline = false; // Always store locally for commissioning report steps 2-5
+      }
       if (!isOnline) {
-        appSnackBar(context, AppColor.green, "Saved offline locally");
+        appSnackBar(
+          context,
+          AppColor.green,
+          !widget.isServiceReport ? "Step 2 saved successfully" : "Saved offline locally",
+        );
         if (_highestSubmittedStep < 2) {
           _highestSubmittedStep = 2;
         }
@@ -891,11 +945,6 @@ class _CreateCommissioningReportScreenState
         );
       } else {
         if (_submitStep2Bloc.state is CommissioningStep2LoadingState) return;
-        if (!widget.isServiceReport && _selectedWarranty == null) {
-          appSnackBar(context, AppColor.bright_red, 'val_select_warranty'.tr());
-          setState(() => _isSavingOffline = false);
-          return;
-        }
         int warrantyYears = _selectedWarranty != null
             ? (int.tryParse(_selectedWarranty!.split('_').first) ?? 1)
             : 1;
@@ -939,8 +988,15 @@ class _CreateCommissioningReportScreenState
         },
       );
       bool isOnline = await NetworkInfo().checkIsConnected;
+      if (!widget.isServiceReport) {
+        isOnline = false; // Always store locally for commissioning report steps 2-5
+      }
       if (!isOnline) {
-        appSnackBar(context, AppColor.green, "Saved offline locally");
+        appSnackBar(
+          context,
+          AppColor.green,
+          !widget.isServiceReport ? "Step 3 saved successfully" : "Saved offline locally",
+        );
         if (_highestSubmittedStep < 3) {
           _highestSubmittedStep = 3;
         }
@@ -1005,8 +1061,15 @@ class _CreateCommissioningReportScreenState
         },
       );
       bool isOnline = await NetworkInfo().checkIsConnected;
+      if (!widget.isServiceReport) {
+        isOnline = false; // Always store locally for commissioning report steps 2-5
+      }
       if (!isOnline) {
-        appSnackBar(context, AppColor.green, "Saved offline locally");
+        appSnackBar(
+          context,
+          AppColor.green,
+          !widget.isServiceReport ? "Step 4 saved successfully" : "Saved offline locally",
+        );
         if (_highestSubmittedStep < 4) {
           _highestSubmittedStep = 4;
         }
@@ -1345,8 +1408,15 @@ class _CreateCommissioningReportScreenState
         },
       );
       bool isOnline = await NetworkInfo().checkIsConnected;
+      if (!widget.isServiceReport) {
+        isOnline = false; // Always store locally for commissioning report steps 2-5
+      }
       if (!isOnline) {
-        appSnackBar(context, AppColor.green, "Saved offline locally");
+        appSnackBar(
+          context,
+          AppColor.green,
+          !widget.isServiceReport ? "Step 5 saved successfully" : "Saved offline locally",
+        );
         if (_highestSubmittedStep < 5) {
           _highestSubmittedStep = 5;
         }
@@ -1406,6 +1476,35 @@ class _CreateCommissioningReportScreenState
       final effectiveAssignId =
           savedAssignId.isNotEmpty ? savedAssignId : (_selectedTechnicianRepId ?? '');
 
+      if (!widget.isServiceReport) {
+        // Commissioning flow validation — use effectiveAssignId so DB value is accepted
+        if (effectiveAssignId.isEmpty) {
+          appSnackBar(context, AppColor.bright_red, 'val_sel_tech_rep'.tr());
+          return;
+        }
+        if (_technicianSignatureFile == null &&
+            (_existingTechnicianSignatureUrl == null ||
+                _existingTechnicianSignatureUrl!.isEmpty)) {
+          appSnackBar(context, AppColor.bright_red, 'val_add_tech_sig'.tr());
+          return;
+        }
+        if (_customerRepNameController.text.trim().isEmpty) {
+          appSnackBar(context, AppColor.bright_red, 'val_enter_cust_rep'.tr());
+          return;
+        }
+        if (_customerSignatureFile == null &&
+            (_existingCustomerSignatureUrl == null ||
+                _existingCustomerSignatureUrl!.isEmpty)) {
+          appSnackBar(context, AppColor.bright_red, 'val_add_cust_sig'.tr());
+          return;
+        }
+        final allWorkPhotos = [..._workPhotos, ..._existingWorkPhotosUrls];
+        if (allWorkPhotos.isEmpty) {
+          appSnackBar(context, AppColor.bright_red, 'val_upload_photo'.tr());
+          return;
+        }
+      }
+
       print(
         '🡐 Submitting Step 6: effectiveAssignId = \'$effectiveAssignId\'',
       );
@@ -1427,6 +1526,71 @@ class _CreateCommissioningReportScreenState
         },
       );
       bool isOnline = await NetworkInfo().checkIsConnected;
+      if (!widget.isServiceReport) {
+        if (!isOnline) {
+          if (mounted) setState(() => _isSavingOffline = false);
+          showDialog<bool>(
+            context: context,
+            builder: (context) => AppAlertDialogWidget(
+              title: "Offline Mode",
+              subtitle:
+                  "This form will be saved locally on your device. Once an internet connection is available, you will need to manually sync it to upload the data to the server. Would you like to continue?",
+              confirmText: "Yes, Save Locally",
+              cancelText: "No",
+              icon: Icons.wifi_off_rounded,
+              iconBgColor: const Color(0xFFFFF3E0),
+              iconColor: const Color(0xFFFF9800),
+              confirmBtnColor: const Color(0xFFFF9800),
+              onConfirm: () async {
+                Navigator.pop(context, true);
+              },
+            ),
+          ).then((value) async {
+            if (value == true) {
+              setState(() => _isSavingOffline = true);
+              if (_highestSubmittedStep < 6) {
+                _highestSubmittedStep = 6;
+              }
+              appSnackBar(
+                context,
+                AppColor.green,
+                "Report saved offline completely!",
+              );
+              setState(() => _isSavingOffline = false);
+              widget.onBack();
+            }
+          });
+          return;
+        } else {
+          // Show loading dialog
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => const Center(
+              child: CircularProgressIndicator(color: AppColor.primaryColor),
+            ),
+          );
+
+          // Call the offline sync service to submit step 2 to step 6 APIs sequentially
+          final syncResult = await getIt<OfflineSyncService>().syncReport(_commissioningReportId ?? "");
+          if (mounted) Navigator.pop(context); // Close loading indicator
+
+          if (syncResult.isRight()) {
+            final qrCodeImage = syncResult.getRight().toNullable();
+            if (_highestSubmittedStep < 6) {
+              _highestSubmittedStep = 6;
+            }
+            if (mounted) setState(() => _isSavingOffline = false);
+            _showSuccessDialog(qrCodeImage: qrCodeImage);
+          } else {
+            final failure = syncResult.getLeft().toNullable()!;
+            appSnackBar(context, AppColor.bright_red, "Submission failed: ${failure.message}");
+            if (mounted) setState(() => _isSavingOffline = false);
+          }
+          return;
+        }
+      }
+
       if (!isOnline) {
         appSnackBar(
           context,
@@ -1492,46 +1656,6 @@ class _CreateCommissioningReportScreenState
             technicianSignaturePath: techSignaturePath,
             customerSignaturePath: custSignaturePath,
             workPhotosPaths: workPhotosPaths,
-          ),
-        );
-      } else {
-        // Commissioning flow validation — use effectiveAssignId so DB value is accepted
-        if (effectiveAssignId.isEmpty) {
-          appSnackBar(context, AppColor.bright_red, 'val_sel_tech_rep'.tr());
-          return;
-        }
-        if (_technicianSignatureFile == null &&
-            (_existingTechnicianSignatureUrl == null ||
-                _existingTechnicianSignatureUrl!.isEmpty)) {
-          appSnackBar(context, AppColor.bright_red, 'val_add_tech_sig'.tr());
-          return;
-        }
-        if (_customerRepNameController.text.trim().isEmpty) {
-          appSnackBar(context, AppColor.bright_red, 'val_enter_cust_rep'.tr());
-          return;
-        }
-        if (_customerSignatureFile == null &&
-            (_existingCustomerSignatureUrl == null ||
-                _existingCustomerSignatureUrl!.isEmpty)) {
-          appSnackBar(context, AppColor.bright_red, 'val_add_cust_sig'.tr());
-          return;
-        }
-        final allWorkPhotos = [..._workPhotos, ..._existingWorkPhotosUrls];
-        if (allWorkPhotos.isEmpty) {
-          appSnackBar(context, AppColor.bright_red, 'val_upload_photo'.tr());
-          return;
-        }
-        _submitStep6Bloc.add(
-          CommissioningStep6SubmitEvent(
-            commissioning_report_id: _commissioningReportId ?? "",
-            assignId: effectiveAssignId,
-            technicianRemarks: _technicianRemarksController.text.trim(),
-            customerRemarks: _customerRemarksController.text.trim(),
-            technicianRepresentative: effectiveAssignId,
-            customerRepresentativeName: _customerRepNameController.text.trim(),
-            technicianSignaturePath: _technicianSignatureFile?.path,
-            customerSignaturePath: _customerSignatureFile?.path,
-            workPhotosPaths: _workPhotos.map((f) => f.path).toList(),
           ),
         );
       }
@@ -1814,7 +1938,7 @@ class _CreateCommissioningReportScreenState
               bloc: _submitStep1Bloc,
               listener: (context, state) {
                 if (state is CommissioningStep1lSuccessState) {
-                  appSnackBar(context, AppColor.green, state.data.message);
+                  appSnackBar(context, AppColor.green, "Step 1 saved successfully");
                   _commissioningReportId = state.data.data.id;
                   // Call assigned technician API
                   _assignedTechniciansBloc.add(
@@ -4058,6 +4182,7 @@ class _CreateCommissioningReportScreenState
     BuildContext context,
     Function(File) onImageSelected,
   ) async {
+    if (_isPickingImage) return;
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -4072,12 +4197,18 @@ class _CreateCommissioningReportScreenState
                 title: Text('commissioning_gallery'.tr()),
                 onTap: () async {
                   Navigator.pop(context);
-                  final ImagePicker picker = ImagePicker();
-                  final XFile? file = await picker.pickImage(
-                    source: ImageSource.gallery,
-                  );
-                  if (file != null) {
-                    onImageSelected(File(file.path));
+                  if (_isPickingImage) return;
+                  setState(() => _isPickingImage = true);
+                  try {
+                    final ImagePicker picker = ImagePicker();
+                    final XFile? file = await picker.pickImage(
+                      source: ImageSource.gallery,
+                    );
+                    if (file != null) {
+                      onImageSelected(File(file.path));
+                    }
+                  } finally {
+                    setState(() => _isPickingImage = false);
                   }
                 },
               ),
@@ -4086,12 +4217,18 @@ class _CreateCommissioningReportScreenState
                 title: Text('commissioning_camera'.tr()),
                 onTap: () async {
                   Navigator.pop(context);
-                  final ImagePicker picker = ImagePicker();
-                  final XFile? file = await picker.pickImage(
-                    source: ImageSource.camera,
-                  );
-                  if (file != null) {
-                    onImageSelected(File(file.path));
+                  if (_isPickingImage) return;
+                  setState(() => _isPickingImage = true);
+                  try {
+                    final ImagePicker picker = ImagePicker();
+                    final XFile? file = await picker.pickImage(
+                      source: ImageSource.camera,
+                    );
+                    if (file != null) {
+                      onImageSelected(File(file.path));
+                    }
+                  } finally {
+                    setState(() => _isPickingImage = false);
                   }
                 },
               ),

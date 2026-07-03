@@ -368,11 +368,21 @@ class Step6Widget extends StatelessWidget {
             // Upload Photo tile
             GestureDetector(
               onTap: () async {
-                final ImagePicker picker = ImagePicker();
-                final List<XFile> files = await picker.pickMultiImage();
-                if (files.isNotEmpty) {
+                if (parent._isPickingImage) return;
+                parent.updateState(() {
+                  parent._isPickingImage = true;
+                });
+                try {
+                  final ImagePicker picker = ImagePicker();
+                  final List<XFile> files = await picker.pickMultiImage();
+                  if (files.isNotEmpty) {
+                    parent.updateState(() {
+                      parent._workPhotos.addAll(files.map((e) => File(e.path)));
+                    });
+                  }
+                } finally {
                   parent.updateState(() {
-                    parent._workPhotos.addAll(files.map((e) => File(e.path)));
+                    parent._isPickingImage = false;
                   });
                 }
               },
@@ -403,11 +413,21 @@ class Step6Widget extends StatelessWidget {
             // Capture Photo tile
             GestureDetector(
               onTap: () async {
-                final ImagePicker picker = ImagePicker();
-                final XFile? file = await picker.pickImage(source: ImageSource.camera);
-                if (file != null) {
+                if (parent._isPickingImage) return;
+                parent.updateState(() {
+                  parent._isPickingImage = true;
+                });
+                try {
+                  final ImagePicker picker = ImagePicker();
+                  final XFile? file = await picker.pickImage(source: ImageSource.camera);
+                  if (file != null) {
+                    parent.updateState(() {
+                      parent._workPhotos.add(File(file.path));
+                    });
+                  }
+                } finally {
                   parent.updateState(() {
-                    parent._workPhotos.add(File(file.path));
+                    parent._isPickingImage = false;
                   });
                 }
               },
