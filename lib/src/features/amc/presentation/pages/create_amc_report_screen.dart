@@ -187,8 +187,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
         _currentReportId = report['report_id'];
       }
       if (_currentStep == 1) {
-        final isOnline = await NetworkInfo().checkIsConnected;
-        if (isOnline && report == null) {
+        if (report == null) {
           _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
         }
       }
@@ -2443,7 +2442,10 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                         "agenda": _agendaController.text,
                       };
                       setState(() => _isLoading = true);
-                      final isOnline = await NetworkInfo().checkIsConnected;
+                      bool isOnline = await NetworkInfo().checkIsConnected;
+                      if (_currentStep == 1) {
+                        isOnline = true; // Always call API on AMC report step 1, bypass internet check
+                      }
                       await OfflineAmcReportsDb.instance.saveStep(
                         _currentReportId ?? "",
                         widget.visitId,

@@ -682,7 +682,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         _reportId = _complaintId;
       }
 
-      final isOnline = await NetworkInfo().checkIsConnected;
+      bool isOnline = await NetworkInfo().checkIsConnected;
+      if (_currentStep == 1) {
+        isOnline = true; // Always call API on service work report step 1, bypass internet check
+      }
       await OfflineServiceWorkReportsDb.instance.saveStep(
         _reportId!,
         _complaintId!,

@@ -752,74 +752,52 @@ class AuthRepositoryImpl implements Repository {
 
   @override
   Future<Either<Failure, CommissioningReportStep1AutoFillResponse>>
-  commissioning_report_step1_autofill(CommissioningStep1AutofillParams params) {
-    return _networkInfo.check<CommissioningReportStep1AutoFillResponse>(
-      connected: () async {
-        try {
-          String token = await SessionManager.getAuthToken() ?? "";
+  commissioning_report_step1_autofill(CommissioningStep1AutofillParams params) async {
+    try {
+      String token = await SessionManager.getAuthToken() ?? "";
 
-          final respData = await _remoteDataSource
-              .commissioningReportStep1Autofill(params, token);
+      final respData = await _remoteDataSource
+          .commissioningReportStep1Autofill(params, token);
 
-          if (respData.status != 200) {
-            return Left(CredentialFailure(respData.message!));
-          }
+      if (respData.status != 200) {
+        return Left(CredentialFailure(respData.message!));
+      }
 
-          return Right(respData);
-        } on ServerException {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch (e) {
-          if (e is ApiException) {
-            return Left(ApiFailure(e.message)); // rethrow as-is
-          }
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        }
-      },
-      notConnected: () async {
-        try {
-          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
-        } on CacheException {
-          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
-        }
-      },
-    );
+      return Right(respData);
+    } on ServerException {
+      return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+    } catch (e) {
+      if (e is ApiException) {
+        return Left(ApiFailure(e.message)); // rethrow as-is
+      }
+      return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+    }
   }
 
   @override
   Future<Either<Failure, CommissioningStep1Response>>
-  commissioning_report_step1(CommissioningStep1Params params) {
-    return _networkInfo.check<CommissioningStep1Response>(
-      connected: () async {
-        try {
-          String token = await SessionManager.getAuthToken() ?? "";
+  commissioning_report_step1(CommissioningStep1Params params) async {
+    try {
+      String token = await SessionManager.getAuthToken() ?? "";
 
-          final respData = await _remoteDataSource.commissioningReportStep1(
-            params,
-            token,
-          );
+      final respData = await _remoteDataSource.commissioningReportStep1(
+        params,
+        token,
+      );
 
-          if (respData.status != 200) {
-            return Left(CredentialFailure(respData.message!));
-          }
+      if (respData.status != 200) {
+        return Left(CredentialFailure(respData.message!));
+      }
 
-          return Right(respData);
-        } on ServerException {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch (e) {
-          if (e is ApiException) {
-            return Left(ApiFailure(e.message)); // rethrow as-is
-          }
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        }
-      },
-      notConnected: () async {
-        try {
-          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
-        } on CacheException {
-          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
-        }
-      },
-    );
+      return Right(respData);
+    } on ServerException {
+      return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+    } catch (e) {
+      if (e is ApiException) {
+        return Left(ApiFailure(e.message)); // rethrow as-is
+      }
+      return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+    }
   }
 
   @override
@@ -1545,71 +1523,49 @@ class AuthRepositoryImpl implements Repository {
   @override
   Future<Either<Failure, ServiceCallStep1Response>> serviceCallReportStep1(
     ServiceCallReportStep1Params params,
-  ) {
-    return _networkInfo.check<ServiceCallStep1Response>(
-      connected: () async {
-        try {
-          String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceCallReportStep1(
-            params,
-            token,
-          );
+  ) async {
+    try {
+      String token = await SessionManager.getAuthToken() ?? "";
+      final response = await _remoteDataSource.serviceCallReportStep1(
+        params,
+        token,
+      );
 
-          if (response.status != 200) {
-            return Left(CredentialFailure(response.message));
-          }
+      if (response.status != 200) {
+        return Left(CredentialFailure(response.message));
+      }
 
-          return Right(response);
-        } catch (e) {
-          if (e is ApiException) {
-            return Left(ApiFailure(e.message));
-          }
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        }
-      },
-      notConnected: () async {
-        try {
-          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
-        } on CacheException {
-          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
-        }
-      },
-    );
+      return Right(response);
+    } catch (e) {
+      if (e is ApiException) {
+        return Left(ApiFailure(e.message));
+      }
+      return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+    }
   }
 
   @override
   Future<Either<Failure, ServiceWorkReportStep1Response>> serviceWorkReportStep1(
     ServiceWorkReportStep1Params params,
-  ) {
-    return _networkInfo.check<ServiceWorkReportStep1Response>(
-      connected: () async {
-        try {
-          String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceWorkReportStep1(
-            params,
-            token,
-          );
+  ) async {
+    try {
+      String token = await SessionManager.getAuthToken() ?? "";
+      final response = await _remoteDataSource.serviceWorkReportStep1(
+        params,
+        token,
+      );
 
-          if (response.status != 200) {
-            return Left(CredentialFailure(response.message));
-          }
+      if (response.status != 200) {
+        return Left(CredentialFailure(response.message));
+      }
 
-          return Right(response);
-        } catch (e) {
-          if (e is ApiException) {
-            return Left(ApiFailure(e.message));
-          }
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        }
-      },
-      notConnected: () async {
-        try {
-          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
-        } on CacheException {
-          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
-        }
-      },
-    );
+      return Right(response);
+    } catch (e) {
+      if (e is ApiException) {
+        return Left(ApiFailure(e.message));
+      }
+      return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+    }
   }
 
   @override
@@ -1850,68 +1806,46 @@ class AuthRepositoryImpl implements Repository {
   @override
   Future<Either<Failure, ServiceWorkReportStep1Response>> serviceWorkReportStep1AutoFill(
     String complaintId,
-  ) {
-    return _networkInfo.check<ServiceWorkReportStep1Response>(
-      connected: () async {
-        try {
-          String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource.serviceWorkReportStep1AutoFill(
-            complaintId,
-            token,
-          );
+  ) async {
+    try {
+      String token = await SessionManager.getAuthToken() ?? "";
+      final response = await _remoteDataSource.serviceWorkReportStep1AutoFill(
+        complaintId,
+        token,
+      );
 
-          if (response.status != 200) {
-            return Left(CredentialFailure(response.message));
-          }
+      if (response.status != 200) {
+        return Left(CredentialFailure(response.message));
+      }
 
-          return Right(response);
-        } catch (e) {
-          if (e is ApiException) {
-            return Left(ApiFailure(e.message));
-          }
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        }
-      },
-      notConnected: () async {
-        try {
-          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
-        } on CacheException {
-          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
-        }
-      },
-    );
+      return Right(response);
+    } catch (e) {
+      if (e is ApiException) {
+        return Left(ApiFailure(e.message));
+      }
+      return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+    }
   }
 
   @override
   Future<Either<Failure, ServiceCallStep1Response>>
-  serviceCallReportStep1AutoFill(String complaintId) {
-    return _networkInfo.check<ServiceCallStep1Response>(
-      connected: () async {
-        try {
-          String token = await SessionManager.getAuthToken() ?? "";
-          final response = await _remoteDataSource
-              .serviceCallReportStep1AutoFill(complaintId, token);
+  serviceCallReportStep1AutoFill(String complaintId) async {
+    try {
+      String token = await SessionManager.getAuthToken() ?? "";
+      final response = await _remoteDataSource
+          .serviceCallReportStep1AutoFill(complaintId, token);
 
-          if (response.status != 200) {
-            return Left(CredentialFailure(response.message));
-          }
+      if (response.status != 200) {
+        return Left(CredentialFailure(response.message));
+      }
 
-          return Right(response);
-        } catch (e) {
-          if (e is ApiException) {
-            return Left(ApiFailure(e.message));
-          }
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        }
-      },
-      notConnected: () async {
-        try {
-          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
-        } on CacheException {
-          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
-        }
-      },
-    );
+      return Right(response);
+    } catch (e) {
+      if (e is ApiException) {
+        return Left(ApiFailure(e.message));
+      }
+      return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+    }
   }
 
   @override
@@ -2667,31 +2601,20 @@ class AuthRepositoryImpl implements Repository {
   Future<Either<Failure, AmcReportStep1Response>> amcReportStep1(
     PostAmcReportStep1Params params,
   ) async {
-    return _networkInfo.check<AmcReportStep1Response>(
-      connected: () async {
-        try {
-          String token = await SessionManager.getAuthToken() ?? "";
-          if (token.isEmpty) throw AuthException();
+    try {
+      String token = await SessionManager.getAuthToken() ?? "";
+      if (token.isEmpty) throw AuthException();
 
-          final respData = await _remoteDataSource.amcReportStep1(params, token);
-          return Right(respData);
-        } on ServerException {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch (e) {
-          if (e is ApiException) {
-            return Left(ApiFailure(e.message));
-          }
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        }
-      },
-      notConnected: () async {
-        try {
-          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
-        } on CacheException {
-          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
-        }
-      },
-    );
+      final respData = await _remoteDataSource.amcReportStep1(params, token);
+      return Right(respData);
+    } on ServerException {
+      return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+    } catch (e) {
+      if (e is ApiException) {
+        return Left(ApiFailure(e.message));
+      }
+      return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+    }
   }
 
   @override
@@ -2786,31 +2709,20 @@ class AuthRepositoryImpl implements Repository {
   Future<Either<Failure, AmcReportStep1Response>> amcReportStep1AutoFill(
     String reportId,
   ) async {
-    return _networkInfo.check<AmcReportStep1Response>(
-      connected: () async {
-        try {
-          String token = await SessionManager.getAuthToken() ?? "";
-          if (token.isEmpty) throw AuthException();
+    try {
+      String token = await SessionManager.getAuthToken() ?? "";
+      if (token.isEmpty) throw AuthException();
 
-          final respData = await _remoteDataSource.amcReportStep1AutoFill(reportId, token);
-          return Right(respData);
-        } on ServerException {
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        } catch (e) {
-          if (e is ApiException) {
-            return Left(ApiFailure(e.message));
-          }
-          return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
-        }
-      },
-      notConnected: () async {
-        try {
-          return Left(InternetFailure(mapFailureToMessage(InternetFailure(""))));
-        } on CacheException {
-          return Left(CacheFailure(mapFailureToMessage(CacheFailure(""))));
-        }
-      },
-    );
+      final respData = await _remoteDataSource.amcReportStep1AutoFill(reportId, token);
+      return Right(respData);
+    } on ServerException {
+      return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+    } catch (e) {
+      if (e is ApiException) {
+        return Left(ApiFailure(e.message));
+      }
+      return Left(ServerFailure(mapFailureToMessage(ServerFailure(""))));
+    }
   }
 
   @override

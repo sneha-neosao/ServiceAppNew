@@ -799,6 +799,9 @@ class _CreateCommissioningReportScreenState
         },
       );
       bool isOnline = await NetworkInfo().checkIsConnected;
+      if (_currentStep == 1) {
+        isOnline = true; // Always call API on commissioning report and service call step first, bypass internet check
+      }
       if (!isOnline) {
         appSnackBar(context, AppColor.green, "Saved offline locally");
         if (_highestSubmittedStep < 1) {
