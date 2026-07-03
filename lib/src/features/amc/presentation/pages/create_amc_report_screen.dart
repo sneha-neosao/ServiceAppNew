@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:service_app/src/core/network/network_checker.dart';
 import 'package:service_app/src/core/database/offline_amc_reports_db.dart';
+import 'package:service_app/src/features/offline/domain/services/offline_amc_sync_service.dart';
+import 'package:service_app/src/features/widgets/app_alert_dialogue_widget.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -155,6 +157,118 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
     }
     _technicianIds.clear();
     super.dispose();
+  }
+
+  void _showSuccessDialog({String? qrCodeImage}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withValues(alpha: 0.5),
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Color(0xFFA5ABB7)),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          widget.onSubmit();
+                        },
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFE8F5E9),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.check_circle,
+                      color: Color(0xFF4CAF50),
+                      size: 40,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'amc_report_feedback'.tr(),
+                    textAlign: TextAlign.center,
+                    style: AppFont.style(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFF0D121F),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8F9FB),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFF1F2F6)),
+                    ),
+                    child: qrCodeImage != null && qrCodeImage.isNotEmpty
+                        ? Image.network(
+                            qrCodeImage,
+                            width: 180,
+                            height: 180,
+                            fit: BoxFit.contain,
+                          )
+                        : const Icon(
+                            Icons.qr_code_2,
+                            size: 180,
+                            color: Color(0xFF0D121F),
+                          ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Report submitted successfully!',
+                    textAlign: TextAlign.center,
+                    style: AppFont.style(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF5C6672),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      widget.onSubmit();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4CAF50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      minimumSize: const Size(double.infinity, 48),
+                    ),
+                    child: Text(
+                      'ok'.tr(),
+                      style: AppFont.style(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _loadSession() async {
@@ -2580,19 +2694,13 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                           _isLoading = false;
                           _currentStep++;
                         });
-                        appSnackBar(context, AppColor.green, "Saved offline locally");
+                        appSnackBar(context, AppColor.green, "Step 2 saved successfully");
                       } else {
-                        _step2Bloc.add(PostAmcReportStep2Event(PostAmcReportStep2Params(
-                          id: _currentReportId!,
-                          isMechanicalChecklistNa: _mechNA,
-                          isPipelineHydraulicChecklistNa: _pipeNA,
-                          isElectricalChecklistNa: _elecNA,
-                          operationChecklistNa: _operationNA,
-                          mechanicalChecklist: jsonEncode(mechMap),
-                          pipelineHydraulicChecklist: jsonEncode(_pipeNA ? {} : listToMap(_pipelineSelected)),
-                          electricalChecklist: jsonEncode(_elecNA ? {} : listToMap(_electricalSelected)),
-                          operationChecklist: jsonEncode(_operationNA ? {} : listToMap(_operationSelected)),
-                        )));
+                        setState(() {
+                          _isLoading = false;
+                          _currentStep++;
+                        });
+                        appSnackBar(context, AppColor.green, "Step 2 saved successfully");
                       }
                     } else if (_currentStep < 3) {
                       setState(() => _currentStep++);
@@ -2655,19 +2763,56 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
 
                       if (!isOnline) {
                         setState(() => _isLoading = false);
-                        appSnackBar(context, AppColor.green, "Saved offline locally");
-                        widget.onSubmit();
+                        showDialog<bool>(
+                          context: context,
+                          builder: (context) => AppAlertDialogWidget(
+                            title: "Offline Mode",
+                            subtitle:
+                                "This form will be saved locally on your device. Once an internet connection is available, you will need to manually sync it to upload the data to the server. Would you like to continue?",
+                            confirmText: "Yes, Save Locally",
+                            cancelText: "No",
+                            icon: Icons.wifi_off_rounded,
+                            iconBgColor: const Color(0xFFFFF3E0),
+                            iconColor: const Color(0xFFFF9800),
+                            confirmBtnColor: const Color(0xFFFF9800),
+                            onConfirm: () async {
+                              Navigator.pop(context, true);
+                            },
+                          ),
+                        ).then((value) async {
+                          if (value == true) {
+                            appSnackBar(
+                              context,
+                              AppColor.green,
+                              "Report saved offline completely!",
+                            );
+                            widget.onSubmit();
+                          }
+                        });
+                        return;
                       } else {
-                        _step3Bloc.add(PostAmcReportStep3Event(PostAmcReportStep3Params(
-                          id: _currentReportId!,
-                          technicianRemarks: _technicianRemarksController.text.trim(),
-                          customerRemarks: _customerRemarksController.text.trim(),
-                          workPhotos: _workPhotos,
-                          technicianRepresentative: _selectedTechnicianRepId!,
-                          technicianSignature: _technicianSignatureFile,
-                          customerRepresentativeName: _customerRepNameController.text.trim(),
-                          customerSignature: _customerSignatureFile,
-                        )));
+                        // Show loading dialog
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) => const Center(
+                            child: CircularProgressIndicator(color: AppColor.primaryColor),
+                          ),
+                        );
+
+                        // Call the offline sync service to submit step 2 to step 3 APIs sequentially
+                        final syncResult = await getIt<OfflineAmcSyncService>().syncReport(_currentReportId ?? "");
+                        if (mounted) Navigator.pop(context); // Close loading indicator
+
+                        if (syncResult.isRight()) {
+                          setState(() => _isLoading = false);
+                          widget.onSubmit();
+                        } else {
+                          final failure = syncResult.getLeft().toNullable()!;
+                          appSnackBar(context, AppColor.bright_red, "Submission failed: ${failure.message}");
+                          setState(() => _isLoading = false);
+                        }
+                        return;
                       }
                     }
                   },

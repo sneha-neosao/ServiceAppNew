@@ -20,7 +20,7 @@ class OfflineAmcSyncService {
     this._amcStep3,
   );
 
-  Future<Either<Failure, bool>> syncReport(String reportId) async {
+  Future<Either<Failure, String?>> syncReport(String reportId) async {
     try {
       final report = await OfflineAmcReportsDb.instance.getReport(reportId);
       if (report == null) return Left(ServerFailure('Local AMC report not found.'));
@@ -90,10 +90,13 @@ class OfflineAmcSyncService {
         ));
         
         if (res.isLeft()) return Left(res.getLeft().toNullable()!);
+        final qrCodeImage = res.getRight().toNullable()?.data.qrCodeUrl;
+        await OfflineAmcReportsDb.instance.deleteReport(currentServerId.isNotEmpty ? currentServerId : reportId);
+        return Right(qrCodeImage);
       }
 
       await OfflineAmcReportsDb.instance.deleteReport(currentServerId.isNotEmpty ? currentServerId : reportId);
-      return const Right(true);
+      return const Right(null);
     } catch (e, st) {
       logger.e('Error syncing offline AMC report: $e\n$st');
       return Left(ServerFailure('Sync failed: $e'));
