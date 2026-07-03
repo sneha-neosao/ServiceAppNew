@@ -58,6 +58,7 @@ import 'package:service_app/src/core/database/offline_commissioning_db.dart';
 import 'package:service_app/src/core/database/offline_service_reports_db.dart';
 import 'package:service_app/src/core/network/network_checker.dart';
 import 'package:service_app/src/features/offline/domain/services/offline_sync_service.dart';
+import 'package:service_app/src/features/offline/domain/services/offline_service_sync_service.dart';
 import '../../bloc/commissioning_step6_bloc/commissioning_step6_bloc.dart';
 import '../../bloc/commissioning_step6_bloc/commissioning_step6_event.dart';
 import '../../bloc/commissioning_step6_bloc/commissioning_step6_state.dart';
@@ -909,14 +910,12 @@ class _CreateCommissioningReportScreenState
         },
       );
       bool isOnline = await NetworkInfo().checkIsConnected;
-      if (!widget.isServiceReport) {
-        isOnline = false; // Always store locally for commissioning report steps 2-5
-      }
+      isOnline = false; // Always store locally for both commissioning and service report steps 2-5
       if (!isOnline) {
         appSnackBar(
           context,
           AppColor.green,
-          !widget.isServiceReport ? "Step 2 saved successfully" : "Saved offline locally",
+          "Step 2 saved successfully",
         );
         if (_highestSubmittedStep < 2) {
           _highestSubmittedStep = 2;
@@ -988,14 +987,12 @@ class _CreateCommissioningReportScreenState
         },
       );
       bool isOnline = await NetworkInfo().checkIsConnected;
-      if (!widget.isServiceReport) {
-        isOnline = false; // Always store locally for commissioning report steps 2-5
-      }
+      isOnline = false; // Always store locally for both commissioning and service report steps 2-5
       if (!isOnline) {
         appSnackBar(
           context,
           AppColor.green,
-          !widget.isServiceReport ? "Step 3 saved successfully" : "Saved offline locally",
+          "Step 3 saved successfully",
         );
         if (_highestSubmittedStep < 3) {
           _highestSubmittedStep = 3;
@@ -1061,14 +1058,12 @@ class _CreateCommissioningReportScreenState
         },
       );
       bool isOnline = await NetworkInfo().checkIsConnected;
-      if (!widget.isServiceReport) {
-        isOnline = false; // Always store locally for commissioning report steps 2-5
-      }
+      isOnline = false; // Always store locally for both commissioning and service report steps 2-5
       if (!isOnline) {
         appSnackBar(
           context,
           AppColor.green,
-          !widget.isServiceReport ? "Step 4 saved successfully" : "Saved offline locally",
+          "Step 4 saved successfully",
         );
         if (_highestSubmittedStep < 4) {
           _highestSubmittedStep = 4;
@@ -1408,14 +1403,12 @@ class _CreateCommissioningReportScreenState
         },
       );
       bool isOnline = await NetworkInfo().checkIsConnected;
-      if (!widget.isServiceReport) {
-        isOnline = false; // Always store locally for commissioning report steps 2-5
-      }
+      isOnline = false; // Always store locally for both commissioning and service report steps 2-5
       if (!isOnline) {
         appSnackBar(
           context,
           AppColor.green,
-          !widget.isServiceReport ? "Step 5 saved successfully" : "Saved offline locally",
+          "Step 5 saved successfully",
         );
         if (_highestSubmittedStep < 5) {
           _highestSubmittedStep = 5;
@@ -1476,33 +1469,31 @@ class _CreateCommissioningReportScreenState
       final effectiveAssignId =
           savedAssignId.isNotEmpty ? savedAssignId : (_selectedTechnicianRepId ?? '');
 
-      if (!widget.isServiceReport) {
-        // Commissioning flow validation — use effectiveAssignId so DB value is accepted
-        if (effectiveAssignId.isEmpty) {
-          appSnackBar(context, AppColor.bright_red, 'val_sel_tech_rep'.tr());
-          return;
-        }
-        if (_technicianSignatureFile == null &&
-            (_existingTechnicianSignatureUrl == null ||
-                _existingTechnicianSignatureUrl!.isEmpty)) {
-          appSnackBar(context, AppColor.bright_red, 'val_add_tech_sig'.tr());
-          return;
-        }
-        if (_customerRepNameController.text.trim().isEmpty) {
-          appSnackBar(context, AppColor.bright_red, 'val_enter_cust_rep'.tr());
-          return;
-        }
-        if (_customerSignatureFile == null &&
-            (_existingCustomerSignatureUrl == null ||
-                _existingCustomerSignatureUrl!.isEmpty)) {
-          appSnackBar(context, AppColor.bright_red, 'val_add_cust_sig'.tr());
-          return;
-        }
-        final allWorkPhotos = [..._workPhotos, ..._existingWorkPhotosUrls];
-        if (allWorkPhotos.isEmpty) {
-          appSnackBar(context, AppColor.bright_red, 'val_upload_photo'.tr());
-          return;
-        }
+      // Validation check for both Commissioning and Service Call Report
+      if (effectiveAssignId.isEmpty) {
+        appSnackBar(context, AppColor.bright_red, 'val_sel_tech_rep'.tr());
+        return;
+      }
+      if (_technicianSignatureFile == null &&
+          (_existingTechnicianSignatureUrl == null ||
+              _existingTechnicianSignatureUrl!.isEmpty)) {
+        appSnackBar(context, AppColor.bright_red, 'val_add_tech_sig'.tr());
+        return;
+      }
+      if (_customerRepNameController.text.trim().isEmpty) {
+        appSnackBar(context, AppColor.bright_red, 'val_enter_cust_rep'.tr());
+        return;
+      }
+      if (_customerSignatureFile == null &&
+          (_existingCustomerSignatureUrl == null ||
+              _existingCustomerSignatureUrl!.isEmpty)) {
+        appSnackBar(context, AppColor.bright_red, 'val_add_cust_sig'.tr());
+        return;
+      }
+      final allWorkPhotos = [..._workPhotos, ..._existingWorkPhotosUrls];
+      if (allWorkPhotos.isEmpty) {
+        appSnackBar(context, AppColor.bright_red, 'val_upload_photo'.tr());
+        return;
       }
 
       print(
@@ -1525,139 +1516,72 @@ class _CreateCommissioningReportScreenState
           "workPhotosPaths": _workPhotos.map((f) => f.path).toList(),
         },
       );
+
       bool isOnline = await NetworkInfo().checkIsConnected;
-      if (!widget.isServiceReport) {
-        if (!isOnline) {
-          if (mounted) setState(() => _isSavingOffline = false);
-          showDialog<bool>(
-            context: context,
-            builder: (context) => AppAlertDialogWidget(
-              title: "Offline Mode",
-              subtitle:
-                  "This form will be saved locally on your device. Once an internet connection is available, you will need to manually sync it to upload the data to the server. Would you like to continue?",
-              confirmText: "Yes, Save Locally",
-              cancelText: "No",
-              icon: Icons.wifi_off_rounded,
-              iconBgColor: const Color(0xFFFFF3E0),
-              iconColor: const Color(0xFFFF9800),
-              confirmBtnColor: const Color(0xFFFF9800),
-              onConfirm: () async {
-                Navigator.pop(context, true);
-              },
-            ),
-          ).then((value) async {
-            if (value == true) {
-              setState(() => _isSavingOffline = true);
-              if (_highestSubmittedStep < 6) {
-                _highestSubmittedStep = 6;
-              }
-              appSnackBar(
-                context,
-                AppColor.green,
-                "Report saved offline completely!",
-              );
-              setState(() => _isSavingOffline = false);
-              widget.onBack();
-            }
-          });
-          return;
-        } else {
-          // Show loading dialog
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) => const Center(
-              child: CircularProgressIndicator(color: AppColor.primaryColor),
-            ),
-          );
-
-          // Call the offline sync service to submit step 2 to step 6 APIs sequentially
-          final syncResult = await getIt<OfflineSyncService>().syncReport(_commissioningReportId ?? "");
-          if (mounted) Navigator.pop(context); // Close loading indicator
-
-          if (syncResult.isRight()) {
-            final qrCodeImage = syncResult.getRight().toNullable();
+      if (!isOnline) {
+        if (mounted) setState(() => _isSavingOffline = false);
+        showDialog<bool>(
+          context: context,
+          builder: (context) => AppAlertDialogWidget(
+            title: "Offline Mode",
+            subtitle:
+                "This form will be saved locally on your device. Once an internet connection is available, you will need to manually sync it to upload the data to the server. Would you like to continue?",
+            confirmText: "Yes, Save Locally",
+            cancelText: "No",
+            icon: Icons.wifi_off_rounded,
+            iconBgColor: const Color(0xFFFFF3E0),
+            iconColor: const Color(0xFFFF9800),
+            confirmBtnColor: const Color(0xFFFF9800),
+            onConfirm: () async {
+              Navigator.pop(context, true);
+            },
+          ),
+        ).then((value) async {
+          if (value == true) {
+            setState(() => _isSavingOffline = true);
             if (_highestSubmittedStep < 6) {
               _highestSubmittedStep = 6;
             }
-            if (mounted) setState(() => _isSavingOffline = false);
-            _showSuccessDialog(qrCodeImage: qrCodeImage);
-          } else {
-            final failure = syncResult.getLeft().toNullable()!;
-            appSnackBar(context, AppColor.bright_red, "Submission failed: ${failure.message}");
-            if (mounted) setState(() => _isSavingOffline = false);
+            appSnackBar(
+              context,
+              AppColor.green,
+              "Report saved offline completely!",
+            );
+            setState(() => _isSavingOffline = false);
+            widget.onBack();
           }
-          return;
-        }
-      }
-
-      if (!isOnline) {
-        appSnackBar(
-          context,
-          AppColor.green,
-          "Report saved offline completely!",
-        );
-        if (_highestSubmittedStep < 6) {
-          _highestSubmittedStep = 6;
-        }
-        if (mounted) setState(() => _isSavingOffline = false);
-        widget.onBack();
+        });
         return;
-      }
-      setState(() => _isSavingOffline = false);
-
-      if (widget.isServiceReport) {
-        String? techSignaturePath = _technicianSignatureFile?.path;
-        if (techSignaturePath == null &&
-            _existingTechnicianSignatureUrl != null &&
-            _existingTechnicianSignatureUrl!.isNotEmpty) {
-          techSignaturePath = _existingTechnicianSignatureUrl;
-        }
-        String? custSignaturePath = _customerSignatureFile?.path;
-        if (custSignaturePath == null &&
-            _existingCustomerSignatureUrl != null &&
-            _existingCustomerSignatureUrl!.isNotEmpty) {
-          custSignaturePath = _existingCustomerSignatureUrl;
-        }
-        List<String> workPhotosPaths = _workPhotos.map((f) => f.path).toList();
-        if (workPhotosPaths.isEmpty && _existingWorkPhotosUrls.isNotEmpty) {
-          workPhotosPaths = List.from(_existingWorkPhotosUrls);
-        } else if (_existingWorkPhotosUrls.isNotEmpty) {
-          workPhotosPaths.addAll(_existingWorkPhotosUrls);
-        }
-        // Validation — use effectiveAssignId so DB value is accepted
-        if (effectiveAssignId.isEmpty) {
-          appSnackBar(context, AppColor.bright_red, 'val_sel_tech_rep'.tr());
-          return;
-        }
-        if (techSignaturePath == null || techSignaturePath.isEmpty) {
-          appSnackBar(context, AppColor.bright_red, 'val_add_tech_sig'.tr());
-          return;
-        }
-        if (_customerRepNameController.text.trim().isEmpty) {
-          appSnackBar(context, AppColor.bright_red, 'val_enter_cust_rep'.tr());
-          return;
-        }
-        if (custSignaturePath == null || custSignaturePath.isEmpty) {
-          appSnackBar(context, AppColor.bright_red, 'val_add_cust_sig'.tr());
-          return;
-        }
-        if (workPhotosPaths.isEmpty) {
-          appSnackBar(context, AppColor.bright_red, 'val_upload_photo'.tr());
-          return;
-        }
-        _submitServiceCallStep6Bloc.add(
-          ServiceCallReportStep6SubmitEvent(
-            reportId: _commissioningReportId ?? "",
-            technicianRemarks: _technicianRemarksController.text.trim(),
-            customerRemarks: _customerRemarksController.text.trim(),
-            technicianRepresentative: effectiveAssignId,
-            customerRepresentativeName: _customerRepNameController.text.trim(),
-            technicianSignaturePath: techSignaturePath,
-            customerSignaturePath: custSignaturePath,
-            workPhotosPaths: workPhotosPaths,
+      } else {
+        // Show loading dialog
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const Center(
+            child: CircularProgressIndicator(color: AppColor.primaryColor),
           ),
         );
+
+        // Call the appropriate offline sync service to submit step 2 to step 6 APIs sequentially
+        final syncResult = widget.isServiceReport
+            ? await getIt<OfflineServiceSyncService>().syncReport(_commissioningReportId ?? "")
+            : await getIt<OfflineSyncService>().syncReport(_commissioningReportId ?? "");
+
+        if (mounted) Navigator.pop(context); // Close loading indicator
+
+        if (syncResult.isRight()) {
+          final qrCodeImage = syncResult.getRight().toNullable();
+          if (_highestSubmittedStep < 6) {
+            _highestSubmittedStep = 6;
+          }
+          if (mounted) setState(() => _isSavingOffline = false);
+          _showSuccessDialog(qrCodeImage: qrCodeImage);
+        } else {
+          final failure = syncResult.getLeft().toNullable()!;
+          appSnackBar(context, AppColor.bright_red, "Submission failed: ${failure.message}");
+          if (mounted) setState(() => _isSavingOffline = false);
+        }
+        return;
       }
     }
   }

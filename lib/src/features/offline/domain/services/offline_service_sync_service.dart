@@ -30,7 +30,7 @@ class OfflineServiceSyncService {
     this._serviceStep6,
   );
 
-  Future<Either<Failure, bool>> syncReport(String reportId) async {
+  Future<Either<Failure, String?>> syncReport(String reportId) async {
     try {
       final report = await OfflineServiceReportsDb.instance.getReport(reportId);
       if (report == null) return Left(ServerFailure('Local service report not found.'));
@@ -103,10 +103,13 @@ class OfflineServiceSyncService {
           workPhotosPaths: List<String>.from(step6Data['workPhotosPaths'] ?? []),
         ));
         if (res.isLeft()) return Left(res.getLeft().toNullable()!);
+        final qrCodeImage = res.getRight().toNullable()?.data.qrCodeImage;
+        await OfflineServiceReportsDb.instance.deleteReport(reportId);
+        return Right(qrCodeImage);
       }
 
       await OfflineServiceReportsDb.instance.deleteReport(reportId);
-      return const Right(true);
+      return const Right(null);
     } catch (e, st) {
       logger.e('Error syncing offline service report: $e\n$st');
       return Left(ServerFailure('Sync failed: $e'));
