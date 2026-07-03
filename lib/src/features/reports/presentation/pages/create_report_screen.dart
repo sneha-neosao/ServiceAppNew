@@ -62,9 +62,11 @@ import 'package:service_app/src/features/common/domain/usecase/create_new_site_u
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
 import 'package:service_app/src/core/network/network_checker.dart';
 import 'package:service_app/src/features/widgets/step_shimmer.dart';
-import 'package:service_app/src/core/database/offline_service_work_db.dart';
+
 import 'package:service_app/src/core/database/offline_service_work_reports_db.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
+import 'package:service_app/src/features/offline/domain/services/offline_service_work_sync_service.dart';
+import 'package:service_app/src/features/widgets/app_alert_dialogue_widget.dart';
 import 'package:signature/signature.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
@@ -664,57 +666,30 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         return;
       }
 
-      final step1Data = {
-        "customerId": _selectedCustomerId!,
-        "siteId": _selectedSiteId!,
-        "technicianIds": techs,
-        "memberPresentsCustomerSide": _memberControllers
-            .map((e) => e.text)
-            .where((e) => e.isNotEmpty)
-            .join(", "),
-        "agenda": _agendaController.text,
-      };
+      // For service work report: always call Step 1 API directly.
+      // Do NOT save to local DB with a TEMP id before the API is called.
+      // commissioning_work_id is either a real complaint id or empty string.
+      final complaintIdForApi = (_complaintId != null && _complaintId!.isNotEmpty)
+          ? _complaintId
+          : null;
+      final memberPresent = _memberControllers
+          .map((e) => e.text)
+          .where((e) => e.isNotEmpty)
+          .join(", ");
+      final agendaText = _agendaController.text;
 
-      if (_complaintId == null || _complaintId!.isEmpty) {
-        _complaintId = 'TEMP_${DateTime.now().millisecondsSinceEpoch}';
-      }
-      if (_reportId == null || _reportId!.isEmpty) {
-        _reportId = _complaintId;
-      }
-
-      bool isOnline = await NetworkInfo().checkIsConnected;
-      if (_currentStep == 1) {
-        isOnline = true; // Always call API on service work report step 1, bypass internet check
-      }
-      await OfflineServiceWorkReportsDb.instance.saveStep(
-        _reportId!,
-        _complaintId!,
-        1,
-        step1Data,
-      );
-
-      if (!isOnline) {
-        setState(() {
-          _currentStep++;
-        });
-        appSnackBar(context, AppColor.green, "Saved offline locally");
-      } else {
-        _serviceWorkReportStep1Bloc.add(
-          PostServiceWorkReportStep1Event(
-            ServiceWorkReportStep1Params(
-              customerId: _selectedCustomerId!,
-              siteId: _selectedSiteId!,
-              technicianIds: techs,
-              memberPresentsCustomerSide: _memberControllers
-                  .map((e) => e.text)
-                  .where((e) => e.isNotEmpty)
-                  .join(", "),
-              agenda: _agendaController.text,
-              complaintId: _complaintId != _reportId ? _complaintId : null,
-            ),
+      _serviceWorkReportStep1Bloc.add(
+        PostServiceWorkReportStep1Event(
+          ServiceWorkReportStep1Params(
+            customerId: _selectedCustomerId!,
+            siteId: _selectedSiteId!,
+            technicianIds: techs,
+            memberPresentsCustomerSide: memberPresent,
+            agenda: agendaText,
+            complaintId: complaintIdForApi,
           ),
-        );
-      }
+        ),
+      );
     } else if (_currentStep == 2) {
       if (_reportId == null) {
         appSnackBar(
@@ -765,8 +740,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       if (_complaintId == null || _complaintId!.isEmpty) {
         _complaintId = _reportId;
       }
-
-      final isOnline = await NetworkInfo().checkIsConnected;
+      bool isOnline = await NetworkInfo().checkIsConnected;
+      isOnline = false; // Always store locally for service work report steps 2-3
       await OfflineServiceWorkReportsDb.instance.saveStep(
         _reportId!,
         _complaintId!,
@@ -778,18 +753,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         setState(() {
           _currentStep++;
         });
-        appSnackBar(context, AppColor.green, "Saved offline locally");
-      } else {
-        _serviceWorkReportStep2Bloc.add(
-          PostServiceWorkReportStep2Event(
-            ServiceWorkReportStep2Params(
-              id: _reportId!,
-              isTechnicalNa: _isTechnicalNA,
-              technicalDetails: jsonEncode(techDetails),
-              descriptions: descList,
-            ),
-          ),
-        );
+        appSnackBar(context, AppColor.green, "Step 2 saved successfully");
       }
     } else if (_currentStep == 3) {
       if (_reportId == null) return;
@@ -980,8 +944,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       if (_complaintId == null || _complaintId!.isEmpty) {
         _complaintId = _reportId;
       }
-
-      final isOnline = await NetworkInfo().checkIsConnected;
+      bool isOnline = await NetworkInfo().checkIsConnected;
+      isOnline = false; // Always store locally for service work report steps 2-3
       await OfflineServiceWorkReportsDb.instance.saveStep(
         _reportId!,
         _complaintId!,
@@ -993,19 +957,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         setState(() {
           _currentStep++;
         });
-        appSnackBar(context, AppColor.green, "Saved offline locally");
-      } else {
-        _serviceWorkReportStep3Bloc.add(
-          PostServiceWorkReportStep3Event(
-            ServiceWorkReportStep3Params(
-              id: _reportId!,
-              isMechanicalChecklistNa: _mechNA,
-              isPipelineChecklistNa: _pipeNA,
-              isElectricalChecklistNa: _elecNA,
-              checklistItems: checklistItems,
-            ),
-          ),
-        );
+        appSnackBar(context, AppColor.green, "Step 3 saved successfully");
       }
     } else if (_currentStep == 4) {
       if (_reportId == null) {
@@ -1046,15 +998,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       }
 
       if (_loggedInTechnicianAssignId == null) {
-        final dbAssignId = await OfflineServiceWorkDb.instance.getAssignId(_reportId!);
-        if (dbAssignId != null) {
-          _loggedInTechnicianAssignId = dbAssignId;
-        } else {
-          final reportsDbAssignId = await OfflineServiceWorkReportsDb.instance
-              .getAssignIdByWorkId(_complaintId ?? _reportId!);
-          if (reportsDbAssignId != null) {
-            _loggedInTechnicianAssignId = reportsDbAssignId;
-          }
+        final reportsDbAssignId = await OfflineServiceWorkReportsDb.instance
+            .getAssignIdByWorkId(_complaintId ?? _reportId!);
+        if (reportsDbAssignId != null) {
+          _loggedInTechnicianAssignId = reportsDbAssignId;
         }
       }
 
@@ -1087,29 +1034,55 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         step4Data,
         reportState: 'offline',
       );
-
       if (!isOnline) {
-        appSnackBar(context, AppColor.green, "Report saved offline successfully");
-        _showSuccessDialog();
+        showDialog<bool>(
+          context: context,
+          builder: (context) => AppAlertDialogWidget(
+            title: "Offline Mode",
+            subtitle:
+                "This form will be saved locally on your device. Once an internet connection is available, you will need to manually sync it to upload the data to the server. Would you like to continue?",
+            confirmText: "Yes, Save Locally",
+            cancelText: "No",
+            icon: Icons.wifi_off_rounded,
+            iconBgColor: const Color(0xFFFFF3E0),
+            iconColor: const Color(0xFFFF9800),
+            confirmBtnColor: const Color(0xFFFF9800),
+            onConfirm: () async {
+              Navigator.pop(context, true);
+            },
+          ),
+        ).then((value) async {
+          if (value == true) {
+            appSnackBar(
+              context,
+              AppColor.green,
+              "Report saved offline completely!",
+            );
+            widget.onBack();
+          }
+        });
+        return;
       } else {
-        _serviceWorkReportStep4Bloc.add(
-          PostServiceWorkReportStep4Event(
-            params: ServiceWorkReportStep4Params(
-              id: _reportId!,
-              customerRepresentativeName: _customerRepNameCtrl.text.trim(),
-              customerRemarks: _remarksCustomerCtrl.text.trim(),
-              technicianRemarks: _remarksTechCtrl.text.trim(),
-              technicianRepresentative:
-                  _loggedInTechnicianAssignId ?? _loggedInTechnicianId,
-              workPhotosPaths: allWorkPhotos,
-              customerSignaturePath:
-                  _customerSignatureFile?.path ?? _existingCustomerSignatureUrl,
-              technicianSignaturePath:
-                  _technicianSignatureFile?.path ??
-                  _existingTechnicianSignatureUrl,
-            ),
+        // Show loading dialog
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const Center(
+            child: CircularProgressIndicator(color: AppColor.primaryColor),
           ),
         );
+
+        // Call the offline sync service to submit step 2 to step 4 APIs sequentially
+        final syncResult = await getIt<OfflineServiceWorkSyncService>().syncReport(_reportId!);
+        if (mounted) Navigator.pop(context); // Close loading indicator
+
+        if (syncResult.isRight()) {
+          widget.onBack();
+        } else {
+          final failure = syncResult.getLeft().toNullable()!;
+          appSnackBar(context, AppColor.bright_red, "Submission failed: ${failure.message}");
+        }
+        return;
       }
     } else if (_currentStep < 4) {
       setState(() {
@@ -1467,29 +1440,52 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       listeners: [
         BlocListener<ServiceWorkReportStep1Bloc, ServiceWorkReportStep1State>(
           bloc: _serviceWorkReportStep1Bloc,
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is ServiceWorkReportStep1Success) {
+              final newReportId = state.data.data.id;
+              final complaintId = state.data.data.complaintId.isNotEmpty
+                  ? state.data.data.complaintId
+                  : (_complaintId ?? '');
+
               setState(() {
-                _reportId = state.data.data.id;
+                _reportId = newReportId;
                 if (state.data.data.complaintId.isNotEmpty) {
                   _complaintId = state.data.data.complaintId;
                 }
                 _currentStep++;
               });
-              if (_complaintId != null) {
-                _serviceWorkReportStep1AutofillBloc.add(
-                  GetServiceWorkReportStep1AutofillEvent(_complaintId!),
-                );
-              }
-              // Trigger step2 autofill after moving to step 2
-              if (_reportId != null) {
-                _serviceWorkReportTechniciansBloc.add(
-                  FetchServiceWorkReportTechniciansEvent(_reportId!),
-                );
-                _serviceWorkReportStep2AutofillBloc.add(
-                  GetServiceWorkReportStep2AutofillEvent(_reportId!),
-                );
-              }
+
+              // Save step1 to DB with the real report_id from API
+              final step1DataForDb = {
+                "customerId": _selectedCustomerId ?? '',
+                "siteId": _selectedSiteId ?? '',
+                "technicianIds": _technicianIds
+                    .asMap()
+                    .entries
+                    .where((e) => e.value != null)
+                    .map((e) => {"id": e.value!, "name": _technicians[e.key].text})
+                    .toList(),
+                "memberPresentsCustomerSide": _memberControllers
+                    .map((e) => e.text)
+                    .where((e) => e.isNotEmpty)
+                    .join(", "),
+                "agenda": _agendaController.text,
+              };
+              await OfflineServiceWorkReportsDb.instance.saveStep(
+                newReportId,
+                complaintId,
+                1,
+                step1DataForDb,
+              );
+
+              // Trigger technicians API to get the logged-in technician's assignId
+              _serviceWorkReportTechniciansBloc.add(
+                FetchServiceWorkReportTechniciansEvent(newReportId),
+              );
+              // Trigger step2 autofill
+              _serviceWorkReportStep2AutofillBloc.add(
+                GetServiceWorkReportStep2AutofillEvent(newReportId),
+              );
             } else if (state is ServiceWorkReportStep1Failure) {
               appSnackBar(context, AppColor.bright_red, state.message);
             }
@@ -1570,7 +1566,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 context, AppColor.green,
                 state.response.message ?? 'Report submitted successfully',
               );
-              _showSuccessDialog(qrCodeUrl: state.response.data.qrCodeImage);
+              widget.onBack();
             } else if (state is ServiceWorkReportStep4Error) {
               appSnackBar(context, AppColor.bright_red, state.message);
             }
@@ -1674,7 +1670,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ServiceWorkReportTechniciansState
         >(
           bloc: _serviceWorkReportTechniciansBloc,
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is ServiceWorkReportTechniciansLoaded) {
               try {
                 final match = state.response.data.firstWhere(
@@ -1682,8 +1678,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 );
                 _loggedInTechnicianAssignId = match.assignId;
                 if (_reportId != null) {
-                  OfflineServiceWorkDb.instance.saveAssignId(_reportId!, match.assignId);
-                  OfflineServiceWorkReportsDb.instance.updateAssignId(
+                  await OfflineServiceWorkReportsDb.instance.updateAssignId(
                     _complaintId ?? _reportId!,
                     _reportId!,
                     match.assignId,

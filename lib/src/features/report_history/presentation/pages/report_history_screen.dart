@@ -253,11 +253,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               if (url != null && url.isNotEmpty) {
                 if (state.action == PdfAction.view) {
                   final uri = Uri.parse(url);
-                  final cacheClearUri = uri.replace(queryParameters: {
-                    ...uri.queryParameters,
-                    'v': DateTime.now().millisecondsSinceEpoch.toString(),
-                  });
-                  launchUrl(cacheClearUri, mode: LaunchMode.externalApplication);
+                  launchUrl(uri, mode: LaunchMode.externalApplication);
                 } else if (state.action == PdfAction.download) {
                   _downloadPdf(url);
                 }
@@ -287,11 +283,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               if (url != null && url.isNotEmpty) {
                 if (state.action == ServiceCallPdfAction.view) {
                   final uri = Uri.parse(url);
-                  final cacheClearUri = uri.replace(queryParameters: {
-                    ...uri.queryParameters,
-                    'v': DateTime.now().millisecondsSinceEpoch.toString(),
-                  });
-                  launchUrl(cacheClearUri, mode: LaunchMode.externalApplication);
+                  launchUrl(uri, mode: LaunchMode.externalApplication);
                 } else if (state.action == ServiceCallPdfAction.download) {
                   _downloadPdf(url);
                 }

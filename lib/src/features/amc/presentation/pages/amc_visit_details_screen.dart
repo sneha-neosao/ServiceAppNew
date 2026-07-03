@@ -96,11 +96,7 @@ class _AmcVisitDetailsScreenState extends State<AmcVisitDetailsScreen> {
                 final url = state.pdfUrl;
                 if (url.isNotEmpty) {
                   final uri = Uri.parse(url);
-                  final cacheClearUri = uri.replace(queryParameters: {
-                    ...uri.queryParameters,
-                    'v': DateTime.now().millisecondsSinceEpoch.toString(),
-                  });
-                  launchUrl(cacheClearUri, mode: LaunchMode.externalApplication);
+                  launchUrl(uri, mode: LaunchMode.externalApplication);
                 } else {
                   appSnackBar(context, AppColor.bright_red, 'pdf_url_is_empty'.tr());
                 }
