@@ -60,8 +60,10 @@ import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create
 import 'package:service_app/src/features/common/bloc/create_new_site_bloc/create_new_site_state.dart';
 import 'package:service_app/src/features/common/domain/usecase/create_new_site_usecase.dart';
 import 'package:service_app/src/features/widgets/snackbar_widget.dart';
+import 'package:service_app/src/core/network/network_checker.dart';
 import 'package:service_app/src/features/widgets/step_shimmer.dart';
 import 'package:service_app/src/core/database/offline_service_work_db.dart';
+import 'package:service_app/src/core/database/offline_service_work_reports_db.dart';
 import 'package:service_app/src/core/session/session_manager.dart';
 import 'package:signature/signature.dart';
 import 'dart:io';
@@ -275,11 +277,207 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         getIt<ServiceWorkReportTechniciansBloc>();
     _deleteServiceWorkReportBloc = getIt<DeleteServiceWorkReportBloc>();
 
-    if (_complaintId != null) {
-      _serviceWorkReportStep1AutofillBloc.add(
-        GetServiceWorkReportStep1AutofillEvent(_complaintId!),
-      );
+    _initOfflineDraft().then((_) {
+      if (_currentStep == 1 && _complaintId != null) {
+        if (_selectedCustomerId == null) {
+          _serviceWorkReportStep1AutofillBloc.add(
+            GetServiceWorkReportStep1AutofillEvent(_complaintId!),
+          );
+        }
+      }
+    });
+  }
+
+  Future<void> _initOfflineDraft() async {
+    if (_complaintId == null) return;
+    final report = await OfflineServiceWorkReportsDb.instance.getReportByWorkId(_complaintId!);
+    if (report == null) return;
+
+    if (mounted) {
+      setState(() {
+        _reportId = report['report_id'] as String?;
+        final step = _getInitialStepFromMap(report);
+        _currentStep = step;
+        
+        // Load Step 1
+        if (report['step1'] != null) {
+          try {
+            final step1 = jsonDecode(report['step1'] as String);
+            _selectedCustomerId = step1['customerId']?.toString();
+            _selectedSiteId = step1['siteId']?.toString();
+            
+            if (step1['technicianIds'] != null) {
+              final List techs = step1['technicianIds'];
+              _technicians.clear();
+              _technicianIds.clear();
+              for (var t in techs) {
+                _technicians.add(TextEditingController(text: t['name']?.toString() ?? ''));
+                _technicianIds.add(t['id']?.toString());
+              }
+              if (_technicians.isEmpty) {
+                _technicians.add(TextEditingController());
+                _technicianIds.add(null);
+              }
+            }
+            
+            if (step1['memberPresentsCustomerSide'] != null) {
+              final String members = step1['memberPresentsCustomerSide'].toString();
+              _memberControllers.clear();
+              if (members.isNotEmpty) {
+                for (var m in members.split(', ')) {
+                  _memberControllers.add(TextEditingController(text: m));
+                }
+              }
+              if (_memberControllers.isEmpty) {
+                _memberControllers.add(TextEditingController());
+              }
+            }
+            
+            if (step1['agenda'] != null) {
+              _agendaController.text = step1['agenda'].toString();
+            }
+          } catch (e) {
+            print("Error parsing step1 offline draft: $e");
+          }
+        }
+        
+        // Load Step 2
+        if (report['step2'] != null) {
+          try {
+            final step2 = jsonDecode(report['step2'] as String);
+            _isTechnicalNA = step2['isTechnicalNa'] == true;
+            if (step2['technicalDetails'] != null) {
+              final techDetails = jsonDecode(step2['technicalDetails'] as String);
+              _pumpMakeCtrl.text = techDetails['pump_make']?.toString() ?? "";
+              _pumpModelCtrl.text = techDetails['pump_model']?.toString() ?? "";
+              _pumpSerialCtrl.text = techDetails['pump_serial']?.toString() ?? "";
+              final pumpFlow = techDetails['pump_flow'];
+              if (pumpFlow != null) {
+                _pumpFlowLpmCtrl.text = pumpFlow['lpm']?.toString() ?? "";
+                _pumpFlowLpsCtrl.text = pumpFlow['lps']?.toString() ?? "";
+                _pumpFlowM3hrCtrl.text = pumpFlow['m3_hr']?.toString() ?? "";
+                _pumpFlowUsgpmCtrl.text = pumpFlow['usgpm']?.toString() ?? "";
+              }
+              _pumpHeadMtrCtrl.text = techDetails['pump_head_mtr']?.toString() ?? "";
+              _driverMakeCtrl.text = techDetails['driver_make']?.toString() ?? "";
+              _driverSerialCtrl.text = techDetails['driver_serial']?.toString() ?? "";
+              _ratingKwCtrl.text = techDetails['rating_kw']?.toString() ?? "";
+              _ratingHpCtrl.text = techDetails['rating_hp']?.toString() ?? "";
+              _rpmCtrl.text = techDetails['rpm']?.toString() ?? "";
+              _panelMakeCtrl.text = techDetails['panel_make']?.toString() ?? "";
+              _panelSerialCtrl.text = techDetails['panel_serial']?.toString() ?? "";
+            }
+            if (step2['descriptions'] != null) {
+              final List desc = step2['descriptions'];
+              _workDescControllers.clear();
+              for (var d in desc) {
+                _workDescControllers.add(TextEditingController(text: d['description']?.toString() ?? ""));
+              }
+              while (_workDescControllers.length < 3) {
+                _workDescControllers.add(TextEditingController());
+              }
+            }
+          } catch (e) {
+            print("Error parsing step2 offline draft: $e");
+          }
+        }
+        
+        // Load Step 3
+        if (report['step3'] != null) {
+          try {
+            final step3 = jsonDecode(report['step3'] as String);
+            _mechNA = step3['isMechanicalChecklistNa'] == true;
+            _pipeNA = step3['isPipelineChecklistNa'] == true;
+            _elecNA = step3['isElectricalChecklistNa'] == true;
+            
+            if (step3['checklistItems'] != null) {
+              final List items = step3['checklistItems'];
+              for (var item in items) {
+                final key = item['keyChecklist']?.toString();
+                final val = item['valueChecklist']?.toString();
+                final type = item['checkType']?.toString();
+                if (type == 'mechanical') {
+                  if (key == 'Bearing Noise / Abnormal Sound Checked') _bearingNoise = val;
+                  if (key == 'Vibration Checked') _vibration = val;
+                  if (key == 'Mechanical Seal / Gland Leakage Checked') _mechSeal = val;
+                  if (key == 'Pump Not Running Dry') _pumpDry = val;
+                } else if (type == 'pipeline') {
+                  if (key == 'NRV / Butterfly Valve / Gate Valve Condition Checked') _nrvValve = val;
+                  if (key == 'Strainer / Foot Valve Condition Checked') _strainerValve = val;
+                  if (key == 'Suction Line (Air Leakage & Water Leakage Checked)') _suctionLine = val;
+                  if (key == 'Delivery Line (Air Leakage & Water Leakage Checked)') _deliveryLine = val;
+                  if (key == 'Suction / Delivery Valve Condition Checked') _suctionDelivery = val;
+                  if (key == 'Pressure Switch / Pressure Transmitter Checked') _pressureSwitch = val;
+                } else if (type == 'electrical') {
+                  if (key == 'Electrical Faults Checked') _elecFaults = val;
+                  if (key == 'Voltage Checked') _voltage = val;
+                  if (key == 'Phase Checked') _phase = val;
+                  if (key == 'Current Checked') _current = val;
+                  if (key == 'Control Panel Wiring Checked') _panelWiring = val;
+                }
+              }
+            }
+          } catch (e) {
+            print("Error parsing step3 offline draft: $e");
+          }
+        }
+        
+        // Load Step 4
+        if (report['step4'] != null) {
+          try {
+            final step4 = jsonDecode(report['step4'] as String);
+            _customerRepNameCtrl.text = step4['customerRepresentativeName']?.toString() ?? "";
+            _remarksCustomerCtrl.text = step4['customerRemarks']?.toString() ?? "";
+            _remarksTechCtrl.text = step4['technicianRemarks']?.toString() ?? "";
+            
+            if (step4['customerSignaturePath'] != null) {
+              final path = step4['customerSignaturePath'].toString();
+              if (path.isNotEmpty) {
+                if (path.startsWith('http')) {
+                  _existingCustomerSignatureUrl = path;
+                } else {
+                  _customerSignatureFile = File(path);
+                }
+              }
+            }
+            
+            if (step4['technicianSignaturePath'] != null) {
+              final path = step4['technicianSignaturePath'].toString();
+              if (path.isNotEmpty) {
+                if (path.startsWith('http')) {
+                  _existingTechnicianSignatureUrl = path;
+                } else {
+                  _technicianSignatureFile = File(path);
+                }
+              }
+            }
+            
+            if (step4['workPhotosPaths'] != null) {
+              final List paths = step4['workPhotosPaths'];
+              _pickedPhotos.clear();
+              _existingWorkPhotosUrls.clear();
+              for (var p in paths) {
+                final path = p.toString();
+                if (path.startsWith('http')) {
+                  _existingWorkPhotosUrls.add(path);
+                } else {
+                  _pickedPhotos.add(XFile(path));
+                }
+              }
+            }
+          } catch (e) {
+            print("Error parsing step4 offline draft: $e");
+          }
+        }
+      });
     }
+  }
+
+  int _getInitialStepFromMap(Map<String, dynamic> map) {
+    if (map['step4'] != null) return 4;
+    if (map['step3'] != null) return 3;
+    if (map['step2'] != null) return 2;
+    return 1;
   }
 
   // Dynamic list of member name fields – starts with one empty field
@@ -466,21 +664,54 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         return;
       }
 
-      _serviceWorkReportStep1Bloc.add(
-        PostServiceWorkReportStep1Event(
-          ServiceWorkReportStep1Params(
-            customerId: _selectedCustomerId!,
-            siteId: _selectedSiteId!,
-            technicianIds: techs,
-            memberPresentsCustomerSide: _memberControllers
-                .map((e) => e.text)
-                .where((e) => e.isNotEmpty)
-                .join(", "),
-            agenda: _agendaController.text,
-            complaintId: _reportId != null ? _complaintId : null,
-          ),
-        ),
+      final step1Data = {
+        "customerId": _selectedCustomerId!,
+        "siteId": _selectedSiteId!,
+        "technicianIds": techs,
+        "memberPresentsCustomerSide": _memberControllers
+            .map((e) => e.text)
+            .where((e) => e.isNotEmpty)
+            .join(", "),
+        "agenda": _agendaController.text,
+      };
+
+      if (_complaintId == null || _complaintId!.isEmpty) {
+        _complaintId = 'TEMP_${DateTime.now().millisecondsSinceEpoch}';
+      }
+      if (_reportId == null || _reportId!.isEmpty) {
+        _reportId = _complaintId;
+      }
+
+      final isOnline = await NetworkInfo().checkIsConnected;
+      await OfflineServiceWorkReportsDb.instance.saveStep(
+        _reportId!,
+        _complaintId!,
+        1,
+        step1Data,
       );
+
+      if (!isOnline) {
+        setState(() {
+          _currentStep++;
+        });
+        appSnackBar(context, AppColor.green, "Saved offline locally");
+      } else {
+        _serviceWorkReportStep1Bloc.add(
+          PostServiceWorkReportStep1Event(
+            ServiceWorkReportStep1Params(
+              customerId: _selectedCustomerId!,
+              siteId: _selectedSiteId!,
+              technicianIds: techs,
+              memberPresentsCustomerSide: _memberControllers
+                  .map((e) => e.text)
+                  .where((e) => e.isNotEmpty)
+                  .join(", "),
+              agenda: _agendaController.text,
+              complaintId: _complaintId != _reportId ? _complaintId : null,
+            ),
+          ),
+        );
+      }
     } else if (_currentStep == 2) {
       if (_reportId == null) {
         appSnackBar(
@@ -522,16 +753,41 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         };
       }
 
-      _serviceWorkReportStep2Bloc.add(
-        PostServiceWorkReportStep2Event(
-          ServiceWorkReportStep2Params(
-            id: _reportId!,
-            isTechnicalNa: _isTechnicalNA,
-            technicalDetails: jsonEncode(techDetails),
-            descriptions: descList,
-          ),
-        ),
+      final step2Data = {
+        "isTechnicalNa": _isTechnicalNA,
+        "technicalDetails": jsonEncode(techDetails),
+        "descriptions": descList,
+      };
+
+      if (_complaintId == null || _complaintId!.isEmpty) {
+        _complaintId = _reportId;
+      }
+
+      final isOnline = await NetworkInfo().checkIsConnected;
+      await OfflineServiceWorkReportsDb.instance.saveStep(
+        _reportId!,
+        _complaintId!,
+        2,
+        step2Data,
       );
+
+      if (!isOnline) {
+        setState(() {
+          _currentStep++;
+        });
+        appSnackBar(context, AppColor.green, "Saved offline locally");
+      } else {
+        _serviceWorkReportStep2Bloc.add(
+          PostServiceWorkReportStep2Event(
+            ServiceWorkReportStep2Params(
+              id: _reportId!,
+              isTechnicalNa: _isTechnicalNA,
+              technicalDetails: jsonEncode(techDetails),
+              descriptions: descList,
+            ),
+          ),
+        );
+      }
     } else if (_currentStep == 3) {
       if (_reportId == null) return;
 
@@ -711,17 +967,43 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         "Control Panel Wiring Checked",
       );
 
-      _serviceWorkReportStep3Bloc.add(
-        PostServiceWorkReportStep3Event(
-          ServiceWorkReportStep3Params(
-            id: _reportId!,
-            isMechanicalChecklistNa: _mechNA,
-            isPipelineChecklistNa: _pipeNA,
-            isElectricalChecklistNa: _elecNA,
-            checklistItems: checklistItems,
-          ),
-        ),
+      final step3Data = {
+        "isMechanicalChecklistNa": _mechNA,
+        "isPipelineChecklistNa": _pipeNA,
+        "isElectricalChecklistNa": _elecNA,
+        "checklistItems": checklistItems.map((e) => e.toJson()).toList(),
+      };
+
+      if (_complaintId == null || _complaintId!.isEmpty) {
+        _complaintId = _reportId;
+      }
+
+      final isOnline = await NetworkInfo().checkIsConnected;
+      await OfflineServiceWorkReportsDb.instance.saveStep(
+        _reportId!,
+        _complaintId!,
+        3,
+        step3Data,
       );
+
+      if (!isOnline) {
+        setState(() {
+          _currentStep++;
+        });
+        appSnackBar(context, AppColor.green, "Saved offline locally");
+      } else {
+        _serviceWorkReportStep3Bloc.add(
+          PostServiceWorkReportStep3Event(
+            ServiceWorkReportStep3Params(
+              id: _reportId!,
+              isMechanicalChecklistNa: _mechNA,
+              isPipelineChecklistNa: _pipeNA,
+              isElectricalChecklistNa: _elecNA,
+              checklistItems: checklistItems,
+            ),
+          ),
+        );
+      }
     } else if (_currentStep == 4) {
       if (_reportId == null) {
         appSnackBar(context, AppColor.bright_red, "Missing report ID.");
@@ -764,30 +1046,68 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         final dbAssignId = await OfflineServiceWorkDb.instance.getAssignId(_reportId!);
         if (dbAssignId != null) {
           _loggedInTechnicianAssignId = dbAssignId;
+        } else {
+          final reportsDbAssignId = await OfflineServiceWorkReportsDb.instance
+              .getAssignIdByWorkId(_complaintId ?? _reportId!);
+          if (reportsDbAssignId != null) {
+            _loggedInTechnicianAssignId = reportsDbAssignId;
+          }
         }
       }
 
       List<String> allWorkPhotos = _pickedPhotos.map((e) => e.path).toList();
       allWorkPhotos.addAll(_existingWorkPhotosUrls);
 
-      _serviceWorkReportStep4Bloc.add(
-        PostServiceWorkReportStep4Event(
-          params: ServiceWorkReportStep4Params(
-            id: _reportId!,
-            customerRepresentativeName: _customerRepNameCtrl.text.trim(),
-            customerRemarks: _remarksCustomerCtrl.text.trim(),
-            technicianRemarks: _remarksTechCtrl.text.trim(),
-            technicianRepresentative:
-                _loggedInTechnicianAssignId ?? _loggedInTechnicianId,
-            workPhotosPaths: allWorkPhotos,
-            customerSignaturePath:
-                _customerSignatureFile?.path ?? _existingCustomerSignatureUrl,
-            technicianSignaturePath:
-                _technicianSignatureFile?.path ??
-                _existingTechnicianSignatureUrl,
-          ),
-        ),
+      final step4Data = {
+        "customerRepresentativeName": _customerRepNameCtrl.text.trim(),
+        "customerRemarks": _remarksCustomerCtrl.text.trim(),
+        "technicianRemarks": _remarksTechCtrl.text.trim(),
+        "technicianRepresentative":
+            _loggedInTechnicianAssignId ?? _loggedInTechnicianId,
+        "workPhotosPaths": allWorkPhotos,
+        "customerSignaturePath":
+            _customerSignatureFile?.path ?? _existingCustomerSignatureUrl,
+        "technicianSignaturePath":
+            _technicianSignatureFile?.path ??
+            _existingTechnicianSignatureUrl,
+      };
+
+      if (_complaintId == null || _complaintId!.isEmpty) {
+        _complaintId = _reportId;
+      }
+
+      final isOnline = await NetworkInfo().checkIsConnected;
+      await OfflineServiceWorkReportsDb.instance.saveStep(
+        _reportId!,
+        _complaintId!,
+        4,
+        step4Data,
+        reportState: 'offline',
       );
+
+      if (!isOnline) {
+        appSnackBar(context, AppColor.green, "Report saved offline successfully");
+        _showSuccessDialog();
+      } else {
+        _serviceWorkReportStep4Bloc.add(
+          PostServiceWorkReportStep4Event(
+            params: ServiceWorkReportStep4Params(
+              id: _reportId!,
+              customerRepresentativeName: _customerRepNameCtrl.text.trim(),
+              customerRemarks: _remarksCustomerCtrl.text.trim(),
+              technicianRemarks: _remarksTechCtrl.text.trim(),
+              technicianRepresentative:
+                  _loggedInTechnicianAssignId ?? _loggedInTechnicianId,
+              workPhotosPaths: allWorkPhotos,
+              customerSignaturePath:
+                  _customerSignatureFile?.path ?? _existingCustomerSignatureUrl,
+              technicianSignaturePath:
+                  _technicianSignatureFile?.path ??
+                  _existingTechnicianSignatureUrl,
+            ),
+          ),
+        );
+      }
     } else if (_currentStep < 4) {
       setState(() {
         _currentStep++;
@@ -1240,6 +1560,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           bloc: _serviceWorkReportStep4Bloc,
           listener: (context, state) {
             if (state is ServiceWorkReportStep4Loaded) {
+              if (_reportId != null) {
+                OfflineServiceWorkReportsDb.instance.deleteReport(_reportId!);
+              }
               appSnackBar(
                 context, AppColor.green,
                 state.response.message ?? 'Report submitted successfully',
@@ -1357,6 +1680,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 _loggedInTechnicianAssignId = match.assignId;
                 if (_reportId != null) {
                   OfflineServiceWorkDb.instance.saveAssignId(_reportId!, match.assignId);
+                  OfflineServiceWorkReportsDb.instance.updateAssignId(
+                    _complaintId ?? _reportId!,
+                    _reportId!,
+                    match.assignId,
+                  );
                 }
               } catch (_) {
                 // If not found, ignore
@@ -1368,7 +1696,17 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           bloc: _customerBloc,
           listener: (context, state) {
             if (state is CustomerSuccessState) {
-              if ((_selectedCustomerId == null ||
+              if (_selectedCustomerId != null && _selectedCustomerId!.isNotEmpty) {
+                final matches = state.data.data.where(
+                  (x) => x.id == _selectedCustomerId,
+                );
+                if (matches.isNotEmpty) {
+                  setState(() {
+                    _selectedCustomer = matches.first.name;
+                  });
+                  _sitesBloc.add(SitesGetEvent(customer_id: _selectedCustomerId!));
+                }
+              } else if ((_selectedCustomerId == null ||
                       _selectedCustomerId!.isEmpty) &&
                   _selectedCustomer != 'select_customer'.tr()) {
                 final matches = state.data.data.where(
@@ -1388,7 +1726,16 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           bloc: _sitesBloc,
           listener: (context, state) {
             if (state is SitesSuccessState) {
-              if ((_selectedSiteId == null || _selectedSiteId!.isEmpty) &&
+              if (_selectedSiteId != null && _selectedSiteId!.isNotEmpty) {
+                final matches = state.data.data.where(
+                  (x) => x.id == _selectedSiteId,
+                );
+                if (matches.isNotEmpty) {
+                  setState(() {
+                    _selectedSite = matches.first.name;
+                  });
+                }
+              } else if ((_selectedSiteId == null || _selectedSiteId!.isEmpty) &&
                   _selectedSite != 'select_site'.tr()) {
                 final matches = state.data.data.where(
                   (x) => x.name == _selectedSite,

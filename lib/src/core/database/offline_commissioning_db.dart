@@ -20,7 +20,7 @@ class OfflineCommissioningDb {
 
     return await openDatabase(
       path,
-      version: 5,
+      version: 6,
       onCreate: _createDB,
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -59,6 +59,23 @@ class OfflineCommissioningDb {
               step1 TEXT,
               step2 TEXT,
               step3 TEXT,
+              synced INTEGER DEFAULT 0,
+              step_synced INTEGER DEFAULT 0
+            )
+          ''');
+        }
+        if (oldVersion < 6) {
+          await db.execute('''
+            CREATE TABLE service_work_report (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              commissioning_work_id TEXT NOT NULL,
+              report_id TEXT NOT NULL,
+              assign_id TEXT,
+              report_state TEXT,
+              step1 TEXT,
+              step2 TEXT,
+              step3 TEXT,
+              step4 TEXT,
               synced INTEGER DEFAULT 0,
               step_synced INTEGER DEFAULT 0
             )
@@ -113,6 +130,21 @@ class OfflineCommissioningDb {
         step1 TEXT,
         step2 TEXT,
         step3 TEXT,
+        synced INTEGER DEFAULT 0,
+        step_synced INTEGER DEFAULT 0
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE service_work_report (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        commissioning_work_id TEXT NOT NULL,
+        report_id TEXT NOT NULL,
+        assign_id TEXT,
+        report_state TEXT,
+        step1 TEXT,
+        step2 TEXT,
+        step3 TEXT,
+        step4 TEXT,
         synced INTEGER DEFAULT 0,
         step_synced INTEGER DEFAULT 0
       )
