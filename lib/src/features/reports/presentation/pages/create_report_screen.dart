@@ -285,7 +285,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     }
   }
 
-  Future<void> _initOfflineDraft() async {
+  Future<void> _initOfflineDraft({bool setStep = true}) async {
     if (_complaintId == null) return;
     final report = await OfflineServiceWorkReportsDb.instance.getReportByWorkId(_complaintId!);
     if (report == null) return;
@@ -293,8 +293,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     if (mounted) {
       setState(() {
         _reportId = report['report_id'] as String?;
-        final step = _getInitialStepFromMap(report);
-        _currentStep = step;
+        if (setStep) {
+          final step = _getInitialStepFromMap(report);
+          _currentStep = step;
+        }
         
         // Load Step 1
         if (report['step1'] != null) {
@@ -742,24 +744,34 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       bool isOnline = await NetworkInfo().checkIsConnected;
       isOnline = false; // Always store locally for service work report steps 2-3
       try {
-        setState(() => _isSavingOffline = true);
+        setState(() {
+          _isSavingOffline = true;
+          debugPrint("STEP2_SAVE: setting _isSavingOffline to true");
+        });
+        // Instant visual feedback delay
+        await Future.delayed(const Duration(milliseconds: 100));
         await OfflineServiceWorkReportsDb.instance.saveStep(
           _reportId!,
           _complaintId!,
           2,
           step2Data,
         );
+        // Wait another 300ms for loader to be clearly visible
+        await Future.delayed(const Duration(milliseconds: 300));
       } finally {
         if (mounted) {
-          setState(() => _isSavingOffline = false);
+          setState(() {
+            _isSavingOffline = false;
+            debugPrint("STEP3_SAVE: setting _isSavingOffline to false");
+            debugPrint("STEP2_SAVE: setting _isSavingOffline to false");
+            if (!isOnline) {
+              _currentStep++;
+            }
+          });
+          if (!isOnline) {
+            appSnackBar(context, AppColor.green, "step_2_saved_successfully".tr());
+          }
         }
-      }
-
-      if (!isOnline) {
-        setState(() {
-          _currentStep++;
-        });
-        appSnackBar(context, AppColor.green, "step_2_saved_successfully".tr());
       }
     } else if (_currentStep == 3) {
       if (_reportId == null) return;
@@ -953,24 +965,32 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       bool isOnline = await NetworkInfo().checkIsConnected;
       isOnline = false; // Always store locally for service work report steps 2-3
       try {
-        setState(() => _isSavingOffline = true);
+        setState(() {
+          _isSavingOffline = true;
+          debugPrint("STEP3_SAVE: setting _isSavingOffline to true");
+        });
+        // Instant visual feedback delay
+        await Future.delayed(const Duration(milliseconds: 100));
         await OfflineServiceWorkReportsDb.instance.saveStep(
           _reportId!,
           _complaintId!,
           3,
           step3Data,
         );
+        // Wait another 300ms for loader to be clearly visible
+        await Future.delayed(const Duration(milliseconds: 300));
       } finally {
         if (mounted) {
-          setState(() => _isSavingOffline = false);
+          setState(() {
+            _isSavingOffline = false;
+            if (!isOnline) {
+              _currentStep++;
+            }
+          });
+          if (!isOnline) {
+            appSnackBar(context, AppColor.green, "step_3_saved_successfully".tr());
+          }
         }
-      }
-
-      if (!isOnline) {
-        setState(() {
-          _currentStep++;
-        });
-        appSnackBar(context, AppColor.green, "step_3_saved_successfully".tr());
       }
     } else if (_currentStep == 4) {
       if (_reportId == null) {
@@ -1042,6 +1062,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       final isOnline = await NetworkInfo().checkIsConnected;
       try {
         setState(() => _isSavingOffline = true);
+        // Instant visual feedback delay
+        await Future.delayed(const Duration(milliseconds: 100));
         await OfflineServiceWorkReportsDb.instance.saveStep(
           _reportId!,
           _complaintId!,
@@ -1049,6 +1071,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           step4Data,
           reportState: 'offline',
         );
+        // Wait another 300ms for loader to be clearly visible
+        await Future.delayed(const Duration(milliseconds: 300));
       } finally {
         if (mounted) {
           setState(() => _isSavingOffline = false);
@@ -1116,7 +1140,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       setState(() {
         _currentStep--;
       });
-      _initOfflineDraft();
+      _initOfflineDraft(setStep: false);
     } else {
       _handleBack();
     }
@@ -1877,7 +1901,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                               ),
                                               child: Builder(
                                                 builder: (context) {
-                                                  bool isLoading =
+                                                  bool isLoading = _isSavingOffline ||
                                                       (_currentStep == 1 &&
                                                           state
                                                               is ServiceWorkReportStep1Loading) ||
@@ -3189,7 +3213,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ],
         ),
 
-        // ── All fields wrapped: inactive + non-tappable when NA is checked ──────
+        // ── Technical details fields: inactive + non-tappable when NA is checked ──
         IgnorePointer(
           ignoring: _isTechnicalNA,
           child: AnimatedOpacity(
@@ -3300,108 +3324,109 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 // ── Panel Serial / Model ───────────────────────────────────
                 _buildTechLabel('commissioning_panel_serial_model'.tr()),
                 _buildUnderlineField(_panelSerialCtrl),
-                const SizedBox(height: 40),
-
-                // ── Work Description ───────────────────────────────────────
-                Center(
-                  child: Text(
-                    'service_work_description'.tr(),
-                    style: AppFont.style(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      color: const Color(0xFFA5ABB7),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                ...List.generate(_workDescControllers.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 12, right: 8),
-                          child: Text(
-                            '${index + 1}.',
-                            style: AppFont.style(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFFA5ABB7),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Focus(
-                            child: Builder(
-                              builder: (ctx) {
-                                final hasFocus = Focus.of(ctx).hasFocus;
-                                return Container(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    12,
-                                    10,
-                                    10,
-                                    10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFF8F9FB),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: hasFocus
-                                          ? const Color(0xFF1565C0)
-                                          : const Color(0xFFF1F2F6),
-                                      width: hasFocus ? 1.5 : 1,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: TextField(
-                                          controller:
-                                              _workDescControllers[index],
-                                          minLines: 3,
-                                          maxLines: null,
-                                          style: AppFont.style(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w700,
-                                            color: const Color(0xFF0D121F),
-                                          ),
-                                          decoration: InputDecoration(
-                                            hintText: 'commissioning_work_description_hint'.tr(),
-                                            hintStyle: AppFont.style(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w700,
-                                              color: const Color(0xFFA5ABB7),
-                                            ),
-                                            border: InputBorder.none,
-                                            isDense: true,
-                                            contentPadding: EdgeInsets.zero,
-                                          ),
-                                        ),
-                                      ),
-                                      SpeechToTextMicButton(
-                                        controller: _workDescControllers[index],
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-
-                const SizedBox(height: 60),
               ],
             ),
           ),
         ),
+
+        const SizedBox(height: 40),
+
+        // ── Work Description (always active, not affected by NA toggle) ────────
+        Center(
+          child: Text(
+            'service_work_description'.tr(),
+            style: AppFont.style(
+              fontSize: 13,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFFA5ABB7),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        ...List.generate(_workDescControllers.length, (index) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 12, right: 8),
+                  child: Text(
+                    '${index + 1}.',
+                    style: AppFont.style(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFFA5ABB7),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Focus(
+                    child: Builder(
+                      builder: (ctx) {
+                        final hasFocus = Focus.of(ctx).hasFocus;
+                        return Container(
+                          padding: const EdgeInsets.fromLTRB(
+                            12,
+                            10,
+                            10,
+                            10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF8F9FB),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: hasFocus
+                                  ? const Color(0xFF1565C0)
+                                  : const Color(0xFFF1F2F6),
+                              width: hasFocus ? 1.5 : 1,
+                            ),
+                          ),
+                          child: Row(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller:
+                                      _workDescControllers[index],
+                                  minLines: 3,
+                                  maxLines: null,
+                                  style: AppFont.style(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF0D121F),
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: 'commissioning_work_description_hint'.tr(),
+                                    hintStyle: AppFont.style(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFFA5ABB7),
+                                    ),
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                ),
+                              ),
+                              SpeechToTextMicButton(
+                                controller: _workDescControllers[index],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+
+        const SizedBox(height: 60),
       ],
     );
   }

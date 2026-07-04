@@ -539,7 +539,7 @@
   "amc_report_subtitle": "ઓફલાઇન દરમિયાન સાચવાયેલા AMC રિપોર્ટ્સ અહીં દેખાશે.",
   "no_service_work_reports": "કોઈ ઓફલાઇન સર્વિસ/કામ રિપોર્ટ્સ નથી",
   "service_work_report_subtitle": "ઓફલાઇન દરમિયાન સાચવાયેલા સર્વિસ/કામ રિપોર્ટ્સ અહીં દેખાશે.",
-  "work_id": "કામ ID:",
+  "work_id": "કામ આઈડી:",
   "steps_completed": "પગલાં પૂર્ણ થયા",
   "incomplete": "અપૂર્ણ",
   "sync_report": "રિપોર્ટ સિંક કરો",
