@@ -640,7 +640,7 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
     final totalSteps = _selectedTab == 2 ? 3 : (_selectedTab == 3 ? 4 : 6);
 
     // Parse step1 for the agenda/technician names if available
-    String subtitle = 'Report ID: ${_shortId(reportId)}';
+    String subtitle = '${'report_id'.tr()} ${_shortId(reportId)}';
     if (report['step1'] != null) {
       try {
         final step1 = jsonDecode(report['step1'] as String) as Map;

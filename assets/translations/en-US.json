@@ -543,5 +543,6 @@
   "work_id": "Work ID:",
   "steps_completed": "Steps completed",
   "incomplete": "Incomplete",
-  "sync_report": "Sync Report"
+  "sync_report": "Sync Report",
+  "report_id": "Report ID:"
 }

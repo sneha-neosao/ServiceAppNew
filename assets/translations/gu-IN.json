@@ -542,5 +542,6 @@
   "work_id": "કામ ID:",
   "steps_completed": "પગલાં પૂર્ણ થયા",
   "incomplete": "અપૂર્ણ",
-  "sync_report": "રિપોર્ટ સિંક કરો"
+  "sync_report": "રિપોર્ટ સિંક કરો",
+  "report_id": "રિપોર્ટ આઈડી:"
 }

@@ -543,5 +543,6 @@
   "work_id": "कार्य ID:",
   "steps_completed": "चरण पूरे हुए",
   "incomplete": "अपूर्ण",
-  "sync_report": "रिपोर्ट सिंक करें"
+  "sync_report": "रिपोर्ट सिंक करें",
+  "report_id": "रिपोर्ट आईडी:"
 }

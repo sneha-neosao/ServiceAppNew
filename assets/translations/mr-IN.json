@@ -543,5 +543,6 @@
   "work_id": "काम आयडी:",
   "steps_completed": "स्टेप्स पूर्ण झाल्या",
   "incomplete": "अपूर्ण",
-  "sync_report": "अहवाल सिंक करा"
+  "sync_report": "अहवाल सिंक करा",
+  "report_id": "अहवाल आयडी:"
 }

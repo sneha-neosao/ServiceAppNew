@@ -542,5 +542,6 @@
   "work_id": "ಕೆಲಸದ ID:",
   "steps_completed": "ಹಂತಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ",
   "incomplete": "ಅಪೂರ್ಣ",
-  "sync_report": "ವರದಿ ಸಿಂಕ್ ಮಾಡಿ"
+  "sync_report": "ವರದಿ ಸಿಂಕ್ ಮಾಡಿ",
+  "report_id": "ವರದಿ ಐಡಿ:"
 }
