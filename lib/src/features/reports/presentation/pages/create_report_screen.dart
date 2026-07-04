@@ -1038,11 +1038,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         showDialog<bool>(
           context: context,
           builder: (context) => AppAlertDialogWidget(
-            title: "Offline Mode",
+            title: "offline_mode".tr(),
             subtitle:
-                "This form will be saved locally on your device. Once an internet connection is available, you will need to manually sync it to upload the data to the server. Would you like to continue?",
-            confirmText: "Yes, Save Locally",
-            cancelText: "No",
+                "offline_mode_subtitle".tr(),
+            confirmText: "yes".tr(),
+            cancelText: "no".tr(),
             icon: Icons.wifi_off_rounded,
             iconBgColor: const Color(0xFFFFF3E0),
             iconColor: const Color(0xFFFF9800),
@@ -1056,7 +1056,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             appSnackBar(
               context,
               AppColor.green,
-              "Report saved offline completely!",
+              "reort_saved_offline".tr(),
             );
             widget.onBack();
           }

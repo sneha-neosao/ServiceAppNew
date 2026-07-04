@@ -526,5 +526,8 @@
   "step_2_saved_successfully": "Step 2 saved successfully",
   "step_3_saved_successfully": "Step 3 saved successfully",
   "step_4_saved_successfully": "Step 4 saved successfully",
-  "step_5_saved_successfully": "Step 5 saved successfully"
+  "step_5_saved_successfully": "Step 5 saved successfully",
+  "offline_mode": "Offline Mode",
+  "offline_mode_subtitle": "This form will be saved locally on your device. Once an internet connection is available, you will need to manually sync it to upload the data to the server. Would you like to continue?",
+  "reort_saved_offline": "Report saved offline completely!"
 }

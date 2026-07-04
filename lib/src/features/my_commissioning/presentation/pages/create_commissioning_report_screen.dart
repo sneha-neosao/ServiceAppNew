@@ -533,20 +533,6 @@ class _CreateCommissioningReportScreenState
       if (_currentStep == 6) {
         _loadAssignIdFromDb();
       }
-      if (_currentStep == 1) {
-        final report = await _db.getReportByWorkId(widget.commissioningWorkId);
-        if (report == null) {
-          if (widget.isServiceReport) {
-            _serviceCallStep1AutoFillBloc.add(
-              ServiceCallReportStep1AutoFillGetEvent(widget.commissioningWorkId),
-            );
-          } else {
-            _step1Bloc.add(
-              CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId),
-            );
-          }
-        }
-      }
     }
   }
 
@@ -607,21 +593,21 @@ class _CreateCommissioningReportScreenState
             _isTechnicalDetailsNA = step3['isTechnicalNa'] == true || step3['isTechnicalNa'] == 'true' || step3['isTechnicalNa'] == 1 || step3['isTechnicalNa'] == '1';
             if (step3['technicalDetails'] != null) {
               final techDetails = step3['technicalDetails'];
-              _pumpMakeController.text = techDetails['pumpMake']?.toString() ?? "";
-              _pumpModelController.text = techDetails['pumpModel']?.toString() ?? "";
-              _pumpSerialNumberController.text = techDetails['pumpSerialNumber']?.toString() ?? "";
-              _pumpFlowLPMController.text = techDetails['pumpFlowLpm']?.toString() ?? "";
-              _pumpFlowM3HRController.text = techDetails['pumpFlowM3hr']?.toString() ?? "";
-              _pumpFlowLPSController.text = techDetails['pumpFlowLps']?.toString() ?? "";
-              _pumpFlowUSGPMController.text = techDetails['pumpFlowUsgpm']?.toString() ?? "";
-              _pumpHeadMTRController.text = techDetails['pumpHeadMtr']?.toString() ?? "";
-              _driverMakeController.text = techDetails['driverMake']?.toString() ?? "";
-              _driverSerialNumberController.text = techDetails['driverSerialNumber']?.toString() ?? "";
-              _ratingKWController.text = techDetails['ratingKw']?.toString() ?? "";
-              _ratingHPController.text = techDetails['ratingHp']?.toString() ?? "";
+              _pumpMakeController.text = (techDetails['pump_make'] ?? techDetails['pumpMake'])?.toString() ?? "";
+              _pumpModelController.text = (techDetails['pump_model'] ?? techDetails['pumpModel'])?.toString() ?? "";
+              _pumpSerialNumberController.text = (techDetails['pump_serial_number'] ?? techDetails['pumpSerialNumber'])?.toString() ?? "";
+              _pumpFlowLPMController.text = (techDetails['pump_flow_lpm'] ?? techDetails['pumpFlowLpm'])?.toString() ?? "";
+              _pumpFlowM3HRController.text = (techDetails['pump_flow_m3hr'] ?? techDetails['pumpFlowM3hr'])?.toString() ?? "";
+              _pumpFlowLPSController.text = (techDetails['pump_flow_lps'] ?? techDetails['pumpFlowLps'])?.toString() ?? "";
+              _pumpFlowUSGPMController.text = (techDetails['pump_flow_usgpm'] ?? techDetails['pumpFlowUsgpm'])?.toString() ?? "";
+              _pumpHeadMTRController.text = (techDetails['pump_head_mtr'] ?? techDetails['pumpHeadMtr'])?.toString() ?? "";
+              _driverMakeController.text = (techDetails['driver_make'] ?? techDetails['driverMake'])?.toString() ?? "";
+              _driverSerialNumberController.text = (techDetails['driver_serial_number'] ?? techDetails['driverSerialNumber'])?.toString() ?? "";
+              _ratingKWController.text = (techDetails['rating_kw'] ?? techDetails['ratingKw'])?.toString() ?? "";
+              _ratingHPController.text = (techDetails['rating_hp'] ?? techDetails['ratingHp'])?.toString() ?? "";
               _rpmController.text = techDetails['rpm']?.toString() ?? "";
-              _controlPanelMakeController.text = techDetails['controlPanelMake']?.toString() ?? "";
-              _panelSerialModelController.text = techDetails['panelSerialModel']?.toString() ?? "";
+              _controlPanelMakeController.text = (techDetails['control_panel_make'] ?? techDetails['controlPanelMake'])?.toString() ?? "";
+              _panelSerialModelController.text = (techDetails['panel_serial_model'] ?? techDetails['panelSerialModel'])?.toString() ?? "";
             }
           } catch (e) {
             print("Error parsing step3: $e");
@@ -856,6 +842,7 @@ class _CreateCommissioningReportScreenState
           _currentStep++;
           _triggerAutoFillForStep(_currentStep);
         });
+        _loadStepDataFromDb();
         return;
       }
       setState(() => _isSavingOffline = false);
@@ -925,6 +912,7 @@ class _CreateCommissioningReportScreenState
           _currentStep++;
           _triggerAutoFillForStep(_currentStep);
         });
+        _loadStepDataFromDb();
         return;
       }
       setState(() => _isSavingOffline = false);
@@ -1002,6 +990,7 @@ class _CreateCommissioningReportScreenState
           _currentStep++;
           _triggerAutoFillForStep(_currentStep);
         });
+        _loadStepDataFromDb();
         return;
       }
       setState(() => _isSavingOffline = false);
@@ -1073,6 +1062,7 @@ class _CreateCommissioningReportScreenState
           _currentStep++;
           _triggerAutoFillForStep(_currentStep);
         });
+        _loadStepDataFromDb();
         return;
       }
       setState(() => _isSavingOffline = false);
@@ -1418,6 +1408,7 @@ class _CreateCommissioningReportScreenState
           _currentStep++;
           _triggerAutoFillForStep(_currentStep);
         });
+        _loadStepDataFromDb();
         return;
       }
       setState(() => _isSavingOffline = false);
@@ -1523,11 +1514,11 @@ class _CreateCommissioningReportScreenState
         showDialog<bool>(
           context: context,
           builder: (context) => AppAlertDialogWidget(
-            title: "Offline Mode",
+            title: "offline_mode".tr(),
             subtitle:
-                "This form will be saved locally on your device. Once an internet connection is available, you will need to manually sync it to upload the data to the server. Would you like to continue?",
-            confirmText: "Yes, Save Locally",
-            cancelText: "No",
+            "offline_mode_subtitle".tr(),
+            confirmText: "yes".tr(),
+            cancelText: "no".tr(),
             icon: Icons.wifi_off_rounded,
             iconBgColor: const Color(0xFFFFF3E0),
             iconColor: const Color(0xFFFF9800),
@@ -1545,7 +1536,7 @@ class _CreateCommissioningReportScreenState
             appSnackBar(
               context,
               AppColor.green,
-              "Report saved offline completely!",
+              "reort_saved_offline".tr(),
             );
             setState(() => _isSavingOffline = false);
             widget.onBack();
@@ -1590,88 +1581,8 @@ class _CreateCommissioningReportScreenState
     if (_currentStep > 1) {
       setState(() {
         _currentStep--;
-        if (_currentStep == 1) {
-          if (widget.isServiceReport && widget.commissioningWorkId.isNotEmpty) {
-            _serviceCallStep1AutoFillBloc.add(
-              ServiceCallReportStep1AutoFillGetEvent(
-                widget.commissioningWorkId,
-              ),
-            );
-          } else {
-            _step1Bloc.add(
-              CommissioningStep1AutoFillGetEvent(widget.commissioningWorkId),
-            );
-          }
-        } else if (_currentStep == 2) {
-          if (widget.isServiceReport) {
-            final idToUse = _commissioningReportId ?? "";
-            if (idToUse.isNotEmpty) {
-              _serviceCallStep2AutoFillBloc.add(
-                ServiceCallReportStep2AutoFillGetEvent(idToUse),
-              );
-            }
-          } else {
-            if (_commissioningReportId != null) {
-              _step2Bloc.add(
-                CommissioningStep2AutoFillGetEvent(
-                  _commissioningReportId ?? "",
-                ),
-              );
-            }
-          }
-        } else if (_currentStep == 3) {
-          if (widget.isServiceReport) {
-            final idToUse = _commissioningReportId ?? "";
-            if (idToUse.isNotEmpty) {
-              _serviceCallStep3AutoFillBloc.add(
-                ServiceCallReportStep3AutoFillGetEvent(idToUse),
-              );
-            }
-          } else {
-            if (_commissioningReportId != null) {
-              _step3Bloc.add(
-                CommissioningStep3AutoFillGetEvent(
-                  _commissioningReportId ?? "",
-                ),
-              );
-            }
-          }
-        } else if (_currentStep == 4) {
-          if (widget.isServiceReport) {
-            final idToUse = _commissioningReportId ?? "";
-            if (idToUse.isNotEmpty) {
-              _serviceCallStep4AutoFillBloc.add(
-                ServiceCallReportStep4AutoFillGetEvent(idToUse),
-              );
-            }
-          } else {
-            if (_commissioningReportId != null) {
-              _step4Bloc.add(
-                CommissioningStep4AutoFillGetEvent(
-                  _commissioningReportId ?? "",
-                ),
-              );
-            }
-          }
-        } else if (_currentStep == 5) {
-          if (widget.isServiceReport) {
-            final idToUse = _commissioningReportId ?? "";
-            if (idToUse.isNotEmpty) {
-              _serviceCallStep5AutoFillBloc.add(
-                ServiceCallReportStep5AutoFillGetEvent(idToUse),
-              );
-            }
-          } else {
-            if (_commissioningReportId != null) {
-              _step5Bloc.add(
-                CommissioningStep5AutoFillGetEvent(
-                  _commissioningReportId ?? "",
-                ),
-              );
-            }
-          }
-        }
       });
+      _loadStepDataFromDb();
     } else {
       widget.onBack();
     }
@@ -1804,18 +1715,12 @@ class _CreateCommissioningReportScreenState
       child: BlocListener<ServiceCallReportStep3Bloc, ServiceCallReportStep3State>(
         bloc: _submitServiceCallStep3Bloc,
         listener: (context, state) {
-          if (state is ServiceCallReportStep3SuccessState) {
+                    if (state is ServiceCallReportStep3SuccessState) {
             appSnackBar(context, AppColor.green, state.data.message);
             setState(() {
               _currentStep++;
-              if (_currentStep == 4 && _commissioningReportId != null) {
-                _serviceCallStep4AutoFillBloc.add(
-                  ServiceCallReportStep4AutoFillGetEvent(
-                    _commissioningReportId ?? "",
-                  ),
-                );
-              }
             });
+            _loadStepDataFromDb();
           } else if (state is ServiceCallReportStep3FailureState) {
             appSnackBar(context, AppColor.bright_red, state.message);
           }
@@ -1823,18 +1728,12 @@ class _CreateCommissioningReportScreenState
         child: BlocListener<ServiceCallReportStep2Bloc, ServiceCallReportStep2State>(
           bloc: _submitServiceCallStep2Bloc,
           listener: (context, state) {
-            if (state is ServiceCallReportStep2SuccessState) {
+                        if (state is ServiceCallReportStep2SuccessState) {
               appSnackBar(context, AppColor.green, state.data.message);
               setState(() {
                 _currentStep++;
-                if (_currentStep == 3 && _commissioningReportId != null) {
-                  _serviceCallStep3AutoFillBloc.add(
-                    ServiceCallReportStep3AutoFillGetEvent(
-                      _commissioningReportId ?? "",
-                    ),
-                  );
-                }
               });
+              _loadStepDataFromDb();
             } else if (state is ServiceCallReportStep2FailureState) {
               appSnackBar(context, AppColor.bright_red, state.message);
             }
@@ -1842,18 +1741,12 @@ class _CreateCommissioningReportScreenState
           child: BlocListener<CommissioningStep2Bloc, CommissioningStep2State>(
             bloc: _submitStep2Bloc,
             listener: (context, state) {
-              if (state is CommissioningStep2SuccessState) {
+                            if (state is CommissioningStep2SuccessState) {
                 appSnackBar(context, AppColor.green, state.data.message);
                 setState(() {
                   _currentStep++;
-                  if (_currentStep == 3 && _commissioningReportId != null) {
-                    _step3Bloc.add(
-                      CommissioningStep3AutoFillGetEvent(
-                        _commissioningReportId ?? "",
-                      ),
-                    );
-                  }
                 });
+                _loadStepDataFromDb();
               } else if (state is CommissioningStep2FailureState) {
                 appSnackBar(context, AppColor.bright_red, state.message);
               }
@@ -1861,7 +1754,7 @@ class _CreateCommissioningReportScreenState
             child: BlocListener<CommissioningStep1Bloc, CommissioningStep1State>(
               bloc: _submitStep1Bloc,
               listener: (context, state) {
-                if (state is CommissioningStep1lSuccessState) {
+                                if (state is CommissioningStep1lSuccessState) {
                   appSnackBar(context, AppColor.green, "step_1_saved_successfully".tr());
                   _commissioningReportId = state.data.data.id;
                   // Call assigned technician API
@@ -1871,14 +1764,8 @@ class _CreateCommissioningReportScreenState
                   _commissioningReportId = state.data.data.id;
                   setState(() {
                     _currentStep++;
-                    if (_currentStep == 2 && _commissioningReportId != null) {
-                      _step2Bloc.add(
-                        CommissioningStep2AutoFillGetEvent(
-                          _commissioningReportId ?? "",
-                        ),
-                      );
-                    }
                   });
+                  _loadStepDataFromDb();
                 } else if (state is CommissioningStep1FailureState) {
                   appSnackBar(context, AppColor.bright_red, state.message);
                 }
@@ -1915,7 +1802,7 @@ class _CreateCommissioningReportScreenState
                 child: BlocListener<ServiceCallReportStep1Bloc, ServiceCallReportStep1State>(
                   bloc: _submitServiceCallStep1Bloc,
                   listener: (context, state) {
-                    if (state is ServiceCallReportStep1SuccessState) {
+                                        if (state is ServiceCallReportStep1SuccessState) {
                       appSnackBar(context, AppColor.green, state.data.message);
                       _commissioningReportId = state.data.data.id;
                       // Call assigned technician API for service reports
@@ -1925,14 +1812,8 @@ class _CreateCommissioningReportScreenState
                       // Move to step 2 for service calls if needed
                       setState(() {
                         _currentStep++;
-                        if (_currentStep == 2 && _commissioningReportId != null) {
-                          _serviceCallStep2AutoFillBloc.add(
-                            ServiceCallReportStep2AutoFillGetEvent(
-                              _commissioningReportId ?? "",
-                            ),
-                          );
-                        }
                       });
+                      _loadStepDataFromDb();
                     } else if (state is ServiceCallReportStep1FailureState) {
                       appSnackBar(context, AppColor.bright_red, state.message);
                     }
@@ -1940,19 +1821,12 @@ class _CreateCommissioningReportScreenState
                   child: BlocListener<CommissioningStep3Bloc, CommissioningStep3State>(
                     bloc: _submitStep3Bloc,
                     listener: (context, state) {
-                      if (state is CommissioningStep3SuccessState) {
+                                            if (state is CommissioningStep3SuccessState) {
                         appSnackBar(context, AppColor.green, state.data.message);
                         setState(() {
                           _currentStep++;
-                          if (_currentStep == 4 &&
-                              _commissioningReportId != null) {
-                            _step4Bloc.add(
-                              CommissioningStep4AutoFillGetEvent(
-                                _commissioningReportId ?? "",
-                              ),
-                            );
-                          }
                         });
+                        _loadStepDataFromDb();
                       } else if (state is CommissioningStep3FailureState) {
                         appSnackBar(context, AppColor.bright_red, state.message);
                       }
@@ -2091,22 +1965,15 @@ class _CreateCommissioningReportScreenState
                                       listener: (context, state) {
                                         if (state
                                             is ServiceCallReportStep4SuccessState) {
-                                          appSnackBar(
+                                                                                    appSnackBar(
                                             context,
                                             AppColor.green,
                                             state.data.message,
                                           );
                                           setState(() {
                                             _currentStep++;
-                                            if (_currentStep == 5 &&
-                                                _commissioningReportId != null) {
-                                              _serviceCallStep5AutoFillBloc.add(
-                                                ServiceCallReportStep5AutoFillGetEvent(
-                                                  _commissioningReportId ?? "",
-                                                ),
-                                              );
-                                            }
                                           });
+                                          _loadStepDataFromDb();
                                         } else if (state
                                             is ServiceCallReportStep4FailureState) {
                                           appSnackBar(
@@ -2125,24 +1992,15 @@ class _CreateCommissioningReportScreenState
                                             listener: (context, state) {
                                               if (state
                                                   is CommissioningStep4SuccessState) {
-                                                appSnackBar(
+                                                                                                appSnackBar(
                                                   context,
                                                   AppColor.green,
                                                   state.data.message,
                                                 );
                                                 setState(() {
                                                   _currentStep++;
-                                                  if (_currentStep == 5 &&
-                                                      _commissioningReportId !=
-                                                          null) {
-                                                    _step5Bloc.add(
-                                                      CommissioningStep5AutoFillGetEvent(
-                                                        _commissioningReportId ??
-                                                            "",
-                                                      ),
-                                                    );
-                                                  }
                                                 });
+                                                _loadStepDataFromDb();
                                               } else if (state
                                                   is CommissioningStep4FailureState) {
                                                 appSnackBar(
@@ -2258,7 +2116,7 @@ class _CreateCommissioningReportScreenState
                                                               bloc:
                                                                   _submitServiceCallStep5Bloc,
                                                               listener: (context, state) {
-                                                                if (state
+                                                                                                                                if (state
                                                                     is ServiceCallReportStep5SuccessState) {
                                                                   appSnackBar(
                                                                     context,
@@ -2279,14 +2137,9 @@ class _CreateCommissioningReportScreenState
                                                                           _commissioningReportId!,
                                                                         ),
                                                                       );
-                                                                      _serviceCallStep6AutoFillBloc.add(
-                                                                        ServiceCallReportStep6AutoFillGetEvent(
-                                                                          _commissioningReportId ??
-                                                                              "",
-                                                                        ),
-                                                                      );
                                                                     }
                                                                   });
+                                                                  _loadStepDataFromDb();
                                                                 } else if (state
                                                                     is ServiceCallReportStep5FailureState) {
                                                                   appSnackBar(
@@ -2309,7 +2162,7 @@ class _CreateCommissioningReportScreenState
                                                                           context,
                                                                           state,
                                                                         ) {
-                                                                          if (state
+                                                                                                                                                    if (state
                                                                               is CommissioningStep5SuccessState) {
                                                                             appSnackBar(
                                                                               context,
@@ -2322,12 +2175,6 @@ class _CreateCommissioningReportScreenState
                                                                                       6 &&
                                                                                   _commissioningReportId !=
                                                                                       null) {
-                                                                                _step6Bloc.add(
-                                                                                  CommissioningStep6AutoFillGetEvent(
-                                                                                    _commissioningReportId ??
-                                                                                        "",
-                                                                                  ),
-                                                                                );
                                                                                 _assignedTechniciansBloc.add(
                                                                                   AssignedTechnicianRepresentativeGetEvent(
                                                                                     _commissioningReportId!,
@@ -2335,6 +2182,7 @@ class _CreateCommissioningReportScreenState
                                                                                 );
                                                                               }
                                                                             });
+                                                                            _loadStepDataFromDb();
                                                                           } else if (state
                                                                               is CommissioningStep5FailureState) {
                                                                             appSnackBar(
