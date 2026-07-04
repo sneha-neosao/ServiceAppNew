@@ -12,6 +12,7 @@ import 'package:service_app/src/features/offline/domain/services/offline_service
 import 'package:service_app/src/core/network/network_checker.dart';
 import 'package:service_app/src/core/theme/app_color.dart';
 import 'package:service_app/src/core/theme/app_font.dart';
+import 'package:service_app/src/core/errors/failures.dart';
 
 class OfflineReportsScreen extends StatefulWidget {
   final bool isOnline;
@@ -95,12 +96,18 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
 
     result.fold(
       (failure) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(failure.message),
-            backgroundColor: AppColor.bright_red,
-          ),
-        );
+        // Detect "already submitted" response from the server and
+        // offer the user a clear path to remove the stale local record.
+        if (_isAlreadySubmittedError(failure)) {
+          _showAlreadySubmittedDialog(reportId, failure.message);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(failure.message),
+              backgroundColor: AppColor.bright_red,
+            ),
+          );
+        }
       },
       (success) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -111,6 +118,160 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
         );
         _loadReports(); // reload to remove it from the list
       },
+    );
+  }
+
+  /// Returns true when the API response indicates the report was already
+  /// submitted on the server and can no longer be modified.
+  bool _isAlreadySubmittedError(Failure failure) {
+    final msg = failure.message.toLowerCase();
+    return msg.contains('already submitted') ||
+        msg.contains('cannot be modified') ||
+        msg.contains('cannot modify') ||
+        msg.contains('report has been already submitted');
+  }
+
+  /// Deletes the local offline report from the appropriate database.
+  Future<void> _deleteLocalReport(String reportId) async {
+    switch (_selectedTab) {
+      case 0:
+        await OfflineCommissioningDb.instance.deleteReport(reportId);
+        break;
+      case 1:
+        await OfflineServiceReportsDb.instance.deleteReport(reportId);
+        break;
+      case 2:
+        await OfflineAmcReportsDb.instance.deleteReport(reportId);
+        break;
+      case 3:
+        await OfflineServiceWorkReportsDb.instance.deleteReport(reportId);
+        break;
+    }
+  }
+
+  /// Shows a professional alert dialog informing the user that the report was
+  /// already submitted on the server. Tapping OK removes the stale local record.
+  void _showAlreadySubmittedDialog(String reportId, String apiMessage) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        insetPadding:
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // ── Icon ──────────────────────────────────────────────
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFFF3E0),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.info_outline_rounded,
+                      color: Color(0xFFFF9800),
+                      size: 32,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // ── Title ────────────────────────────────────────────
+                  Text(
+                    'Report Already Submitted',
+                    style: AppFont.style(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0D121F),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // ── API message ──────────────────────────────────────
+                  Text(
+                    apiMessage,
+                    textAlign: TextAlign.center,
+                    style: AppFont.style(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF5C616E),
+                      height: 1.4,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // ── Informational note ───────────────────────────────
+                  Text(
+                    'This offline record is no longer required and will be permanently removed from your device upon confirmation.',
+                    textAlign: TextAlign.center,
+                    style: AppFont.style(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xFF9CA3AF),
+                      height: 1.5,
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // ── OK button ────────────────────────────────────────
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        Navigator.of(ctx).pop();
+                        await _deleteLocalReport(reportId);
+                        if (mounted) _loadReports();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1565C0),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        'OK',
+                        style: AppFont.style(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // ── Close icon ──────────────────────────────────────────────
+            Positioned(
+              top: 12,
+              right: 12,
+              child: GestureDetector(
+                onTap: () => Navigator.of(ctx).pop(),
+                child: const Icon(
+                  Icons.close,
+                  size: 20,
+                  color: Color(0xFFB0B8C8),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
