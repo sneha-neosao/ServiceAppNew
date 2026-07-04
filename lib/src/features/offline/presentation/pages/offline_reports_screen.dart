@@ -414,9 +414,9 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
 
             // ── Segmented Tab Control ──────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+              padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
               child: Container(
-                height: 48,
+                height: 52,
                 decoration: BoxDecoration(
                   color: const Color(0xFFF1F2F6),
                   borderRadius: BorderRadius.circular(12),
@@ -435,8 +435,8 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                         widthFactor: 1.0 / 4, // 4 tabs
                         child: Container(
                           margin: const EdgeInsets.symmetric(
-                            horizontal: 2,
-                            vertical: 4,
+                            horizontal: 0,
+                            vertical: 3,
                           ),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -464,7 +464,7 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
 
             // ── Body ───────────────────────────────────────────────────────
             Expanded(
@@ -567,10 +567,11 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
       },
       child: Container(
         color: Colors.transparent,
-        margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+        margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 2),
         child: Center(
           child: Text(
             label,
+            textAlign: TextAlign.center,
             style: AppFont.style(
               fontSize: 10,
               fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,

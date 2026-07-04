@@ -521,5 +521,10 @@
   "view_all_visits": "All Visits",
   "amc_duration": "AMC Duration",
   "completed_visits": "Completed Visits",
-  "complaint_date_and_time": "Complaint Date & Time"
+  "complaint_date_and_time": "Complaint Date & Time",
+  "step_1_saved_successfully": "Step 1 saved successfully",
+  "step_2_saved_successfully": "Step 2 saved successfully",
+  "step_3_saved_successfully": "Step 3 saved successfully",
+  "step_4_saved_successfully": "Step 4 saved successfully",
+  "step_5_saved_successfully": "Step 5 saved successfully"
 }

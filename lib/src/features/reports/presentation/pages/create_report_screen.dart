@@ -753,7 +753,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         setState(() {
           _currentStep++;
         });
-        appSnackBar(context, AppColor.green, "Step 2 saved successfully");
+        appSnackBar(context, AppColor.green, "step_2_saved_successfully".tr());
       }
     } else if (_currentStep == 3) {
       if (_reportId == null) return;
@@ -957,7 +957,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         setState(() {
           _currentStep++;
         });
-        appSnackBar(context, AppColor.green, "Step 3 saved successfully");
+        appSnackBar(context, AppColor.green, "step_3_saved_successfully".tr());
       }
     } else if (_currentStep == 4) {
       if (_reportId == null) {

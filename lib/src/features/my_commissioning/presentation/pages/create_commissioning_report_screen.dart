@@ -915,7 +915,7 @@ class _CreateCommissioningReportScreenState
         appSnackBar(
           context,
           AppColor.green,
-          "Step 2 saved successfully",
+          "step_2_saved_successfully".tr(),
         );
         if (_highestSubmittedStep < 2) {
           _highestSubmittedStep = 2;
@@ -992,7 +992,7 @@ class _CreateCommissioningReportScreenState
         appSnackBar(
           context,
           AppColor.green,
-          "Step 3 saved successfully",
+          "step_3_saved_successfully".tr(),
         );
         if (_highestSubmittedStep < 3) {
           _highestSubmittedStep = 3;
@@ -1063,7 +1063,7 @@ class _CreateCommissioningReportScreenState
         appSnackBar(
           context,
           AppColor.green,
-          "Step 4 saved successfully",
+          "step_4_saved_successfully".tr(),
         );
         if (_highestSubmittedStep < 4) {
           _highestSubmittedStep = 4;
@@ -1408,7 +1408,7 @@ class _CreateCommissioningReportScreenState
         appSnackBar(
           context,
           AppColor.green,
-          "Step 5 saved successfully",
+          "step_5_saved_successfully".tr(),
         );
         if (_highestSubmittedStep < 5) {
           _highestSubmittedStep = 5;
@@ -1862,7 +1862,7 @@ class _CreateCommissioningReportScreenState
               bloc: _submitStep1Bloc,
               listener: (context, state) {
                 if (state is CommissioningStep1lSuccessState) {
-                  appSnackBar(context, AppColor.green, "Step 1 saved successfully");
+                  appSnackBar(context, AppColor.green, "step_1_saved_successfully".tr());
                   _commissioningReportId = state.data.data.id;
                   // Call assigned technician API
                   _assignedTechniciansBloc.add(

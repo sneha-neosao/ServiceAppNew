@@ -2694,13 +2694,13 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                           _isLoading = false;
                           _currentStep++;
                         });
-                        appSnackBar(context, AppColor.green, "Step 2 saved successfully");
+                        appSnackBar(context, AppColor.green, "step_2_saved_successfully".tr());
                       } else {
                         setState(() {
                           _isLoading = false;
                           _currentStep++;
                         });
-                        appSnackBar(context, AppColor.green, "Step 2 saved successfully");
+                        appSnackBar(context, AppColor.green, "step_2_saved_successfully".tr());
                       }
                     } else if (_currentStep < 3) {
                       setState(() => _currentStep++);
