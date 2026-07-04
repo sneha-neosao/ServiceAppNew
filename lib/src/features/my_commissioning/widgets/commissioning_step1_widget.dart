@@ -245,12 +245,12 @@ class Step1Widget extends StatelessWidget {
         // ── Customer & Project Details ───────────────────────────────────
         parent._buildInfoRow(
           'commissioning_customer_name_label'.tr(),
-          data?.customerName ?? 'commissioning_customer_name_fallback'.tr(),
+          data?.customerName ?? parent.widget.customerName ?? 'commissioning_customer_name_fallback'.tr(),
         ),
         const SizedBox(height: 24),
         parent._buildInfoRow(
           'commissioning_project_site_name_label'.tr(),
-          data?.siteName ?? 'commissioning_project_site_name_fallback'.tr(),
+          data?.siteName ?? parent.widget.siteName ?? 'commissioning_project_site_name_fallback'.tr(),
         ),
         const SizedBox(height: 24),
         if (parent.widget.isServiceReport)

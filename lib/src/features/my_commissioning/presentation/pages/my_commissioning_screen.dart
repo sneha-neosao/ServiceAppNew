@@ -221,6 +221,8 @@ class MyCommissioningScreenState extends State<MyCommissioningScreen> {
                                       // initialStepNo: item.stepNo, // commented out per request
                                       reportId: item.reportId,
                                       defaultTechnicians: item.assignedTechnicians.map((t) => {'id': t.id, 'name': t.name}).toList(),
+                                      customerName: item.customer.name,
+                                      siteName: item.site.name,
                                       onBack: () => Navigator.pop(context),
                                     ),
                               ),

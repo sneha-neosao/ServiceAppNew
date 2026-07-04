@@ -520,6 +520,11 @@ class _ServiceCallsScreenState extends State<ServiceCallsScreen> {
                         complaintNo: item.complaintNumber,
                         // initialStepNo: item.step_no ?? 0, // commented out per request
                         reportId: item.reportId,
+                        defaultTechnicians: item.assignedTechnicians
+                            .map((t) => {'id': t.id, 'name': t.name})
+                            .toList(),
+                        customerName: item.customerName,
+                        siteName: item.siteName,
                       ),
                     ),
                   );

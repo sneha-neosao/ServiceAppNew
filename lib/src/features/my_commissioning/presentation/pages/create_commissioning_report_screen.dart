@@ -131,6 +131,8 @@ class CreateCommissioningReportScreen extends StatefulWidget {
   final int initialStepNo;
   final String? reportId;
   final List<Map<String, dynamic>>? defaultTechnicians;
+  final String? customerName;
+  final String? siteName;
   const CreateCommissioningReportScreen({
     super.key,
     required this.onBack,
@@ -140,6 +142,8 @@ class CreateCommissioningReportScreen extends StatefulWidget {
     this.initialStepNo = 0,
     this.reportId,
     this.defaultTechnicians,
+    this.customerName,
+    this.siteName,
   });
   @override
   State<CreateCommissioningReportScreen> createState() =>

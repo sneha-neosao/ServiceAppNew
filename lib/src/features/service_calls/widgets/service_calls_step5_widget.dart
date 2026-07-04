@@ -103,6 +103,11 @@ class ServiceCallsStep5Widget extends StatelessWidget {
                         complaintNo: item.complaintNumber,
                         initialStepNo: item.step_no ?? 0,
                         reportId: item.reportId,
+                        defaultTechnicians: item.assignedTechnicians
+                            .map((t) => {'id': t.id, 'name': t.name})
+                            .toList(),
+                        customerName: item.customerName,
+                        siteName: item.siteName,
                       ),
                     ),
                   ).then((_) {
