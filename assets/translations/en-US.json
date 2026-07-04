@@ -529,5 +529,19 @@
   "step_5_saved_successfully": "Step 5 saved successfully",
   "offline_mode": "Offline Mode",
   "offline_mode_subtitle": "This form will be saved locally on your device. Once an internet connection is available, you will need to manually sync it to upload the data to the server. Would you like to continue?",
-  "reort_saved_offline": "Report saved offline completely!"
+  "reort_saved_offline": "Report saved offline completely!",
+  "offline_reports": "Offline Reports",
+  "service_work": "Service/Work",
+  "no_commissioning_reports": "No Offline Commissioning Reports",
+  "commissioning_report_subtitle": "Commissioning reports saved while offline will appear here.",
+  "no_service_call_reports": "No Offline Service Call Reports",
+  "service_calls_report_subtitle": "Service call reports saved while offline will appear here.",
+  "no_amc_reports": "No Offline AMC Reports",
+  "amc_report_subtitle": "AMC reports saved while offline will appear here.",
+  "no_service_work_reports": "No Offline Service/Work Reports",
+  "service_work_report_subtitle": "Service/Work reports saved while offline will appear here.",
+  "work_id": "Work ID:",
+  "steps_completed": "Steps completed",
+  "incomplete": "Incomplete",
+  "sync_report": "Sync Report"
 }

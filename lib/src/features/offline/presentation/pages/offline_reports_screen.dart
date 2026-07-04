@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:service_app/src/configs/injector/injector_conf.dart';
 import 'package:service_app/src/core/database/offline_commissioning_db.dart';
@@ -329,7 +330,7 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Offline Reports',
+                          'offline_reports'.tr(),
                           style: AppFont.style(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
@@ -338,75 +339,75 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                         ),
                       ),
                       // Online/Offline badge
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 400),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: widget.isOnline
-                              ? const Color(0xFF22C55E)
-                              : const Color(0xFFEF4444),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color:
-                                  (widget.isOnline
-                                          ? const Color(0xFF22C55E)
-                                          : const Color(0xFFEF4444))
-                                      .withValues(alpha: 0.35),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 7,
-                              height: 7,
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              widget.isOnline ? 'Online' : 'Offline',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // AnimatedContainer(
+                      //   duration: const Duration(milliseconds: 400),
+                      //   padding: const EdgeInsets.symmetric(
+                      //     horizontal: 10,
+                      //     vertical: 6,
+                      //   ),
+                      //   decoration: BoxDecoration(
+                      //     color: widget.isOnline
+                      //         ? const Color(0xFF22C55E)
+                      //         : const Color(0xFFEF4444),
+                      //     borderRadius: BorderRadius.circular(20),
+                      //     boxShadow: [
+                      //       BoxShadow(
+                      //         color:
+                      //             (widget.isOnline
+                      //                     ? const Color(0xFF22C55E)
+                      //                     : const Color(0xFFEF4444))
+                      //                 .withValues(alpha: 0.35),
+                      //         blurRadius: 6,
+                      //         offset: const Offset(0, 2),
+                      //       ),
+                      //     ],
+                      //   ),
+                      //   child: Row(
+                      //     mainAxisSize: MainAxisSize.min,
+                      //     children: [
+                      //       Container(
+                      //         width: 7,
+                      //         height: 7,
+                      //         decoration: const BoxDecoration(
+                      //           color: Colors.white,
+                      //           shape: BoxShape.circle,
+                      //         ),
+                      //       ),
+                      //       const SizedBox(width: 5),
+                      //       Text(
+                      //         widget.isOnline ? 'Online' : 'Offline',
+                      //         style: const TextStyle(
+                      //           color: Colors.white,
+                      //           fontSize: 11,
+                      //           fontWeight: FontWeight.w700,
+                      //           letterSpacing: 0.3,
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  // Subtitle info row
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.cloud_off_rounded,
-                        size: 14,
-                        color: Colors.grey[500],
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Reports saved locally while offline',
-                        style: AppFont.style(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.grey[600]!,
-                        ),
-                      ),
-                    ],
-                  ),
+                  // const SizedBox(height: 12),
+                  // // Subtitle info row
+                  // Row(
+                  //   children: [
+                  //     Icon(
+                  //       Icons.cloud_off_rounded,
+                  //       size: 14,
+                  //       color: Colors.grey[500],
+                  //     ),
+                  //     const SizedBox(width: 6),
+                  //     Text(
+                  //       'Reports saved locally while offline',
+                  //       style: AppFont.style(
+                  //         fontSize: 12,
+                  //         fontWeight: FontWeight.w400,
+                  //         color: Colors.grey[600]!,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),
@@ -454,10 +455,10 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                     ),
                     Row(
                       children: [
-                        Expanded(child: _buildSegmentTab(0, 'Commissioning')),
-                        Expanded(child: _buildSegmentTab(1, 'Service Call')),
-                        Expanded(child: _buildSegmentTab(2, 'AMC')),
-                        Expanded(child: _buildSegmentTab(3, 'Service/Work')),
+                        Expanded(child: _buildSegmentTab(0, 'home_nav_commissioning'.tr())),
+                        Expanded(child: _buildSegmentTab(1, 'home_nav_service_calls'.tr())),
+                        Expanded(child: _buildSegmentTab(2, 'reports_tab_amc'.tr())),
+                        Expanded(child: _buildSegmentTab(3, 'service_work'.tr())),
                       ],
                     ),
                   ],
@@ -477,9 +478,9 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                   : (_selectedTab == 0
                       ? (_reports.isEmpty
                           ? _buildEmpty(
-                              title: 'No Offline Commissioning Reports',
+                              title: 'no_commissioning_reports'.tr(),
                               subtitle:
-                                  'Commissioning reports saved while offline will appear here.',
+                                  'commissioning_report_subtitle'.tr(),
                             )
                           : RefreshIndicator(
                               onRefresh: _loadReports,
@@ -496,9 +497,9 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                       : _selectedTab == 1
                           ? (_reports.isEmpty
                               ? _buildEmpty(
-                                  title: 'No Offline Service Call Reports',
+                                  title: 'no_service_call_reports'.tr(),
                                   subtitle:
-                                      'Service call reports saved while offline will appear here.',
+                                      'service_calls_report_subtitle'.tr(),
                                 )
                               : RefreshIndicator(
                                   onRefresh: _loadReports,
@@ -515,9 +516,9 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                           : _selectedTab == 2
                               ? (_reports.isEmpty
                                   ? _buildEmpty(
-                                      title: 'No Offline AMC Reports',
+                                      title: 'no_amc_reports'.tr(),
                                       subtitle:
-                                          'AMC reports saved while offline will appear here.',
+                                          'amc_report_subtitle'.tr(),
                                     )
                                   : RefreshIndicator(
                                       onRefresh: _loadReports,
@@ -533,9 +534,9 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                                     ))
                               : (_reports.isEmpty
                                   ? _buildEmpty(
-                                      title: 'No Offline Service/Work Reports',
+                                      title: 'no_service_work_reports'.tr(),
                                       subtitle:
-                                          'Service/Work reports saved while offline will appear here.',
+                                          'service_work_report_subtitle'.tr(),
                                     )
                                   : RefreshIndicator(
                                       onRefresh: _loadReports,
@@ -702,7 +703,7 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Work ID: ${_shortId(commissioningWorkId)}',
+                        '${"work_id".tr()} ${_shortId(commissioningWorkId)}',
                         style: AppFont.style(
                           fontSize: 11,
                           fontWeight: FontWeight.w400,
@@ -713,28 +714,28 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                   ),
                 ),
                 // Sync / Pending badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: synced
-                        ? const Color(0xFFDCFCE7)
-                        : const Color(0xFFFFF7ED),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    synced ? 'Synced' : 'Pending',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: synced
-                          ? const Color(0xFF16A34A)
-                          : const Color(0xFFEA580C),
-                    ),
-                  ),
-                ),
+                // Container(
+                //   padding: const EdgeInsets.symmetric(
+                //     horizontal: 8,
+                //     vertical: 4,
+                //   ),
+                //   decoration: BoxDecoration(
+                //     color: synced
+                //         ? const Color(0xFFDCFCE7)
+                //         : const Color(0xFFFFF7ED),
+                //     borderRadius: BorderRadius.circular(8),
+                //   ),
+                //   child: Text(
+                //     synced ? 'Synced' : 'Pending',
+                //     style: TextStyle(
+                //       fontSize: 10,
+                //       fontWeight: FontWeight.w700,
+                //       color: synced
+                //           ? const Color(0xFF16A34A)
+                //           : const Color(0xFFEA580C),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -749,7 +750,7 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Steps completed',
+                      'steps_completed'.tr(),
                       style: AppFont.style(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
@@ -820,8 +821,8 @@ class _OfflineReportsScreenState extends State<OfflineReportsScreen> {
                             synced
                                 ? 'Synced'
                                 : (stepsCompleted < totalSteps
-                                      ? 'Incomplete'
-                                      : 'Sync Report'),
+                                      ? 'incomplete'.tr()
+                                      : 'sync_report'.tr()),
                             style: AppFont.style(
                               fontSize: 10,
                               fontWeight: FontWeight.w900,
