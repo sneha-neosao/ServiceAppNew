@@ -107,6 +107,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   bool _isAutoCalculatingFlow = false;
   bool _isAutoCalculatingRating = false;
+  bool _isSavingOffline = false;
 
   void _setupAutoCalculateListeners() {
     _pumpFlowLpmCtrl.addListener(() => _calculateFlow('lpm'.tr()));
@@ -210,13 +211,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   }
 
   late ServiceWorkReportStep1Bloc _serviceWorkReportStep1Bloc;
-  late ServiceWorkReportStep1AutofillBloc _serviceWorkReportStep1AutofillBloc;
   late ServiceWorkReportStep2Bloc _serviceWorkReportStep2Bloc;
-  late ServiceWorkReportStep2AutofillBloc _serviceWorkReportStep2AutofillBloc;
   late ServiceWorkReportStep3Bloc _serviceWorkReportStep3Bloc;
-  late ServiceWorkReportStep3AutofillBloc _serviceWorkReportStep3AutofillBloc;
   late ServiceWorkReportStep4Bloc _serviceWorkReportStep4Bloc;
-  late ServiceWorkReportStep4AutofillBloc _serviceWorkReportStep4AutofillBloc;
   late ServiceWorkReportTechniciansBloc _serviceWorkReportTechniciansBloc;
   late DeleteServiceWorkReportBloc _deleteServiceWorkReportBloc;
 
@@ -253,7 +250,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchLoggedInTechnician();
     if (widget.complaintId != null) {
       _complaintId = widget.complaintId;
     }
@@ -264,30 +260,29 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     _createNewCustomerBloc = getIt<CreateNewCustomerBloc>();
     _createNewSiteBloc = getIt<CreateNewSiteBloc>();
     _serviceWorkReportStep1Bloc = getIt<ServiceWorkReportStep1Bloc>();
-    _serviceWorkReportStep1AutofillBloc =
-        getIt<ServiceWorkReportStep1AutofillBloc>();
     _serviceWorkReportStep2Bloc = getIt<ServiceWorkReportStep2Bloc>();
-    _serviceWorkReportStep2AutofillBloc =
-        getIt<ServiceWorkReportStep2AutofillBloc>();
     _serviceWorkReportStep3Bloc = getIt<ServiceWorkReportStep3Bloc>();
-    _serviceWorkReportStep3AutofillBloc =
-        getIt<ServiceWorkReportStep3AutofillBloc>();
     _serviceWorkReportStep4Bloc = getIt<ServiceWorkReportStep4Bloc>();
-    _serviceWorkReportStep4AutofillBloc =
-        getIt<ServiceWorkReportStep4AutofillBloc>();
     _serviceWorkReportTechniciansBloc =
         getIt<ServiceWorkReportTechniciansBloc>();
     _deleteServiceWorkReportBloc = getIt<DeleteServiceWorkReportBloc>();
 
-    _initOfflineDraft().then((_) {
-      if (_currentStep == 1 && _complaintId != null) {
-        if (_selectedCustomerId == null) {
-          _serviceWorkReportStep1AutofillBloc.add(
-            GetServiceWorkReportStep1AutofillEvent(_complaintId!),
-          );
+    _initData();
+  }
+
+  Future<void> _initData() async {
+    await _fetchLoggedInTechnician();
+    await _initOfflineDraft();
+    if (mounted) {
+      setState(() {
+        if (_technicians.isNotEmpty && (_technicians[0].text.isEmpty || _technicianIds[0] == null)) {
+          if (_loggedInTechnicianName.isNotEmpty) {
+            _technicians[0].text = _loggedInTechnicianName;
+            _technicianIds[0] = _loggedInTechnicianId;
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   Future<void> _initOfflineDraft() async {
@@ -471,6 +466,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             print("Error parsing step4 offline draft: $e");
           }
         }
+        if (_technicians.isNotEmpty && (_technicians[0].text.isEmpty || _technicianIds[0] == null)) {
+          if (_loggedInTechnicianName.isNotEmpty) {
+            _technicians[0].text = _loggedInTechnicianName;
+            _technicianIds[0] = _loggedInTechnicianId;
+          }
+        }
       });
     }
   }
@@ -530,9 +531,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   void dispose() {
     _serviceWorkReportStep1Bloc.close();
     _serviceWorkReportStep2Bloc.close();
-    _serviceWorkReportStep2AutofillBloc.close();
     _serviceWorkReportStep3Bloc.close();
-    _serviceWorkReportStep3AutofillBloc.close();
     _serviceWorkReportStep4Bloc.close();
     _serviceWorkReportTechniciansBloc.close();
     _deleteServiceWorkReportBloc.close();
@@ -628,15 +627,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   void _nextStep() async {
     if (_currentStep == 1) {
       List<Map<String, String>> techs = [];
-      var techState = _technicianBloc.state;
-      if (techState is TechnicianSuccessState) {
-        for (int i = 0; i < _technicians.length; i++) {
-          var ctrl = _technicians[i];
-          if (ctrl.text.isNotEmpty) {
-            String name = ctrl.text;
-            String id = _technicianIds[i] ?? "";
+      for (int i = 0; i < _technicians.length; i++) {
+        var ctrl = _technicians[i];
+        if (ctrl.text.isNotEmpty) {
+          String name = ctrl.text;
+          String id = _technicianIds[i] ?? "";
 
-            if (id.isEmpty) {
+          if (id.isEmpty) {
+            final techState = _technicianBloc.state;
+            if (techState is TechnicianSuccessState) {
               try {
                 final match = techState.data.data.firstWhere(
                   (e) => e.name == name,
@@ -644,8 +643,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 id = match.id;
               } catch (_) {}
             }
-            techs.add({"id": id, "name": name});
           }
+          techs.add({"id": id, "name": name});
         }
       }
 
@@ -742,12 +741,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       }
       bool isOnline = await NetworkInfo().checkIsConnected;
       isOnline = false; // Always store locally for service work report steps 2-3
-      await OfflineServiceWorkReportsDb.instance.saveStep(
-        _reportId!,
-        _complaintId!,
-        2,
-        step2Data,
-      );
+      try {
+        setState(() => _isSavingOffline = true);
+        await OfflineServiceWorkReportsDb.instance.saveStep(
+          _reportId!,
+          _complaintId!,
+          2,
+          step2Data,
+        );
+      } finally {
+        if (mounted) {
+          setState(() => _isSavingOffline = false);
+        }
+      }
 
       if (!isOnline) {
         setState(() {
@@ -946,12 +952,19 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       }
       bool isOnline = await NetworkInfo().checkIsConnected;
       isOnline = false; // Always store locally for service work report steps 2-3
-      await OfflineServiceWorkReportsDb.instance.saveStep(
-        _reportId!,
-        _complaintId!,
-        3,
-        step3Data,
-      );
+      try {
+        setState(() => _isSavingOffline = true);
+        await OfflineServiceWorkReportsDb.instance.saveStep(
+          _reportId!,
+          _complaintId!,
+          3,
+          step3Data,
+        );
+      } finally {
+        if (mounted) {
+          setState(() => _isSavingOffline = false);
+        }
+      }
 
       if (!isOnline) {
         setState(() {
@@ -1027,13 +1040,20 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       }
 
       final isOnline = await NetworkInfo().checkIsConnected;
-      await OfflineServiceWorkReportsDb.instance.saveStep(
-        _reportId!,
-        _complaintId!,
-        4,
-        step4Data,
-        reportState: 'offline',
-      );
+      try {
+        setState(() => _isSavingOffline = true);
+        await OfflineServiceWorkReportsDb.instance.saveStep(
+          _reportId!,
+          _complaintId!,
+          4,
+          step4Data,
+          reportState: 'offline',
+        );
+      } finally {
+        if (mounted) {
+          setState(() => _isSavingOffline = false);
+        }
+      }
       if (!isOnline) {
         showDialog<bool>(
           context: context,
@@ -1096,21 +1116,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       setState(() {
         _currentStep--;
       });
-      if (_currentStep == 1 && _complaintId != null) {
-        _serviceWorkReportStep1AutofillBloc.add(
-          GetServiceWorkReportStep1AutofillEvent(_complaintId!),
-        );
-      }
-      if (_currentStep == 2 && _reportId != null) {
-        _serviceWorkReportStep2AutofillBloc.add(
-          GetServiceWorkReportStep2AutofillEvent(_reportId!),
-        );
-      }
-      if (_currentStep == 3 && _reportId != null) {
-        _serviceWorkReportStep3AutofillBloc.add(
-          GetServiceWorkReportStep3AutofillEvent(_reportId!),
-        );
-      }
+      _initOfflineDraft();
     } else {
       _handleBack();
     }
@@ -1482,10 +1488,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               _serviceWorkReportTechniciansBloc.add(
                 FetchServiceWorkReportTechniciansEvent(newReportId),
               );
-              // Trigger step2 autofill
-              _serviceWorkReportStep2AutofillBloc.add(
-                GetServiceWorkReportStep2AutofillEvent(newReportId),
-              );
+
             } else if (state is ServiceWorkReportStep1Failure) {
               appSnackBar(context, AppColor.bright_red, state.message);
             }
@@ -1498,43 +1501,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               setState(() {
                 _currentStep++;
               });
-              if (_reportId != null) {
-                _serviceWorkReportStep3AutofillBloc.add(
-                  GetServiceWorkReportStep3AutofillEvent(_reportId!),
-                );
-              }
+
             } else if (state is ServiceWorkReportStep2Failure) {
               appSnackBar(context, AppColor.bright_red, state.error);
             }
           },
         ),
-        BlocListener<
-          ServiceWorkReportStep2AutofillBloc,
-          ServiceWorkReportStep2AutofillState
-        >(
-          bloc: _serviceWorkReportStep2AutofillBloc,
-          listener: (context, state) {
-            if (state is ServiceWorkReportStep2AutofillSuccess) {
-              final data = state.data.data;
-              setState(() {
-                _isTechnicalNA = data.isTechnicalNa;
-                // Pre-fill work descriptions
-                _workDescControllers.clear();
-                for (var desc in data.savedDescriptions) {
-                  _workDescControllers.add(
-                    TextEditingController(text: desc.description),
-                  );
-                }
-                // Always show at least 3 rows
-                while (_workDescControllers.length < 3) {
-                  _workDescControllers.add(TextEditingController());
-                }
-              });
-            } else if (state is ServiceWorkReportStep2AutofillFailure) {
-              // Silent fail - just keep existing data
-            }
-          },
-        ),
+
         BlocListener<ServiceWorkReportStep3Bloc, ServiceWorkReportStep3State>(
           bloc: _serviceWorkReportStep3Bloc,
           listener: (context, state) {
@@ -1546,9 +1519,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 _serviceWorkReportTechniciansBloc.add(
                   FetchServiceWorkReportTechniciansEvent(_reportId!),
                 );
-                _serviceWorkReportStep4AutofillBloc.add(
-                  GetServiceWorkReportStep4AutofillEvent(_reportId!),
-                );
+
               }
             } else if (state is ServiceWorkReportStep3Failure) {
               appSnackBar(context, AppColor.bright_red, state.error);
@@ -1572,99 +1543,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             }
           },
         ),
-        BlocListener<
-          ServiceWorkReportStep3AutofillBloc,
-          ServiceWorkReportStep3AutofillState
-        >(
-          bloc: _serviceWorkReportStep3AutofillBloc,
-          listener: (context, state) {
-            if (state is ServiceWorkReportStep3AutofillSuccess) {
-              final data = state.data.data;
-              setState(() {
-                _mechNA = data.isMechanicalChecklistNa;
-                _pipeNA = data.isPipelineChecklistNa;
-                _elecNA = data.isElectricalChecklistNa;
 
-                if (_reportId != null) {
-                  _serviceWorkReportTechniciansBloc.add(
-                    FetchServiceWorkReportTechniciansEvent(_reportId!),
-                  );
-                }
 
-                for (var item in data.savedChecklists) {
-                  if (item.checkType == "mechanical") {
-                    if (item.keyChecklist ==
-                        "Bearing Noise / Abnormal Sound Checked")
-                      _bearingNoise = item.valueChecklist;
-                    if (item.keyChecklist == "Vibration Checked")
-                      _vibration = item.valueChecklist;
-                    if (item.keyChecklist ==
-                        "Mechanical Seal / Gland Leakage Checked")
-                      _mechSeal = item.valueChecklist;
-                    if (item.keyChecklist == "Pump Not Running Dry")
-                      _pumpDry = item.valueChecklist;
-                  } else if (item.checkType == "pipeline") {
-                    if (item.keyChecklist ==
-                        "NRV / Butterfly Valve / Gate Valve Condition Checked")
-                      _nrvValve = item.valueChecklist;
-                    if (item.keyChecklist ==
-                        "Strainer / Foot Valve Condition Checked")
-                      _strainerValve = item.valueChecklist;
-                    if (item.keyChecklist ==
-                        "Suction Line (Air Leakage & Water Leakage Checked)")
-                      _suctionLine = item.valueChecklist;
-                    if (item.keyChecklist ==
-                        "Delivery Line (Air Leakage & Water Leakage Checked)")
-                      _deliveryLine = item.valueChecklist;
-                    if (item.keyChecklist ==
-                        "Suction / Delivery Valve Condition Checked")
-                      _suctionDelivery = item.valueChecklist;
-                    if (item.keyChecklist ==
-                        "Pressure Switch / Pressure Transmitter Checked")
-                      _pressureSwitch = item.valueChecklist;
-                  } else if (item.checkType == "electrical") {
-                    if (item.keyChecklist == "Electrical Faults Checked")
-                      _elecFaults = item.valueChecklist;
-                    if (item.keyChecklist == "Voltage Checked")
-                      _voltage = item.valueChecklist;
-                    if (item.keyChecklist == "Phase Checked")
-                      _phase = item.valueChecklist;
-                    if (item.keyChecklist == "Current Checked")
-                      _current = item.valueChecklist;
-                    if (item.keyChecklist == "Control Panel Wiring Checked")
-                      _panelWiring = item.valueChecklist;
-                  }
-                }
-              });
-            }
-          },
-        ),
-        BlocListener<
-          ServiceWorkReportStep4AutofillBloc,
-          ServiceWorkReportStep4AutofillState
-        >(
-          bloc: _serviceWorkReportStep4AutofillBloc,
-          listener: (context, state) {
-            if (state is ServiceWorkReportStep4AutofillSuccess) {
-              final data = state.data.data;
-              setState(() {
-                _remarksTechCtrl.text = data.technicianRemarks;
-                _remarksCustomerCtrl.text = data.customerRemarks;
-                _customerRepNameCtrl.text = data.customerRepresentativeName;
-
-                if (data.technicianSignature.isNotEmpty) {
-                  _existingTechnicianSignatureUrl = data.technicianSignature;
-                }
-                if (data.customerSignature.isNotEmpty) {
-                  _existingCustomerSignatureUrl = data.customerSignature;
-                }
-                if (data.savedWorkPhotos.isNotEmpty) {
-                  _existingWorkPhotosUrls = data.savedWorkPhotos;
-                }
-              });
-            }
-          },
-        ),
         BlocListener<
           ServiceWorkReportTechniciansBloc,
           ServiceWorkReportTechniciansState
@@ -1679,7 +1559,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 _loggedInTechnicianAssignId = match.assignId;
                 if (_reportId != null) {
                   await OfflineServiceWorkReportsDb.instance.updateAssignId(
-                    _complaintId ?? _reportId!,
                     _reportId!,
                     match.assignId,
                   );
@@ -1961,6 +1840,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                           const Spacer(),
                                           GestureDetector(
                                             onTap: () {
+                                              if (_isSavingOffline) return;
                                               if (state
                                                   is ServiceWorkReportStep1Loading)
                                                 return;
@@ -2226,44 +2106,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       case 1:
         return _buildStep1();
       case 2:
-        return BlocBuilder<
-          ServiceWorkReportStep2AutofillBloc,
-          ServiceWorkReportStep2AutofillState
-        >(
-          bloc: _serviceWorkReportStep2AutofillBloc,
-          builder: (context, autofillState) {
-            if (autofillState is ServiceWorkReportStep2AutofillLoading) {
-              return const StepShimmer(step: 1);
-            }
-            return _buildStep2();
-          },
-        );
+        return _buildStep2();
       case 3:
-        return BlocBuilder<
-          ServiceWorkReportStep3AutofillBloc,
-          ServiceWorkReportStep3AutofillState
-        >(
-          bloc: _serviceWorkReportStep3AutofillBloc,
-          builder: (context, autofillState) {
-            if (autofillState is ServiceWorkReportStep3AutofillLoading) {
-              return const StepShimmer(step: 1);
-            }
-            return _buildStep3();
-          },
-        );
+        return _buildStep3();
       case 4:
-        return BlocBuilder<
-          ServiceWorkReportStep4AutofillBloc,
-          ServiceWorkReportStep4AutofillState
-        >(
-          bloc: _serviceWorkReportStep4AutofillBloc,
-          builder: (context, autofillState) {
-            if (autofillState is ServiceWorkReportStep4AutofillLoading) {
-              return const StepShimmer(step: 1);
-            }
-            return _buildStep4();
-          },
-        );
+        return _buildStep4();
       default:
         return Center(
           child: Padding(
@@ -2720,116 +2567,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   }
 
   Widget _buildStep1() {
-    return BlocConsumer<
-      ServiceWorkReportStep1AutofillBloc,
-      ServiceWorkReportStep1AutofillState
-    >(
-      bloc: _serviceWorkReportStep1AutofillBloc,
-      listener: (context, state) {
-        if (state is ServiceWorkReportStep1AutofillSuccess) {
-          final data = state.data.data;
-          setState(() {
-            _selectedCustomerId = data.customerId;
-            _selectedCustomer = data.customerName.isNotEmpty
-                ? data.customerName
-                : 'service_calls_filter_select_customer'.tr();
-            _selectedSiteId = data.siteId;
-            _selectedSite = data.siteName.isNotEmpty
-                ? data.siteName
-                : 'service_calls_filter_select_site'.tr();
 
-            if (data.memberPresentsCustomerSide.isNotEmpty) {
-              final members = data.memberPresentsCustomerSide.split(',');
-              _memberControllers.clear();
-              for (var member in members) {
-                if (member.trim().isNotEmpty) {
-                  _memberControllers.add(
-                    TextEditingController(text: member.trim()),
-                  );
-                }
-              }
-            }
-            if (_memberControllers.isEmpty) {
-              _memberControllers.add(TextEditingController());
-            }
-
-            if (data.agenda.isNotEmpty) {
-              _agendaController.text = data.agenda;
-            }
-
-            if (data.assignedTechnicians.isNotEmpty) {
-              _technicians.clear();
-              _technicianIds.clear();
-              for (var tech in data.assignedTechnicians) {
-                _technicians.add(TextEditingController(text: tech.name));
-                _technicianIds.add(tech.id);
-              }
-            }
-            if (_technicians.isEmpty) {
-              _technicians.add(TextEditingController());
-              _technicianIds.add(null);
-            }
-          });
-
-          if ((_selectedCustomerId == null || _selectedCustomerId!.isEmpty) &&
-              _selectedCustomer != 'select_customer'.tr()) {
-            final custState = _customerBloc.state;
-            if (custState is CustomerSuccessState) {
-              final matches = custState.data.data.where(
-                (x) => x.name == _selectedCustomer,
-              );
-              if (matches.isNotEmpty) {
-                setState(() {
-                  _selectedCustomerId = matches.first.id;
-                });
-              }
-            }
-          }
-
-          if (_selectedCustomerId != null && _selectedCustomerId!.isNotEmpty) {
-            _sitesBloc.add(SitesGetEvent(customer_id: _selectedCustomerId!));
-
-            if ((_selectedSiteId == null || _selectedSiteId!.isEmpty) &&
-                _selectedSite != 'select_site'.tr()) {
-              final sitesState = _sitesBloc.state;
-              if (sitesState is SitesSuccessState) {
-                final siteMatches = sitesState.data.data.where(
-                  (x) => x.name == _selectedSite,
-                );
-                if (siteMatches.isNotEmpty) {
-                  setState(() {
-                    _selectedSiteId = siteMatches.first.id;
-                  });
-                }
-              }
-            }
-          }
-        } else if (state is ServiceWorkReportStep1AutofillFailure) {
-          appSnackBar(context, AppColor.bright_red, state.message);
-        }
-      },
-      builder: (context, autofillState) {
-        if (autofillState is ServiceWorkReportStep1AutofillLoading ||
-            (autofillState is ServiceWorkReportStep1AutofillInitial &&
-                _complaintId != null)) {
-          return const StepShimmer(step: 1);
-        }
-
-        String currentDealer = '';
-        if (autofillState is ServiceWorkReportStep1AutofillSuccess &&
-            autofillState.data.data.dealerName.isNotEmpty) {
-          currentDealer = autofillState.data.data.dealerName;
-        }
-
-        final dealerToShow = _loggedInDealerName.isNotEmpty
-            ? _loggedInDealerName
-            : (currentDealer.isNotEmpty
-                  ? currentDealer
-                  : 'commissioning_dealer_name_fallback'.tr());
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
             // Service Provider Card
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
@@ -2957,6 +2698,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                             children: [
                               TextFormField(
                                 controller: controller,
+                                readOnly: idx == 0,
                                 onChanged: (val) {
                                   _technicianIds[idx] =
                                       ''; // Manual input, clear ID
@@ -2991,32 +2733,34 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                                       color: Color(0xFF1565C0),
                                     ),
                                   ),
-                                  suffixIcon: isLoading
-                                      ? const Padding(
-                                          padding: EdgeInsets.all(12.0),
-                                          child: SizedBox(
-                                            width: 16,
-                                            height: 16,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              color: Color(0xFF1565C0),
-                                            ),
-                                          ),
-                                        )
-                                      : IconButton(
-                                          icon: const Icon(
-                                            Icons.keyboard_arrow_down,
-                                            color: Color(0xFFA5ABB7),
-                                          ),
-                                          onPressed: () {
-                                            _showTechnicianBottomSheet(
-                                              context,
-                                              validItems,
-                                              controller,
-                                              idx,
-                                            );
-                                          },
-                                        ),
+                                  suffixIcon: idx == 0
+                                      ? null
+                                      : (isLoading
+                                          ? const Padding(
+                                              padding: EdgeInsets.all(12.0),
+                                              child: SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child: CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  color: Color(0xFF1565C0),
+                                                ),
+                                              ),
+                                            )
+                                          : IconButton(
+                                              icon: const Icon(
+                                                Icons.keyboard_arrow_down,
+                                                color: Color(0xFFA5ABB7),
+                                              ),
+                                              onPressed: () {
+                                                _showTechnicianBottomSheet(
+                                                  context,
+                                                  validItems,
+                                                  controller,
+                                                  idx,
+                                                );
+                                              },
+                                            )),
                                 ),
                                 style: AppFont.style(
                                   fontSize: 14,
@@ -3029,7 +2773,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         },
                       ),
                     ),
-                    if (_technicians.length > 1) ...[
+                    if (idx > 0) ...[
                       const SizedBox(width: 12),
                       GestureDetector(
                         onTap: () {
@@ -3389,8 +3133,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             const SizedBox(height: 60),
           ],
         );
-      },
-    );
   }
 
   Widget _buildStep2() {

@@ -12,16 +12,15 @@ class OfflineServiceWorkReportsDb {
     return await OfflineCommissioningDb.instance.database;
   }
 
-  Future<void> updateAssignId(String commissioningWorkId, String reportId, String assignId) async {
+  Future<void> updateAssignId(String reportId, String assignId) async {
     final db = await database;
     await db.update(
       'service_work_report',
       {
         'assign_id': assignId,
-        if (reportId.isNotEmpty) 'report_id': reportId,
       },
-      where: 'commissioning_work_id = ?',
-      whereArgs: [commissioningWorkId],
+      where: 'report_id = ?',
+      whereArgs: [reportId],
     );
   }
 
