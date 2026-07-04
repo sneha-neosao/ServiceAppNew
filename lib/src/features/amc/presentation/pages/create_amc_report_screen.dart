@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:go_router/go_router.dart';
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:service_app/src/core/network/network_checker.dart';
@@ -300,11 +301,6 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
       if (report != null && report['report_id'] != null) {
         _currentReportId = report['report_id'];
       }
-      if (_currentStep == 1) {
-        if (report == null) {
-          _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
-        }
-      }
     }
   }
 
@@ -587,10 +583,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
               _assignedTechniciansBloc.add(GetAmcAssignedTechniciansEvent(_currentReportId!));
 
               setState(() => _currentStep++);
-              if (_currentReportId != null && !_hasFetchedStep2Autofill) {
-                _hasFetchedStep2Autofill = true;
-                _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
-              }
+              _loadStepDataFromDb();
               appSnackBar(
                 context, AppColor.green,
                 state.data.message,
@@ -2476,13 +2469,7 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                 widget.onBack();
               } else {
                 setState(() => _currentStep--);
-                if (_currentReportId != null) {
-                  if (_currentStep == 1) {
-                    _step1AutofillBloc.add(GetAmcReportStep1AutofillEvent(widget.visitId));
-                  } else if (_currentStep == 2) {
-                    _step2AutofillBloc.add(GetAmcReportStep2AutofillEvent(_currentReportId!));
-                  }
-                }
+                _loadStepDataFromDb();
               }
             },
             child: Row(
@@ -2786,7 +2773,9 @@ class _CreateAmcReportScreenState extends State<CreateAmcReportScreen> {
                               AppColor.green,
                               "reort_saved_offline".tr(),
                             );
-                            widget.onSubmit();
+                            if (context.mounted) {
+                              context.go('/home_screen');
+                            }
                           }
                         });
                         return;
